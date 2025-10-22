@@ -1,0 +1,47 @@
+<script lang="ts">
+	import '../app.css';
+	import favicon from '$lib/assets/favicon.svg';
+	import { onMount } from 'svelte';
+	import { Toaster } from 'svelte-sonner';
+	import { ModeWatcher } from 'mode-watcher';
+	import { page } from '$app/stores';
+	import { auth } from '$lib/firebase/firebase.client';
+	import { onAuthStateChanged } from 'firebase/auth';
+	import Navbar from '@/lib/components/Navbar.svelte';
+	import Footer from '@/lib/components/Footer.svelte';
+	import SEO from '@/lib/components/SEO.svelte';
+
+	let user = $page.data.user;
+
+	onMount(() => {
+		const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+			user = newUser;
+		});
+		return unsubscribe;
+	});
+
+	let { children } = $props();
+</script>
+
+<svelte:head>
+	<link rel="icon" href={favicon} />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+		rel="stylesheet"
+	/>
+</svelte:head>
+
+<SEO />
+<ModeWatcher />
+<Toaster />
+<div class="flex min-h-screen flex-col">
+	<Navbar />
+
+	<main class="container py-8 px-4 mx-auto">
+		{@render children?.()}
+	</main>
+
+	<Footer />
+</div>
