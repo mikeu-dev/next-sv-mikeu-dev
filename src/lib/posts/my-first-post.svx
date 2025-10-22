@@ -1,0 +1,25 @@
+---
+title: My First Post
+description: "This is the first post on my new blog. I'm excited to share my thoughts and experiences with you."
+date: "2025-10-22"
+published: true
+---
+
+## Welcome to My Blog!
+
+This is it! My first blog post. I've been wanting to start a blog for a while now to document my journey in web development, share tutorials, and discuss new technologies.
+
+### Why Start a Blog?
+
+I believe that writing is one of the best ways to learn. By explaining concepts to others, I solidify my own understanding. I also hope that my posts can help other developers who are on a similar path.
+
+### What to Expect
+
+Here are some of the topics I plan to write about:
+
+-   **SvelteKit & Next.js:** Deep dives into my favorite frameworks.
+-   **GIS & Web Mapping:** Tutorials on integrating maps and spatial data into web apps.
+-   **TypeScript:** Tips and tricks for writing more robust code.
+-   **DevOps & Tooling:** Thoughts on my development workflow and tools.
+
+Stay tuned for more content soon!
