@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-
-	export let data: PageData;
+	let { data } = $props();
 </script>
 
 <article class="mx-auto max-w-3xl py-8">
@@ -16,7 +14,7 @@
 		</p>
 	</header>
 
-	<div class="prose max-w-none dark:prose-invert lg:prose-lg">
-		<svelte:component this={data.content} />
+	<div class="prose dark:prose-invert lg:prose-lg max-w-none">
+		{@html data.content}
 	</div>
 </article>
