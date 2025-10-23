@@ -1,23 +1,29 @@
 <script lang="ts">
 	import ProjectCard from '@/lib/components/ProjectCard.svelte';
 	import type { PageData } from './$types';
-	import { Button } from '@/lib/components/ui/button';
+	import type { Project, Tag } from '$lib/types';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import { Icon } from 'svelte-icons-pack';
+	import { buttonVariants } from '@/lib/components/ui/button';
 
 	export let data: PageData;
-	const { projects } = data;
+	const { projects }: { projects: Project[] } = data;
 
 	// Get all unique tags from all projects
-	const allTags = ['All', ...new Set(projects.flatMap((p) => p.tags || []))];
+	const uniqueTags = Array.from(
+		new Map(projects.flatMap((p) => p.tags || []).map((t) => [t.name, t])).values()
+	);
+	const allTags: Tag[] = [...uniqueTags];
 
 	let selectedTag: string = 'All';
 	let filteredProjects = projects;
 
-	function filterProjects(tag: string) {
-		selectedTag = tag;
-		if (tag === 'All') {
+	function filterProjects(tagName: string) {
+		selectedTag = tagName;
+		if (tagName === 'All') {
 			filteredProjects = projects;
 		} else {
-			filteredProjects = projects.filter((p) => p.tags?.includes(tag));
+			filteredProjects = projects.filter((p) => p.tags?.some((t) => t.name === tagName));
 		}
 	}
 </script>
@@ -34,13 +40,27 @@
 	<section class="space-y-8">
 		<div class="flex flex-wrap justify-center gap-2">
 			{#each allTags as tag}
-				<Button
-					on:click={() => filterProjects(tag)}
-					variant={selectedTag === tag ? 'default' : 'outline'}
-					class="rounded-full"
-				>
-					{tag}
-				</Button>
+				<Tooltip.Provider>
+					<Tooltip.Root>
+						<Tooltip.Trigger
+							onclick={() => filterProjects(tag.name)}
+							class="{buttonVariants({
+								variant: selectedTag === tag.name ? 'default' : 'outline'
+							})} cursor-pointer rounded-full"
+							style={selectedTag !== tag.name
+								? `background-color: ${tag.color}1A; color: ${tag.color};`
+								: ''}
+						>
+							{#if tag.icon}
+								<Icon src={tag.icon} size={16} />
+							{/if}
+							{tag.name}
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							<p>Select to filter projects by this tag.</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				</Tooltip.Provider>
 			{/each}
 		</div>
 
