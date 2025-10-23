@@ -24,7 +24,7 @@
 		"@eslint/js": "^9.36.0",
 		"@inlang/paraglide-js": "^2.3.2",
 		"@internationalized/date": "^3.10.0",
-		"@lucide/svelte": "^0.546.0",
+		"@lucide/svelte": "^0.544.0",
 		"@playwright/test": "^1.55.1",
 		"@storybook/addon-a11y": "^9.1.13",
 		"@storybook/addon-docs": "^9.1.13",
