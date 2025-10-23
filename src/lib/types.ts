@@ -8,7 +8,7 @@ export interface Project {
 	repoUrl?: string;
 	demoUrl?: string;
 	published?: boolean;
-	tags?: string[];
+	tags?: Tag[];
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -19,4 +19,13 @@ export interface Contact {
 	email: string;
 	message: string;
 	createdAt?: Date;
+}
+
+import type { Component } from 'svelte';
+
+export interface Tag {
+	name: string;
+	icon: Component;
+	color: string;
+	url: string;
 }
