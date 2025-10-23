@@ -10,7 +10,18 @@
 	import Navbar from '@/lib/components/Navbar.svelte';
 	import Footer from '@/lib/components/Footer.svelte';
 	import SEO from '@/lib/components/SEO.svelte';
+	import { afterNavigate } from '$app/navigation';
+	import { initGsap, ScrollTrigger } from '@/lib/utils';
 
+	// Jalankan hanya di client (bukan SSR)
+	onMount(() => {
+		initGsap();
+
+		// Pastikan ScrollTrigger tahu jika halaman berubah
+		afterNavigate(() => {
+			setTimeout(() => ScrollTrigger.refresh(), 50);
+		});
+	});
 	let user = $page.data.user;
 
 	onMount(() => {

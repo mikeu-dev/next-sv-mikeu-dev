@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
+	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
 	import {
@@ -166,8 +166,12 @@
 </script>
 
 <header bind:this={headerElement} class="relative flex items-center justify-between border-b p-4">
-	<a href="/" bind:this={anchorElement} class="text-lg font-bold"
-		>Mikeu
+	<a href="/" bind:this={anchorElement} class="text-lg font-bold flex items-center gap-2">
+		<Avatar.Root>
+			<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" />
+			<Avatar.Fallback>RR</Avatar.Fallback>
+		</Avatar.Root>
+		Mikeu
 		<span
 			bind:this={devSpan}
 			class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white">Dev</span
@@ -187,10 +191,10 @@
 	</nav>
 	<div class="flex items-center gap-4">
 		{#if user}
-			<Avatar>
-				<AvatarImage src={user.photoURL} alt={user.displayName} />
-				<AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
-			</Avatar>
+			<Avatar.Root>
+				<Avatar.Image src={user.photoURL} alt={user.displayName} />
+				<Avatar.Fallback>RR</Avatar.Fallback>
+			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
 			<Button onclick={handleSignIn}>Sign In with Google</Button>
