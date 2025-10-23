@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import { gsap, ScrollTrigger } from '../utils';
 	import Matter from 'matter-js';
 	import { toast } from 'svelte-sonner';
 	import * as Tooltip from '@/lib/components/ui/tooltip';
@@ -31,7 +30,7 @@
 	}
 
 	onMount(() => {
-		gsap.registerPlugin(ScrollTrigger);
+		ScrollTrigger.refresh();
 
 		// Animate section scroll-in
 		gsap.from(workSection, {
