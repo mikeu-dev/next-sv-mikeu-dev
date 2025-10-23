@@ -2,15 +2,17 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
 	import {
 		GoogleAuthProvider,
+		createUserWithEmailAndPassword,
 		onAuthStateChanged,
-		signInWithPopup,
+		signInWithEmailAndPassword,
 		signOut,
 		type User
-	} from 'firebase/auth';
+	} from 'firebase/auth'; // Hapus signInWithPopup, tambahkan signInWithEmailAndPassword & createUserWithEmailAndPassword
 	import { page } from '$app/stores';
 	import Matter from 'matter-js';
 
@@ -22,11 +24,17 @@
 		{ href: '/contact', label: 'Contact' }
 	];
 	let user: User | null = null;
+	let showModal = false;
+	let authMode: 'signIn' | 'signUp' = 'signIn';
+	let email = '';
+	let password = '';
+	let username = '';
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement; // The container for the physics world
 	let devSpan: HTMLElement;
 
+	// --- onMount tetap sama ---
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, (newUser) => {
 			user = newUser;
@@ -128,25 +136,66 @@
 		};
 	});
 
-	async function handleSignIn() {
-		const provider = new GoogleAuthProvider();
+	function openModal(mode: 'signIn' | 'signUp') {
+		authMode = mode;
+		showModal = true;
+		email = '';
+		username = '';
+		password = '';
+	}
+
+	async function handleSubmit() {
+		let authEmail = email;
+
 		try {
-			const result = await signInWithPopup(auth, provider);
+			let result;
+			// Jika mode sign-in, cari email berdasarkan username
+			if (authMode === 'signIn') {
+				const res = await fetch(`/api/users/find-by-username`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ username })
+				});
+				if (!res.ok) {
+					const errorData = await res.json();
+					throw new Error(errorData.message || 'User not found');
+				}
+				const { email: foundEmail } = await res.json();
+				authEmail = foundEmail;
+			}
+
+			// Lanjutkan dengan email yang ditemukan atau yang diinput saat sign-up
+			if (authMode === 'signIn') {
+				result = await signInWithEmailAndPassword(auth, authEmail, password);
+				toast.success('Signed in successfully');
+			} else {
+				result = await createUserWithEmailAndPassword(auth, authEmail, password);
+				toast.success('Account created successfully');
+			}
+
 			const token = await result.user.getIdToken();
 			const res = await fetch('/api/auth', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ token })
+				body: JSON.stringify({ token, username, email: authEmail }) // Kirim data user ke server
 			});
+
 			if (res.ok) {
-				toast.success('Signed in successfully');
 				window.location.reload();
 			} else {
-				toast.error('Sign in failed');
+				toast.error('Authentication with server failed.');
 			}
-		} catch (error) {
-			toast.error('Sign in failed');
+		} catch (e: unknown) {
+			console.error('Authentication error:', e);
+			let message = 'An unknown error occurred.';
+			if (e instanceof Error) {
+				// Firebase errors often have more specific messages
+				message = e.message;
+			}
+			toast.error(message);
 		}
+
+		showModal = false;
 	}
 
 	async function handleSignOut() {
@@ -159,14 +208,15 @@
 			} else {
 				toast.error('Sign out failed');
 			}
-		} catch (error) {
-			toast.error('Sign out failed');
+		} catch (e: unknown) {
+			console.error('Sign out error:', e);
+			toast.error('An error occurred during sign out.');
 		}
 	}
 </script>
 
 <header bind:this={headerElement} class="relative flex items-center justify-between border-b p-4">
-	<a href="/" bind:this={anchorElement} class="text-lg font-bold flex items-center gap-2">
+	<a href="/" bind:this={anchorElement} class="flex items-center gap-2 text-lg font-bold">
 		<Avatar.Root>
 			<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" />
 			<Avatar.Fallback>RR</Avatar.Fallback>
@@ -197,7 +247,75 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<Button onclick={handleSignIn}>Sign In with Google</Button>
+			<Button onclick={() => openModal('signIn')}>Sign In</Button>
 		{/if}
 	</div>
 </header>
+
+<Dialog.Root bind:open={showModal}>
+	<Dialog.Content class="sm:max-w-[425px]">
+		<Dialog.Header>
+			<Dialog.Title>{authMode === 'signIn' ? 'Sign In' : 'Sign Up'}</Dialog.Title>
+			<Dialog.Description>
+				{authMode === 'signIn'
+					? 'Enter your credentials to access your account.'
+					: 'Create an account to get started.'}
+			</Dialog.Description>
+		</Dialog.Header>
+		<div class="grid gap-4 py-4">
+			<form on:submit|preventDefault={handleSubmit}>
+				{#if authMode === 'signUp'}
+					<div class="mb-4">
+						<label for="email" class="mb-1 block text-sm font-medium text-muted-foreground"
+							>Email</label
+						>
+						<input
+							type="email"
+							id="email"
+							bind:value={email}
+							class="w-full rounded border bg-background p-2"
+							required
+						/>
+					</div>
+				{/if}
+				<div class="mb-4">
+					<label for="username" class="mb-1 block text-sm font-medium text-muted-foreground"
+						>Username</label
+					>
+					<input
+						type="text"
+						id="username"
+						bind:value={username}
+						class="w-full rounded border bg-background p-2"
+						required
+					/>
+				</div>
+				<div class="mb-6">
+					<label for="password" class="mb-1 block text-sm font-medium text-muted-foreground"
+						>Password</label
+					>
+					<input
+						type="password"
+						id="password"
+						bind:value={password}
+						class="w-full rounded border bg-background p-2"
+						required
+					/>
+				</div>
+				<Button type="submit" class="w-full">{authMode === 'signIn' ? 'Sign In' : 'Sign Up'}</Button
+				>
+			</form>
+		</div>
+		<Dialog.Footer class="sm:justify-center">
+			<p class="text-center text-sm text-muted-foreground">
+				{authMode === 'signIn' ? "Don't have an account?" : 'Already have an account?'}
+				<button
+					class="underline"
+					on:click={() => (authMode = authMode === 'signIn' ? 'signUp' : 'signIn')}
+				>
+					{authMode === 'signIn' ? 'Sign Up' : 'Sign In'}
+				</button>
+			</p>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
