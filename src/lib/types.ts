@@ -1,3 +1,5 @@
+import type { IconType } from "svelte-icons-pack";
+
 export interface Project {
 	id: string;
 	title: string;
@@ -21,11 +23,9 @@ export interface Contact {
 	createdAt?: Date;
 }
 
-import type { Component } from 'svelte';
-
 export interface Tag {
 	name: string;
-	icon: Component;
+	icon: IconType;
 	color: string;
 	url: string;
 }
