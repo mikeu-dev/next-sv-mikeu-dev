@@ -38,11 +38,15 @@
 
 		{#if project.tags && project.tags.length > 0}
 			<div class="mb-4 flex flex-wrap gap-2">
-				{#each project.tags as tag}
+				{#each project.tags as tag: Tag}
 					<span
-						class="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary transition-colors group-hover:bg-primary/20"
+						class="group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors"
+						style="background-color: {tag.color}1A; color: {tag.color};"
 					>
-						{tag}
+						{#if tag.icon}
+							<tag.icon class="size-3" />
+						{/if}
+						{tag.name}
 					</span>
 				{/each}
 			</div>
