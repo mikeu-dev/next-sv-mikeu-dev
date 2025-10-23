@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ArrowLeft, ExternalLink, Github } from '@lucide/svelte';
 	import { Button } from '@/lib/components/ui/button';
+	import { Icon } from 'svelte-icons-pack';
 
 	let { data } = $props();
 	const { project } = data;
@@ -26,9 +27,13 @@
 				{#if project.tags && project.tags.length > 0}
 					{#each project.tags as tag}
 						<span
-							class="rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground"
+							class="group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors"
+							style="background-color: {tag.color}1A; color: {tag.color};"
 						>
-							{tag}
+							{#if tag.icon}
+								<Icon src={tag.icon} size={16} />
+							{/if}
+							{tag.name}
 						</span>
 					{/each}
 				{/if}
@@ -43,7 +48,7 @@
 			/>
 		{/if}
 
-	<div class="prose prose-lg dark:prose-invert max-w-none">
+		<div class="prose prose-lg dark:prose-invert max-w-none">
 			{#if project.content}
 				{@html project.content}
 			{:else}
