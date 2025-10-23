@@ -247,7 +247,7 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<Button onclick={() => openModal('signIn')}>Sign In</Button>
+			<Button onclick={() => toast.info('Becanda keles. Yakali..')}>Sign In</Button>
 		{/if}
 	</div>
 </header>
