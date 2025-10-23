@@ -19,7 +19,7 @@ export const projects: Project[] = [
 		description:
 			'A modern and responsive Food Market website built with Vue.js and Tailwind CSS. This project features a dynamic product catalog, detailed food item pages, and a fully interactive shopping cart for a seamless user experience.',
 		thumbnailUrl:
-			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/src/lib/assets/emameun.jpg',
+			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/main/src/lib/assets/images/projects/emameun.jpg',
 		repoUrl: 'https://github.com/mikeu-dev/next-sv-mikeu-dev',
 		demoUrl: 'https://emameun.vercel.app/',
 		tags: [
@@ -54,7 +54,7 @@ export const projects: Project[] = [
 		description:
 			'A comprehensive information system for the Environmental Agency of Purwakarta Regency. This platform serves as a central hub for environmental programs, public services, and educational resources, featuring an interactive map for visualizing environmental data.',
 		thumbnailUrl:
-			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/src/lib/assets/dlh.jpg',
+			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/main/src/lib/assets/images/projects/dlh.jpg',
 		demoUrl: 'https://dlh.purwakartakab.go.id/',
 		tags: [
 			{
@@ -94,7 +94,7 @@ export const projects: Project[] = [
 		description:
 			'A web-based information system for the Jatiluhur Irrigation Management Unit. This platform provides essential irrigation data, features an interactive mapping system for monitoring channels, and includes a public complaint submission feature.',
 		thumbnailUrl:
-			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/src/lib/assets/upijatiluhur.jpg',
+			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/main/src/lib/assets/images/projects/upidijatiluhur.jpg',
 		demoUrl: 'https://upijatiluhur.id/',
 		tags: [
 			{
@@ -133,7 +133,7 @@ export const projects: Project[] = [
 		description:
 			'An interactive web application for creating, viewing, and managing geospatial data. Built with Next.js and React, it allows users to draw on the map, import/export various GIS file formats, and visualize data in real-time.',
 		thumbnailUrl:
-			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/src/lib/assets/mapin.jpg',
+			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/main/src/lib/assets/images/projects/mapin.jpg',
 		demoUrl: 'https://mapin-aja.vercel.app/',
 		repoUrl: 'https://github.com/mikeu-dev/mapin-aja',
 		tags: [
@@ -180,7 +180,7 @@ export const projects: Project[] = [
 		description:
 			'A platform for managing and monitoring investment projects in the Purwakarta region. It features project management tools, advanced search/filtering, and data visualization in both table and map formats, all built on the CodeIgniter 4 framework.',
 		thumbnailUrl:
-			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/src/lib/assets/investasi.jpg',
+			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/main/src/lib/assets/images/projects/investasi.jpg',
 		demoUrl: 'https://investasi.purwakartakab.go.id/',
 		tags: [
 			{
@@ -220,7 +220,7 @@ export const projects: Project[] = [
 		description:
 			'A web application to streamline the technical approval process for construction projects. Built with Laravel and the TALL stack (Tailwind, Alpine.js, Livewire, Laravel), it provides a centralized platform for managing approval requests efficiently.',
 		thumbnailUrl:
-			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/src/lib/assets/siperintis.jpg',
+			'https://raw.githubusercontent.com/mikeu-dev/next-sv-mikeu-dev/main/src/lib/assets/images/projects/siperintis-applicant-app.png',
 		demoUrl: 'https://siperintis.pratama.live/',
 		tags: [
 			{
@@ -232,7 +232,7 @@ export const projects: Project[] = [
 			{
 				name: 'Filament',
 				icon: SiFi,
-				color: '#BB86FC',
+				color: '#eb6b34',
 				url: 'filamentphp.com'
 			},
 			{
