@@ -8,32 +8,57 @@ type Post = {
 	published: boolean;
 };
 
-async function getPosts() {
+// Ganti dengan repo kamu
+const GITHUB_USER = 'mikeu-dev';
+const GITHUB_REPO = 'portfolio-assets';
+const BLOG_DIR = 'blogs';
+
+async function getPosts(): Promise<Post[]> {
 	const posts: Post[] = [];
-	const paths = import.meta.glob<{ metadata: Omit<Post, 'slug'> }>('/src/lib/posts/*.svx', {
-		eager: true
-	});
 
-	for (const path in paths) {
-		const file = paths[path];
-		const slug = path.split('/').at(-1)?.replace('.svx', '');
+	// 1️⃣ Ambil daftar file di folder blog dari GitHub API
+	const listRes = await fetch(
+		`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${BLOG_DIR}`
+	);
+	const files: { name: string; download_url: string }[] = await listRes.json();
 
-		if (file && typeof file === 'object' && 'metadata' in file && slug) {
-			const post = { ...file.metadata, slug };
-			if (post.published) {
-				posts.push(post);
-			}
+	// 2️⃣ Loop tiap file .svx
+	for (const file of files) {
+		if (!file.name.endsWith('.svx')) continue;
+
+		// Ambil isi file mentah
+		const raw = await fetch(file.download_url).then((res) => res.text());
+
+		// 3️⃣ Ekstrak metadata (frontmatter) dari konten .svx
+		const match = /^---\n([\s\S]*?)\n---/.exec(raw);
+		if (!match) continue;
+
+		const frontmatter = Object.fromEntries(
+			match[1]
+				.split('\n')
+				.map((line) => {
+					const [key, ...value] = line.split(':');
+					return [key.trim(), value.join(':').trim()];
+				})
+				.filter(([k, v]) => k && v)
+		) as Record<string, string>;
+
+		// 4️⃣ Pastikan metadata valid dan post di-publish
+		const slug = file.name.replace('.svx', '');
+		if (frontmatter.published === 'true') {
+			posts.push({
+				...(frontmatter as Omit<Post, 'slug' | 'published'>),
+				published: true,
+				slug
+			});
 		}
 	}
 
-	return posts.sort(
-		(first, second) => new Date(second.date).getTime() - new Date(first.date).getTime()
-	);
+	// 5️⃣ Urutkan berdasarkan tanggal terbaru
+	return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export const load: PageServerLoad = async () => {
 	const posts = await getPosts();
-	return {
-		posts
-	};
+	return { posts };
 };
