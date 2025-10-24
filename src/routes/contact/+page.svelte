@@ -40,18 +40,21 @@
 			class="space-y-6"
 		>
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-				<div class="space-y-2">
+				<div class="flex w-full max-w-sm flex-col gap-1.5">
 					<Label for="name">Name</Label>
-					<Input type="text" id="name" name="name" required />
+					<Input type="text" id="name" placeholder="Input name here" name="name" required />
+					<p class="text-sm text-muted-foreground">Enter your name.</p>
 				</div>
-				<div class="space-y-2">
+				<div class="flex w-full max-w-sm flex-col gap-1.5">
 					<Label for="email">Email</Label>
-					<Input type="email" id="email" name="email" required />
+					<Input type="email" id="email" name="email" placeholder="Input email here" required />
+					<p class="text-sm text-muted-foreground">Enter your email address.</p>
 				</div>
 			</div>
-			<div class="space-y-2">
+			<div class="flex w-full max-w-2xl flex-col gap-1.5">
 				<Label for="message">Message</Label>
-				<Textarea id="message" name="message" rows={5} required />
+				<Textarea id="message" name="message" rows={5} placeholder="Input message here" required />
+				<p class="text-sm text-muted-foreground">Enter your message..</p>
 			</div>
 			<div class="text-right">
 				<Button type="submit">Send Message</Button>
