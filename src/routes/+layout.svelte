@@ -6,7 +6,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { onAuthStateChanged } from 'firebase/auth';
-	import Navbar from '@/lib/components/Navbar.svelte';
+	import Navbar from '@/lib/components/guest/navbar/navbar.svelte';
 	import Footer from '@/lib/components/Footer.svelte';
 	import SEO from '@/lib/components/SEO.svelte';
 	import { afterNavigate } from '$app/navigation';
