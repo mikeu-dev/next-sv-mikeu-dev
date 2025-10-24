@@ -2,60 +2,15 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import {
-		Atom,
-		Box,
-		Braces,
-		CodeXml,
-		Cog,
-		Container,
-		Database,
-		Globe,
-		MapPin,
-		Mouse,
-		Server,
-		Type,
-		Wind
-	} from '@lucide/svelte';
 	import { initGsap } from '@/lib/utils';
-
+	import { techStack } from '@/lib/data/techstack';
+	import { getLocale } from '@/lib/paraglide/runtime';
+	import { Icon } from 'svelte-icons-pack';
+	let initialLocale = $state(getLocale());
+	let techstack = $derived(techStack[initialLocale] || techStack['en']);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
 	let wavingHand: HTMLElement;
-
-	const techStack = [
-		{
-			category: 'Core Expertise',
-			description: 'Technologies I use daily and know inside-out.',
-			items: [
-				{ name: 'SvelteKit', icon: Braces },
-				{ name: 'Next.js', icon: CodeXml },
-				{ name: 'TypeScript', icon: Type },
-				{ name: 'Laravel', icon: Server },
-				{ name: 'Tailwind CSS', icon: Wind }
-			]
-		},
-		{
-			category: 'Comfortable With',
-			description: 'Tools I have significant experience with.',
-			items: [
-				{ name: 'React', icon: Atom },
-				{ name: 'Leaflet', icon: MapPin },
-				{ name: 'OpenLayers', icon: Globe },
-				{ name: 'MySQL', icon: Database },
-				{ name: 'Docker', icon: Container }
-			]
-		},
-		{
-			category: 'Exploring',
-			description: 'What I am currently learning and experimenting with.',
-			items: [
-				{ name: 'Go', icon: Mouse },
-				{ name: 'Rust', icon: Cog },
-				{ name: 'WebAssembly', icon: Box }
-			]
-		}
-	];
 
 	const journey = [
 		{
@@ -136,9 +91,15 @@
 	<section class="grid grid-cols-1 items-center gap-12 md:grid-cols-5">
 		<div class="md:col-span-1">
 			<!-- Placeholder for a profile picture -->
-			<div
+			<!-- <div
 				class="aspect-square rounded-lg bg-gradient-to-br from-teal-400 to-blue-500 shadow-lg"
-			></div>
+			></div> -->
+			<img
+				src="https://github.com/mikeu-dev.png"
+				alt="@mikeu-dev"
+				srcset=""
+				class="aspect-square rounded"
+			/>
 		</div>
 		<div class="md:col-span-3">
 			<h2 class="font-poppins mb-4 text-3xl font-bold tracking-tight">
@@ -206,16 +167,19 @@
 	<section>
 		<h2 class="font-poppins mb-8 text-center text-3xl font-bold tracking-tight">My Tech Stack</h2>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-			{#each techStack as skillCategory}
+			{#each techstack as skillCategory}
 				<div class="rounded-lg border bg-card p-6 text-card-foreground">
 					<h3 class="font-poppins mb-2 text-xl font-bold">{skillCategory.category}</h3>
 					<p class="mb-4 text-sm text-muted-foreground">{skillCategory.description}</p>
 					<div class="flex flex-wrap gap-2">
 						{#each skillCategory.items as tech}
 							<span
-								class="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground"
+								class="group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors"
+								style="background-color: {tech.color}1A; color: {tech.color};"
 							>
-								<svelte:component this={tech.icon} class="size-4" />
+								{#if tech.icon}
+									<Icon src={tech.icon} size={16} />
+								{/if}
 								{tech.name}
 							</span>
 						{/each}
