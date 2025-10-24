@@ -4,7 +4,6 @@
 	import { onMount } from 'svelte';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
-	import { page } from '$app/stores';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { onAuthStateChanged } from 'firebase/auth';
 	import Navbar from '@/lib/components/Navbar.svelte';
@@ -12,7 +11,10 @@
 	import SEO from '@/lib/components/SEO.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import { locales, localizeHref } from '$lib/paraglide/runtime';
+	import { page } from '$app/state';
 
+	let { data, children } = $props();
 	// Jalankan hanya di client (bukan SSR)
 	onMount(() => {
 		// Pastikan ScrollTrigger tahu jika halaman berubah
@@ -20,16 +22,13 @@
 			setTimeout(() => ScrollTrigger.refresh(), 50);
 		});
 	});
-	let user = $page.data.user;
-
+	let user;
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, (newUser) => {
 			user = newUser;
 		});
 		return unsubscribe;
 	});
-
-	let { children } = $props();
 </script>
 
 <svelte:head>
@@ -53,4 +52,9 @@
 	</main>
 
 	<Footer />
+</div>
+<div style="display:none">
+	{#each locales as locale}
+		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
+	{/each}
 </div>

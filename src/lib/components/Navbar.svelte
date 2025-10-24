@@ -3,11 +3,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Select from '$lib/components/ui/select/index.js';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
+	import Id from 'svelte-flags/Id.svelte';
+	import GbNir from 'svelte-flags/GbNir.svelte';
 	import {
-		GoogleAuthProvider,
-		// GoogleAuthProvider is not used, can be removed
 		createUserWithEmailAndPassword,
 		onAuthStateChanged,
 		signInWithEmailAndPassword,
@@ -18,6 +19,16 @@
 	import Matter from 'matter-js';
 	import { slide, fade } from 'svelte/transition'; // Import Svelte transitions
 	import { quintOut } from 'svelte/easing'; // Import easing for slide transition
+	import { getLocale, setLocale } from '../paraglide/runtime';
+
+	let locale = $state(getLocale());
+	$effect(() => {
+		if (locale) {
+			setLocale(locale);
+		}
+	});
+
+	const availableLanguageTags = ['in', 'en'] as const;
 
 	const navLinks = [
 		{ href: '/', label: 'Home' },
@@ -26,23 +37,23 @@
 		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	];
-	let user: User | null = null;
-	let showAuthModal = false; // Renamed to avoid conflict with mobile menu
-	let authMode: 'signIn' | 'signUp' = 'signIn';
-	let email = '';
-	let password = '';
-	let username = '';
+	let user: User | null = $state(null);
+	let showAuthModal = $state(false); // Renamed to avoid conflict with mobile menu
+	let authMode: 'signIn' | 'signUp' = $state('signIn');
+	let email = $state('');
+	let password = $state('');
+	let username = $state('');
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
 	let devSpan: HTMLElement;
 
 	// New state for mobile menu
-	let isMobileMenuOpen = false;
+	let isMobileMenuOpen: boolean = $state(false);
 
 	// --- onMount tetap sama ---
 	onMount(() => {
-		const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+		const unsubscribe = onAuthStateChanged(auth, (newUser: User | null) => {
 			user = newUser;
 		});
 
@@ -262,6 +273,22 @@
 		{/each}
 	</nav>
 	<div class="hidden items-center gap-4 md:flex">
+		<Select.Root type="single" bind:value={locale}>
+			<Select.Trigger class="w-[90px] font-mono text-xs" size="sm"
+				>{#if locale === 'id'}
+					<Id class="h-5 w-5" />ID
+				{:else if locale === 'en'}
+					<GbNir class="h-5 w-5 text-xs" />EN
+				{:else}
+					<span class="text-gray-500">Bahasa</span>
+				{/if}
+			</Select.Trigger>
+			<Select.Content class="font-mono text-xs">
+				<Select.Item value="id"><Id />ID</Select.Item>
+				<Select.Item value="en"><GbNir />EN</Select.Item>
+			</Select.Content>
+		</Select.Root>
+		<div class="mx-2 h-6 w-px bg-border"></div>
 		{#if user}
 			<Avatar.Root>
 				<Avatar.Image src={user.photoURL} alt={user.displayName} />
@@ -339,6 +366,19 @@
 				</a>
 			{/each}
 		</nav>
+		<div class="my-8 flex justify-center gap-4">
+			{#each availableLanguageTags as lang}
+				<a
+					href={'/' + lang + $page.url.pathname}
+					class="text-lg font-medium"
+					class:text-foreground={lang === locale}
+					class:text-muted-foreground={lang !== locale}
+					onclick={toggleMobileMenu}
+				>
+					{lang.toUpperCase()}
+				</a>
+			{/each}
+		</div>
 		<div class="mt-8 flex flex-col gap-4">
 			{#if user}
 				<div class="flex items-center gap-2">
