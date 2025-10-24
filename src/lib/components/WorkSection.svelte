@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { gsap, ScrollTrigger } from '../utils';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import Matter from 'matter-js';
 	import { toast } from 'svelte-sonner';
 	import * as Tooltip from '@/lib/components/ui/tooltip';
 	import ProjectCard from '@/lib/components/ProjectCard.svelte';
 	import type { Project } from '$lib/types';
+	import { initGsap } from '@/lib/utils';
 
 	export let projects: Project[];
 
@@ -30,6 +32,7 @@
 	}
 
 	onMount(() => {
+		initGsap();
 		ScrollTrigger.refresh();
 
 		// Animate section scroll-in

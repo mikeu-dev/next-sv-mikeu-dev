@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import {
 		Atom,
@@ -16,7 +17,7 @@
 		Type,
 		Wind
 	} from '@lucide/svelte';
-	import { gsap } from '@/lib/utils';
+	import { initGsap } from '@/lib/utils';
 
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
@@ -84,6 +85,7 @@
 	];
 
 	onMount(() => {
+		initGsap();
 		if (container) {
 			gsap.from(container.children, {
 				y: 30,
