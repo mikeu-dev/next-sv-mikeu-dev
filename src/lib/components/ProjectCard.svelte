@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowRight, ExternalLink, Github } from '@lucide/svelte';
 	import type { Project, Tag } from '$lib/types';
 	import { Icon } from 'svelte-icons-pack';
+	import { initGsap } from '@/lib/utils';
 
 	let { project }: { project: Project } = $props();
 
 	let cardElement: HTMLDivElement;
 
 	onMount(() => {
+		initGsap();
 		gsap.from(cardElement, {
 			y: 50,
 			opacity: 0,

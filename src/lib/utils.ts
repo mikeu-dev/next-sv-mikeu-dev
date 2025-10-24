@@ -14,11 +14,6 @@ export function initGsap() {
 	win._gsapRegistered = true;
 }
 
-export { gsap, ScrollTrigger };
-
-
-
-
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
