@@ -71,6 +71,8 @@
 		"vitest-browser-svelte": "^1.1.0"
 	},
 	"dependencies": {
+		"@sveltejs/adapter-static": "^3.0.10",
+		"@sveltejs/adapter-vercel": "^6.0.0",
 		"busboy": "^1.6.0",
 		"firebase": "^12.4.0",
 		"firebase-admin": "^13.5.0",
