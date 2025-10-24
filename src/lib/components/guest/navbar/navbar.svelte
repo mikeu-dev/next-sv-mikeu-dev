@@ -38,6 +38,7 @@
 	let password = $state('');
 	let username = $state('');
 	let isMobileMenuOpen = $state(false);
+	const resumeUrl = "https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(id).pdf";
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
@@ -245,7 +246,7 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<!-- <Button onclick={makeFallingConfetti}>Sign In</Button> -->
+			<Button href={resumeUrl} download>Get My Resume</Button>
 		{/if}
 	</div>
 
