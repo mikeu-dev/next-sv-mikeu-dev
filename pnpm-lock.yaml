@@ -29,6 +29,9 @@ importers:
       matter-js:
         specifier: ^0.20.0
         version: 0.20.0
+      svelte-canvas-confetti:
+        specifier: ^0.6.0
+        version: 0.6.0
       svelte-flags:
         specifier: ^3.0.0
         version: 3.0.0(svelte@5.41.1)
@@ -2941,6 +2944,9 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       svelte: ^5.0.0
+
+  svelte-canvas-confetti@0.6.0:
+    resolution: {integrity: sha512-Q/jp48oVvwLCkuwQAQS6JJk1g4CGHRtXVrsESze/zsTzkhsn8NLM5GezwmEbXg9ok8tdMugpjpOiWMlNh5zSlw==}
 
   svelte-check@4.3.3:
     resolution: {integrity: sha512-RYP0bEwenDXzfv0P1sKAwjZSlaRyqBn0Fz1TVni58lqyEiqgwztTpmodJrGzP6ZT2aHl4MbTvWP6gbmQ3FOnBg==}
@@ -6233,6 +6239,8 @@ snapshots:
       esrap: 1.2.2
       svelte: 5.41.1
       zimmerframe: 1.1.2
+
+  svelte-canvas-confetti@0.6.0: {}
 
   svelte-check@4.3.3(picomatch@4.0.3)(svelte@5.41.1)(typescript@5.9.3):
     dependencies:

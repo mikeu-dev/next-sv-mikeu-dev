@@ -6,6 +6,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
 	import { page } from '$app/stores';
+	import { page as p } from '$app/state';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
 	import SunIcon from '@lucide/svelte/icons/sun';
@@ -24,6 +25,9 @@
 	import { quintOut } from 'svelte/easing';
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
 	import { setupMatter } from './navbar.svelte.js';
+	import { FallingConfetti } from 'svelte-canvas-confetti';
+	import { tick } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
 
 	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
@@ -38,6 +42,23 @@
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
 	let devSpan: HTMLElement;
+	let fallingConfetti = $state(false);
+
+	afterNavigate(() => {
+		if (p.url.pathname === '/') {
+			fallingConfetti = true;
+
+			setTimeout(() => {
+				fallingConfetti = false;
+			}, 5000); // tampil selama 2 detik
+		}
+	});
+
+	const makeFallingConfetti = async () => {
+		fallingConfetti = false;
+		await tick();
+		fallingConfetti = true;
+	};
 
 	// --- Reactive Locale Sync ---
 	$effect(() => {
@@ -145,16 +166,23 @@
 	}
 </script>
 
+{#if fallingConfetti}
+	<FallingConfetti />
+{/if}
 <!-- ===================== HEADER ===================== -->
-<header bind:this={headerElement} class="relative z-10 flex items-center justify-between border-b p-4">
+<header
+	bind:this={headerElement}
+	class="relative z-10 flex items-center justify-between border-b p-4"
+>
 	<a href="/" bind:this={anchorElement} class="flex min-w-0 items-center gap-2 text-lg font-bold">
 		<Avatar.Root>
 			<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" />
 			<Avatar.Fallback>RR</Avatar.Fallback>
 		</Avatar.Root>
 		Mikeu
-		<span bind:this={devSpan} class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white"
-			>Dev</span
+		<span
+			bind:this={devSpan}
+			class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white">Dev</span
 		>
 	</a>
 
@@ -176,8 +204,12 @@
 		<!-- Theme Dropdown -->
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger class={buttonVariants({ variant: 'outline', size: 'icon' })}>
-				<SunIcon class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-				<MoonIcon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+				<SunIcon
+					class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
+				/>
+				<MoonIcon
+					class="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
+				/>
 				<span class="sr-only">Toggle theme</span>
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content align="end">
@@ -213,15 +245,26 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<Button onclick={() => openAuthModal('signIn')}>Sign In</Button>
+			<!-- <Button onclick={makeFallingConfetti}>Sign In</Button> -->
 		{/if}
 	</div>
 
 	<!-- Mobile Menu Button -->
 	<div class="md:hidden">
 		<Button variant="ghost" size="icon" onclick={toggleMobileMenu}>
-			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="h-6 w-6"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M4 6h16M4 12h16M4 18h16"
+				/>
 			</svg>
 			<span class="sr-only">Toggle navigation</span>
 		</Button>
@@ -230,12 +273,31 @@
 
 <!-- ===================== MOBILE MENU ===================== -->
 {#if isMobileMenuOpen}
-	<button aria-label="toggle" transition:fade={{ duration: 150 }} class="fixed inset-0 z-40 bg-black/50 md:hidden" onclick={toggleMobileMenu}></button>
-	<div transition:slide={{ axis: 'x', duration: 200, easing: quintOut }} class="fixed top-0 right-0 z-50 flex h-full w-3/4 max-w-xs flex-col bg-background p-4 shadow-lg md:hidden">
+	<button
+		aria-label="toggle"
+		transition:fade={{ duration: 150 }}
+		class="fixed inset-0 z-40 bg-black/50 md:hidden"
+		onclick={toggleMobileMenu}
+	></button>
+	<div
+		transition:slide={{ axis: 'x', duration: 200, easing: quintOut }}
+		class="fixed top-0 right-0 z-50 flex h-full w-3/4 max-w-xs flex-col bg-background p-4 shadow-lg md:hidden"
+	>
 		<div class="flex justify-end">
 			<Button variant="ghost" size="icon" onclick={toggleMobileMenu}>
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M6 18L18 6M6 6l12 12"
+					/>
 				</svg>
 			</Button>
 		</div>
@@ -291,26 +353,52 @@
 		<Dialog.Header>
 			<Dialog.Title>{authMode === 'signIn' ? 'Sign In' : 'Sign Up'}</Dialog.Title>
 			<Dialog.Description>
-				{authMode === 'signIn' ? 'Enter your credentials to access your account.' : 'Create an account to get started.'}
+				{authMode === 'signIn'
+					? 'Enter your credentials to access your account.'
+					: 'Create an account to get started.'}
 			</Dialog.Description>
 		</Dialog.Header>
 
 		<form onsubmit={handleSubmit} class="grid gap-4 py-4">
 			{#if authMode === 'signUp'}
 				<div>
-					<label for="email" class="mb-1 block text-sm font-medium text-muted-foreground">Email</label>
-					<input id="email" type="email" bind:value={email} class="w-full rounded border bg-background p-2" required />
+					<label for="email" class="mb-1 block text-sm font-medium text-muted-foreground"
+						>Email</label
+					>
+					<input
+						id="email"
+						type="email"
+						bind:value={email}
+						class="w-full rounded border bg-background p-2"
+						required
+					/>
 				</div>
 			{/if}
 
 			<div>
-				<label for="username" class="mb-1 block text-sm font-medium text-muted-foreground">Username</label>
-				<input id="username" type="text" bind:value={username} class="w-full rounded border bg-background p-2" required />
+				<label for="username" class="mb-1 block text-sm font-medium text-muted-foreground"
+					>Username</label
+				>
+				<input
+					id="username"
+					type="text"
+					bind:value={username}
+					class="w-full rounded border bg-background p-2"
+					required
+				/>
 			</div>
 
 			<div>
-				<label for="password" class="mb-1 block text-sm font-medium text-muted-foreground">Password</label>
-				<input id="password" type="password" bind:value={password} class="w-full rounded border bg-background p-2" required />
+				<label for="password" class="mb-1 block text-sm font-medium text-muted-foreground"
+					>Password</label
+				>
+				<input
+					id="password"
+					type="password"
+					bind:value={password}
+					class="w-full rounded border bg-background p-2"
+					required
+				/>
 			</div>
 
 			<Button type="submit" class="w-full">{authMode === 'signIn' ? 'Sign In' : 'Sign Up'}</Button>
@@ -319,7 +407,10 @@
 		<Dialog.Footer class="sm:justify-center">
 			<p class="text-center text-sm text-muted-foreground">
 				{authMode === 'signIn' ? "Don't have an account?" : 'Already have an account?'}
-				<button class="underline" onclick={() => (authMode = authMode === 'signIn' ? 'signUp' : 'signIn')}>
+				<button
+					class="underline"
+					onclick={() => (authMode = authMode === 'signIn' ? 'signUp' : 'signIn')}
+				>
 					{authMode === 'signIn' ? 'Sign Up' : 'Sign In'}
 				</button>
 			</p>
