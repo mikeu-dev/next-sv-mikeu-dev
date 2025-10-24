@@ -37,6 +37,7 @@
 		"@tailwindcss/forms": "^0.5.10",
 		"@tailwindcss/typography": "^0.5.18",
 		"@tailwindcss/vite": "^4.1.13",
+		"@types/busboy": "^1.5.4",
 		"@types/matter-js": "^0.20.2",
 		"@types/node": "^22",
 		"@vitest/browser": "^3.2.4",
@@ -70,6 +71,7 @@
 		"vitest-browser-svelte": "^1.1.0"
 	},
 	"dependencies": {
+		"busboy": "^1.6.0",
 		"firebase": "^12.4.0",
 		"firebase-admin": "^13.5.0",
 		"gsap": "^3.13.0",
