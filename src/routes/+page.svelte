@@ -2,7 +2,7 @@
 	import type { PageData } from './$types';
 	import ContactSection from '../lib/components/ContactSection.svelte';
 	import HeroSection from '../lib/components/HeroSection.svelte';
-	import WorkSection from '../lib/components/WorkSection.svelte';
+	import WorkSection from '../lib/components/guest/sections/work/work.svelte';
 
 	export let data: PageData;
 	const { projects } = data;
