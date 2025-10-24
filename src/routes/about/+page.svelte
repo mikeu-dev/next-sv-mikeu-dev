@@ -6,38 +6,13 @@
 	import { techStack } from '@/lib/data/techstack';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { Icon } from 'svelte-icons-pack';
+	import { journey } from '@/lib/data/journey';
 	let initialLocale = $state(getLocale());
 	let techstack = $derived(techStack[initialLocale] || techStack['en']);
+	let myJourney = $derived(journey[initialLocale] || journey['en']);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
 	let wavingHand: HTMLElement;
-
-	const journey = [
-		{
-			year: '2021',
-			title: 'The Spark',
-			description:
-				'Began my web development journey, diving into the fundamentals of HTML, CSS, and JavaScript.'
-		},
-		{
-			year: '2022',
-			title: 'First Professional Steps',
-			description:
-				'Landed my first freelance projects, focusing on building interactive Web GIS applications with Leaflet and Laravel.'
-		},
-		{
-			year: '2023',
-			title: 'Framework Mastery',
-			description:
-				'Deepened my expertise in modern frameworks, embracing SvelteKit and Next.js for building high-performance applications.'
-		},
-		{
-			year: 'Present',
-			title: 'Continuous Growth',
-			description:
-				'Currently studying at STMIK Mardira Indonesia while actively contributing to open-source and exploring advanced concepts like WebAssembly and Go.'
-		}
-	];
 
 	onMount(() => {
 		initGsap();
@@ -130,7 +105,7 @@
 			<div class="absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2 bg-border"></div>
 
 			<div class="space-y-16">
-				{#each journey as item, i}
+				{#each myJourney as item, i}
 					<div class="journey-item relative flex items-center" class:text-right={i % 2 === 0}>
 						<div class="flex w-1/2 justify-end pr-8 text-right">
 							{#if i % 2 === 0}
