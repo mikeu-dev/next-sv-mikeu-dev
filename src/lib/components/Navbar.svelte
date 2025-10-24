@@ -7,14 +7,17 @@
 	import { toast } from 'svelte-sonner';
 	import {
 		GoogleAuthProvider,
+		// GoogleAuthProvider is not used, can be removed
 		createUserWithEmailAndPassword,
 		onAuthStateChanged,
 		signInWithEmailAndPassword,
 		signOut,
 		type User
-	} from 'firebase/auth'; // Hapus signInWithPopup, tambahkan signInWithEmailAndPassword & createUserWithEmailAndPassword
+	} from 'firebase/auth';
 	import { page } from '$app/stores';
 	import Matter from 'matter-js';
+	import { slide, fade } from 'svelte/transition'; // Import Svelte transitions
+	import { quintOut } from 'svelte/easing'; // Import easing for slide transition
 
 	const navLinks = [
 		{ href: '/', label: 'Home' },
@@ -24,15 +27,18 @@
 		{ href: '/contact', label: 'Contact' }
 	];
 	let user: User | null = null;
-	let showModal = false;
+	let showAuthModal = false; // Renamed to avoid conflict with mobile menu
 	let authMode: 'signIn' | 'signUp' = 'signIn';
 	let email = '';
 	let password = '';
 	let username = '';
 
 	let anchorElement: HTMLAnchorElement;
-	let headerElement: HTMLElement; // The container for the physics world
+	let headerElement: HTMLElement;
 	let devSpan: HTMLElement;
+
+	// New state for mobile menu
+	let isMobileMenuOpen = false;
 
 	// --- onMount tetap sama ---
 	onMount(() => {
@@ -47,6 +53,11 @@
 		engine.gravity.y = 0.6; // A bit less gravity for a lighter feel
 		const world = engine.world;
 
+		// Ensure headerElement and devSpan are available before Matter.js setup
+		if (!headerElement || !devSpan) {
+			console.warn('Matter.js elements not found. Skipping physics setup.');
+			return;
+		}
 		const runner = Runner.create();
 
 		const headerRect = headerElement.getBoundingClientRect();
@@ -136,15 +147,21 @@
 		};
 	});
 
-	function openModal(mode: 'signIn' | 'signUp') {
+	// Function to toggle mobile menu
+	function toggleMobileMenu() {
+		isMobileMenuOpen = !isMobileMenuOpen;
+	}
+
+	function openAuthModal(mode: 'signIn' | 'signUp') {
 		authMode = mode;
-		showModal = true;
+		showAuthModal = true;
 		email = '';
 		username = '';
 		password = '';
 	}
 
-	async function handleSubmit() {
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
 		let authEmail = email;
 
 		try {
@@ -195,7 +212,7 @@
 			toast.error(message);
 		}
 
-		showModal = false;
+		showAuthModal = false;
 	}
 
 	async function handleSignOut() {
@@ -215,8 +232,12 @@
 	}
 </script>
 
-<header bind:this={headerElement} class="relative flex items-center justify-between border-b p-4">
-	<a href="/" bind:this={anchorElement} class="flex items-center gap-2 text-lg font-bold">
+<header
+	bind:this={headerElement}
+	class="relative z-10 flex items-center justify-between border-b p-4"
+>
+	<a href="/" bind:this={anchorElement} class="flex min-w-0 items-center gap-2 text-lg font-bold">
+		<!-- min-w-0 added to prevent overflow on small screens -->
 		<Avatar.Root>
 			<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" />
 			<Avatar.Fallback>RR</Avatar.Fallback>
@@ -225,9 +246,10 @@
 		<span
 			bind:this={devSpan}
 			class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white">Dev</span
-		></a
-	>
-	<nav class="flex items-center space-x-6 text-sm font-medium">
+		>
+	</a>
+	<!-- Desktop Navigation -->
+	<nav class="hidden items-center space-x-6 text-sm font-medium md:flex">
 		{#each navLinks as link}
 			<a
 				href={link.href}
@@ -239,7 +261,7 @@
 			</a>
 		{/each}
 	</nav>
-	<div class="flex items-center gap-4">
+	<div class="hidden items-center gap-4 md:flex">
 		{#if user}
 			<Avatar.Root>
 				<Avatar.Image src={user.photoURL} alt={user.displayName} />
@@ -247,12 +269,94 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<Button onclick={() => toast.info('Becanda keles. Yakali..')}>Sign In</Button>
+			<Button onclick={() => openAuthModal('signIn')}>Sign In</Button>
 		{/if}
+	</div>
+
+	<!-- Mobile Menu Button -->
+	<div class="md:hidden">
+		<Button variant="ghost" size="icon" onclick={toggleMobileMenu}>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="h-6 w-6"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M4 6h16M4 12h16M4 18h16"
+				/>
+			</svg>
+			<span class="sr-only">Toggle navigation</span>
+		</Button>
 	</div>
 </header>
 
-<Dialog.Root bind:open={showModal}>
+<!-- Mobile Menu Overlay and Drawer -->
+{#if isMobileMenuOpen}
+	<button
+		transition:fade={{ duration: 150 }}
+		class="fixed inset-0 z-40 bg-black/50 md:hidden"
+		onclick={toggleMobileMenu}
+		aria-label="toggle"
+	></button>
+	<div
+		transition:slide={{ axis: 'x', duration: 200, easing: quintOut }}
+		class="fixed top-0 right-0 z-50 flex h-full w-3/4 max-w-xs flex-col bg-background p-4 shadow-lg md:hidden"
+	>
+		<div class="flex justify-end">
+			<Button variant="ghost" size="icon" onclick={toggleMobileMenu}>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M6 18L18 6M6 6l12 12"
+					/>
+				</svg>
+				<span class="sr-only">Close navigation</span>
+			</Button>
+		</div>
+		<nav class="mt-8 flex grow flex-col space-y-4 text-lg">
+			{#each navLinks as link}
+				<a
+					href={link.href}
+					class="block transition-colors hover:text-foreground/80"
+					class:text-foreground={$page.url.pathname === link.href}
+					class:text-muted-foreground={$page.url.pathname !== link.href}
+					onclick={toggleMobileMenu}
+				>
+					{link.label}
+				</a>
+			{/each}
+		</nav>
+		<div class="mt-8 flex flex-col gap-4">
+			{#if user}
+				<div class="flex items-center gap-2">
+					<Avatar.Root>
+						<Avatar.Image src={user.photoURL} alt={user.displayName} />
+						<Avatar.Fallback>RR</Avatar.Fallback>
+					</Avatar.Root>
+					<span class="font-medium">{user.displayName || user.email}</span>
+				</div>
+				<Button onclick={handleSignOut}>Sign Out</Button>
+			{:else}
+				<Button onclick={() => openAuthModal('signIn')}>Sign In</Button>
+			{/if}
+		</div>
+	</div>
+{/if}
+
+<Dialog.Root bind:open={showAuthModal}>
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>
 			<Dialog.Title>{authMode === 'signIn' ? 'Sign In' : 'Sign Up'}</Dialog.Title>
@@ -263,7 +367,7 @@
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
-			<form on:submit|preventDefault={handleSubmit}>
+			<form onsubmit={handleSubmit}>
 				{#if authMode === 'signUp'}
 					<div class="mb-4">
 						<label for="email" class="mb-1 block text-sm font-medium text-muted-foreground"
@@ -311,7 +415,7 @@
 				{authMode === 'signIn' ? "Don't have an account?" : 'Already have an account?'}
 				<button
 					class="underline"
-					on:click={() => (authMode = authMode === 'signIn' ? 'signUp' : 'signIn')}
+					onclick={() => (authMode = authMode === 'signIn' ? 'signUp' : 'signIn')}
 				>
 					{authMode === 'signIn' ? 'Sign Up' : 'Sign In'}
 				</button>
