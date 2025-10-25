@@ -17,8 +17,8 @@
 
 	// Teks tooltip dinamis berdasarkan status drag
 	const tooltipText = $derived($isDragging
-		? 'Klik kanan untuk melepas jika menempel.'
-		: 'Click and drag the cards to play!');
+		? 'Right click to remove if attached.'
+		: 'Click and drag the cards to tuing-tuing position!');
 </script>
 
 <Tooltip.Provider>

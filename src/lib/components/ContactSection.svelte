@@ -3,12 +3,12 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowRight } from '@lucide/svelte';
-	import { initGsap } from '@/lib/utils';
 
 	let contactSection: HTMLElement;
 
 	onMount(() => {
-		initGsap();
+		gsap.registerPlugin(ScrollTrigger);
+		ScrollTrigger.refresh();
 		gsap.from(contactSection, {
 			y: 50,
 			opacity: 0,
