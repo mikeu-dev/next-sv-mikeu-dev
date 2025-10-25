@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { initGsap } from '@/lib/utils';
 	import { techStack } from '@/lib/data/techstack';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { Icon } from 'svelte-icons-pack';
@@ -15,7 +14,9 @@
 	let wavingHand: HTMLElement;
 
 	onMount(() => {
-		initGsap();
+		gsap.registerPlugin(ScrollTrigger);
+
+		// Animate container elements on scroll
 		if (container) {
 			gsap.from(container.children, {
 				y: 30,
