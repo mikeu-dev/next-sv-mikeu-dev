@@ -9,19 +9,11 @@
 	import Navbar from '@/lib/components/guest/navbar/navbar.svelte';
 	import Footer from '@/lib/components/Footer.svelte';
 	import SEO from '@/lib/components/SEO.svelte';
-	import { afterNavigate } from '$app/navigation';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
 
 	let { data, children } = $props();
-	// Jalankan hanya di client (bukan SSR)
-	onMount(() => {
-		// Pastikan ScrollTrigger tahu jika halaman berubah
-		afterNavigate(() => {
-			setTimeout(() => ScrollTrigger.refresh(), 50);
-		});
-	});
+
 	let user;
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, (newUser) => {
@@ -47,7 +39,7 @@
 <div class="flex min-h-screen flex-col">
 	<Navbar />
 
-	<main class="container py-8 px-4 mx-auto">
+	<main class="container mx-auto px-4 py-8">
 		{@render children?.()}
 	</main>
 

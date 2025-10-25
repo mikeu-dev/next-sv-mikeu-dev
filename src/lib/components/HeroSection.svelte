@@ -4,7 +4,6 @@
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { initGsap } from '@/lib/utils';
 
 	let heroTitle: HTMLElement;
 	let heroSubtitle: HTMLElement;
@@ -15,7 +14,6 @@
 	const titleChars = titleText.split('');
 
 	onMount(() => {
-		initGsap();
 		ScrollTrigger.refresh();
 		// Animate subtitle and buttons
 		gsap.from(heroSubtitle, { y: 20, opacity: 0, duration: 0.5, delay: 0.2 });

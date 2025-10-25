@@ -2,11 +2,10 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Matter from 'matter-js';
 import { toast } from 'svelte-sonner';
-import { initGsap } from '@/lib/utils';
 import { onMount } from 'svelte';
 import { writable, get } from 'svelte/store';
 
-// ✅ Hanya destructure yang dipakai sebagai nilai
+// ✅ Destructure yang dipakai
 const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
 
 export function useWorkSection() {
@@ -33,11 +32,10 @@ export function useWorkSection() {
 		const elements = get(projectCardElements);
 		if (!section) return;
 
-		initGsap();
 		gsap.registerPlugin(ScrollTrigger);
 		ScrollTrigger.refresh();
 
-		// Animasi muncul saat scroll
+		// Animasi masuk saat scroll
 		gsap.from(section, {
 			y: 50,
 			opacity: 0,
@@ -50,7 +48,7 @@ export function useWorkSection() {
 			}
 		});
 
-		// Setup Matter.js
+		// Setup Matter.js (aman untuk scroll)
 		const engine = Engine.create();
 		const world = engine.world;
 		engine.gravity.y = 0.6;
@@ -64,6 +62,7 @@ export function useWorkSection() {
 			Bodies.rectangle(rect.width + 50, rect.height / 2, 100, rect.height, wallOptions)
 		]);
 
+		// ✅ Buat body untuk tiap kartu
 		const cardBodies = elements.map((el) => {
 			const elRect = el.getBoundingClientRect();
 			const initialX = elRect.left - rect.left + elRect.width / 2;
@@ -88,33 +87,37 @@ export function useWorkSection() {
 			cardBodies.map((c) => c.body)
 		);
 
+		// ✅ Buat mouse + constraint aman untuk scroll
 		const mouse = Mouse.create(section);
+
+		mouse.element.addEventListener(
+			'touchmove',
+			(e) => {
+				// Jika tidak sedang drag, biarkan scroll normal
+				if (!get(isDragging)) return;
+				e.preventDefault();
+			},
+			{ passive: false }
+		);
+
+		mouse.element.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
+
 		const mouseConstraint = MouseConstraint.create(engine, {
 			mouse,
 			constraint: { stiffness: 0.1, render: { visible: false } }
 		});
 		Composite.add(world, mouseConstraint);
 
-		// ✅ Solusi Definitif: Dengarkan mouseup di level window.
-		// Ini akan menangkap event pelepasan mouse di mana pun kursor berada.
+		// ✅ Tangani pelepasan mouse global
 		function handleMouseUp() {
 			isDragging.set(false);
-			// Set body pada mouseConstraint ke null untuk melepaskan ikatan.
-			// Ini adalah cara yang paling andal.
-			// @ts-expect-error - Ini adalah cara yang benar untuk melepaskan body di Matter.js
+			// @ts-expect-error Matter.js tidak expose properti ini di tipe
 			mouseConstraint.body = null;
 		}
 
-		// Event saat mulai menyeret
-		Matter.Events.on(mouseConstraint, 'startdrag', () => {
-			isDragging.set(true);
-		});
+		Matter.Events.on(mouseConstraint, 'startdrag', () => isDragging.set(true));
+		Matter.Events.on(mouseConstraint, 'enddrag', () => isDragging.set(false));
 
-		Matter.Events.on(mouseConstraint, 'enddrag', () => {
-			isDragging.set(false);
-		});
-
-		// Tambahkan event listener ke window
 		window.addEventListener('mouseup', handleMouseUp);
 
 		const runner = Runner.create();
@@ -123,6 +126,7 @@ export function useWorkSection() {
 		function update() {
 			if (engine.world.bodies.length === 0) return;
 			requestAnimationFrame(update);
+
 			cardBodies.forEach(({ body, element, initialX, initialY }) => {
 				const { x, y } = body.position;
 				const angle = body.angle;
@@ -140,6 +144,7 @@ export function useWorkSection() {
 		}
 		update();
 
+		// Tooltip behavior
 		function handleMouseEnter() {
 			if (hoverTimeout) clearTimeout(hoverTimeout);
 			hoverTimeout = setTimeout(() => tooltipOpen.set(true), TOOLTIP_DELAY);
@@ -167,7 +172,6 @@ export function useWorkSection() {
 			section.removeEventListener('mouseenter', handleMouseEnter);
 			section.removeEventListener('mouseleave', handleMouseLeave);
 			section.removeEventListener('mousemove', handleMouseMove);
-			// Jangan lupa hapus event listener dari window saat komponen di-unmount
 			window.removeEventListener('mouseup', handleMouseUp);
 		};
 	});

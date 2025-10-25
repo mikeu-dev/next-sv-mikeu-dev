@@ -1,10 +1,9 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import ContactSection from '../lib/components/ContactSection.svelte';
 	import HeroSection from '../lib/components/HeroSection.svelte';
 	import WorkSection from '../lib/components/guest/sections/work/work.svelte';
 
-	export let data: PageData;
+	let { data } = $props();
 	const { projects } = data;
 </script>
 

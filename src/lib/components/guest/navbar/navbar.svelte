@@ -24,8 +24,8 @@
 	import { slide, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
-	import { setupMatter } from './navbar.svelte.js';
-	import { FallingConfetti } from 'svelte-canvas-confetti';
+	import { setupGsapPendulum } from './navbar.svelte.js';
+	import { ConfettiBurst, ConfettiCannon, FallingConfetti, random } from 'svelte-canvas-confetti';
 	import { tick } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 
@@ -38,12 +38,14 @@
 	let password = $state('');
 	let username = $state('');
 	let isMobileMenuOpen = $state(false);
-	const resumeUrl = "https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(id).pdf";
+	const resumeUrl =
+		'https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(id).pdf';
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
 	let devSpan: HTMLElement;
 	let fallingConfetti = $state(false);
+	let confettiCannon = $state(false);
 
 	afterNavigate(() => {
 		if (p.url.pathname === '/') {
@@ -55,10 +57,10 @@
 		}
 	});
 
-	const makeFallingConfetti = async () => {
-		fallingConfetti = false;
+	const makeConfettiCannon = async () => {
+		confettiCannon = false;
 		await tick();
-		fallingConfetti = true;
+		confettiCannon = true;
 	};
 
 	// --- Reactive Locale Sync ---
@@ -75,7 +77,7 @@
 	// --- Matter.js Setup (Lifecycle Safe) ---
 	$effect(() => {
 		if (anchorElement && headerElement && devSpan) {
-			const cleanup = setupMatter(anchorElement, headerElement, devSpan);
+			const cleanup = setupGsapPendulum(anchorElement, headerElement, devSpan);
 			return cleanup;
 		}
 	});
@@ -170,12 +172,21 @@
 {#if fallingConfetti}
 	<FallingConfetti />
 {/if}
+
+{#if confettiCannon}
+	<ConfettiCannon
+		origin={[window.innerWidth / 2, window.innerHeight]}
+		angle={-90}
+		spread={35}
+		force={35}
+	/>
+{/if}
 <!-- ===================== HEADER ===================== -->
 <header
 	bind:this={headerElement}
 	class="relative z-10 flex items-center justify-between border-b p-4"
 >
-	<a href="/" bind:this={anchorElement} class="flex min-w-0 items-center gap-2 text-lg font-bold">
+	<a href="/" bind:this={anchorElement} class="flex items-center gap-2 text-lg font-bold">
 		<Avatar.Root>
 			<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" />
 			<Avatar.Fallback>RR</Avatar.Fallback>
@@ -183,8 +194,10 @@
 		Mikeu
 		<span
 			bind:this={devSpan}
-			class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white">Dev</span
+			class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white"
 		>
+			Dev
+		</span>
 	</a>
 
 	<!-- Desktop Navigation -->
@@ -246,7 +259,7 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<Button href={resumeUrl} download>Get My Resume</Button>
+			<Button href={resumeUrl} onclick={makeConfettiCannon} download>Get My Resume</Button>
 		{/if}
 	</div>
 
