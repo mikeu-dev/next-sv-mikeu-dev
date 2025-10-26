@@ -35,7 +35,7 @@ export function useWorkSection() {
 		gsap.registerPlugin(ScrollTrigger);
 		ScrollTrigger.refresh();
 
-		// Animasi masuk saat scroll
+		// 🎬 Animasi muncul saat scroll
 		gsap.from(section, {
 			y: 50,
 			opacity: 0,
@@ -48,7 +48,7 @@ export function useWorkSection() {
 			}
 		});
 
-		// Setup Matter.js (aman untuk scroll)
+		// ⚙️ Setup Matter.js
 		const engine = Engine.create();
 		const world = engine.world;
 		engine.gravity.y = 0.6;
@@ -62,7 +62,7 @@ export function useWorkSection() {
 			Bodies.rectangle(rect.width + 50, rect.height / 2, 100, rect.height, wallOptions)
 		]);
 
-		// ✅ Buat body untuk tiap kartu
+		// 🧱 Buat body untuk tiap kartu
 		const cardBodies = elements.map((el) => {
 			const elRect = el.getBoundingClientRect();
 			const initialX = elRect.left - rect.left + elRect.width / 2;
@@ -87,28 +87,44 @@ export function useWorkSection() {
 			cardBodies.map((c) => c.body)
 		);
 
-		// ✅ Buat mouse + constraint aman untuk scroll
+		// 🖱️ Setup mouse dan constraint
 		const mouse = Mouse.create(section);
-
-		mouse.element.addEventListener(
-			'touchmove',
-			(e) => {
-				// Jika tidak sedang drag, biarkan scroll normal
-				if (!get(isDragging)) return;
-				e.preventDefault();
-			},
-			{ passive: false }
-		);
-
-		mouse.element.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
-
 		const mouseConstraint = MouseConstraint.create(engine, {
 			mouse,
 			constraint: { stiffness: 0.1, render: { visible: false } }
 		});
 		Composite.add(world, mouseConstraint);
 
-		// ✅ Tangani pelepasan mouse global
+		// --- 🧩 PERBAIKAN gesture scroll ---
+		let startY = 0;
+		let movedY = 0;
+
+		mouse.element.addEventListener('touchstart', (e) => {
+			startY = e.touches[0].clientY;
+			movedY = 0;
+		});
+
+		mouse.element.addEventListener(
+			'touchmove',
+			(e) => {
+				movedY = Math.abs(e.touches[0].clientY - startY);
+
+				// hanya blok scroll bila benar-benar dragging dan gerakannya besar
+				if (get(isDragging) && movedY > 15) e.preventDefault();
+			},
+			{ passive: false }
+		);
+
+		// izinkan scroll wheel / trackpad
+		section.addEventListener(
+			'wheel',
+			(e) => {
+				if (get(isDragging)) return;
+			},
+			{ passive: true }
+		);
+
+		// Tangani drag event
 		function handleMouseUp() {
 			isDragging.set(false);
 			// @ts-expect-error Matter.js tidak expose properti ini di tipe
@@ -117,7 +133,6 @@ export function useWorkSection() {
 
 		Matter.Events.on(mouseConstraint, 'startdrag', () => isDragging.set(true));
 		Matter.Events.on(mouseConstraint, 'enddrag', () => isDragging.set(false));
-
 		window.addEventListener('mouseup', handleMouseUp);
 
 		const runner = Runner.create();
