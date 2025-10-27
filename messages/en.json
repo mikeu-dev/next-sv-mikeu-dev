@@ -8,5 +8,9 @@
 	"work_subtitle": "A selection of projects that I'm proud of.",
 	"work_card_button": "View Details",
 	"nav_cv_button": "Get My Resume",
-	"footer_copyright": "{year} {name}. All rights reserved."
+	"footer_copyright": "{year} {name}. All rights reserved.",
+	"contact_title": "Get in Touch",
+	"contact_subtitle_first_part": "I'm always open to discussing new projects or collaboration opportunities.",
+	"contact_subtitle_second_part": "Feel free to check out my work and reach out.",
+	"contact_button": "Visit My Github"
 }

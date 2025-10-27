@@ -8,5 +8,9 @@
 	"work_subtitle": "Pilihan proyek yang membuat saya bangga.",
 	"work_card_button": "Lihat Detail",
 	"nav_cv_button": "Unduh Resume",
-	"footer_copyright": "{year} {name}. Semua hak dilindungi undang-undang."
+	"footer_copyright": "{year} {name}. Semua hak dilindungi undang-undang.",
+	"contact_title": "Hubungi kami",
+	"contact_subtitle_first_part": "Saya selalu terbuka untuk mendiskusikan proyek baru atau peluang kolaborasi.",
+	"contact_subtitle_second_part": "Jangan ragu untuk melihat karya saya dan menghubungi saya.",
+	"contact_button": "Kunjungi Github Saya"
 }
