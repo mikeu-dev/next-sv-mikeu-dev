@@ -1,0 +1,39 @@
+<script lang="ts">
+	import { socialLinks } from '@/lib/data/socials';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import { buttonVariants } from '../../ui/button';
+</script>
+
+<footer
+	class="border-t bg-gradient-to-b from-slate-100 to-background px-4 py-8 dark:from-slate-900"
+>
+	<div class="container flex flex-col items-center justify-between gap-4 md:flex-row">
+		<p class="text-sm text-muted-foreground">
+			&copy; {new Date().getFullYear()} Mikeu Dev. All rights reserved.
+		</p>
+		<div class="flex items-center gap-4">
+			{#each socialLinks as link}
+				<Tooltip.Provider>
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							<a
+								href={link.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								aria-label={link.label}
+								class="flex cursor-pointer items-center justify-center rounded-full"
+								style={`background-color: ${link.color}1A; color: ${link.color}; width: 2rem; height: 2rem;`}
+							>
+								<svelte:component this={link.icon} class="size-4" />
+							</a>
+						</Tooltip.Trigger>
+
+						<Tooltip.Content>
+							<p>{link.label}</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				</Tooltip.Provider>
+			{/each}
+		</div>
+	</div>
+</footer>
