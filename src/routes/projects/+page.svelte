@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ProjectCard from '@/lib/components/ProjectCard.svelte';
+	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import type { PageData } from './$types';
 	import type { Project, Tag } from '$lib/types';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';

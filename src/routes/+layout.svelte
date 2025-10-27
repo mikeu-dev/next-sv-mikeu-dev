@@ -8,7 +8,7 @@
 	import { onAuthStateChanged } from 'firebase/auth';
 	import Navbar from '@/lib/components/guest/navbar/navbar.svelte';
 	import Footer from '@/lib/components/guest/footer/footer.svelte';
-	import SEO from '@/lib/components/SEO.svelte';
+	import SEO from '@/lib/components/seo/seo.svelte';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
 
