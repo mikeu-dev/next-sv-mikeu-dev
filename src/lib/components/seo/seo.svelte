@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/state";
-
+	
 	type Props = {
 		title?: string;
 		description?: string;
@@ -9,12 +9,12 @@
 
 	let { title, description, image }: Props = $props();
 
-	const defaultTitle = 'Riki Ruswandi | Web & GIS Developer';
+	const defaultTitle = 'Mikeu | Web & GIS Developer';
 	const defaultDescription = 'A passionate Web & GIS Developer from Indonesia.';
 	const siteUrl = page.url.origin;
-	const defaultImage = `${siteUrl}/preview.png`; // Assuming a default preview image exists in /static
+	const defaultImage = `${siteUrl}/preview.png`; 
 
-	const finalTitle = title ? `${title} | Riki Ruswandi` : defaultTitle;
+	const finalTitle = title ? `${title} | Mikeu` : defaultTitle;
 	const finalDescription = description || defaultDescription;
 	const finalImage = image || defaultImage;
 	const canonicalUrl = page.url.href;
