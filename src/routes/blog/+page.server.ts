@@ -1,64 +1,53 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types'
 
 type Post = {
-	slug: string;
-	title: string;
-	description: string;
-	date: string;
-	published: boolean;
-};
+	slug: string
+	title: string
+	description?: string
+	date: string
+	published: boolean
+}
 
-// Ganti dengan repo kamu
-const GITHUB_USER = 'mikeu-dev';
-const GITHUB_REPO = 'portfolio-assets';
-const BLOG_DIR = 'blogs';
+// Ambil semua file .svx di folder posts secara raw
+const postsModules = import.meta.glob('/src/lib/posts/*.svx', { as: 'raw' })
 
 async function getPosts(): Promise<Post[]> {
-	const posts: Post[] = [];
+	const posts: Post[] = []
 
-	// 1️⃣ Ambil daftar file di folder blog dari GitHub API
-	const listRes = await fetch(
-		`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${BLOG_DIR}`
-	);
-	const files: { name: string; download_url: string }[] = await listRes.json();
+	// Loop tiap entry
+	for (const [path, importer] of Object.entries(postsModules)) {
+		const raw = await (importer as () => Promise<string>)()
 
-	// 2️⃣ Loop tiap file .svx
-	for (const file of files) {
-		if (!file.name.endsWith('.svx')) continue;
-
-		// Ambil isi file mentah
-		const raw = await fetch(file.download_url).then((res) => res.text());
-
-		// 3️⃣ Ekstrak metadata (frontmatter) dari konten .svx
-		const match = /^---\n([\s\S]*?)\n---/.exec(raw);
-		if (!match) continue;
+		// Parse frontmatter manual
+		const match = /^---\n([\s\S]*?)\n---/.exec(raw)
+		if (!match) continue
 
 		const frontmatter = Object.fromEntries(
 			match[1]
 				.split('\n')
 				.map((line) => {
-					const [key, ...value] = line.split(':');
-					return [key.trim(), value.join(':').trim()];
+					const [key, ...value] = line.split(':')
+					return [key.trim(), value.join(':').trim()]
 				})
 				.filter(([k, v]) => k && v)
-		) as Record<string, string>;
+		) as Record<string, string>
 
-		// 4️⃣ Pastikan metadata valid dan post di-publish
-		const slug = file.name.replace('.svx', '');
+		// Pastikan post published
 		if (frontmatter.published === 'true') {
+			const slug = path.split('/').pop()!.replace('.svx', '')
 			posts.push({
 				...(frontmatter as Omit<Post, 'slug' | 'published'>),
-				published: true,
-				slug
-			});
+				slug,
+				published: true
+			})
 		}
 	}
 
-	// 5️⃣ Urutkan berdasarkan tanggal terbaru
-	return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	// Urutkan berdasarkan tanggal terbaru
+	return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
 export const load: PageServerLoad = async () => {
-	const posts = await getPosts();
-	return { posts };
-};
+	const posts = await getPosts()
+	return { posts }
+}
