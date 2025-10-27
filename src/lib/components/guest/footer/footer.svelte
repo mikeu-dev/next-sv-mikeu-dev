@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { socialLinks } from '@/lib/data/socials';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { buttonVariants } from '../../ui/button';
+	import * as m from '@/lib/paraglide/messages';
 </script>
 
 <footer
@@ -9,7 +9,10 @@
 >
 	<div class="container flex flex-col items-center justify-between gap-4 md:flex-row">
 		<p class="text-sm text-muted-foreground">
-			&copy; {new Date().getFullYear()} Mikeu Dev. All rights reserved.
+			&copy; {m.footer_copyright({
+				year:new Date().getFullYear(),
+				name:"Mikeu Dev"
+			})}
 		</p>
 		<div class="flex items-center gap-4">
 			{#each socialLinks as link}
