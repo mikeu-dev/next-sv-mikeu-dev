@@ -5,25 +5,27 @@
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { Icon } from 'svelte-icons-pack';
 	import { buttonVariants } from '@/lib/components/ui/button';
+	import { getLocale } from '@/lib/paraglide/runtime';
 
-	export let data: PageData;
-	const { projects }: { projects: Project[] } = data;
-
+	let data: PageData = $props();
+	const { projects }: { projects: Record<string, Project[]> } = data;
+	let initialLocale = $state(getLocale());
+	let projectsData = $derived(projects[initialLocale] || projects['en']);
 	// Get all unique tags from all projects
 	const uniqueTags = Array.from(
-		new Map(projects.flatMap((p) => p.tags || []).map((t) => [t.name, t])).values()
+		new Map(projectsData.flatMap((p) => p.tags || []).map((t) => [t.name, t])).values()
 	);
 	const allTags: Tag[] = [...uniqueTags];
 
 	let selectedTag: string = 'All';
-	let filteredProjects = projects;
+	let filteredProjects = projectsData;
 
 	function filterProjects(tagName: string) {
 		selectedTag = tagName;
 		if (tagName === 'All') {
-			filteredProjects = projects;
+			filteredProjects = projectsData;
 		} else {
-			filteredProjects = projects.filter((p) => p.tags?.some((t) => t.name === tagName));
+			filteredProjects = projectsData.filter((p) => p.tags?.some((t) => t.name === tagName));
 		}
 	}
 </script>
