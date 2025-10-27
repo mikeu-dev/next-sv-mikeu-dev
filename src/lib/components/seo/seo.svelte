@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from "$app/state";
 
 	type Props = {
 		title?: string;
@@ -11,13 +11,13 @@
 
 	const defaultTitle = 'Riki Ruswandi | Web & GIS Developer';
 	const defaultDescription = 'A passionate Web & GIS Developer from Indonesia.';
-	const siteUrl = $page.url.origin;
+	const siteUrl = page.url.origin;
 	const defaultImage = `${siteUrl}/preview.png`; // Assuming a default preview image exists in /static
 
 	const finalTitle = title ? `${title} | Riki Ruswandi` : defaultTitle;
 	const finalDescription = description || defaultDescription;
 	const finalImage = image || defaultImage;
-	const canonicalUrl = $page.url.href;
+	const canonicalUrl = page.url.href;
 </script>
 
 <svelte:head>
