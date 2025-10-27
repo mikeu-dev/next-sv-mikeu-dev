@@ -4,13 +4,18 @@
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
+	import * as m from '@/lib/paraglide/messages';
 	let heroTitle: HTMLElement;
 	let heroSubtitle: HTMLElement;
 	let heroButton: HTMLElement;
 	let letterElements: HTMLElement[] = [];
-
-	const titleText = 'Riki Ruswandi (Mikeu)';
+	interface HeroSection {
+		title: string;
+		subtitle: string;
+		button_text: string;
+		button_link: string;
+	}
+	const titleText = m.hero_title();
 	const titleChars = titleText.split('');
 
 	onMount(() => {
@@ -107,11 +112,10 @@
 		bind:this={heroSubtitle}
 		class="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl"
 	>
-		A Passionate Web & GIS Developer from Indonesia. I enjoy learning new things — especially in
-		programming, web development, and geospatial technology.
+		{m.hero_subtitle()}
 	</p>
 	<div bind:this={heroButton} class="mt-8 flex justify-center gap-4">
-		<Button href="#contact" size="lg">Contact Me</Button>
-		<Button href="#work" variant="outline" size="lg">View My Work</Button>
+		<Button href="#contact" size="lg">{m.hero_button_text()}</Button>
+		<Button href="#work" variant="outline" size="lg">{m.hero_button_link()}</Button>
 	</div>
 </section>

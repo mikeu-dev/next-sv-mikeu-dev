@@ -1,4 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+	"hero_title": "Riki Ruswandi (Mikeu)",
+	"hero_subtitle": "A Passionate Web & GIS Developer from Indonesia. I enjoy learning new things — especially in programming, web development, and geospatial technology.",
+	"hero_button_text": "Contact Me",
+	"hero_button_link": "View My Work"
 }
