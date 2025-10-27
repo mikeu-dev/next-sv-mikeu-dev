@@ -1,46 +1,40 @@
-import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { compile } from 'mdsvex';
+import { error } from '@sveltejs/kit'
 
-// Ganti dengan repo kamu
-const GITHUB_USER = 'mikeu-dev';
-const GITHUB_REPO = 'portfolio-assets';
-const BLOG_DIR = 'blogs';
+const posts = import.meta.glob('/src/lib/posts/*.svx', { as: 'raw' })
 
-export const load: PageServerLoad = async ({ params }) => {
-	try {
-		// 1. Ambil isi file mentah dari GitHub
-		const res = await fetch(
-			`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${BLOG_DIR}/${params.slug}.svx`
-		);
+export interface BlogPageData {
+  slug: string
+  path: string
+  meta: Record<string, string>
+}
 
-		if (!res.ok) {
-			error(404, `Could not find ${params.slug}`);
-		}
+export const load = async ({ params }): Promise<BlogPageData> => {
+  const match = Object.entries(posts).find(([path]) => path.endsWith(`${params.slug}.svx`))
+  if (!match) throw error(404, `Artikel "${params.slug}" tidak ditemukan`)
 
-		const raw = await res.text();
+  const [, importer] = match as [string, () => Promise<string>]
+  const raw = await importer()
 
-		// 2. Compile konten SVX menjadi HTML dan ekstrak metadata
-		const compiled = await compile(raw);
+  // === Parse frontmatter manual ===
+  const fmMatch = /^---\n([\s\S]*?)\n---/.exec(raw)
+  const meta: Record<string, string> = {}
 
-		if (!compiled || !compiled.code || !compiled.data?.fm) {
-			error(500, 'Failed to compile post');
-		}
+  if (fmMatch) {
+    const fm = fmMatch[1]
+    fm.split('\n')
+      .map((line) => {
+        const [key, ...value] = line.split(':')
+        return [key.trim(), value.join(':').trim()]
+      })
+      .filter(([k, v]) => k && v)
+      .forEach(([k, v]) => {
+        meta[k] = v
+      })
+  }
 
-		const { title, description, date } = compiled.data.fm as {
-			title: string;
-			description: string;
-			date: string;
-		};
-
-		return {
-			content: compiled.code,
-			title,
-			description,
-			date
-		};
-	} catch (e) {
-		console.error(e);
-		error(500, `Could not process ${params.slug}`);
-	}
-};
+  return {
+    slug: params.slug,
+    path: match[0], // untuk dynamic import di +page.svelte
+    meta
+  }
+}
