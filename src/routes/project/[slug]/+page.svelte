@@ -2,9 +2,11 @@
 	import { ArrowLeft, ExternalLink, Github } from '@lucide/svelte';
 	import { Button } from '@/lib/components/ui/button';
 	import { Icon } from 'svelte-icons-pack';
+	import * as m from '@/lib/paraglide/messages.js';
+	import type { Project } from '$lib/types';
 
 	let { data } = $props();
-	const { project } = data;
+	const { project }: { project: Project } = data;
 </script>
 
 <div class="mx-auto max-w-4xl py-12 md:py-16">
@@ -14,7 +16,7 @@
 			class="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
 		>
 			<ArrowLeft class="mr-2 size-4" />
-			Back to Projects
+			{m.project_button_back()}
 		</a>
 	</div>
 
@@ -52,7 +54,7 @@
 			{#if project.content}
 				{@html project.content}
 			{:else}
-				<p>Detailed project description is not yet available. Please check back later!</p>
+				<p>{m.project_content_not_found()}</p>
 			{/if}
 		</div>
 
@@ -60,13 +62,13 @@
 			{#if project.repoUrl}
 				<Button href={project.repoUrl} target="_blank" variant="outline">
 					<Github class="mr-2 size-4" />
-					View on GitHub
+					{m.project_button_view_code()}
 				</Button>
 			{/if}
 			{#if project.demoUrl}
 				<Button href={project.demoUrl} target="_blank">
 					<ExternalLink class="mr-2 size-4" />
-					Live Demo
+					{m.project_button_demo()}
 				</Button>
 			{/if}
 		</footer>
