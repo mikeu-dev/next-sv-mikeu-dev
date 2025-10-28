@@ -11,15 +11,24 @@
 	import SEO from '@/lib/components/seo/seo.svelte';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
+	import { afterNavigate } from '$app/navigation';
+	import { FallingConfetti } from 'svelte-canvas-confetti';
 
 	let { data, children } = $props();
 
 	let user;
+	let fallingConfetti = $state(false);
+
 	onMount(() => {
-		const unsubscribe = onAuthStateChanged(auth, (newUser) => {
-			user = newUser;
-		});
+		const unsubscribe = onAuthStateChanged(auth, (newUser) => (user = newUser));
 		return unsubscribe;
+	});
+
+	afterNavigate(() => {
+		if (page.url.pathname === '/') {
+			fallingConfetti = true;
+			setTimeout(() => (fallingConfetti = false), 5000);
+		}
 	});
 </script>
 
@@ -33,19 +42,26 @@
 	/>
 </svelte:head>
 
+<!-- 🎉 Confetti layer di luar layout utama -->
+{#if fallingConfetti}
+	<FallingConfetti />
+{/if}
+
 <SEO />
 <ModeWatcher />
 <Toaster />
-<div class="flex min-h-screen flex-col">
-	<Navbar />
 
-	<main class="container mx-auto px-4 py-8">
+<!-- 🧩 Layout utama -->
+<div class="flex min-h-dvh flex-col">
+	<Navbar />
+	<main class="container mx-auto flex-1 px-4 py-8">
 		{@render children?.()}
 	</main>
-
 	<Footer />
 </div>
-<div style="display:none">
+
+<!-- 🌐 Hidden locale links -->
+<div style="display: none">
 	{#each locales as locale}
 		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 	{/each}

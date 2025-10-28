@@ -6,7 +6,7 @@
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { Icon } from 'svelte-icons-pack';
 	import { journey } from '@/lib/data/journey';
-	import * as m from '$lib/paraglide/messages'
+	import * as m from '$lib/paraglide/messages';
 	let initialLocale = $state(getLocale());
 	let techstack = $derived(techStack[initialLocale] || techStack['en']);
 	let myJourney = $derived(journey[initialLocale] || journey['en']);
@@ -80,11 +80,13 @@
 		</div>
 		<div class="md:col-span-3">
 			<h2 class="font-poppins mb-4 text-3xl font-bold tracking-tight">
-				{m.about_begin_first_part()} <span bind:this={wavingHand} class="inline-block">👋</span>, {m.about_begin_second_part({
-					name: "Riki Ruswandi (Mikeu)"
-				})} 
+				{m.about_begin_first_part()} <span bind:this={wavingHand} class="inline-block">👋</span>, {m.about_begin_second_part(
+					{
+						name: 'Riki Ruswandi (Mikeu)'
+					}
+				)}
 			</h2>
-			<div class="prose lg:prose-lg max-w-none space-y-4 text-muted-foreground">
+			<div class="prose max-w-none space-y-4 text-muted-foreground lg:prose-lg">
 				<p>
 					{@html m.about_desc_first_part()}
 				</p>
@@ -95,16 +97,23 @@
 		</div>
 	</section>
 
-	<section bind:this={journeySection}>
-		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight">{m.about_jurney_title()}</h2>
-		<div class="relative">
-			<!-- Vertical line -->
-			<div class="absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2 bg-border"></div>
+	<section bind:this={journeySection} class="py-16">
+		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight">
+			{m.about_jurney_title()}
+		</h2>
 
+		<div class="relative mx-auto max-w-5xl px-4">
+			<!-- Garis tengah (desktop) -->
+			<div
+				class="absolute top-0 left-1/2 hidden h-full w-0.5 -translate-x-1/2 bg-border md:block"
+			></div>
+
+			<!-- Timeline Items -->
 			<div class="space-y-16">
 				{#each myJourney as item, i}
-					<div class="journey-item relative flex items-center" class:text-right={i % 2 === 0}>
-						<div class="flex w-1/2 justify-end pr-12 text-right">
+					<div class="relative flex flex-col md:flex-row md:items-center">
+						<!-- Kolom kiri -->
+						<div class="hidden w-1/2 justify-end pr-12 text-right md:flex">
 							{#if i % 2 === 0}
 								<div class="max-w-sm">
 									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
@@ -113,22 +122,41 @@
 							{/if}
 						</div>
 
-						<!-- Dot and Year -->
-						<div class="absolute left-1/2 z-10 -translate-x-1/2">
+						<!-- Titik tengah (hanya desktop) -->
+						<div
+							class="absolute left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center md:flex"
+						>
 							<div
 								class="flex size-16 flex-col items-center justify-center rounded-full border-2 border-primary bg-background"
 							>
-								<span class="font-poppins text-lg font-bold text-primary">{item.year}</span>
+								<span class="font-poppins text-lg font-bold text-primary">
+									{item.year}
+								</span>
 							</div>
 						</div>
 
-						<div class="flex w-1/2 justify-start pl-12">
+						<!-- Kolom kanan -->
+						<div class="hidden w-1/2 justify-start pl-12 text-left md:flex">
 							{#if i % 2 !== 0}
 								<div class="max-w-sm">
 									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
 									<p class="mt-1 text-muted-foreground">{item.description}</p>
 								</div>
 							{/if}
+						</div>
+
+						<!-- Versi mobile (satu kolom) -->
+						<div class="flex flex-col md:hidden">
+							<div class="absolute top-8 left-[1.3rem] h-full w-0.5 bg-border"></div>
+							<div
+								class="z-10 mb-4 flex size-12 flex-col items-center justify-center rounded-full border-2 border-primary bg-background text-primary"
+							>
+								<span class="font-poppins text-sm font-bold">{item.year}</span>
+							</div>
+							<div class="pl-10">
+								<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
+								<p class="mt-1 text-muted-foreground">{item.description}</p>
+							</div>
 						</div>
 					</div>
 				{/each}
@@ -137,7 +165,9 @@
 	</section>
 
 	<section>
-		<h2 class="font-poppins mb-8 text-center text-3xl font-bold tracking-tight">{m.about_teckstack_title()}</h2>
+		<h2 class="font-poppins mb-8 text-center text-3xl font-bold tracking-tight">
+			{m.about_teckstack_title()}
+		</h2>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 			{#each techstack as skillCategory}
 				<div class="rounded-lg border bg-card p-6 text-card-foreground">
