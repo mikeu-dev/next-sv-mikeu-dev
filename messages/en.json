@@ -12,5 +12,13 @@
 	"contact_title": "Get in Touch",
 	"contact_subtitle_first_part": "I'm always open to discussing new projects or collaboration opportunities.",
 	"contact_subtitle_second_part": "Feel free to check out my work and reach out.",
-	"contact_button": "Visit My Github"
+	"contact_button": "Visit My Github",
+	"about_title": "About Me",
+	"about_subtitle": "A little more about my journey, my skills, and what I'm passionate about.",
+	"about_begin_first_part": "Hi there",
+	"about_begin_second_part": "I'm {name}",
+	"about_desc_first_part": "As a developer based in Indonesia, I'm driven by a passion for exploring the ever-evolving worlds of programming and web technology. I have a particular interest in the geospatial domain, and my work is currently centered on building <strong>web-based GIS solutions</strong>.",
+	"about_desc_second_part": "My professional philosophy is built on three pillars: <em>consistency</em>, a <em>curious mind</em>, and a commitment to <em>sharing knowledge</em>. This approach is fundamental to growth in tech, motivating me to dive into new tools and share what I learn with the community.",
+	"about_jurney_title": "My Journey",
+	"about_teckstack_title": "My Tech Stack"
 }
