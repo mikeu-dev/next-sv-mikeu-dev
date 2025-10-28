@@ -12,7 +12,7 @@
 	const defaultTitle = 'Mikeu | Web & GIS Developer';
 	const defaultDescription = 'A passionate Web & GIS Developer from Indonesia.';
 	const siteUrl = page.url.origin;
-	const defaultImage = `${siteUrl}/preview.png`; 
+	const defaultImage = `${siteUrl}/favicon.png`; 
 
 	const finalTitle = title ? `${title} | Mikeu` : defaultTitle;
 	const finalDescription = description || defaultDescription;

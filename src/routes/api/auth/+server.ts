@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import { json } from '@sveltejs/kit';
 import { AuthService } from '../../../lib/server/services/auth.service';
 import { HttpException } from '../../../lib/server/exceptions/http.exception';

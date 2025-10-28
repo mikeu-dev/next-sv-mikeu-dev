@@ -42,7 +42,7 @@
 	let username = $state('');
 	let isMobileMenuOpen = $state(false);
 	const resumeUrl =
-		'https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(id).pdf';
+		`https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;

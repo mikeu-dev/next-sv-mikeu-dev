@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import { json } from '@sveltejs/kit';
 import { ContactsService } from '@/lib/server/services/contacts.service';
 import type { RequestHandler } from './$types';
