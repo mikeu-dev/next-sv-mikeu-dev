@@ -30,14 +30,14 @@
 
 <div
 	bind:this={cardElement}
-	class="group relative flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+	class="group relative flex flex-col overflow-hidden rounded border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
 >
 	{#if project.thumbnailUrl}
 		<div class="overflow-hidden">
 			<img
 				src={project.thumbnailUrl}
 				alt={project.title}
-				class="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+				class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
 			/>
 		</div>
 	{/if}

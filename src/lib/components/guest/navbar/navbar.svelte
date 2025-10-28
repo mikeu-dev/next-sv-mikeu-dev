@@ -6,7 +6,6 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
 	import { page } from '$app/stores';
-	import { page as p } from '$app/state';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
 	import SunIcon from '@lucide/svelte/icons/sun';
@@ -25,9 +24,8 @@
 	import { quintOut } from 'svelte/easing';
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
 	import { setupGsapPendulum } from './navbar.svelte.js';
-	import { ConfettiBurst, ConfettiCannon, FallingConfetti, random } from 'svelte-canvas-confetti';
+	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { tick } from 'svelte';
-	import { afterNavigate } from '$app/navigation';
 	import { navLinks } from '@/lib/data/navlinks';
 	import * as m from '@/lib/paraglide/messages';
 	let initialLocale = $state(getLocale());
@@ -46,18 +44,9 @@
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
 	let devSpan: HTMLElement;
-	let fallingConfetti = $state(false);
+	
 	let confettiCannon = $state(false);
 
-	afterNavigate(() => {
-		if (p.url.pathname === '/') {
-			fallingConfetti = true;
-
-			setTimeout(() => {
-				fallingConfetti = false;
-			}, 5000); // tampil selama 2 detik
-		}
-	});
 
 	const makeConfettiCannon = async () => {
 		confettiCannon = false;
@@ -87,7 +76,6 @@
 	// --- Computed / Derived State ---
 	let isLoggedIn = $derived(Boolean(user));
 	let currentPath = $derived($page.url.pathname);
-	const availableLanguageTags = ['id', 'en'] as const;
 
 	// --- UI Interaction Handlers ---
 	function toggleMobileMenu() {
@@ -163,10 +151,6 @@
 		}
 	}
 </script>
-
-{#if fallingConfetti}
-	<FallingConfetti />
-{/if}
 
 {#if confettiCannon}
 	<ConfettiCannon

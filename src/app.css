@@ -119,7 +119,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-#work {
-  touch-action: pan-y; /* izinkan scroll vertikal alami */
-}
