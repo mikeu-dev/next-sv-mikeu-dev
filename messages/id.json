@@ -30,5 +30,9 @@
 	"contact_field_message": "Pesan",
 	"contact_page_button": "Kirim Pesan",
 	"contact_form_failure": "Terjadi kesalahan tak terduga. Silakan coba lagi nanti.",
-	"contact_form_success": "Pesan berhasil dikirim!"
+	"contact_form_success": "Pesan berhasil dikirim!",
+	"blog_title": "Blog",
+	"blog_subtitle": "Selamat datang di blog saya. Di sini saya berbagi pemikiran saya tentang pengembangan web, GIS, dan hal-hal lainnya.",
+	"blog_card_button": "Baca Selengkapnya",
+	"blog_loading": "Memuat artikel..."
 }

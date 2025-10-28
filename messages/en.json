@@ -30,5 +30,9 @@
 	"contact_field_message": "Message",
 	"contact_page_button": "Send Message",
 	"contact_form_failure": "An unexpected error occurred. Please try again later.",
-	"contact_form_success": "Message sent successfully!"
+	"contact_form_success": "Message sent successfully!",
+	"blog_title": "Blog",
+	"blog_subtitle": "Welcome to my blog. Here I share my thoughts on web development, GIS, and more.",
+	"blog_card_button": "Read More",
+	"blog_loading": "Loading article..."
 }
