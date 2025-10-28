@@ -20,5 +20,15 @@
 	"about_desc_first_part": "Sebagai seorang pengembang yang berbasis di Indonesia, saya terdorong oleh passion untuk mengeksplorasi dunia pemrograman dan teknologi web yang terus berkembang. Saya memiliki ketertarikan khusus pada domain geospasial, dan pekerjaan saya saat ini berfokus pada pembangunan <strong>web-based GIS solutions</strong>.",
 	"about_desc_second_part": "Filosofi profesional saya dibangun di atas tiga pilar: <em>konsistensi</em>, <em>pikiran yang ingin tahu</em>, dan komitmen untuk <em>berbagi pengetahuan</em>. Pendekatan ini menjadi dasar pertumbuhan dalam bidang teknologi, memotivasi saya untuk mempelajari alat baru dan berbagi apa yang saya pelajari dengan komunitas.",
 	"about_jurney_title": "Perjalanan Saya",
-	"about_teckstack_title": "Teknologi yang Saya Kuasai"
+	"about_teckstack_title": "Teknologi yang Saya Kuasai",
+	"contact_page_title": "Hubungi Saya",
+	"contact_page_subtitle": "Saya selalu terbuka untuk berdiskusi tentang proyek baru, ide kreatif, atau kesempatan untuk menjadi bagian dari visi Anda.",
+	"contact_field_name": "Nama",
+	"contact_field_placeholder": "Masukkan {name} di sini",
+	"contact_field_decription": "Isi {name} Anda",
+	"contact_field_email": "Email",
+	"contact_field_message": "Pesan",
+	"contact_page_button": "Kirim Pesan",
+	"contact_form_failure": "Terjadi kesalahan tak terduga. Silakan coba lagi nanti.",
+	"contact_form_success": "Pesan berhasil dikirim!"
 }

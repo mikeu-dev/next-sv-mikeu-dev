@@ -20,5 +20,15 @@
 	"about_desc_first_part": "As a developer based in Indonesia, I'm driven by a passion for exploring the ever-evolving worlds of programming and web technology. I have a particular interest in the geospatial domain, and my work is currently centered on building <strong>web-based GIS solutions</strong>.",
 	"about_desc_second_part": "My professional philosophy is built on three pillars: <em>consistency</em>, a <em>curious mind</em>, and a commitment to <em>sharing knowledge</em>. This approach is fundamental to growth in tech, motivating me to dive into new tools and share what I learn with the community.",
 	"about_jurney_title": "My Journey",
-	"about_teckstack_title": "My Tech Stack"
+	"about_teckstack_title": "My Tech Stack",
+	"contact_page_title": "Contact Me",
+	"contact_page_subtitle": "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.",
+	"contact_field_name": "Name",
+	"contact_field_placeholder": "Input {name} here",
+	"contact_field_decription": "Enter your {name}",
+	"contact_field_email": "Email",
+	"contact_field_message": "Message",
+	"contact_page_button": "Send Message",
+	"contact_form_failure": "An unexpected error occurred. Please try again later.",
+	"contact_form_success": "Message sent successfully!"
 }
