@@ -41,8 +41,7 @@
 	let password = $state('');
 	let username = $state('');
 	let isMobileMenuOpen = $state(false);
-	const resumeUrl =
-		`https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
+	const resumeUrl = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
@@ -283,21 +282,33 @@
 
 <!-- ===================== MOBILE MENU ===================== -->
 {#if isMobileMenuOpen}
+	<!-- Overlay -->
 	<button
 		aria-label="toggle"
-		transition:fade={{ duration: 150 }}
-		class="fixed inset-0 z-40 bg-black/50 md:hidden"
+		transition:fade={{ duration: 200 }}
+		class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
 		onclick={toggleMobileMenu}
 	></button>
+
+	<!-- Panel -->
 	<div
-		transition:slide={{ axis: 'x', duration: 200, easing: quintOut }}
-		class="fixed top-0 right-0 z-50 flex h-full w-3/4 max-w-xs flex-col bg-background p-4 shadow-lg md:hidden"
+		transition:slide={{ axis: 'x', duration: 250, easing: quintOut }}
+		class="fixed top-0 right-0 z-50 flex h-full w-[85%] max-w-xs flex-col bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl md:hidden"
 	>
-		<div class="flex justify-end">
-			<Button variant="ghost" size="icon" onclick={toggleMobileMenu}>
+		<!-- Header Close -->
+		<div class="flex items-center justify-between p-4 border-b border-border/40">
+			<h2 class="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+				Menu
+			</h2>
+			<Button
+				variant="ghost"
+				size="icon"
+				onclick={toggleMobileMenu}
+				class="rounded-full hover:bg-accent/10"
+			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					class="h-6 w-6"
+					class="h-5 w-5"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -312,50 +323,75 @@
 			</Button>
 		</div>
 
-		<nav class="mt-8 flex grow flex-col space-y-4 text-lg">
+		<!-- Nav Links -->
+		<nav class="flex flex-col gap-3 px-6 py-8 text-base">
 			{#each navLinksData as link}
 				<a
 					href={link.href}
-					class="block transition-colors hover:text-foreground/80"
+					onclick={toggleMobileMenu}
+					class="rounded-md px-3 py-2 font-medium transition-all duration-200 hover:bg-accent/10"
 					class:text-foreground={currentPath === link.href}
 					class:text-muted-foreground={currentPath !== link.href}
-					onclick={toggleMobileMenu}
 				>
 					{link.label}
 				</a>
 			{/each}
 		</nav>
 
-		<div class="my-8 flex justify-center gap-4">
-			{#each availableLanguageTags as lang}
-				<a
-					href={'/' + lang + currentPath}
-					class="text-lg font-medium"
-					class:text-foreground={lang === locale}
-					class:text-muted-foreground={lang !== locale}
-					onclick={toggleMobileMenu}
-				>
-					{lang.toUpperCase()}
-				</a>
-			{/each}
+		<!-- Divider -->
+		<div class="mx-6 my-4 h-px bg-border/40"></div>
+
+		<!-- Settings (Theme + Language) -->
+		<div class="flex items-center justify-center gap-4 px-4">
+			<!-- Theme Toggle -->
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger class={buttonVariants({ variant: 'outline', size: 'icon' })}>
+					<SunIcon class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+					<MoonIcon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+					<span class="sr-only">Toggle theme</span>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end">
+					<DropdownMenu.Item onclick={() => setMode('light')}>Light</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => setMode('dark')}>Dark</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => resetMode()}>System</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+
+			<!-- Locale Selector -->
+			<Select.Root type="single" bind:value={locale}>
+				<Select.Trigger class="w-[90px] font-mono text-xs">
+					{#if locale === 'id'}
+						<Id class="h-5 w-5" />ID
+					{:else if locale === 'en'}
+						<GbNir class="h-5 w-5" />EN
+					{:else}
+						<span class="text-gray-500">Lang</span>
+					{/if}
+				</Select.Trigger>
+				<Select.Content class="font-mono text-xs">
+					<Select.Item value="id"><Id />ID</Select.Item>
+					<Select.Item value="en"><GbNir />EN</Select.Item>
+				</Select.Content>
+			</Select.Root>
 		</div>
 
-		<div class="mt-8 flex flex-col gap-4">
-			{#if isLoggedIn}
-				<div class="flex items-center gap-2">
-					<Avatar.Root>
-						<Avatar.Image src={user?.photoURL} alt={user?.displayName} />
-						<Avatar.Fallback>RR</Avatar.Fallback>
-					</Avatar.Root>
-					<span class="font-medium">{user?.displayName || user?.email}</span>
-				</div>
-				<Button onclick={handleSignOut}>Sign Out</Button>
-			{:else}
-				<Button href={resumeUrl} onclick={makeConfettiCannon} download>{m.nav_cv_button()}</Button>
-			{/if}
+		<!-- CTA Button -->
+		<div class="mt-auto flex flex-col items-center gap-4 px-6 pb-6 pt-4">
+			<Button
+				href={resumeUrl}
+				onclick={makeConfettiCannon}
+				download
+				class="w-full font-semibold"
+			>
+				{m.nav_cv_button()}
+			</Button>
+			<p class="text-xs text-muted-foreground text-center">
+				© {new Date().getFullYear()} Mikeu Dev
+			</p>
 		</div>
 	</div>
 {/if}
+
 
 <!-- ===================== AUTH DIALOG ===================== -->
 <Dialog.Root bind:open={showAuthModal}>
