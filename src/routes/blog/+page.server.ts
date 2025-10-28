@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types'
+import { getLocale } from '@/lib/paraglide/runtime'
 
-type Post = {
+export interface Post {
 	slug: string
 	title: string
 	description?: string
@@ -8,17 +9,16 @@ type Post = {
 	published: boolean
 }
 
-// Ambil semua file .svx di folder posts secara raw
-const postsModules = import.meta.glob('/src/lib/posts/*.svx', { as: 'raw' })
+const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', { as: 'raw' })
 
 async function getPosts(): Promise<Post[]> {
 	const posts: Post[] = []
+	const locale = getLocale()
 
-	// Loop tiap entry
-	for (const [path, importer] of Object.entries(postsModules)) {
+	for (const [path, importer] of Object.entries(allPostsModules)) {
+		if (!path.includes(`/${locale}/`)) continue
+
 		const raw = await (importer as () => Promise<string>)()
-
-		// Parse frontmatter manual
 		const match = /^---\n([\s\S]*?)\n---/.exec(raw)
 		if (!match) continue
 
@@ -32,7 +32,6 @@ async function getPosts(): Promise<Post[]> {
 				.filter(([k, v]) => k && v)
 		) as Record<string, string>
 
-		// Pastikan post published
 		if (frontmatter.published === 'true') {
 			const slug = path.split('/').pop()!.replace('.svx', '')
 			posts.push({
@@ -43,7 +42,6 @@ async function getPosts(): Promise<Post[]> {
 		}
 	}
 
-	// Urutkan berdasarkan tanggal terbaru
 	return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 

@@ -2,10 +2,11 @@
 	import { onMount } from 'svelte';
 	import type { SvelteComponent } from 'svelte';
 	import type { BlogPageData } from './+page.server';
+	import * as m from '@/lib/paraglide/messages';
 
-	export let data: BlogPageData;
+	let { data }: { data: BlogPageData } = $props();
 
-	let Content: typeof SvelteComponent | null = null;
+	let Content = $state<typeof SvelteComponent | null>(null);
 
 	onMount(async () => {
 		const module = await import(data.path);
@@ -13,9 +14,7 @@
 	});
 </script>
 
-<article
-	class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert"
->
+<article class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert">
 	<header class="mb-12 text-center">
 		<h1 class="text-4xl font-bold tracking-tight">{data.meta.title}</h1>
 		{#if data.meta.date}
@@ -30,8 +29,8 @@
 	</header>
 
 	{#if Content}
-		<svelte:component this={Content} />
+		<Content />
 	{:else}
-		<p>Memuat artikel...</p>
+		<p>{m.blog_loading}</p>
 	{/if}
 </article>

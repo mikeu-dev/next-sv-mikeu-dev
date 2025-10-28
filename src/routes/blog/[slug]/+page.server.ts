@@ -1,40 +1,48 @@
 import { error } from '@sveltejs/kit'
+import { getLocale } from '@/lib/paraglide/runtime'
 
-const posts = import.meta.glob('/src/lib/posts/*.svx', { as: 'raw' })
+// Ambil semua file .svx dari semua folder bahasa
+const allPosts = import.meta.glob('/src/lib/posts/**/*.svx', { as: 'raw' })
 
 export interface BlogPageData {
-  slug: string
-  path: string
-  meta: Record<string, string>
+	slug: string
+	path: string
+	meta: Record<string, string>
 }
 
 export const load = async ({ params }): Promise<BlogPageData> => {
-  const match = Object.entries(posts).find(([path]) => path.endsWith(`${params.slug}.svx`))
-  if (!match) throw error(404, `Artikel "${params.slug}" tidak ditemukan`)
+	const locale = getLocale()
 
-  const [, importer] = match as [string, () => Promise<string>]
-  const raw = await importer()
+	// Cari file yang cocok dengan slug dan locale aktif
+	const match = Object.entries(allPosts).find(([path]) =>
+		path.includes(`/${locale}/`) && path.endsWith(`${params.slug}.svx`)
+	)
 
-  // === Parse frontmatter manual ===
-  const fmMatch = /^---\n([\s\S]*?)\n---/.exec(raw)
-  const meta: Record<string, string> = {}
+	if (!match) throw error(404, `Artikel "${params.slug}" tidak ditemukan`)
 
-  if (fmMatch) {
-    const fm = fmMatch[1]
-    fm.split('\n')
-      .map((line) => {
-        const [key, ...value] = line.split(':')
-        return [key.trim(), value.join(':').trim()]
-      })
-      .filter(([k, v]) => k && v)
-      .forEach(([k, v]) => {
-        meta[k] = v
-      })
-  }
+	const [, importer] = match as [string, () => Promise<string>]
+	const raw = await importer()
 
-  return {
-    slug: params.slug,
-    path: match[0], // untuk dynamic import di +page.svelte
-    meta
-  }
+	// === Parse frontmatter manual ===
+	const fmMatch = /^---\n([\s\S]*?)\n---/.exec(raw)
+	const meta: Record<string, string> = {}
+
+	if (fmMatch) {
+		const fm = fmMatch[1]
+		fm.split('\n')
+			.map((line) => {
+				const [key, ...value] = line.split(':')
+				return [key.trim(), value.join(':').trim()]
+			})
+			.filter(([k, v]) => k && v)
+			.forEach(([k, v]) => {
+				meta[k] = v
+			})
+	}
+
+	return {
+		slug: params.slug,
+		path: match[0], // digunakan untuk dynamic import di +page.svelte
+		meta
+	}
 }
