@@ -6,6 +6,7 @@
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { Icon } from 'svelte-icons-pack';
 	import { journey } from '@/lib/data/journey';
+	import * as m from '$lib/paraglide/messages'
 	let initialLocale = $state(getLocale());
 	let techstack = $derived(techStack[initialLocale] || techStack['en']);
 	let myJourney = $derived(journey[initialLocale] || journey['en']);
@@ -58,9 +59,9 @@
 
 <div bind:this={container} class="mx-auto max-w-4xl space-y-20 py-12 md:space-y-28 md:py-20">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">About Me</h1>
+		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.about_title()}</h1>
 		<p class="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">
-			A little more about my journey, my skills, and what I'm passionate about.
+			{m.about_subtitle()}
 		</p>
 	</section>
 
@@ -79,28 +80,23 @@
 		</div>
 		<div class="md:col-span-3">
 			<h2 class="font-poppins mb-4 text-3xl font-bold tracking-tight">
-				Hi there <span bind:this={wavingHand} class="inline-block">👋</span>, I'm Riki Ruswandi
-				(Mikeu)
+				{m.about_begin_first_part()} <span bind:this={wavingHand} class="inline-block">👋</span>, {m.about_begin_second_part({
+					name: "Riki Ruswandi (Mikeu)"
+				})} 
 			</h2>
 			<div class="prose lg:prose-lg max-w-none space-y-4 text-muted-foreground">
 				<p>
-					As a developer based in Indonesia, I'm driven by a passion for exploring the ever-evolving
-					worlds of programming and web technology. I have a particular interest in the geospatial
-					domain, and my work is currently centered on building innovative
-					<strong>web-based GIS solutions</strong>.
+					{@html m.about_desc_first_part()}
 				</p>
 				<p>
-					My professional philosophy is built on three pillars: <em>consistency</em>, a
-					<em>curious mind</em>, and a commitment to <em>sharing knowledge</em>. This approach is
-					fundamental to growth in tech, motivating me to dive into new tools and share what I learn
-					with the community.
+					{@html m.about_desc_second_part()}
 				</p>
 			</div>
 		</div>
 	</section>
 
 	<section bind:this={journeySection}>
-		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight">My Journey</h2>
+		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight">{m.about_jurney_title()}</h2>
 		<div class="relative">
 			<!-- Vertical line -->
 			<div class="absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2 bg-border"></div>
@@ -108,7 +104,7 @@
 			<div class="space-y-16">
 				{#each myJourney as item, i}
 					<div class="journey-item relative flex items-center" class:text-right={i % 2 === 0}>
-						<div class="flex w-1/2 justify-end pr-8 text-right">
+						<div class="flex w-1/2 justify-end pr-12 text-right">
 							{#if i % 2 === 0}
 								<div class="max-w-sm">
 									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
@@ -126,7 +122,7 @@
 							</div>
 						</div>
 
-						<div class="flex w-1/2 justify-start pl-8">
+						<div class="flex w-1/2 justify-start pl-12">
 							{#if i % 2 !== 0}
 								<div class="max-w-sm">
 									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
@@ -141,7 +137,7 @@
 	</section>
 
 	<section>
-		<h2 class="font-poppins mb-8 text-center text-3xl font-bold tracking-tight">My Tech Stack</h2>
+		<h2 class="font-poppins mb-8 text-center text-3xl font-bold tracking-tight">{m.about_teckstack_title()}</h2>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 			{#each techstack as skillCategory}
 				<div class="rounded-lg border bg-card p-6 text-card-foreground">
