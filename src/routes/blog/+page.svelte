@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-
-	export let data: PageData;
+	import * as m from '@/lib/paraglide/messages';
+	import type { Post } from './+page.server';
+	let { data }: { data: { posts: Post[] } } = $props();
 </script>
 
 <div class="space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">Blog</h1>
+		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.blog_title()}</h1>
 		<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-			Welcome to my blog. Here I share my thoughts on web development, GIS, and more.
+			{m.blog_subtitle()}
 		</p>
 	</section>
 
@@ -29,7 +29,11 @@
 						})}
 					</p>
 					<p class="mt-2 text-muted-foreground">{post.description}</p>
-					<a href={`/blog/${post.slug}`} class="mt-4 inline-block text-sm font-medium text-primary hover:underline">Read more</a>
+					<a
+						href={`/blog/${post.slug}`}
+						class="mt-4 inline-block text-sm font-medium text-primary hover:underline"
+						>{m.blog_card_button()}</a
+					>
 				</article>
 			{/each}
 		</div>

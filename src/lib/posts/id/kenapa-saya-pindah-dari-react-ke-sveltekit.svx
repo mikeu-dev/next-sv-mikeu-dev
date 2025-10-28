@@ -1,0 +1,134 @@
+---
+title: "Kenapa Saya Pindah dari React ke SvelteKit"
+description: "Pengalaman pribadi beralih dari React ke SvelteKit — framework yang lebih ringan, cepat, dan menyenangkan untuk dikembangkan."
+date: "2025-10-23"
+published: true
+---
+
+## Kenapa Saya Pindah dari React ke SvelteKit
+
+Sejak awal saya belajar frontend, **React** adalah pilihan utama saya. Dokumentasinya lengkap, ekosistemnya luas, dan hampir semua lowongan kerja menyebutnya.  
+Tapi setelah beberapa tahun, saya mulai merasa React semakin berat — terutama ketika membuat proyek kecil atau prototipe cepat.
+
+Hingga akhirnya saya mencoba **SvelteKit**, dan pengalaman saya berubah total.
+
+___
+
+## 1. React Mulai Terasa “Berat”
+
+React itu powerful, tapi juga kompleks.  
+Beberapa hal yang mulai membuat saya frustrasi:
+-Terlalu banyak *boilerplate* (import `useState`, `useEffect`, dll untuk hal sederhana)
+-Harus mengelola bundler (Vite/Webpack) secara manual
+-Banyak dependensi tambahan hanya untuk hal dasar (routing, state management, dll)
+-Komponen yang mudah membengkak dan sulit dibaca ketika proyek makin besar
+
+> React memberi banyak kebebasan — tapi kadang terlalu banyak hingga kita butuh mengatur terlalu banyak hal hanya untuk mulai.
+
+Sebagai contoh, berikut cara sederhana menampilkan counter di React:
+
+```jsx
+// Counter.jsx
+import { useState } from "react";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Kamu telah mengklik {count} kali</p>
+      <button onClick={() => setCount(count + 1)}>Tambah</button>
+    </div>
+  );
+}
+```
+
+___
+
+## 2. SvelteKit Lebih “Natural”
+
+Ketika saya pertama kali mencoba SvelteKit, hal yang paling terasa adalah:
+-Tidak perlu “overthinking” state dan reactivity
+-Reaktifitas terasa alami, cukup dengan let variabel biasa
+-Routing otomatis berbasis file
+-Integrasi SSR (Server Side Rendering) langsung siap pakai
+
+Berikut kode yang sama jika ditulis dengan Svelte:
+
+```svelte
+<script>
+  let count = $state(0);
+</script>
+
+<p>Kamu telah mengklik {count} kali</p>
+<button onclick={() => count++}>Tambah</button>
+```
+
+Tanpa `useState`, tanpa hooks, tanpa import tambahan — semua terasa sederhana dan intuitif.  
+Inilah yang membuat saya merasa menulis UI kembali terasa menyenangkan.
+
+___
+
+## 3. Performa & Ukuran Build
+
+Svelte menghasilkan output yang lebih kecil dan lebih cepat, karena:
+-Ia meng-compile langsung ke JavaScript murni, bukan menjalankan Virtual DOM.
+-Waktu loading dan interaksi terasa jauh lebih ringan, terutama pada aplikasi kecil-menengah.
+
+Sebagai perbandingan:
+
+```bash
+# Build Size Comparison
+React App:     120 KB (minified)
+SvelteKit App:  40 KB (minified)
+```
+
+| Angka bisa bervariasi tergantung dependensi, tapi perbedaannya nyata. |
+
+___
+
+## 4. Pengalaman Developer (DX)
+
+Kombinasi SvelteKit + Vite benar-benar efisien:
+-Hot reload sangat cepat
+-Pesan error mudah dipahami
+-Setup proyek baru bisa dalam hitungan detik
+-Adapter ke Vercel, Netlify, Cloudflare langsung tersedia
+
+Setup proyek baru di SvelteKit modern sesederhana ini:
+
+```bash
+npx sv create my-app
+cd my-app
+npm run dev
+```
+
+Kamu langsung dapat routing otomatis (`+page.svelte`, `+layout.svelte`) tanpa konfigurasi tambahan.
+
+___
+
+## 5. Kapan React Masih Lebih Cocok
+
+Tentu, bukan berarti React jelek.  
+Saya masih akan memilih React jika:
+-Proyek besar dengan banyak tim dan kebutuhan ekosistem library yang luas
+-Menggunakan React Native untuk mobile
+-Ada integrasi kompleks dengan UI library yang spesifik untuk React
+
+> Tapi untuk proyek pribadi, website portofolio, atau dashboard ringan — SvelteKit jauh lebih menyenangkan.
+
+___
+
+## Penutup
+
+Beralih ke SvelteKit membuat saya jatuh cinta lagi dengan frontend.  
+Kode lebih bersih, performa lebih cepat, dan proses pengembangan terasa menyenangkan.
+
+Kalau kamu merasa React mulai terasa terlalu banyak untuk hal sederhana, mungkin ini saatnya mencoba SvelteKit.
+
+___
+
+## Referensi
+
+- [SvelteKit Official Site](https://kit.svelte.dev)  
+- [React Documentation](https://react.dev)

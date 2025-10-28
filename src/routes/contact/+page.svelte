@@ -5,6 +5,7 @@
 	import Textarea from '@/lib/components/ui/textarea/textarea.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
+	import * as m from '@/lib/paraglide/messages';
 
 	type ActionData = {
 		success: boolean;
@@ -14,10 +15,9 @@
 
 <div class="space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">Contact Me</h1>
+		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.contact_page_title()}</h1>
 		<p class="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">
-			I'm always open to discussing new projects, creative ideas, or opportunities to be part of
-			your visions.
+			{m.contact_page_subtitle()}
 		</p>
 	</section>
 
@@ -28,11 +28,11 @@
 				return async ({ result }) => {
 					if (result.type === 'success') {
 						const data = result.data as ActionData;
-						toast.success(data.message);
+						toast.success(data.message ?? m.contact_form_success());
 						formElement.reset();
 					} else if (result.type === 'failure') {
 						const data = result.data as ActionData;
-						toast.error(data.message ?? 'An unexpected error occurred.');
+						toast.error(data.message ?? m.contact_form_failure());
 					}
 					await applyAction(result);
 				};
@@ -41,23 +41,35 @@
 		>
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
-					<Label for="name">Name</Label>
-					<Input type="text" id="name" placeholder="Input name here" name="name" required />
-					<p class="text-sm text-muted-foreground">Enter your name.</p>
+					<Label for="name">{m.contact_field_name()}</Label>
+					<Input type="text" id="name" placeholder="{m.contact_field_placeholder({
+						name: m.contact_field_name()
+					})}" name="name" required />
+					<p class="text-sm text-muted-foreground">{m.contact_field_decription({
+						name: m.contact_field_name()
+					})}</p>
 				</div>
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
-					<Label for="email">Email</Label>
-					<Input type="email" id="email" name="email" placeholder="Input email here" required />
-					<p class="text-sm text-muted-foreground">Enter your email address.</p>
+					<Label for="email">{m.contact_field_email()}</Label>
+					<Input type="email" id="email" name="email" placeholder="{m.contact_field_placeholder({
+						name: m.contact_field_email()
+					})}" required />
+					<p class="text-sm text-muted-foreground">{m.contact_field_decription({
+						name: m.contact_field_email()
+					})}</p>
 				</div>
 			</div>
 			<div class="flex w-full max-w-2xl flex-col gap-1.5">
-				<Label for="message">Message</Label>
-				<Textarea id="message" name="message" rows={5} placeholder="Input message here" required />
-				<p class="text-sm text-muted-foreground">Enter your message..</p>
+				<Label for="message">{m.contact_field_message()}</Label>
+				<Textarea id="message" name="message" rows={5} placeholder="{m.contact_field_placeholder({
+						name: m.contact_field_message()
+					})}" required />
+				<p class="text-sm text-muted-foreground">{m.contact_field_decription({
+						name: m.contact_field_message()
+					})}</p>
 			</div>
 			<div class="text-right">
-				<Button type="submit">Send Message</Button>
+				<Button type="submit">{m.contact_page_button()}</Button>
 			</div>
 		</form>
 	</section>

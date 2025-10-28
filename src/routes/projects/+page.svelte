@@ -1,30 +1,32 @@
 <script lang="ts">
-	import ProjectCard from '@/lib/components/ProjectCard.svelte';
+	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import type { PageData } from './$types';
-	import type { Project, Tag } from '$lib/types';
+	import type { Project } from '$lib/types';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { Icon } from 'svelte-icons-pack';
 	import { buttonVariants } from '@/lib/components/ui/button';
+	import { getLocale } from '@/lib/paraglide/runtime';
 
-	export let data: PageData;
-	const { projects }: { projects: Project[] } = data;
+	let { data }: { data: PageData } = $props();
+	const { projects }: { projects: Record<string, Project[]> } = data;
+	let initialLocale = $state(getLocale());
+	let projectsData = $derived(projects[initialLocale] || projects['en']);
 
-	// Get all unique tags from all projects
-	const uniqueTags = Array.from(
-		new Map(projects.flatMap((p) => p.tags || []).map((t) => [t.name, t])).values()
-	);
-	const allTags: Tag[] = [...uniqueTags];
+	let allTags = $derived.by(() => {
+		const uniqueTags = Array.from(
+			new Map((projectsData ?? []).flatMap((p) => p.tags || []).map((t) => [t.name, t])).values()
+		);
+		return uniqueTags;
+	});
 
-	let selectedTag: string = 'All';
-	let filteredProjects = projects;
+	let selectedTag = $state<string>('All');
+	let filteredProjects = $derived.by(() => {
+		if (selectedTag === 'All') return projectsData;
+		return projectsData.filter((p) => p.tags?.some((t) => t.name === selectedTag));
+	});
 
 	function filterProjects(tagName: string) {
 		selectedTag = tagName;
-		if (tagName === 'All') {
-			filteredProjects = projects;
-		} else {
-			filteredProjects = projects.filter((p) => p.tags?.some((t) => t.name === tagName));
-		}
 	}
 </script>
 

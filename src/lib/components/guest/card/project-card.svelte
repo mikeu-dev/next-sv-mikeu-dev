@@ -5,6 +5,7 @@
 	import { ArrowRight, ExternalLink, Github } from '@lucide/svelte';
 	import type { Project, Tag } from '$lib/types';
 	import { Icon } from 'svelte-icons-pack';
+	import * as m from '@/lib/paraglide/messages';
 
 	let { project }: { project: Project } = $props();
 
@@ -40,6 +41,7 @@
 			/>
 		</div>
 	{/if}
+
 	<div class="flex grow flex-col p-6">
 		<h3 class="font-poppins mb-2 text-xl font-bold">
 			<a href={`/project/${project.slug}`} class="text-foreground group-hover:text-primary">
@@ -47,7 +49,17 @@
 				{project.title}
 			</a>
 		</h3>
-		<p class="mb-4 grow text-muted-foreground">{project.description}</p>
+
+		<!-- Deskripsi dipotong default, full saat hover -->
+		<p
+			class="relative mb-4 max-h-16 overflow-hidden text-muted-foreground transition-all duration-300 group-hover:max-h-96"
+		>
+			{project.description}
+			<!-- gradient overlay untuk efek fade -->
+			<span
+				class="absolute bottom-0 left-0 h-6 w-full bg-gradient-to-t from-card to-transparent group-hover:hidden"
+			></span>
+		</p>
 
 		{#if project.tags && project.tags.length > 0}
 			<div class="mb-4 flex flex-wrap gap-2">
@@ -67,7 +79,7 @@
 
 		<div class="mt-auto flex items-center justify-between border-t pt-4">
 			<span class="flex items-center text-sm font-medium text-primary">
-				View Details
+				{m.work_card_button()}
 				<ArrowRight class="inline size-4 transition-transform group-hover:translate-x-1" />
 			</span>
 			<div class="flex items-center gap-4">

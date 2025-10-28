@@ -28,7 +28,10 @@
 	import { ConfettiBurst, ConfettiCannon, FallingConfetti, random } from 'svelte-canvas-confetti';
 	import { tick } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
-
+	import { navLinks } from '@/lib/data/navlinks';
+	import * as m from '@/lib/paraglide/messages';
+	let initialLocale = $state(getLocale());
+	let navLinksData = $derived(navLinks[initialLocale] || navLinks['en']);
 	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
 	let user: User | null = $state(null);
@@ -86,13 +89,6 @@
 	let isLoggedIn = $derived(Boolean(user));
 	let currentPath = $derived($page.url.pathname);
 	const availableLanguageTags = ['id', 'en'] as const;
-	const navLinks = [
-		{ href: '/', label: 'Home' },
-		{ href: '/projects', label: 'Projects' },
-		{ href: '/blog', label: 'Blog' },
-		{ href: '/about', label: 'About' },
-		{ href: '/contact', label: 'Contact' }
-	];
 
 	// --- UI Interaction Handlers ---
 	function toggleMobileMenu() {
@@ -202,7 +198,7 @@
 
 	<!-- Desktop Navigation -->
 	<nav class="hidden items-center space-x-6 text-sm font-medium md:flex">
-		{#each navLinks as link}
+		{#each navLinksData as link}
 			<a
 				href={link.href}
 				class="transition-colors hover:text-foreground/80"
@@ -259,7 +255,7 @@
 			</Avatar.Root>
 			<Button onclick={handleSignOut}>Sign Out</Button>
 		{:else}
-			<Button href={resumeUrl} onclick={makeConfettiCannon} download>Get My Resume</Button>
+			<Button href={resumeUrl} onclick={makeConfettiCannon} download>{m.nav_cv_button()}</Button>
 		{/if}
 	</div>
 
@@ -317,7 +313,7 @@
 		</div>
 
 		<nav class="mt-8 flex grow flex-col space-y-4 text-lg">
-			{#each navLinks as link}
+			{#each navLinksData as link}
 				<a
 					href={link.href}
 					class="block transition-colors hover:text-foreground/80"
@@ -355,7 +351,7 @@
 				</div>
 				<Button onclick={handleSignOut}>Sign Out</Button>
 			{:else}
-				<Button onclick={() => openAuthModal('signIn')}>Sign In</Button>
+				<Button href={resumeUrl} onclick={makeConfettiCannon} download>{m.nav_cv_button()}</Button>
 			{/if}
 		</div>
 	</div>

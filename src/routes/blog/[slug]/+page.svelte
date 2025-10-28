@@ -1,20 +1,36 @@
 <script lang="ts">
-	let { data } = $props();
+	import { onMount } from 'svelte';
+	import type { SvelteComponent } from 'svelte';
+	import type { BlogPageData } from './+page.server';
+	import * as m from '@/lib/paraglide/messages';
+
+	let { data }: { data: BlogPageData } = $props();
+
+	let Content = $state<typeof SvelteComponent | null>(null);
+
+	onMount(async () => {
+		const module = await import(data.path);
+		Content = module.default;
+	});
 </script>
 
-<article class="mx-auto max-w-3xl py-8">
-	<header class="mb-8 text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{data.title}</h1>
-		<p class="mt-4 text-muted-foreground">
-			Posted on {new Date(data.date).toLocaleDateString('en-US', {
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric'
-			})}
-		</p>
+<article class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert">
+	<header class="mb-12 text-center">
+		<h1 class="text-4xl font-bold tracking-tight">{data.meta.title}</h1>
+		{#if data.meta.date}
+			<p class="mt-4 text-muted-foreground">
+				{new Date(data.meta.date).toLocaleDateString('id-ID', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				})}
+			</p>
+		{/if}
 	</header>
 
-	<div class="prose dark:prose-invert lg:prose-lg max-w-none">
-		{@html data.content}
-	</div>
+	{#if Content}
+		<Content />
+	{:else}
+		<p>{m.blog_loading}</p>
+	{/if}
 </article>
