@@ -7,7 +7,7 @@
 <footer
 	class="border-t bg-gradient-to-b from-slate-100 to-background px-4 py-8 dark:from-slate-900"
 >
-	<div class="container flex flex-col items-center justify-between gap-4 md:flex-row">
+	<div class="container flex flex-col items-center gap-2 md:flex-row md:justify-between md:gap-4">
 		<p class="text-sm text-muted-foreground">
 			&copy; {m.footer_copyright({
 				year:new Date().getFullYear(),
