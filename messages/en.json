@@ -35,6 +35,7 @@
 	"blog_subtitle": "Welcome to my blog. Here I share my thoughts on web development, GIS, and more.",
 	"blog_card_button": "Read More",
 	"blog_loading": "Loading article...",
+	"blog_button_back": "Back to Blogs",
 	"project_button_back": "Back to Projects",
 	"project_content_not_found": "Detailed project description is not yet available. Please check back later!",
 	"project_button_demo": "Live Demo",

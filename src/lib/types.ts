@@ -7,10 +7,12 @@ export interface Project {
 	content?: string;
 	slug?: string;
 	thumbnailUrl?: string;
+	imagesUrl?: string[];
 	repoUrl?: string;
 	demoUrl?: string;
 	published?: boolean;
 	tags?: Tag[];
+	pinned?: boolean;
 	createdAt?: Date;
 	updatedAt?: Date;
 }

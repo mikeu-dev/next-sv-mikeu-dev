@@ -3,6 +3,7 @@
 	import type { SvelteComponent } from 'svelte';
 	import type { BlogPageData } from './+page.server';
 	import * as m from '@/lib/paraglide/messages';
+	import { ArrowLeft } from '@lucide/svelte';
 
 	interface SvelteModule {
 		default: typeof SvelteComponent;
@@ -30,6 +31,15 @@
 </script>
 
 <article class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert">
+	<div class="mb-8">
+		<a
+			href="/blog"
+			class="inline-flex items-center text-sm text-muted-foreground hover:text-foreground no-underline"
+		>
+			<ArrowLeft class="mr-2 size-4" />
+			{m.blog_button_back()}
+		</a>
+	</div>
 	<header class="mb-12 text-center">
 		<h1 class="text-4xl font-bold tracking-tight">{data.meta.title}</h1>
 		{#if data.meta.date}

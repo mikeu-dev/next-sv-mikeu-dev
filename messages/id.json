@@ -35,6 +35,7 @@
 	"blog_subtitle": "Selamat datang di blog saya. Di sini saya berbagi pemikiran saya tentang pengembangan web, GIS, dan hal-hal lainnya.",
 	"blog_card_button": "Baca Selengkapnya",
 	"blog_loading": "Memuat artikel...",
+	"blog_button_back": "Kembali ke Blog",
 	"project_button_back": "Kembali ke Proyek",
 	"project_content_not_found": "Deskripsi detail proyek belum tersedia. Silakan periksa kembali nanti!",
 	"project_button_demo": "Lihat Demo",
