@@ -57,7 +57,7 @@
 	});
 </script>
 
-<div bind:this={container} class="mx-auto max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20 mt-20">
+<div bind:this={container} class="mx-auto mt-20 max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.about_title()}</h1>
 		<p class="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">
@@ -176,7 +176,8 @@
 					<div class="flex flex-wrap gap-2">
 						{#each skillCategory.items as tech}
 							<span
-								class="group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors"
+								class={`group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors
+            ${tech.color === '#171d26' ? 'dark:text-white!' : ''}`}
 								style="background-color: {tech.color}1A; color: {tech.color};"
 							>
 								{#if tech.icon}
