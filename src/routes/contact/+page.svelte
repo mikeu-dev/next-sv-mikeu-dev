@@ -13,7 +13,7 @@
 	};
 </script>
 
-<div class="space-y-12">
+<div class="space-y-12 mt-20">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.contact_page_title()}</h1>
 		<p class="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">

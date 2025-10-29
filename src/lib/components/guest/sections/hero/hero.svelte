@@ -6,6 +6,10 @@
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import * as m from '@/lib/paraglide/messages';
 	import { skills } from '@/lib/data/skills';
+	import { getLocale } from '@/lib/paraglide/runtime';
+
+	let locale = $state<string>(getLocale());
+	let skillsData = $derived(skills[locale]||skills['en']);
 
 	const { Engine, Runner, Bodies, Composite } = Matter;
 
@@ -126,7 +130,7 @@
 	id="hero"
 	class="relative flex min-h-screen flex-col items-center justify-start overflow-hidden
     rounded-t-4xl bg-gradient-to-b from-gray-50 to-white pt-28 pb-20 text-center
-    transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-background"
+    transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-background mt-20"
 >
 	<canvas id="particles" class="pointer-events-none absolute inset-0 h-full w-full"></canvas>
 
@@ -158,7 +162,7 @@
 		class="mt-6 flex flex-wrap justify-center gap-4 text-sm
         text-gray-600 transition-colors duration-300 md:text-base dark:text-gray-300"
 	>
-		{#each skills as skill}
+		{#each skillsData as skill}
 			<li class="inline-flex items-center gap-2">
 				<span class="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400"></span>
 				{skill}

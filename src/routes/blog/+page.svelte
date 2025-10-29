@@ -4,7 +4,7 @@
 	let { data }: { data: { posts: Post[] } } = $props();
 </script>
 
-<div class="space-y-12">
+<div class="space-y-12 mt-20">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.blog_title()}</h1>
 		<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
