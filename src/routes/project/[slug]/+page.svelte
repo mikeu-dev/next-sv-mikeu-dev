@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ArrowLeft, ExternalLink, Github } from '@lucide/svelte';
+	import { Splide, SplideSlide } from '@splidejs/svelte-splide';
 	import { Button } from '@/lib/components/ui/button';
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '@/lib/paraglide/messages.js';
@@ -13,7 +14,7 @@
 	<div class="mb-8">
 		<a
 			href="/"
-			class="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"
 		>
 			<ArrowLeft class="mr-2 size-4" />
 			{m.project_button_back()}
@@ -42,7 +43,15 @@
 			</div>
 		</header>
 
-		{#if project.thumbnailUrl}
+		{#if project.imagesUrl && project.imagesUrl.length > 0}
+			<Splide aria-label="Project Images" class="mb-8" options={{ rewind: true, autoplay: true }}>
+				{#each project.imagesUrl as url}
+					<SplideSlide>
+						<img src={url} alt={project.title} />
+					</SplideSlide>
+				{/each}
+			</Splide>
+		{:else}
 			<img
 				src={project.thumbnailUrl}
 				alt="Project thumbnail for {project.title}"
@@ -50,7 +59,7 @@
 			/>
 		{/if}
 
-		<div class="prose prose-lg dark:prose-invert max-w-none">
+		<div class="prose prose-lg max-w-none dark:prose-invert">
 			{#if project.content}
 				{@html project.content}
 			{:else}
