@@ -13,11 +13,41 @@
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
-
+	import Button from '@/lib/components/ui/button/button.svelte';
+	import gsap from 'gsap';
+	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+	import { Icon } from 'svelte-icons-pack';
+	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
+	
 	let { data, children } = $props();
-
+	
 	let user;
 	let fallingConfetti = $state(false);
+	let scrollBtn: HTMLButtonElement;
+	
+	function scrollToTop() {
+		gsap.to(window, { duration: 1, scrollTo: 0 });
+	}
+	
+	function handleScroll() {
+		const show = window.scrollY > 300;
+		gsap.registerPlugin(ScrollToPlugin);
+		
+		// Animasi smooth: opacity + scale
+		gsap.to(scrollBtn, {
+			duration: 0.4,
+			opacity: show ? 1 : 0,
+			scale: show ? 1 : 0.5,
+			pointerEvents: show ? 'auto' : 'none',
+			ease: 'power2.out'
+		});
+	}
+
+	onMount(() => {
+		scrollBtn = document.getElementById('scrollToTopBtn') as HTMLButtonElement;
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 
 	onMount(() => {
 		const unsubscribe = onAuthStateChanged(auth, (newUser) => (user = newUser));
@@ -66,3 +96,11 @@
 		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 	{/each}
 </div>
+
+<Button
+	class="pointer-events-none fixed right-8 bottom-8 z-9999 scale-50 cursor-pointer rounded-full p-3 text-white opacity-0 shadow-3xl transition-all dark:bg-teal-400 dark:hover:bg-teal-300"
+	id="scrollToTopBtn"
+	onclick={() => scrollToTop()}
+>
+	<Icon src={BsArrowUpCircleFill} size={24} />
+</Button>
