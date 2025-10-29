@@ -13,7 +13,7 @@
 <div class="mx-auto max-w-4xl py-12 md:py-16">
 	<div class="mb-8">
 		<a
-			href="/"
+			href="/projects"
 			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"
 		>
 			<ArrowLeft class="mr-2 size-4" />
