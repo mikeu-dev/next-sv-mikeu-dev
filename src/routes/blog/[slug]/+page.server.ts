@@ -2,12 +2,12 @@ import { error } from '@sveltejs/kit';
 import { getLocale } from '@/lib/paraglide/runtime';
 import type { PageServerLoad } from './$types';
 
-// Ambil semua file .svx dari semua folder bahasa
+// Ambil semua file .svx sebagai teks mentah (hanya untuk meta/frontmatter)
 const allPosts = import.meta.glob('/src/lib/posts/**/*.svx', { as: 'raw' });
 
 export interface BlogPageData {
 	slug: string;
-	path: string;
+	locale: string;
 	meta: Record<string, string>;
 }
 
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async (event) => {
 	const { params, locals } = event;
 	const locale = locals.paraglide.locale ?? getLocale();
 
-	// Cari file yang cocok dengan slug dan locale aktif
+	// Cari file sesuai slug dan locale
 	const match = Object.entries(allPosts).find(
 		([path]) => path.includes(`/${locale}/`) && path.endsWith(`${params.slug}.svx`)
 	);
@@ -25,13 +25,13 @@ export const load: PageServerLoad = async (event) => {
 	const [, importer] = match as [string, () => Promise<string>];
 	const raw = await importer();
 
-	// === Parse frontmatter manual ===
+	// === Parse frontmatter ===
 	const fmMatch = /^---\n([\s\S]*?)\n---/.exec(raw);
 	const meta: Record<string, string> = {};
 
 	if (fmMatch) {
-		const fm = fmMatch[1];
-		fm.split('\n')
+		fmMatch[1]
+			.split('\n')
 			.map((line) => {
 				const [key, ...value] = line.split(':');
 				return [key.trim(), value.join(':').trim()];
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async (event) => {
 
 	return {
 		slug: params.slug,
-		path: match[0], // digunakan untuk dynamic import di +page.svelte
+		locale,
 		meta
 	};
 };
