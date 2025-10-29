@@ -4,6 +4,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
 		event.request = request;
+		event.locals.paraglide = { locale };
 
 		return resolve(event, {
 			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
