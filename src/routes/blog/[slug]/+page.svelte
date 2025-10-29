@@ -4,12 +4,27 @@
 	import type { BlogPageData } from './+page.server';
 	import * as m from '@/lib/paraglide/messages';
 
+	interface SvelteModule {
+		default: typeof SvelteComponent;
+	}
+
 	let { data }: { data: BlogPageData } = $props();
+
+	const posts = import.meta.glob('/src/lib/posts/**/*.svx');
 
 	let Content = $state<typeof SvelteComponent | null>(null);
 
 	onMount(async () => {
-		const module = await import(data.path);
+		const match = Object.keys(posts).find(
+			(p) => p.includes(`/${data.locale}/`) && p.endsWith(`${data.slug}.svx`)
+		);
+
+		if (!match) {
+			console.error('File artikel tidak ditemukan:', data.slug);
+			return;
+		}
+
+		const module = (await posts[match]()) as SvelteModule;
 		Content = module.default;
 	});
 </script>
@@ -31,6 +46,6 @@
 	{#if Content}
 		<Content />
 	{:else}
-		<p>{m.blog_loading}</p>
+		<p>{m.blog_loading()}</p>
 	{/if}
 </article>
