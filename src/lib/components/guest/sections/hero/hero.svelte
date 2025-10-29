@@ -105,82 +105,66 @@
 
 <section
 	id="hero"
-	class="relative flex min-h-screen flex-col items-center justify-start overflow-hidden bg-gradient-to-b from-gray-50 to-white pt-28 pb-20 text-center md:pt-40"
+	class="relative flex min-h-screen flex-col items-center justify-start overflow-hidden
+    rounded-t-4xl bg-gradient-to-b from-gray-50
+    to-white pt-28
+    pb-20 text-center transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-black"
 >
-  <!-- SVG Clip -->
-  <svg
-    class="absolute top-0 left-0 w-full h-full pointer-events-none"
-    viewBox="0 0 100 100"
-    preserveAspectRatio="none"
-  >
-    <path
-      d="
-        M0,0
-        V8
-        A2,2 0 0 1 2,6
-        H8
-        V0
-        Z
-        M100,0
-        V8
-        A2,2 0 0 0 98,6
-        H92
-        V0
-        Z
-        M100,100
-        H0
-        V100
-        Z
-      "
-      fill="white"
-      vector-effect="non-scaling-stroke"
-    />
-  </svg>
+	<!-- Background Partikel -->
+	<canvas id="particles" class="pointer-events-none absolute inset-0 h-full w-full"></canvas>
 
-  <!-- Background Partikel -->
-  <canvas id="particles" class="pointer-events-none absolute inset-0 h-full w-full"></canvas>
+	<!-- Konten hero -->
+	<div class="relative mx-auto inline-block" style="height: 150px;">
+		<h1
+			bind:this={heroTitle}
+			class="font-poppins mb-4 flex flex-wrap justify-center
+      text-[3rem] leading-[1.1] font-extrabold text-gray-900
+      drop-shadow-sm md:text-[5rem] dark:text-gray-100"
+		>
+			{#each titleChars as char, i}
+				<span bind:this={letterElements[i]} class="inline-block" style="white-space: pre;">
+					{char}
+				</span>
+			{/each}
+		</h1>
+	</div>
 
-  <!-- Konten hero -->
-  <div class="relative mx-auto inline-block" style="height: 150px;">
-    <h1
-      bind:this={heroTitle}
-      class="font-poppins mb-4 flex flex-wrap justify-center text-[3rem] leading-[1.1] font-extrabold md:text-[5rem]"
-    >
-      {#each titleChars as char, i}
-        <span
-          bind:this={letterElements[i]}
-          class="inline-block drop-shadow-sm"
-          style="white-space: pre;"
-        >
-          {char}
-        </span>
-      {/each}
-    </h1>
-  </div>
+	<p
+		bind:this={heroSubtitle}
+		class="mx-auto max-w-2xl text-lg leading-relaxed
+    text-gray-600 transition-colors duration-300 md:text-xl dark:text-gray-300"
+	>
+		{m.hero_subtitle()}
+	</p>
 
-  <p
-    bind:this={heroSubtitle}
-    class="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl"
-  >
-    {m.hero_subtitle()}
-  </p>
+	<ul
+		bind:this={bulletContainer}
+		class="mt-6 flex flex-wrap justify-center gap-4 text-sm
+    text-gray-600 transition-colors duration-300 md:text-base dark:text-gray-300"
+	>
+		{#each skills as skill}
+			<li class="inline-flex items-center gap-2">
+				<span class="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400"></span>
+				{skill}
+			</li>
+		{/each}
+	</ul>
 
-  <ul
-    bind:this={bulletContainer}
-    class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground md:text-base"
-  >
-    {#each skills as skill}
-      <li class="inline-flex items-center gap-2">
-        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-        {skill}
-      </li>
-    {/each}
-  </ul>
-
-  <div bind:this={heroButton} class="mt-8 flex justify-center gap-4">
-    <Button href="#contact" size="lg">{m.hero_button_text()}</Button>
-    <Button href="#work" variant="outline" size="lg">{m.hero_button_link()}</Button>
-  </div>
+	<div bind:this={heroButton} class="mt-8 flex justify-center gap-4">
+		<Button
+			href="#contact"
+			size="lg"
+			class="dark:bg-teal-400 dark:text-white dark:hover:bg-blue-300"
+		>
+			{m.hero_button_text()}
+		</Button>
+		<Button
+			href="#work"
+			variant="outline"
+			size="lg"
+			class="dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
+		>
+			{m.hero_button_link()}
+		</Button>
+	</div>
 </section>
-
-
