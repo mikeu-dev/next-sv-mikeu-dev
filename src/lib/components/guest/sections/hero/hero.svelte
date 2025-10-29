@@ -126,7 +126,7 @@
 	id="hero"
 	class="relative flex min-h-screen flex-col items-center justify-start overflow-hidden
     rounded-t-4xl bg-gradient-to-b from-gray-50 to-white pt-28 pb-20 text-center
-    transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-black"
+    transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-background"
 >
 	<canvas id="particles" class="pointer-events-none absolute inset-0 h-full w-full"></canvas>
 
@@ -170,7 +170,7 @@
 		<Button
 			href="#contact"
 			size="lg"
-			class="dark:bg-teal-400 dark:text-white dark:hover:bg-blue-300"
+			class="dark:bg-teal-500 dark:text-white dark:hover:bg-teal-400"
 		>
 			{m.hero_button_text()}
 		</Button>
