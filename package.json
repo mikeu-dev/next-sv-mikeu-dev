@@ -72,6 +72,7 @@
 	},
 	"dependencies": {
 		"@lottiefiles/dotlottie-svelte": "^0.8.6",
+		"@splidejs/svelte-splide": "^0.2.9",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/adapter-vercel": "^6.0.0",
 		"busboy": "^1.6.0",

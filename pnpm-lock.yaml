@@ -11,6 +11,9 @@ importers:
       '@lottiefiles/dotlottie-svelte':
         specifier: ^0.8.6
         version: 0.8.6(svelte@5.41.1)
+      '@splidejs/svelte-splide':
+        specifier: ^0.2.9
+        version: 0.2.9
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
         version: 3.0.10(@sveltejs/kit@2.47.2(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.41.1)(vite@7.1.11(@types/node@22.18.12)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.41.1)(vite@7.1.11(@types/node@22.18.12)(jiti@2.6.1)(lightningcss@1.30.2)))
@@ -979,6 +982,12 @@ packages:
 
   '@sinclair/typebox@0.31.28':
     resolution: {integrity: sha512-/s55Jujywdw/Jpan+vsy6JZs1z2ZTGxTmbZTPiuSL2wz9mfzA2gN1zzaqmvfi4pq+uOt7Du85fkiwv5ymW84aQ==}
+
+  '@splidejs/splide@4.1.4':
+    resolution: {integrity: sha512-5I30evTJcAJQXt6vJ26g2xEkG+l1nXcpEw4xpKh0/FWQ8ozmAeTbtniVtVmz2sH1Es3vgfC4SS8B2X4o5JMptA==}
+
+  '@splidejs/svelte-splide@0.2.9':
+    resolution: {integrity: sha512-04ekJnDIJKEAhklKQMhkg4Yx0Ihtkk18eA9JeHPON0lDTngQxlOYdEYTJWH2UON45VxmVqoLHv04I++JphO36w==}
 
   '@sqlite.org/sqlite-wasm@3.48.0-build4':
     resolution: {integrity: sha512-hI6twvUkzOmyGZhQMza1gpfqErZxXRw6JEsiVjUbo7tFanVD+8Oil0Ih3l2nGzHdxPI41zFmfUQG7GHqhciKZQ==}
@@ -4189,6 +4198,12 @@ snapshots:
     optional: true
 
   '@sinclair/typebox@0.31.28': {}
+
+  '@splidejs/splide@4.1.4': {}
+
+  '@splidejs/svelte-splide@0.2.9':
+    dependencies:
+      '@splidejs/splide': 4.1.4
 
   '@sqlite.org/sqlite-wasm@3.48.0-build4': {}
 
