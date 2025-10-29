@@ -17,7 +17,7 @@
 	"about_subtitle": "Sedikit tentang perjalanan saya, keterampilan, dan apa yang saya tekuni.",
 	"about_begin_first_part": "Halo",
 	"about_begin_second_part": "Saya {name}",
-	"about_desc_first_part": "Sebagai seorang pengembang yang berbasis di Indonesia, saya terdorong oleh passion untuk mengeksplorasi dunia pemrograman dan teknologi web yang terus berkembang. Saya memiliki ketertarikan khusus pada domain geospasial, dan pekerjaan saya saat ini berfokus pada pembangunan <strong>web-based GIS solutions</strong>.",
+	"about_desc_first_part": "Sebagai seorang pengembang yang berbasis di Indonesia, saya terdorong oleh passion untuk mengeksplorasi dunia pemrograman dan teknologi web yang terus berkembang. Saya memiliki ketertarikan khusus pada domain geospasial, dan pekerjaan saya saat ini berfokus pada pembangunan <strong class='dark:text-white'>web-based GIS solutions</strong>.",
 	"about_desc_second_part": "Filosofi profesional saya dibangun di atas tiga pilar: <em>konsistensi</em>, <em>pikiran yang ingin tahu</em>, dan komitmen untuk <em>berbagi pengetahuan</em>. Pendekatan ini menjadi dasar pertumbuhan dalam bidang teknologi, memotivasi saya untuk mempelajari alat baru dan berbagi apa yang saya pelajari dengan komunitas.",
 	"about_jurney_title": "Perjalanan Saya",
 	"about_teckstack_title": "Teknologi yang Saya Kuasai",

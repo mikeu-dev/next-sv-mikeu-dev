@@ -30,7 +30,7 @@
 	});
 </script>
 
-<article class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert">
+<article class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert mt-20">
 	<div class="mb-8">
 		<a
 			href="/blog"

@@ -57,7 +57,7 @@
 	});
 </script>
 
-<div bind:this={container} class="mx-auto max-w-4xl space-y-20 py-12 md:space-y-28 md:py-20">
+<div bind:this={container} class="mx-auto max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20 mt-20">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.about_title()}</h1>
 		<p class="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">

@@ -10,7 +10,7 @@
 	const { project }: { project: Project } = data;
 </script>
 
-<div class="mx-auto max-w-4xl py-12 md:py-16">
+<div class="mx-auto max-w-4xl py-12 md:py-16 mt-20">
 	<div class="mb-8">
 		<a
 			href="/projects"
