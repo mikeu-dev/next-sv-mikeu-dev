@@ -9,6 +9,7 @@
 	let { projects }: { projects: Record<string, Project[]> } = $props();
 	let initialLocale = $state(getLocale());
 	let projectsData = $derived(projects[initialLocale] || projects['en']);
+	let projectByPinned = $derived(projectsData.filter((project) => project.pinned));
 
 	const { workSection, projectCardElements, tooltipOpen, virtualAnchor, tooltipText } =
 		useWorkSection();
@@ -29,7 +30,7 @@
 			</div>
 
 			<div class="projects-grid mb-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-				{#each projectsData as project, i (project.id)}
+				{#each projectByPinned as project, i (project.id)}
 					<div bind:this={$projectCardElements[i]} class="will-change-transform">
 						<ProjectCard {project} />
 					</div>
