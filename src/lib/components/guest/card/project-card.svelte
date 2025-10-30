@@ -65,7 +65,9 @@
 			<div class="mb-4 flex flex-wrap gap-2">
 				{#each project.tags as tag}
 					<span
-						class="group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors"
+						class={`group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors ${tag.color === '#171d26'
+								? 'dark:text-white!'
+								: ''}`}
 						style="background-color: {tag.color}1A; color: {tag.color};"
 					>
 						{#if tag.icon}
