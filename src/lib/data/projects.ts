@@ -695,7 +695,7 @@ export const projects: Record<string, Project[]> = {
 			demoUrl: 'https://mapin-aja.vercel.app/',
 			repoUrl: 'https://github.com/mikeu-dev/mapin-aja',
 			tags: [
-				{ name: 'Next js', icon: SiNextdotjs, color: '#171d26', url: 'nextjs.org' },
+				{ name: 'Next.js', icon: SiNextdotjs, color: '#171d26', url: 'nextjs.org' },
 				{ name: 'React', icon: SiReact, color: '#42A5F5', url: 'react.dev' },
 				{
 					name: 'Tailwind CSS',

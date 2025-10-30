@@ -30,7 +30,7 @@
 	}
 </script>
 
-<div class="space-y-12 mt-20">
+<div class="mt-20 space-y-12">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">All Projects</h1>
 		<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
@@ -46,9 +46,10 @@
 					<Tooltip.Root>
 						<Tooltip.Trigger
 							onclick={() => filterProjects(tag.name)}
-							class="{buttonVariants({
-								variant: selectedTag === tag.name ? 'default' : 'outline'
-							})} cursor-pointer rounded-full border-0"
+							class={`${buttonVariants({ variant: selectedTag === tag.name ? 'default' : 'outline'})}
+									cursor-pointer rounded-full border-0
+									${tag.color === '#171d26' ? 'dark:text-white!' : ''}
+							`}
 							style={selectedTag !== tag.name
 								? `background-color: ${tag.color}1A; color: ${tag.color};`
 								: ''}

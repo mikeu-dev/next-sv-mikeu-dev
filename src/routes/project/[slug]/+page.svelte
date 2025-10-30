@@ -10,7 +10,7 @@
 	const { project }: { project: Project } = data;
 </script>
 
-<div class="mx-auto max-w-4xl py-12 md:py-16 mt-20">
+<div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
 	<div class="mb-8">
 		<a
 			href="/projects"
@@ -30,7 +30,7 @@
 				{#if project.tags && project.tags.length > 0}
 					{#each project.tags as tag}
 						<span
-							class="group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors"
+							class={`group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors ${tag.color === '#171d26' ? 'dark:text-white!' : ''}`}
 							style="background-color: {tag.color}1A; color: {tag.color};"
 						>
 							{#if tag.icon}
