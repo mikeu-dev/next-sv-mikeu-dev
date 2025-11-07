@@ -7,16 +7,16 @@ export function setupGsapPendulum(
 	devSpan: HTMLElement
 ) {
 	// Atur titik poros
-	devSpan.style.transformOrigin = 'bottom right';
+	devSpan.style.transformOrigin = 'calc(100% - 0.375rem) calc(100% - 0.375rem)';
 
 	// 🔽 Efek jatuh awal (seperti papan dilepas satu baut)
 	gsap.fromTo(
 		devSpan,
-		{ rotate: 0 },
+		{ rotate: 0, transformOrigin: 'calc(100% - 0.375rem) calc(100% - 0.375rem)' },
 		{
 			rotate: -25,
 			duration: 1.2,
-			ease: 'bounce.out',
+			ease: 'bounce.out'
 		}
 	);
 
@@ -25,7 +25,7 @@ export function setupGsapPendulum(
 		gsap.to(devSpan, {
 			rotate: 0,
 			duration: 0.5,
-			ease: 'elastic.out(1, 0.5)',
+			ease: 'elastic.out(1, 0.5)'
 		});
 	};
 
@@ -33,7 +33,7 @@ export function setupGsapPendulum(
 		gsap.to(devSpan, {
 			rotate: -25,
 			duration: 0.8,
-			ease: 'elastic.out(1, 0.4)',
+			ease: 'elastic.out(1, 0.4)'
 		});
 	};
 
