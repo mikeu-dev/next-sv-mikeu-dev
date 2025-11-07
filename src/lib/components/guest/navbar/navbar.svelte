@@ -190,8 +190,14 @@
 	class="fixed inset-x-0 top-0 z-50 transition-transform duration-300 ease-in-out"
 	class:translate-y-[-100%]={hideHeader}
 >
-	<nav class="relative z-10 mx-2 flex items-center justify-between rounded-b-4xl bg-white/30 p-6 shadow backdrop-blur-md lg:px-8 dark:bg-gray-900/30 dark:shadow-sm dark:shadow-gray-600">
-		<a href="/" bind:this={anchorElement} class="flex items-center gap-2 text-lg font-bold">
+	<nav
+		class="relative z-10 mx-2 flex items-center justify-between rounded-b-4xl bg-white/30 p-6 shadow backdrop-blur-md lg:px-8 dark:bg-gray-900/30 dark:shadow-sm dark:shadow-gray-600"
+	>
+		<a
+			href="/"
+			bind:this={anchorElement}
+			class="relative flex items-center gap-2 text-lg font-bold"
+		>
 			<Avatar.Root>
 				<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" />
 				<Avatar.Fallback>RR</Avatar.Fallback>
@@ -199,9 +205,13 @@
 			Mikeu
 			<span
 				bind:this={devSpan}
-				class="inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white"
+				class="relative inline-block origin-bottom-right rounded bg-teal-600 px-4 py-1 text-white"
 			>
 				Dev
+				<!-- Titik indikator/Poros -->
+				<span
+					class="absolute right-1.5 bottom-1.5 h-1 w-1 translate-x-1/4 translate-y-1/4 rounded-full bg-white"
+				></span>
 			</span>
 		</a>
 
