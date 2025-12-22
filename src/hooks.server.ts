@@ -73,11 +73,15 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		const session = event.cookies.get('__session');
 
 		if (!session) {
+			console.log('🔴 No session cookie found, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 
 		try {
 			const decodedClaims = await authService.verifySessionCookie(session);
+
+			console.log('🟢 Session verified for:', decodedClaims.email);
+			console.log('🧐 Expected owner:', env.OWNER_EMAIL);
 
 			// Verify owner email
 			if (decodedClaims.email !== env.OWNER_EMAIL) {
@@ -85,6 +89,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 					email: decodedClaims.email,
 					path: event.url.pathname
 				});
+				console.log('🔴 Email mismatch, redirecting to login');
 				throw redirect(303, '/auth/login');
 			}
 
@@ -93,6 +98,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 			logError('Auth:SessionVerification', error, {
 				path: event.url.pathname
 			});
+			console.log('🔴 Session verification failed, redirecting to login', error);
 			throw redirect(303, '/auth/login');
 		}
 	}

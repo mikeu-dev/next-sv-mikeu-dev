@@ -29,8 +29,8 @@ export async function POST(event: RequestEvent) {
 		event.cookies.set('__session', sessionCookie, {
 			path: '/',
 			httpOnly: true,
-			secure: true, // Always use secure
-			sameSite: 'strict', // Prevent CSRF
+			secure: process.env.NODE_ENV === 'production', // Only secure in production
+			sameSite: 'lax', // Relax strictness slightly for dev/redirect flows
 			maxAge: 60 * 60 * 24 * 7 // 1 week
 		});
 

@@ -29,11 +29,13 @@ const envSchema = z.object({
     UPLOADS_DIR: z.string().default('./uploads')
 });
 
+import { env as dynamicPrivateEnv } from '$env/dynamic/private';
+
 // Parse with error handling
 let parsedEnv: z.infer<typeof envSchema>;
 
 try {
-    parsedEnv = envSchema.parse(process.env);
+    parsedEnv = envSchema.parse(dynamicPrivateEnv);
 } catch (error) {
     console.error('❌ Environment variable validation failed:');
     if (error instanceof z.ZodError) {
@@ -69,7 +71,7 @@ export function checkRequiredEnvVars(): boolean {
         'GITHUB_USERNAME'
     ];
 
-    const missing = required.filter((key) => !process.env[key]);
+    const missing = required.filter((key) => !dynamicPrivateEnv[key]);
 
     if (missing.length > 0) {
         console.warn('⚠️  Missing required environment variables:');
