@@ -1,15 +1,16 @@
 <script lang="ts">
+	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { techStack } from '@/lib/data/techstack';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { Icon } from 'svelte-icons-pack';
-	import { journey } from '@/lib/data/journey';
 	import * as m from '$lib/paraglide/messages';
+
+	let { data }: { data: PageData } = $props();
 	let initialLocale = $state(getLocale());
-	let techstack = $derived(techStack[initialLocale] || techStack['en']);
-	let myJourney = $derived(journey[initialLocale] || journey['en']);
+	let techstack = $derived(data.techStack[initialLocale] || data.techStack['en']);
+	let myJourney = $derived(data.journey[initialLocale] || data.journey['en']);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
 	let wavingHand: HTMLElement;
