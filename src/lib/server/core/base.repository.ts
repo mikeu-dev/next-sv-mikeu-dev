@@ -1,11 +1,11 @@
 import { db } from '../firebase/firebase.server';
 
 export abstract class BaseRepository<T> {
-  protected constructor(private readonly collectionName: string) {}
+  protected constructor(private readonly collectionName: string) { }
 
-  async create(data: T): Promise<T> {
+  async create(data: Omit<T, 'id'>): Promise<T> {
     const docRef = await db.collection(this.collectionName).add(data);
-    return { ...data, id: docRef.id };
+    return { ...data, id: docRef.id } as unknown as T;
   }
 
   async findAll(): Promise<T[]> {

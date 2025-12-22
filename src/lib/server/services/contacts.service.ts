@@ -7,7 +7,15 @@ export class ContactsService {
 	async createContact(data: Omit<Contact, 'id' | 'createdAt'>) {
 		return this.contactsRepository.create({
 			...data,
+			status: 'new',
 			createdAt: new Date()
 		});
+	}
+	async getAllContacts() {
+		return this.contactsRepository.findAll();
+	}
+
+	async updateContact(id: string, data: Partial<Contact>) {
+		return this.contactsRepository.update(id, data);
 	}
 }

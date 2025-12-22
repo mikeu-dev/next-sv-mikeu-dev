@@ -13,9 +13,11 @@
 	};
 </script>
 
-<div class="space-y-12 mt-20">
+<div class="mt-20 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.contact_page_title()}</h1>
+		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">
+			{m.contact_page_title()}
+		</h1>
 		<p class="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">
 			{m.contact_page_subtitle()}
 		</p>
@@ -42,31 +44,67 @@
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
 					<Label for="name">{m.contact_field_name()}</Label>
-					<Input type="text" id="name" placeholder="{m.contact_field_placeholder({
-						name: m.contact_field_name()
-					})}" name="name" required />
-					<p class="text-sm text-muted-foreground">{m.contact_field_decription({
-						name: m.contact_field_name()
-					})}</p>
+					<Input
+						type="text"
+						id="name"
+						placeholder={m.contact_field_placeholder({
+							name: m.contact_field_name()
+						})}
+						name="name"
+						required
+					/>
+					<p class="text-sm text-muted-foreground">
+						{m.contact_field_decription({
+							name: m.contact_field_name()
+						})}
+					</p>
 				</div>
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
 					<Label for="email">{m.contact_field_email()}</Label>
-					<Input type="email" id="email" name="email" placeholder="{m.contact_field_placeholder({
-						name: m.contact_field_email()
-					})}" required />
-					<p class="text-sm text-muted-foreground">{m.contact_field_decription({
-						name: m.contact_field_email()
-					})}</p>
+					<Input
+						type="email"
+						id="email"
+						name="email"
+						placeholder={m.contact_field_placeholder({
+							name: m.contact_field_email()
+						})}
+						required
+					/>
+					<p class="text-sm text-muted-foreground">
+						{m.contact_field_decription({
+							name: m.contact_field_email()
+						})}
+					</p>
+				</div>
+			</div>
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+				<div class="flex w-full max-w-sm flex-col gap-1.5">
+					<Label for="company">Company</Label>
+					<Input type="text" id="company" name="company" placeholder="Your Company Name" />
+					<p class="text-sm text-muted-foreground">Optional</p>
+				</div>
+				<div class="flex w-full max-w-sm flex-col gap-1.5">
+					<Label for="budget">Budget</Label>
+					<Input type="text" id="budget" name="budget" placeholder="e.g. $1,000 - $5,000" />
+					<p class="text-sm text-muted-foreground">Estimate budget for the project</p>
 				</div>
 			</div>
 			<div class="flex w-full max-w-2xl flex-col gap-1.5">
 				<Label for="message">{m.contact_field_message()}</Label>
-				<Textarea id="message" name="message" rows={5} placeholder="{m.contact_field_placeholder({
+				<Textarea
+					id="message"
+					name="message"
+					rows={5}
+					placeholder={m.contact_field_placeholder({
 						name: m.contact_field_message()
-					})}" required />
-				<p class="text-sm text-muted-foreground">{m.contact_field_decription({
+					})}
+					required
+				/>
+				<p class="text-sm text-muted-foreground">
+					{m.contact_field_decription({
 						name: m.contact_field_message()
-					})}</p>
+					})}
+				</p>
 			</div>
 			<div class="text-right">
 				<Button type="submit">{m.contact_page_button()}</Button>

@@ -22,6 +22,10 @@ export interface Contact {
 	name: string;
 	email: string;
 	message: string;
+	company?: string;
+	budget?: string;
+	status?: 'new' | 'in-review' | 'replied' | 'closed';
+	notes?: string;
 	createdAt?: Date;
 }
 

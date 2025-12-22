@@ -8,6 +8,8 @@ export const actions: Actions = {
 		const name = formData.get('name');
 		const email = formData.get('email');
 		const message = formData.get('message');
+		const company = formData.get('company');
+		const budget = formData.get('budget');
 
 		try {
 			const response = await fetch('/api/contact', {
@@ -15,7 +17,7 @@ export const actions: Actions = {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ name, email, message })
+				body: JSON.stringify({ name, email, message, company, budget })
 			});
 
 			if (response.ok) {

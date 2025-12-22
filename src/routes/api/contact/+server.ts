@@ -9,13 +9,13 @@ const contactsService = new ContactsService();
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
-		const { name, email, message } = body;
+		const { name, email, message, company, budget } = body;
 
 		if (!name || !email || !message) {
 			return json({ message: 'Missing required fields' }, { status: 400 });
 		}
 
-		const contact = await contactsService.createContact({ name, email, message });
+		const contact = await contactsService.createContact({ name, email, message, company, budget });
 
 		return json({ message: 'Contact created successfully', contactId: contact.id }, { status: 201 });
 	} catch (error) {
