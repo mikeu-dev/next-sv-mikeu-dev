@@ -5,11 +5,11 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import * as m from '@/lib/paraglide/messages';
-	import { skills } from '@/lib/data/skills';
 	import { getLocale } from '@/lib/paraglide/runtime';
 
+	let { skills }: { skills: { en: string[]; id: string[] } } = $props();
 	let locale = $state<string>(getLocale());
-	let skillsData = $derived(skills[locale]||skills['en']);
+	let skillsData = $derived(skills[locale] || skills['en']);
 
 	const { Engine, Runner, Bodies, Composite } = Matter;
 
@@ -48,16 +48,13 @@
 
 		const floorY = subtitleRect.top - titleRect.top - 40;
 		const floor = Bodies.rectangle(titleRect.width / 2, floorY, titleRect.width, 20, wallOptions);
-		const wallLeft = Bodies.rectangle(
-			-50, 
-			titleRect.height / 2,
-			20, 
-			titleRect.height + 100, 
-			{ isStatic: true, render: { visible: false } }
-		);
+		const wallLeft = Bodies.rectangle(-50, titleRect.height / 2, 20, titleRect.height + 100, {
+			isStatic: true,
+			render: { visible: false }
+		});
 
 		const wallRight = Bodies.rectangle(
-			titleRect.width + 50, 
+			titleRect.width + 50,
 			titleRect.height / 2,
 			20,
 			titleRect.height + 100,
@@ -114,7 +111,7 @@
 		if (heroSection) {
 			gsap.fromTo(
 				heroSection,
-				{ backgroundColor: '#0d9488' }, 
+				{ backgroundColor: '#0d9488' },
 				{ backgroundColor: '', duration: 2, delay: 0.5 }
 			);
 		}
@@ -128,9 +125,9 @@
 
 <section
 	id="hero"
-	class="relative flex min-h-screen flex-col items-center justify-start overflow-hidden
-    rounded-t-4xl bg-gradient-to-b from-gray-50 to-white pt-28 pb-20 text-center
-    transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-background mt-20"
+	class="relative mt-20 flex min-h-screen flex-col items-center justify-start
+    overflow-hidden rounded-t-4xl bg-gradient-to-b from-gray-50 to-white pt-28 pb-20
+    text-center transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-background"
 >
 	<canvas id="particles" class="pointer-events-none absolute inset-0 h-full w-full"></canvas>
 

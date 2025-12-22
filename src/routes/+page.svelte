@@ -4,10 +4,10 @@
 	import WorkSection from '../lib/components/guest/sections/work/work.svelte';
 
 	let { data } = $props();
-	const { projects } = data;
+	const { projects, skills } = data;
 </script>
 
-<HeroSection />
+<HeroSection {skills} />
 
 <WorkSection {projects} />
 
