@@ -4,5 +4,9 @@ export const COLLECTIONS = {
   CATEGORIES: 'categories',
   BLOG_POSTS: 'blog_posts',
   FILES: 'files',
-  CONTACTS: 'contacts'
+  CONTACTS: 'contacts',
+  TECHSTACK: 'techstack',
+  JOURNEY: 'journey',
+  SKILLS: 'skills',
+  SOCIALS: 'socials'
 };
