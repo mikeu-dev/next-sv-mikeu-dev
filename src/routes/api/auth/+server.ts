@@ -4,13 +4,20 @@ import { json } from '@sveltejs/kit';
 import { AuthService } from '../../../lib/server/services/auth.service';
 import { HttpException } from '../../../lib/server/exceptions/http.exception';
 import { UserService } from '$lib/server/services/user.service';
+import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
+import { logError } from '$lib/server/utils/logger';
+import type { RequestEvent } from '@sveltejs/kit';
 
 const authService = new AuthService();
 const userService = new UserService();
 
-export async function POST({ request, cookies }) {
+export async function POST(event: RequestEvent) {
+	// Rate limiting - 5 requests per minute
+	const rateLimitResult = checkRateLimit(event, RateLimitPresets.AUTH);
+	if (rateLimitResult) return rateLimitResult;
+
 	try {
-		const { token, username, email } = await request.json();
+		const { token, username, email } = await event.request.json();
 		const decodedToken = await authService.verifyIdToken(token);
 
 		// Jika ini adalah user baru (dilihat dari waktu pembuatan token), buat dokumen di Firestore
@@ -19,10 +26,11 @@ export async function POST({ request, cookies }) {
 		}
 		const sessionCookie = await authService.createSessionCookie(token);
 
-		cookies.set('__session', sessionCookie, {
+		event.cookies.set('__session', sessionCookie, {
 			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			secure: true, // Always use secure
+			sameSite: 'strict', // Prevent CSRF
 			maxAge: 60 * 60 * 24 * 7 // 1 week
 		});
 
@@ -38,12 +46,12 @@ export async function POST({ request, cookies }) {
 				return json({ message: 'Token has been revoked.' }, { status: 401 });
 			}
 		}
-		console.error('API Auth POST Error:', e);
+		logError('API:Auth:POST', e);
 		return json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
 
-export async function DELETE({ cookies }) {
+export async function DELETE({ cookies }: RequestEvent) {
 	try {
 		const sessionCookie = cookies.get('__session');
 		if (sessionCookie) {
@@ -56,7 +64,8 @@ export async function DELETE({ cookies }) {
 		if (e instanceof HttpException) {
 			return json({ message: e.message }, { status: e.status });
 		}
-		console.error('API Auth DELETE Error:', e);
+		logError('API:Auth:DELETE', e);
 		return json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
+

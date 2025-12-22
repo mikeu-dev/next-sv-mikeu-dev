@@ -3,6 +3,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { SocialsService } from '$lib/server/services/socials.service';
 import { db } from '$lib/server/firebase/firebase.server';
 import { COLLECTIONS } from '$lib/server/firebase/collections';
+import { logError } from '$lib/server/utils/logger';
+import { env } from '$lib/server/config/env';
 
 const socialsService = new SocialsService();
 
@@ -11,11 +13,21 @@ export async function GET() {
         const data = await socialsService.getSocials();
         return json(data);
     } catch (error: any) {
+        logError('API:Socials:GET', error);
         return json({ error: error.message }, { status: 500 });
     }
 }
 
-export const PUT: RequestHandler = async ({ request }) => {
+export const PUT: RequestHandler = async ({ request, locals }) => {
+    // Auth check - only owner can update socials
+    if (!locals.user) {
+        return json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (locals.user.email !== env.OWNER_EMAIL) {
+        return json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     try {
         const { links } = await request.json();
 
@@ -39,7 +51,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 
         return json({ success: true, message: 'Socials updated successfully' });
     } catch (error: any) {
-        console.error('Update socials error:', error);
+        logError('API:Socials:PUT', error);
         return json({ error: error.message || 'Failed to update socials' }, { status: 500 });
     }
 };

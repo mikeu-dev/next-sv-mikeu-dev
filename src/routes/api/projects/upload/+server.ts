@@ -3,11 +3,28 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { GitHubStorageService } from '$lib/server/services/github-storage.service';
 import busboy from 'busboy';
 import type { Readable } from 'stream';
+import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
+import { validateFile, generateSafeFilename } from '$lib/server/utils/file-validation';
+import { logError } from '$lib/server/utils/logger';
+import { env } from '$lib/server/config/env';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
 export async function POST(event: RequestEvent) {
+    // Auth check - only owner can upload files
+    if (!event.locals.user) {
+        return json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (event.locals.user.email !== env.OWNER_EMAIL) {
+        return json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Rate limiting - 10 uploads per minute
+    const rateLimitResult = checkRateLimit(event, RateLimitPresets.UPLOAD);
+    if (rateLimitResult) return rateLimitResult;
+
     try {
         const githubStorage = new GitHubStorageService();
 
@@ -28,7 +45,7 @@ export async function POST(event: RequestEvent) {
         });
 
     } catch (error: any) {
-        console.error('Upload error:', error);
+        logError('API:Projects:Upload', error);
         return json({ error: error.message || 'Upload failed' }, { status: error.status || 500 });
     }
 }
@@ -73,13 +90,23 @@ function parseMultipartFile(event: RequestEvent): Promise<ParsedFile | null> {
             });
 
             file.on('end', () => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                const ext = filename.substring(filename.lastIndexOf('.'));
-                const newFilename = `${fieldname}-${uniqueSuffix}${ext}`;
+                // Validate file
+                const buffer = Buffer.concat(chunks);
+                const validation = validateFile(buffer, filename, mimeType, {
+                    allowedMimeTypes: ALLOWED_MIME_TYPES,
+                    maxSize: MAX_FILE_SIZE
+                });
+
+                if (!validation.valid) {
+                    return reject({ status: 400, message: validation.error });
+                }
+
+                // Generate safe filename
+                const safeFilename = generateSafeFilename(filename);
 
                 fileData = {
-                    buffer: Buffer.concat(chunks),
-                    filename: newFilename,
+                    buffer,
+                    filename: safeFilename,
                     mimeType,
                     size
                 };
