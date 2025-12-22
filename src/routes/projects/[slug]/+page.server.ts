@@ -1,10 +1,17 @@
 import { error } from '@sveltejs/kit';
-import { projects } from '@/lib/data/projects';
 import type { PageServerLoad } from './$types';
-import { getLocale } from '@/lib/paraglide/runtime';
+import { ProjectsService } from '$lib/server/services/projects.service';
+import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
 
-export const load: PageServerLoad = ({ params }) => {
-	const project = projects[getLocale()].find((p) => p.slug === params.slug);
+export const load: PageServerLoad = async ({ params }) => {
+	const projectsService = new ProjectsService(new ProjectsRepository());
+	let project = null;
+
+	try {
+		project = await projectsService.getProjectBySlug(params.slug);
+	} catch (e) {
+		console.error('Error fetching project by slug:', e);
+	}
 
 	if (!project) {
 		error(404, 'Project not found');

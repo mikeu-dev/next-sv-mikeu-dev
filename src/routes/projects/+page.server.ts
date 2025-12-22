@@ -1,24 +1,25 @@
 import type { PageServerLoad } from './$types';
-import { projects as fallbackProjects } from '$lib/data/projects';
 
 export const prerender = false;
 
 export const load: PageServerLoad = async ({ fetch }) => {
+	let projectsResult: Record<string, any[]> = { en: [], id: [] };
+
 	try {
 		const response = await fetch('/api/projects');
 
 		if (response.ok) {
 			const data = await response.json();
-			if (data.projects?.length > 0) {
-				return {
-					projects: data.projects
+			if (data && Array.isArray(data) && data.length > 0) {
+				projectsResult = {
+					en: data,
+					id: data
 				};
 			}
 		}
 	} catch (error) {
-		console.error('Failed to fetch projects from API, using fallback. Error:', error);
+		console.error('Failed to fetch projects from API. Error:', error);
 	}
 
-	// Fallback to static data if API call fails or returns no projects
-	return { projects: fallbackProjects };
+	return { projects: projectsResult };
 };

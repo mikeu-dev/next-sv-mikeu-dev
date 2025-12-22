@@ -22,7 +22,7 @@
 	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { onMount, tick } from 'svelte';
-	import { navLinks } from '@/lib/data/navlinks';
+	import { navLinks } from '@/lib/config/navlinks';
 	import * as m from '@/lib/paraglide/messages';
 	let initialLocale = $state(getLocale());
 	let navLinksData = $derived(navLinks[initialLocale] || navLinks['en']);
