@@ -39,8 +39,9 @@
 		<p class="text-muted-foreground">Migrate local data to Firestore</p>
 	</div>
 
+	<!-- Migrate Local Data Section -->
 	<div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-		<h2 class="mb-4 text-xl font-semibold">Collections to Migrate:</h2>
+		<h2 class="mb-4 text-xl font-semibold">Migrate Local Data to Firestore</h2>
 		<ul class="mb-6 space-y-2">
 			<li class="flex items-center gap-2">
 				<span class="text-2xl">📚</span>
@@ -60,9 +61,15 @@
 			</li>
 			<li class="flex items-center gap-2">
 				<span class="text-2xl">📁</span>
-				<span>Projects (EN & ID)</span>
+				<span>Projects (EN & ID) - Bilingual Format</span>
 			</li>
 		</ul>
+
+		<div class="mb-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+			<p class="text-sm font-medium text-blue-800 dark:text-blue-200">
+				ℹ️ Projects will be migrated directly to bilingual format (title_id, title_en, etc.)
+			</p>
+		</div>
 
 		<button
 			onclick={runMigration}
