@@ -2,8 +2,10 @@ import type { IconType } from "svelte-icons-pack";
 
 export interface Project {
 	id: string;
-	title: string;
-	description: string;
+	title_id: string;
+	title_en: string;
+	description_id: string;
+	description_en: string;
 	content?: string;
 	slug?: string;
 	thumbnailUrl?: string;
@@ -13,7 +15,6 @@ export interface Project {
 	published?: boolean;
 	tags?: Tag[] | SerializedTag[]; // Support both formats
 	pinned?: boolean;
-	lang?: 'en' | 'id'; // Language identifier
 	createdAt?: Date;
 	updatedAt?: Date;
 }

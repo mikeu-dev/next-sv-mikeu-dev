@@ -6,17 +6,9 @@ import { HttpException } from '../../../lib/server/exceptions/http.exception';
 
 const projectsService = new ProjectsService(new ProjectsRepository());
 
-export async function GET({ url }) {
+export async function GET() {
   try {
-    const lang = url.searchParams.get('lang') as 'en' | 'id' | null;
     const projects = await projectsService.findAll();
-
-    // Filter by language if specified
-    if (lang) {
-      const filtered = projects.filter(p => p.lang === lang);
-      return json(filtered);
-    }
-
     return json(projects);
   } catch (e) {
     if (e instanceof HttpException) {

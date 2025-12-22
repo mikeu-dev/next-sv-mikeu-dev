@@ -6,8 +6,10 @@
 	import type { Project, Tag } from '$lib/types';
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '@/lib/paraglide/messages';
+	import { getLocale } from '@/lib/paraglide/runtime';
 
 	let { project }: { project: Project } = $props();
+	let locale = $derived(getLocale());
 
 	let cardElement: HTMLDivElement;
 
@@ -36,7 +38,7 @@
 		<div class="overflow-hidden">
 			<img
 				src={project.thumbnailUrl}
-				alt={project.title}
+				alt={locale === 'en' ? project.title_en : project.title_id}
 				class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
 			/>
 		</div>
@@ -46,7 +48,7 @@
 		<h3 class="font-poppins mb-2 text-xl font-bold">
 			<a href={`/projects/${project.slug}`} class="text-foreground group-hover:text-primary">
 				<span class="absolute inset-0 z-10" aria-hidden="true"></span>
-				{project.title}
+				{locale === 'en' ? project.title_en : project.title_id}
 			</a>
 		</h3>
 
@@ -54,7 +56,7 @@
 		<p
 			class="relative mb-4 max-h-16 overflow-hidden text-muted-foreground transition-all duration-300 group-hover:max-h-96"
 		>
-			{project.description}
+			{locale === 'en' ? project.description_en : project.description_id}
 			<!-- gradient overlay untuk efek fade -->
 			<span
 				class="absolute bottom-0 left-0 h-6 w-full bg-gradient-to-t from-card to-transparent group-hover:hidden"
@@ -91,7 +93,9 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative z-20 text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="Visit project website for {project.title}"
+						aria-label="Visit project website for {locale === 'en'
+							? project.title_en
+							: project.title_id}"
 						onclick={(e) => e.stopPropagation()}
 					>
 						<ExternalLink class="size-5" />
@@ -103,7 +107,9 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative z-20 text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="View source code on GitHub for {project.title}"
+						aria-label="View source code on GitHub for {locale === 'en'
+							? project.title_en
+							: project.title_id}"
 						onclick={(e) => e.stopPropagation()}
 					>
 						<Github class="size-5" />

@@ -2,8 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 
-	let title = $state('');
-	let description = $state('');
+	let title_id = $state('');
+	let title_en = $state('');
+	let description_id = $state('');
+	let description_en = $state('');
 	let repoUrl = $state('');
 	let demoUrl = $state('');
 	let published = $state(false);
@@ -11,6 +13,7 @@
 	let thumbnailPreview = $state('');
 	let uploading = $state(false);
 	let saving = $state(false);
+	let activeTab = $state<'id' | 'en'>('id');
 
 	function handleFileChange(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -58,8 +61,8 @@
 				uploading = false;
 			}
 
-			// Create slug from title
-			const slug = title
+			// Create slug from English title
+			const slug = title_en
 				.toLowerCase()
 				.replace(/[^a-z0-9]+/g, '-')
 				.replace(/(^-|-$)/g, '');
@@ -69,8 +72,10 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					title,
-					description,
+					title_id,
+					title_en,
+					description_id,
+					description_en,
 					slug,
 					thumbnailUrl,
 					repoUrl,
@@ -102,31 +107,99 @@
 	</div>
 
 	<form onsubmit={handleSubmit} class="space-y-6">
-		<!-- Title -->
-		<div>
-			<label for="title" class="mb-2 block text-sm font-medium">Title</label>
-			<input
-				id="title"
-				type="text"
-				bind:value={title}
-				required
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
-				placeholder="My Awesome Project"
-			/>
+		<!-- Language Tabs -->
+		<div class="mb-6">
+			<div class="flex gap-2 border-b border-gray-300 dark:border-gray-700">
+				<button
+					type="button"
+					onclick={() => (activeTab = 'id')}
+					class="px-4 py-2 font-medium transition-colors {activeTab === 'id'
+						? 'border-b-2 border-blue-600 text-blue-600'
+						: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+				>
+					🇮🇩 Indonesia
+				</button>
+				<button
+					type="button"
+					onclick={() => (activeTab = 'en')}
+					class="px-4 py-2 font-medium transition-colors {activeTab === 'en'
+						? 'border-b-2 border-blue-600 text-blue-600'
+						: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+				>
+					🇬🇧 English
+				</button>
+			</div>
 		</div>
 
-		<!-- Description -->
-		<div>
-			<label for="description" class="mb-2 block text-sm font-medium">Description</label>
-			<textarea
-				id="description"
-				bind:value={description}
-				required
-				rows="4"
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
-				placeholder="Describe your project..."
-			></textarea>
-		</div>
+		<!-- Indonesian Fields -->
+		{#if activeTab === 'id'}
+			<div class="space-y-4">
+				<!-- Title ID -->
+				<div>
+					<label for="title_id" class="mb-2 block text-sm font-medium">
+						Judul (Indonesia) <span class="text-red-500">*</span>
+					</label>
+					<input
+						id="title_id"
+						type="text"
+						bind:value={title_id}
+						required
+						class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+						placeholder="Proyek Keren Saya"
+					/>
+				</div>
+
+				<!-- Description ID -->
+				<div>
+					<label for="description_id" class="mb-2 block text-sm font-medium">
+						Deskripsi (Indonesia) <span class="text-red-500">*</span>
+					</label>
+					<textarea
+						id="description_id"
+						bind:value={description_id}
+						required
+						rows="4"
+						class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+						placeholder="Jelaskan proyek Anda..."
+					></textarea>
+				</div>
+			</div>
+		{/if}
+
+		<!-- English Fields -->
+		{#if activeTab === 'en'}
+			<div class="space-y-4">
+				<!-- Title EN -->
+				<div>
+					<label for="title_en" class="mb-2 block text-sm font-medium">
+						Title (English) <span class="text-red-500">*</span>
+					</label>
+					<input
+						id="title_en"
+						type="text"
+						bind:value={title_en}
+						required
+						class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+						placeholder="My Awesome Project"
+					/>
+				</div>
+
+				<!-- Description EN -->
+				<div>
+					<label for="description_en" class="mb-2 block text-sm font-medium">
+						Description (English) <span class="text-red-500">*</span>
+					</label>
+					<textarea
+						id="description_en"
+						bind:value={description_en}
+						required
+						rows="4"
+						class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+						placeholder="Describe your project..."
+					></textarea>
+				</div>
+			</div>
+		{/if}
 
 		<!-- Thumbnail Upload -->
 		<div>

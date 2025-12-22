@@ -6,7 +6,7 @@
 
 	let projects = $state<Project[]>([]);
 	let loading = $state(true);
-	let lang = $state<'en' | 'id' | 'all'>('all');
+	let displayLang = $state<'en' | 'id'>('en');
 
 	onMount(async () => {
 		await loadProjects();
@@ -14,8 +14,7 @@
 
 	async function loadProjects() {
 		try {
-			const url = lang === 'all' ? '/api/projects' : `/api/projects?lang=${lang}`;
-			const response = await fetch(url);
+			const response = await fetch('/api/projects');
 			if (!response.ok) throw new Error('Failed to load projects');
 			projects = await response.json();
 		} catch (error: any) {
@@ -25,9 +24,8 @@
 		}
 	}
 
-	function switchLang(newLang: 'en' | 'id' | 'all') {
-		lang = newLang;
-		loadProjects();
+	function switchLang(newLang: 'en' | 'id') {
+		displayLang = newLang;
 	}
 
 	async function deleteProject(id: string) {
@@ -56,28 +54,20 @@
 		</div>
 		<div class="flex gap-2">
 			<button
-				onclick={() => switchLang('all')}
-				class="rounded-lg px-4 py-2 {lang === 'all'
-					? 'bg-blue-600 text-white'
-					: 'border border-gray-300 dark:border-gray-700'}"
-			>
-				All
-			</button>
-			<button
 				onclick={() => switchLang('en')}
-				class="rounded-lg px-4 py-2 {lang === 'en'
+				class="rounded-lg px-4 py-2 {displayLang === 'en'
 					? 'bg-blue-600 text-white'
 					: 'border border-gray-300 dark:border-gray-700'}"
 			>
-				English
+				🇬🇧 English
 			</button>
 			<button
 				onclick={() => switchLang('id')}
-				class="rounded-lg px-4 py-2 {lang === 'id'
+				class="rounded-lg px-4 py-2 {displayLang === 'id'
 					? 'bg-blue-600 text-white'
 					: 'border border-gray-300 dark:border-gray-700'}"
 			>
-				Indonesia
+				🇮🇩 Indonesia
 			</button>
 			<button
 				onclick={() => goto('/admin/projects/create')}
@@ -109,7 +99,11 @@
 					class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
 				>
 					{#if project.thumbnailUrl}
-						<img src={project.thumbnailUrl} alt={project.title} class="h-48 w-full object-cover" />
+						<img
+							src={project.thumbnailUrl}
+							alt={displayLang === 'en' ? project.title_en : project.title_id}
+							class="h-48 w-full object-cover"
+						/>
 					{:else}
 						<div class="flex h-48 items-center justify-center bg-gray-100 dark:bg-gray-800">
 							<span class="text-muted-foreground">No image</span>
@@ -118,7 +112,9 @@
 
 					<div class="p-4">
 						<div class="mb-2 flex items-start justify-between">
-							<h3 class="text-lg font-semibold">{project.title}</h3>
+							<h3 class="text-lg font-semibold">
+								{displayLang === 'en' ? project.title_en : project.title_id}
+							</h3>
 							{#if project.published}
 								<span
 									class="rounded bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-200"
@@ -134,7 +130,9 @@
 							{/if}
 						</div>
 
-						<p class="mb-4 line-clamp-2 text-sm text-muted-foreground">{project.description}</p>
+						<p class="mb-4 line-clamp-2 text-sm text-muted-foreground">
+							{displayLang === 'en' ? project.description_en : project.description_id}
+						</p>
 
 						<div class="flex gap-2">
 							<button
