@@ -8,7 +8,7 @@
 
 	$effect(() => {
 		if (browser && authState.initialized && !authState.user) {
-			goto('/');
+			goto('/auth/login');
 		}
 	});
 </script>

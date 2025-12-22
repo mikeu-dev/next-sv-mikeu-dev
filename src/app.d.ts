@@ -5,6 +5,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			paraglide: { locale: string };
+			user?: any;
 		}
 		// interface PageData {}
 		// interface PageState {}
@@ -18,4 +19,4 @@ declare global {
 	}
 }
 
-export {};
+export { };
