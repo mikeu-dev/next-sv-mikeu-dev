@@ -1,40 +1,17 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { SvelteComponent } from 'svelte';
 	import type { BlogPageData } from './+page.server';
 	import * as m from '@/lib/paraglide/messages';
 	import { ArrowLeft } from '@lucide/svelte';
-
-	interface SvelteModule {
-		default: typeof SvelteComponent;
-	}
+	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
 
 	let { data }: { data: BlogPageData } = $props();
-
-	const posts = import.meta.glob('/src/lib/posts/**/*.svx');
-
-	let Content = $state<typeof SvelteComponent | null>(null);
-
-	onMount(async () => {
-		const match = Object.keys(posts).find(
-			(p) => p.includes(`/${data.locale}/`) && p.endsWith(`${data.slug}.svx`)
-		);
-
-		if (!match) {
-			console.error('File artikel tidak ditemukan:', data.slug);
-			return;
-		}
-
-		const module = (await posts[match]()) as SvelteModule;
-		Content = module.default;
-	});
 </script>
 
-<article class="mx-auto prose prose-lg max-w-3xl py-8 prose-neutral dark:prose-invert mt-20">
+<article class="mx-auto prose prose-lg mt-20 max-w-3xl py-8 prose-neutral dark:prose-invert">
 	<div class="mb-8">
 		<a
 			href="/blog"
-			class="inline-flex items-center text-sm text-muted-foreground hover:text-foreground no-underline"
+			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"
 		>
 			<ArrowLeft class="mr-2 size-4" />
 			{m.blog_button_back()}
@@ -53,9 +30,5 @@
 		{/if}
 	</header>
 
-	{#if Content}
-		<Content />
-	{:else}
-		<p>{m.blog_loading()}</p>
-	{/if}
+	<MarkdownRenderer content={data.content} />
 </article>

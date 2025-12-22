@@ -252,11 +252,36 @@ export async function POST({ request }: RequestEvent) {
                 results.push({ collection: 'projects', status: 'error', message: error.message });
             }
 
+
+            // Migrate Blog Posts
+            try {
+                const { migrateBlogPosts } = await import('$lib/server/services/migration/blog');
+                const blogResults = await migrateBlogPosts();
+                if (blogResults.success) {
+                    results.push({ collection: 'blog_posts', status: 'success', details: blogResults.details });
+                } else {
+                    results.push({ collection: 'blog_posts', status: 'error', message: blogResults.message });
+                }
+            } catch (error: any) {
+                results.push({ collection: 'blog_posts', status: 'error', message: error.message });
+            }
+
             return json({
                 success: true,
                 message: 'Migration completed',
                 results
             });
+        }
+
+        // Action to migrate only blog posts
+        if (action === 'migrate-blog') {
+            try {
+                const { migrateBlogPosts } = await import('$lib/server/services/migration/blog');
+                const result = await migrateBlogPosts();
+                return json(result);
+            } catch (error: any) {
+                return json({ success: false, message: error.message }, { status: 500 });
+            }
         }
 
         // New action: Convert existing projects to bilingual format

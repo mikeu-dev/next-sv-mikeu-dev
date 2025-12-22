@@ -63,6 +63,10 @@
 				<span class="text-2xl">📁</span>
 				<span>Projects (EN & ID) - Bilingual Format</span>
 			</li>
+			<li class="flex items-center gap-2">
+				<span class="text-2xl">📝</span>
+				<span>Blog Posts (.svx files)</span>
+			</li>
 		</ul>
 
 		<div class="mb-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">

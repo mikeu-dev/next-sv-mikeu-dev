@@ -1,50 +1,48 @@
-import { getLocale } from '@/lib/paraglide/runtime'
-import type { PageServerLoad, RouteParams } from './$types'
-import type { ServerLoadEvent } from '@sveltejs/kit'
+
+import { getLocale } from '@/lib/paraglide/runtime';
+import type { PageServerLoad, RouteParams } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
+import { db } from '$lib/server/firebase/firebase.server';
+import { COLLECTIONS } from '$lib/server/firebase/collections';
 
 export interface Post {
-	slug: string
-	title: string
-	description?: string
-	date: string
-	published: boolean
+  slug: string;
+  title: string;
+  description?: string;
+  date: string;
+  published: boolean;
+  locale: string;
 }
-
-const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', { as: 'raw' })
 
 async function getPosts(locale: string): Promise<Post[]> {
-  const posts: Post[] = []
+  try {
+    // Fetch posts from Firestore filtering by locale
+    // If we want to support fallback or all posts if not found, we would need more logic.
+    // For now, strict locale match.
 
-  for (const [path, importer] of Object.entries(allPostsModules)) {
-    if (!path.includes(`/${locale}/`)) continue
+    const snapshot = await db.collection(COLLECTIONS.BLOG_POSTS)
+      .where('locale', '==', locale)
+      .where('published', '==', true)
+      .get();
 
-    const raw = await (importer as () => Promise<string>)()
-    const match = /^---\n([\s\S]*?)\n---/.exec(raw)
-    if (!match) continue
+    const posts: Post[] = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        slug: data.slug,
+        title: data.title,
+        description: data.description,
+        date: data.date,
+        published: data.published,
+        locale: data.locale,
+      } as Post;
+    });
 
-    const frontmatter = Object.fromEntries(
-      match[1]
-        .split('\n')
-        .map(line => {
-          const [key, ...value] = line.split(':')
-          return [key.trim(), value.join(':').trim()]
-        })
-        .filter(([k,v]) => k && v)
-    ) as Record<string, string>
-
-    if (frontmatter.published === 'true') {
-      const slug = path.split('/').pop()!.replace('.svx', '')
-      posts.push({
-        ...(frontmatter as Omit<Post, 'slug' | 'published'>),
-        slug,
-        published: true
-      })
-    }
+    return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
   }
-
-  return posts.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
-
 
 export const load: PageServerLoad = async (event) => {
   const localsLocale = (event as ServerLoadEvent<RouteParams>).locals?.paraglide?.locale;
