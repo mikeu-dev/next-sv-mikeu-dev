@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { Project } from '$lib/types';
 import { ProjectsService } from '../../../lib/server/services/projects.service';
 import { ProjectsRepository } from '../../../lib/server/repositories/projects.repository';
 import { HttpException } from '../../../lib/server/exceptions/http.exception';
@@ -39,7 +40,7 @@ export async function POST({ request, locals }: RequestEvent) {
     // Validate input
     const validatedData = projectSchema.parse(data);
 
-    const project = await projectsService.create(validatedData);
+    const project = await projectsService.create(validatedData as unknown as Omit<Project, 'id' | 'createdAt' | 'updatedAt'>);
     return json(project, { status: 201 });
   } catch (e) {
     if (e instanceof z.ZodError) {

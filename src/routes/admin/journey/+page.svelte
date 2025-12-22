@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	let journey = $state({ items: [] });
+	let journey = $state<{ items: any[] }>({ items: [] });
 	let loading = $state(true);
 	let lang = $state<'en' | 'id'>('en');
 

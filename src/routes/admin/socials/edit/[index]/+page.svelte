@@ -55,7 +55,7 @@
 
 		try {
 			// Remove the link from the array
-			const updatedLinks = data.allLinks.filter((_, i) => i !== data.index);
+			const updatedLinks = data.allLinks.filter((_: any, i: number) => i !== data.index);
 
 			const response = await fetch('/api/socials', {
 				method: 'PUT',

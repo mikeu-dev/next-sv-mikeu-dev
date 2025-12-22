@@ -17,9 +17,9 @@ interface UploadedFile {
 	url: string;
 }
 export class UploadService {
-	async uploadFile(event: RequestEvent): Promise<UploadedFile> {
+	async uploadFile(request: Request): Promise<UploadedFile> {
 		return new Promise((resolve, reject) => {
-			const headers = Object.fromEntries(event.request.headers.entries());
+			const headers = Object.fromEntries(request.headers.entries());
 			const bb = busboy({
 				// The `busboy` package expects headers as a plain object.
 				headers
@@ -70,7 +70,7 @@ export class UploadService {
 							mimeType: mimetype,
 							size: size,
 							path: saveTo,
-							url: getFileUrl(newFilename, event.request)
+							url: getFileUrl(newFilename, request)
 						});
 					});
 				}
@@ -80,8 +80,8 @@ export class UploadService {
 				reject(new HttpException(500, 'File upload error'));
 			});
 
-			if (event.request.body) {
-				const reader = event.request.body.getReader();
+			if (request.body) {
+				const reader = request.body.getReader();
 				const pump = () => {
 					reader.read().then(({ done, value }) => {
 						if (done) {
