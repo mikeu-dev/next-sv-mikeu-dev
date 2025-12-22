@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
+	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -279,18 +280,13 @@
 
 		<!-- Content (Optional) -->
 		<div>
-			<label for="content" class="mb-2 block text-sm font-medium">
-				Content (Optional Markdown)
-			</label>
-			<textarea
-				id="content"
+			<label class="mb-2 block text-sm font-medium"> Content (Optional Markdown) </label>
+			<MarkdownEditor
 				bind:value={content}
-				rows="6"
-				class="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
 				placeholder="# Project Details
 
 Write detailed content in Markdown format..."
-			></textarea>
+			/>
 		</div>
 
 		<!-- Thumbnail Upload -->

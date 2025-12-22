@@ -6,6 +6,9 @@ import { HttpException } from '../../../../lib/server/exceptions/http.exception'
 
 const projectsService = new ProjectsService(new ProjectsRepository());
 
+// Disable prerendering for this endpoint since it has mutative methods (PUT, DELETE)
+export const prerender = false;
+
 export async function GET({ params }: RequestEvent) {
     try {
         if (!params.id) {
