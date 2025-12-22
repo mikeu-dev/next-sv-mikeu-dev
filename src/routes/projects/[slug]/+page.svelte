@@ -4,11 +4,14 @@
 	import { Button } from '@/lib/components/ui/button';
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '@/lib/paraglide/messages.js';
+	import SEO from '@/lib/components/seo/seo.svelte';
 	import type { Project } from '$lib/types';
 
 	let { data } = $props();
 	const { project }: { project: Project } = data;
 </script>
+
+<SEO title={project.title} description={project.description} image={project.thumbnailUrl} />
 
 <div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
 	<div class="mb-8">
