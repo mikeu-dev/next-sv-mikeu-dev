@@ -197,7 +197,9 @@
 									<input
 										type="text"
 										bind:value={item.color}
-										pattern="^#[0-9A-Fa-f]{6}$"
+										required
+										minlength="4"
+										maxlength="7"
 										class="flex-1 rounded-lg border border-gray-300 px-3 py-2 font-mono text-sm focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
 										placeholder="#000000"
 									/>
