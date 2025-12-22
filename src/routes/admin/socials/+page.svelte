@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import * as SimpleIcons from 'simple-icons';
 
 	let socials = $state({ links: [] });
 	let loading = $state(true);
@@ -21,12 +23,31 @@
 			loading = false;
 		}
 	}
+
+	// Get SVG for an icon
+	function getIconSvg(iconName: string): string {
+		try {
+			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
+			const icon = (SimpleIcons as any)[key];
+			return icon?.svg || '';
+		} catch (e) {
+			return '';
+		}
+	}
 </script>
 
 <div class="container mx-auto p-6">
-	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Social Links Management</h1>
-		<p class="text-muted-foreground">Manage your social media links</p>
+	<div class="mb-6 flex items-center justify-between">
+		<div>
+			<h1 class="text-3xl font-bold">Social Links Management</h1>
+			<p class="text-muted-foreground">Manage your social media links</p>
+		</div>
+		<button
+			onclick={() => goto('/admin/socials/create')}
+			class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+		>
+			+ Add Social Link
+		</button>
 	</div>
 
 	{#if loading}
@@ -43,9 +64,9 @@
 						<div class="flex items-center gap-4">
 							<div
 								class="flex h-12 w-12 items-center justify-center rounded-lg"
-								style="background-color: {link.color}20"
+								style="background-color: {link.color}20; color: {link.color}"
 							>
-								<span class="font-mono text-xs">{link.iconName}</span>
+								{@html getIconSvg(link.iconName)}
 							</div>
 							<div>
 								<h3 class="font-semibold">{link.label}</h3>
@@ -55,6 +76,7 @@
 							</div>
 						</div>
 						<button
+							onclick={() => goto(`/admin/socials/edit/${idx}`)}
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>
 							Edit
@@ -65,3 +87,11 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	:global(.h-12.w-12 svg) {
+		width: 24px;
+		height: 24px;
+		fill: currentColor;
+	}
+</style>
