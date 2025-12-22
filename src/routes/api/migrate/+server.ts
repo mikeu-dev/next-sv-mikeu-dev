@@ -21,16 +21,90 @@ export async function POST({ request }: RequestEvent) {
             try {
                 // Serialize techstack data - convert icon components to icon names
                 const serializeTechStack = (categories: any[]) => {
+                    // Manual mapping for common technologies since icon components can't be serialized
+                    const iconMap: Record<string, string> = {
+                        'HTML': 'SiHtml5',
+                        'CSS': 'SiCss3',
+                        'JavaScript': 'SiJavascript',
+                        'TypeScript': 'SiTypescript',
+                        'PHP': 'SiPhp',
+                        'Python': 'SiPython',
+                        'Java': 'SiJava',
+                        'C#': 'SiCsharp',
+                        'React': 'SiReact',
+                        'Svelte': 'SiSvelte',
+                        'SvelteKit': 'SiSvelte',
+                        'Next.js': 'SiNextdotjs',
+                        'Laravel': 'SiLaravel',
+                        'CodeIgniter 4': 'SiCodeigniter',
+                        'CodeIgniter 3': 'SiCodeigniter',
+                        'Bootstrap': 'SiBootstrap',
+                        'Tailwind CSS': 'SiTailwindcss',
+                        'Node.js': 'SiNodedotjs',
+                        'MySQL': 'SiMysql',
+                        'PostgreSQL': 'SiPostgresql',
+                        'MongoDB': 'SiMongodb',
+                        'Firebase': 'SiFirebase',
+                        'Docker': 'SiDocker',
+                        'Git': 'SiGit',
+                        'GitHub': 'SiGithub',
+                        'GitLab': 'SiGitlab',
+                        'Vite': 'SiVite',
+                        'Webpack': 'SiWebpack',
+                        'JQuery': 'SiJquery',
+                        'Unity': 'SiUnity',
+                        'ASP .NET Core': 'SiDotnet',
+                        'Leaflet': 'SiLeaflet',
+                        'OpenLayers': 'SiOpenlayers',
+                        'Filament': 'SiPhp',
+                        'WSL': 'SiLinux',
+                        'WSL (Windows Subsystem for Linux)': 'SiLinux',
+                    };
+
                     return categories.map(category => ({
                         category: category.category,
                         description: category.description,
-                        items: category.items.map((item: any) => ({
-                            name: item.name,
-                            // Extract icon name from component function name
-                            iconName: item.icon?.name || 'SiDefault',
-                            color: item.color,
-                            url: item.url
-                        }))
+                        items: category.items.map((item: any) => {
+                            // Try to get icon name from mapping first
+                            let iconName = iconMap[item.name] || 'SiDefault';
+
+                            // If not in map, try to extract from component
+                            if (iconName === 'SiDefault' && item.icon) {
+                                // For svelte-icons-pack, the icon is a Svelte component
+                                // Try to get the name from various sources
+                                if (typeof item.icon === 'function') {
+                                    // Try function name first
+                                    iconName = item.icon.name || 'SiDefault';
+                                } else if (typeof item.icon === 'string') {
+                                    // Already a string
+                                    iconName = item.icon;
+                                } else if (item.icon.displayName) {
+                                    // Some components have displayName
+                                    iconName = item.icon.displayName;
+                                } else if (item.icon.$$typeof) {
+                                    // React/Svelte component - try to extract from toString
+                                    const iconStr = item.icon.toString();
+                                    const match = iconStr.match(/Si[A-Z][a-zA-Z0-9]*/);
+                                    if (match) {
+                                        iconName = match[0];
+                                    }
+                                }
+
+                                // Last resort: check if icon has a name property
+                                if (iconName === 'SiDefault' && item.icon.name) {
+                                    iconName = item.icon.name;
+                                }
+                            }
+
+                            console.log(`Extracting icon for ${item.name}: ${iconName}`);
+
+                            return {
+                                name: item.name,
+                                iconName: iconName,
+                                color: item.color,
+                                url: item.url
+                            };
+                        })
                     }));
                 };
 

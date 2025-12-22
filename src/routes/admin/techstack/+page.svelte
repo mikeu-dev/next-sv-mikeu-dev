@@ -2,8 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import * as SimpleIcons from 'simple-icons';
 
-	let techstack = $state({ categories: [] });
+	let techstack = $state<any>({ categories: [] });
 	let loading = $state(true);
 	let lang = $state<'en' | 'id'>('en');
 
@@ -27,6 +28,24 @@
 	function switchLang(newLang: 'en' | 'id') {
 		lang = newLang;
 		loadData();
+	}
+
+	// Get Simple Icon SVG from icon name
+	function getIconSvg(iconName: string): string {
+		try {
+			// Convert "SiReact" to "siReact" format used by simple-icons
+			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
+			const icon = (SimpleIcons as any)[key];
+
+			if (icon && icon.svg) {
+				return icon.svg;
+			}
+		} catch (e) {
+			console.warn(`Icon not found: ${iconName}`);
+		}
+
+		// Fallback: return a simple square icon
+		return '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" x="2" y="2" rx="3"/></svg>';
 	}
 </script>
 
@@ -86,9 +105,9 @@
 							>
 								<div
 									class="flex h-10 w-10 items-center justify-center rounded-lg"
-									style="background-color: {item.color}20"
+									style="background-color: {item.color}20; color: {item.color}"
 								>
-									<span class="font-mono text-xs">{item.iconName}</span>
+									{@html getIconSvg(item.iconName)}
 								</div>
 								<div class="flex-1">
 									<div class="font-medium">{item.name}</div>
@@ -104,3 +123,11 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	:global(.h-10.w-10 svg) {
+		width: 24px;
+		height: 24px;
+		fill: currentColor;
+	}
+</style>
