@@ -2,9 +2,7 @@
 	import { onMount } from 'svelte';
 	import type { Contact } from '$lib/types';
 	import { Input } from '$lib/components/ui/input';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import * as Table from '$lib/components/ui/table';
 	import { toast } from 'svelte-sonner';
 
 	let contacts: Contact[] = [];
@@ -28,18 +26,20 @@
 		}
 	});
 
-	function getStatusColor(status?: string) {
+	function getStatusClass(status?: string) {
+		const base =
+			'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2';
 		switch (status) {
 			case 'new':
-				return 'bg-blue-500 hover:bg-blue-600';
+				return `${base} bg-blue-500 text-white hover:bg-blue-600`;
 			case 'in-review':
-				return 'bg-yellow-500 hover:bg-yellow-600';
+				return `${base} bg-yellow-500 text-white hover:bg-yellow-600`;
 			case 'replied':
-				return 'bg-green-500 hover:bg-green-600';
+				return `${base} bg-green-500 text-white hover:bg-green-600`;
 			case 'closed':
-				return 'bg-gray-500 hover:bg-gray-600';
+				return `${base} bg-gray-500 text-white hover:bg-gray-600`;
 			default:
-				return 'bg-blue-500';
+				return `${base} bg-blue-500 text-white`;
 		}
 	}
 
@@ -54,7 +54,7 @@
 <div class="space-y-6">
 	<div class="flex items-center justify-between">
 		<h2 class="text-3xl font-bold tracking-tight">Inbox / Leads</h2>
-		<Button variant="outline" on:click={() => window.location.reload()}>Refresh</Button>
+		<Button variant="outline" onclick={() => window.location.reload()}>Refresh</Button>
 	</div>
 
 	<div class="flex items-center py-4">
@@ -62,48 +62,69 @@
 	</div>
 
 	<div class="rounded-md border">
-		<Table.Root>
-			<Table.Header>
-				<Table.Row>
-					<Table.Head>Date</Table.Head>
-					<Table.Head>Name</Table.Head>
-					<Table.Head>Company</Table.Head>
-					<Table.Head>Status</Table.Head>
-					<Table.Head class="text-right">Action</Table.Head>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#if loading}
-					<Table.Row>
-						<Table.Cell colspan={5} class="h-24 text-center">Loading...</Table.Cell>
-					</Table.Row>
-				{:else if filteredContacts.length === 0}
-					<Table.Row>
-						<Table.Cell colspan={5} class="h-24 text-center">No results.</Table.Cell>
-					</Table.Row>
-				{:else}
-					{#each filteredContacts as contact (contact.id)}
-						<Table.Row>
-							<Table.Cell>
-								{new Date(contact.createdAt).toLocaleDateString()}
-							</Table.Cell>
-							<Table.Cell>
-								<div class="flex flex-col">
-									<span class="font-medium">{contact.name}</span>
-									<span class="text-xs text-muted-foreground">{contact.email}</span>
-								</div>
-							</Table.Cell>
-							<Table.Cell>{contact.company || '-'}</Table.Cell>
-							<Table.Cell>
-								<Badge class={getStatusColor(contact.status)}>{contact.status}</Badge>
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								<a href="/admin/contacts/{contact.id}" class="text-primary hover:underline">View</a>
-							</Table.Cell>
-						</Table.Row>
-					{/each}
-				{/if}
-			</Table.Body>
-		</Table.Root>
+		<div class="w-full overflow-auto">
+			<table class="w-full caption-bottom text-sm">
+				<thead class="[&_tr]:border-b">
+					<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+						<th
+							class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
+							>Date</th
+						>
+						<th
+							class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
+							>Name</th
+						>
+						<th
+							class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
+							>Company</th
+						>
+						<th
+							class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
+							>Status</th
+						>
+						<th
+							class="h-12 px-4 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
+							>Action</th
+						>
+					</tr>
+				</thead>
+				<tbody class="[&_tr:last-child]:border-0">
+					{#if loading}
+						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+							<td colspan="5" class="h-24 p-4 text-center align-middle">Loading...</td>
+						</tr>
+					{:else if filteredContacts.length === 0}
+						<tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+							<td colspan="5" class="h-24 p-4 text-center align-middle">No results.</td>
+						</tr>
+					{:else}
+						{#each filteredContacts as contact (contact.id)}
+							<tr
+								class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+							>
+								<td class="p-4 align-middle">
+									{contact.createdAt ? new Date(contact.createdAt).toLocaleDateString() : '-'}
+								</td>
+								<td class="p-4 align-middle">
+									<div class="flex flex-col">
+										<span class="font-medium">{contact.name}</span>
+										<span class="text-xs text-muted-foreground">{contact.email}</span>
+									</div>
+								</td>
+								<td class="p-4 align-middle">{contact.company || '-'}</td>
+								<td class="p-4 align-middle">
+									<span class={getStatusClass(contact.status)}>{contact.status}</span>
+								</td>
+								<td class="p-4 text-right align-middle">
+									<a href="/admin/contacts/{contact.id}" class="text-primary hover:underline"
+										>View</a
+									>
+								</td>
+							</tr>
+						{/each}
+					{/if}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>

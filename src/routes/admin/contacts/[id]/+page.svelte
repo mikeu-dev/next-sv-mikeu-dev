@@ -79,8 +79,7 @@
 <div class="space-y-6">
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-4">
-			<Button variant="ghost" size="sm" on:click={() => goto('/admin/contacts')}>&larr; Back</Button
-			>
+			<Button variant="ghost" size="sm" onclick={() => goto('/admin/contacts')}>&larr; Back</Button>
 			<h2 class="text-3xl font-bold tracking-tight">Contact Details</h2>
 		</div>
 	</div>
@@ -148,7 +147,7 @@
 							<Label>Internal Notes</Label>
 							<Textarea bind:value={notes} placeholder="Add notes here..." rows={6} />
 						</div>
-						<Button class="w-full" on:click={handleSave} disabled={saving}>
+						<Button class="w-full" onclick={handleSave} disabled={saving}>
 							{saving ? 'Saving...' : 'Save Changes'}
 						</Button>
 					</Card.Content>
