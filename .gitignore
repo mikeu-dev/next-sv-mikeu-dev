@@ -1,0 +1,36 @@
+test-results
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+/package
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+uploads/
+
+# Exclude local data files (migrated to Firestore)
+src/lib/data/
+# Paraglide
+src/lib/paraglide
+
+*storybook.log
+storybook-static
+project_structure.md
+src/routes/seed/+server.ts

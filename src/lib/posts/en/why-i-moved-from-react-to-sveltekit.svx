@@ -1,0 +1,134 @@
+---
+title: "Why I Moved from React to SvelteKit"
+description: "A personal experience transitioning from React to SvelteKit — a lighter, faster, and more enjoyable framework to build with."
+date: "2025-10-23"
+published: true
+---
+
+## Why I Moved from React to SvelteKit
+
+When I first started learning frontend development, **React** was my go-to choice. The documentation was complete, the ecosystem massive, and nearly every job listing mentioned it.  
+But after a few years, I began to feel React becoming heavier — especially for small projects or quick prototypes.
+
+Then I tried **SvelteKit**, and everything changed.
+
+___
+
+## 1. React Started to Feel “Heavy”
+
+React is powerful, but also complex.  
+Here are a few things that started to frustrate me:
+- Too much *boilerplate* (importing `useState`, `useEffect`, etc. for simple tasks)
+- Managing bundlers (Vite/Webpack) manually
+- Needing extra dependencies for basic things (routing, state management, etc.)
+- Components becoming bloated and hard to read as projects grew
+
+> React gives a lot of freedom — but sometimes too much, forcing us to manage countless details just to get started.
+
+For example, here’s a simple counter in React:
+
+```jsx
+// Counter.jsx
+import { useState } from "react";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>Add</button>
+    </div>
+  );
+}
+```
+
+___
+
+## 2. SvelteKit Feels More “Natural”
+
+The first thing I noticed with SvelteKit was how **natural** it felt:
+- No overthinking about state and reactivity
+- Reactivity feels intuitive, using plain `let` variables
+- File-based routing out of the box
+- SSR (Server Side Rendering) integrated by default
+
+Here’s the same counter in Svelte:
+
+```svelte
+<script>
+  let count = $state(0);
+</script>
+
+<p>You clicked {count} times</p>
+<button onclick={() => count++}>Add</button>
+```
+
+No `useState`, no hooks, no extra imports — everything feels straightforward and intuitive.  
+It made UI development feel fun again.
+
+___
+
+## 3. Performance & Build Size
+
+Svelte produces smaller and faster builds because:
+- It compiles directly to pure JavaScript, instead of running a Virtual DOM.
+- Loading and interactivity are noticeably lighter, especially for small to medium apps.
+
+Comparison example:
+
+```bash
+# Build Size Comparison
+React App:     120 KB (minified)
+SvelteKit App:  40 KB (minified)
+```
+
+| Numbers may vary depending on dependencies, but the difference is clear. |
+
+___
+
+## 4. Developer Experience (DX)
+
+The combination of SvelteKit + Vite is incredibly efficient:
+- Super-fast hot reload
+- Clear and human-friendly error messages
+- New projects can be set up in seconds
+- Built-in adapters for Vercel, Netlify, and Cloudflare
+
+Creating a new SvelteKit project is as simple as:
+
+```bash
+npx sv create my-app
+cd my-app
+npm run dev
+```
+
+You instantly get automatic routing (`+page.svelte`, `+layout.svelte`) without extra configuration.
+
+___
+
+## 5. When React Still Makes Sense
+
+Of course, that doesn’t mean React is bad.  
+I’d still choose React if:
+- The project is large and involves multiple teams with complex dependencies
+- I’m building mobile apps using React Native
+- I need a specific UI library that’s only available for React
+
+> But for personal projects, portfolios, or lightweight dashboards — SvelteKit is simply more enjoyable.
+
+___
+
+## Conclusion
+
+Switching to SvelteKit made me fall in love with frontend again.  
+Cleaner code, faster performance, and a much more enjoyable development process.
+
+If React feels like too much for simple projects, maybe it’s time to give SvelteKit a try.
+
+___
+
+## References
+
+- [SvelteKit Official Site](https://kit.svelte.dev)  
+- [React Documentation](https://react.dev)
