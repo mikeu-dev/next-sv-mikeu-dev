@@ -126,6 +126,8 @@
 			</div>
 
 			<!-- Right Column: Actions -->
+
+			<!-- Activity Timeline -->
 			<div class="space-y-6">
 				<Card.Root>
 					<Card.Header>
@@ -150,6 +152,36 @@
 						<Button class="w-full" onclick={handleSave} disabled={saving}>
 							{saving ? 'Saving...' : 'Save Changes'}
 						</Button>
+					</Card.Content>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Activity Log</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						{#if contact.logs && contact.logs.length > 0}
+							<div class="space-y-4">
+								{#each contact.logs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) as log}
+									<div class="flex flex-col gap-1 border-b pb-3 last:border-0 last:pb-0">
+										<div class="flex items-center justify-between">
+											<span class="text-sm font-semibold">{log.title}</span>
+											<span class="text-xs text-muted-foreground">
+												{new Date(log.createdAt).toLocaleString()}
+											</span>
+										</div>
+										<p class="text-xs text-muted-foreground">{log.description}</p>
+										{#if log.author}
+											<div class="text-[10px] tracking-wider text-muted-foreground uppercase">
+												By {log.author}
+											</div>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						{:else}
+							<p class="text-sm text-muted-foreground">No activity recorded yet.</p>
+						{/if}
 					</Card.Content>
 				</Card.Root>
 			</div>

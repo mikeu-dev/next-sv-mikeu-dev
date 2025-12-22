@@ -26,7 +26,17 @@ export interface Contact {
 	budget?: string;
 	status?: 'new' | 'in-review' | 'replied' | 'closed';
 	notes?: string;
+	logs?: ContactLog[]; // New field for activity logs
 	createdAt?: Date;
+}
+
+export interface ContactLog {
+	id: string;
+	type: 'status_change' | 'note_added' | 'system';
+	title: string;
+	description?: string;
+	createdAt: Date;
+	author?: string;
 }
 
 export interface Tag {
