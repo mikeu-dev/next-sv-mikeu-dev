@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { page } from "$app/state";
-	
+	import { page } from '$app/state';
+
 	type Props = {
 		title?: string;
 		description?: string;
@@ -12,7 +12,7 @@
 	const defaultTitle = 'Mikeu | Web & GIS Developer';
 	const defaultDescription = 'A passionate Web & GIS Developer from Indonesia.';
 	const siteUrl = page.url.origin;
-	const defaultImage = `${siteUrl}/favicon.png`; 
+	const defaultImage = `${siteUrl}/favicon.png`;
 
 	const finalTitle = title ? `${title} | Mikeu` : defaultTitle;
 	const finalDescription = description || defaultDescription;
@@ -37,4 +37,19 @@
 	<meta property="twitter:title" content={finalTitle} />
 	<meta property="twitter:description" content={finalDescription} />
 	<meta property="twitter:image" content={finalImage} />
+
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			"name": "{finalTitle}",
+			"url": "{canonicalUrl}",
+			"description": "{finalDescription}",
+			"image": "{finalImage}",
+			"author": {
+				"@type": "Person",
+				"name": "Mikeu"
+			}
+		}
+	</script>
 </svelte:head>

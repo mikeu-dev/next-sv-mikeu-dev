@@ -92,6 +92,7 @@
 <Button
 	class="shadow-3xl pointer-events-none fixed right-8 bottom-8 z-9999 scale-50 cursor-pointer rounded-full p-3 text-white opacity-0 transition-all dark:bg-teal-400 dark:hover:bg-teal-300"
 	id="scrollToTopBtn"
+	aria-label="Scroll to top"
 	onclick={() => scrollToTop()}
 >
 	<Icon src={BsArrowUpCircleFill} size={24} />
