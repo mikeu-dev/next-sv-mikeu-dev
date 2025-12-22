@@ -105,19 +105,20 @@ export async function POST({ request }: RequestEvent) {
             // Migrate Projects
             try {
                 // Serialize projects - convert tag icon components to icon names
-                const serializeProjects = (projectsList: any[]) => {
+                const serializeProjects = (projectsList: any[], lang: 'en' | 'id') => {
                     return projectsList.map(project => ({
                         id: project.id,
                         slug: project.slug,
                         title: project.title,
                         description: project.description,
-                        content: project.content,
-                        thumbnailUrl: project.thumbnailUrl,
+                        content: project.content || '',
+                        thumbnailUrl: project.thumbnailUrl || '',
                         imagesUrl: project.imagesUrl || [],
-                        repoUrl: project.repoUrl,
-                        demoUrl: project.demoUrl,
+                        repoUrl: project.repoUrl || '',
+                        demoUrl: project.demoUrl || '',
                         published: project.published !== false, // Default true
                         pinned: project.pinned || false,
+                        lang: lang, // Add language identifier
                         tags: project.tags?.map((tag: any) => ({
                             name: tag.name,
                             iconName: tag.icon?.name || 'SiDefault',
@@ -130,15 +131,16 @@ export async function POST({ request }: RequestEvent) {
                 };
 
                 // Migrate EN projects
-                const enProjects = serializeProjects(projects.en);
+                const enProjects = serializeProjects(projects.en, 'en');
                 for (const project of enProjects) {
-                    await db.collection(COLLECTIONS.PROJECTS).doc(`en-${project.id}`).set(project);
+                    // Use project ID directly, add lang field instead
+                    await db.collection(COLLECTIONS.PROJECTS).doc(project.id + '-en').set(project);
                 }
 
-                // Migrate ID projects
-                const idProjects = serializeProjects(projects.id);
+                // Migrate ID projects  
+                const idProjects = serializeProjects(projects.id, 'id');
                 for (const project of idProjects) {
-                    await db.collection(COLLECTIONS.PROJECTS).doc(`id-${project.id}`).set(project);
+                    await db.collection(COLLECTIONS.PROJECTS).doc(project.id + '-id').set(project);
                 }
 
                 results.push({

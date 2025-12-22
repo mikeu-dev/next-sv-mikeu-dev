@@ -11,8 +11,9 @@ export interface Project {
 	repoUrl?: string;
 	demoUrl?: string;
 	published?: boolean;
-	tags?: Tag[];
+	tags?: Tag[] | SerializedTag[]; // Support both formats
 	pinned?: boolean;
+	lang?: 'en' | 'id'; // Language identifier
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -43,6 +44,14 @@ export interface ContactLog {
 export interface Tag {
 	name: string;
 	icon: IconType;
+	color: string;
+	url: string;
+}
+
+// Serialized version for Firestore (icon as string name)
+export interface SerializedTag {
+	name: string;
+	iconName: string;
 	color: string;
 	url: string;
 }

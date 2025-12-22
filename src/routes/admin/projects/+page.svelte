@@ -6,6 +6,7 @@
 
 	let projects = $state<Project[]>([]);
 	let loading = $state(true);
+	let lang = $state<'en' | 'id' | 'all'>('all');
 
 	onMount(async () => {
 		await loadProjects();
@@ -13,7 +14,8 @@
 
 	async function loadProjects() {
 		try {
-			const response = await fetch('/api/projects');
+			const url = lang === 'all' ? '/api/projects' : `/api/projects?lang=${lang}`;
+			const response = await fetch(url);
 			if (!response.ok) throw new Error('Failed to load projects');
 			projects = await response.json();
 		} catch (error: any) {
@@ -21,6 +23,11 @@
 		} finally {
 			loading = false;
 		}
+	}
+
+	function switchLang(newLang: 'en' | 'id' | 'all') {
+		lang = newLang;
+		loadProjects();
 	}
 
 	async function deleteProject(id: string) {
@@ -47,12 +54,38 @@
 			<h1 class="text-3xl font-bold">Projects</h1>
 			<p class="text-muted-foreground">Manage your portfolio projects</p>
 		</div>
-		<button
-			onclick={() => goto('/admin/projects/create')}
-			class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-		>
-			+ New Project
-		</button>
+		<div class="flex gap-2">
+			<button
+				onclick={() => switchLang('all')}
+				class="rounded-lg px-4 py-2 {lang === 'all'
+					? 'bg-blue-600 text-white'
+					: 'border border-gray-300 dark:border-gray-700'}"
+			>
+				All
+			</button>
+			<button
+				onclick={() => switchLang('en')}
+				class="rounded-lg px-4 py-2 {lang === 'en'
+					? 'bg-blue-600 text-white'
+					: 'border border-gray-300 dark:border-gray-700'}"
+			>
+				English
+			</button>
+			<button
+				onclick={() => switchLang('id')}
+				class="rounded-lg px-4 py-2 {lang === 'id'
+					? 'bg-blue-600 text-white'
+					: 'border border-gray-300 dark:border-gray-700'}"
+			>
+				Indonesia
+			</button>
+			<button
+				onclick={() => goto('/admin/projects/create')}
+				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+			>
+				+ New Project
+			</button>
+		</div>
 	</div>
 
 	{#if loading}
