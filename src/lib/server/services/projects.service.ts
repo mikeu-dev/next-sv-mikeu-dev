@@ -48,4 +48,8 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
       updatedAt: new Date(),
     });
   }
+
+  async getProjectBySlug(slug: string): Promise<Project | null> {
+    return this.repository.findBySlug(slug);
+  }
 }

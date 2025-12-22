@@ -1,7 +1,20 @@
 <script lang="ts">
-	import { socialLinks } from '@/lib/data/socials';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import * as m from '@/lib/paraglide/messages';
+	import { Github, Instagram, Linkedin, Mail } from '@lucide/svelte';
+
+	let { socials } = $props();
+
+	const iconMap: Record<string, any> = {
+		Github: Github,
+		Instagram: Instagram,
+		LinkedIn: Linkedin,
+		Mail: Mail
+	};
+
+	function getIcon(name: string) {
+		return iconMap[name] || Mail;
+	}
 </script>
 
 <footer
@@ -10,7 +23,7 @@
 	<div
 		class="mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-2 md:flex-row md:justify-between md:gap-4"
 	>
-		<p class="text-sm text-muted-foreground text-center md:text-left">
+		<p class="text-center text-sm text-muted-foreground md:text-left">
 			&copy; {m.footer_copyright({
 				year: new Date().getFullYear(),
 				name: 'Mikeu Dev'
@@ -18,7 +31,8 @@
 		</p>
 
 		<div class="flex flex-wrap items-center justify-center gap-4">
-			{#each socialLinks as link}
+			{#each socials as link}
+				{@const Icon = getIcon(link.iconName)}
 				<Tooltip.Provider>
 					<Tooltip.Root>
 						<Tooltip.Trigger>
@@ -30,7 +44,7 @@
 								class="flex cursor-pointer items-center justify-center rounded-full transition-all hover:scale-110"
 								style={`background-color: ${link.color}1A; color: ${link.color}; width: 2rem; height: 2rem;`}
 							>
-								<svelte:component this={link.icon} class="size-4" />
+								<Icon class="size-4" />
 							</a>
 						</Tooltip.Trigger>
 
@@ -43,4 +57,3 @@
 		</div>
 	</div>
 </footer>
-

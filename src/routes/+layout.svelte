@@ -18,6 +18,7 @@
 	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
 
 	let { data, children } = $props();
+	const { socials } = data;
 
 	let fallingConfetti = $state(false);
 	let scrollBtn: HTMLButtonElement;
@@ -79,7 +80,7 @@
 	<main class="container mx-auto flex-1 px-4 py-8">
 		{@render children?.()}
 	</main>
-	<Footer />
+	<Footer {socials} />
 </div>
 
 <!-- 🌐 Hidden locale links -->
