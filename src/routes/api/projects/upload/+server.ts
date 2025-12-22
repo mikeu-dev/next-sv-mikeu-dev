@@ -139,3 +139,5 @@ function parseMultipartFile(event: RequestEvent): Promise<ParsedFile | null> {
         }
     });
 }
+
+export const prerender = false;

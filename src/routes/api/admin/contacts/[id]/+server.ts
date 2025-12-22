@@ -42,3 +42,5 @@ export const GET: RequestHandler = async ({ params, locals }) => {
         return json({ message: 'Internal Server Error' }, { status: 500 });
     }
 };
+
+export const prerender = false;

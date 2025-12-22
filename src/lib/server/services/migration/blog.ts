@@ -3,7 +3,7 @@ import { db } from '$lib/server/firebase/firebase.server';
 import { COLLECTIONS } from '$lib/server/firebase/collections';
 
 // We need to use import.meta.glob to get the files
-const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', { as: 'raw' });
+const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', { query: '?raw', import: 'default' });
 
 export async function migrateBlogPosts() {
     const results = [];

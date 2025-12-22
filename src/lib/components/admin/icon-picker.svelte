@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as SimpleIcons from 'simple-icons';
 
-	let { value = $bindable(''), color = '#000000' } = $props();
+	let { value = $bindable(''), color = '#000000', id = '' } = $props();
 
 	let searchQuery = $state('');
 	let isOpen = $state(false);
@@ -64,6 +64,7 @@
 	<!-- Selected Icon Display -->
 	<button
 		type="button"
+		{id}
 		onclick={(e) => {
 			e.stopPropagation();
 			isOpen = !isOpen;

@@ -58,3 +58,5 @@ export async function POST({ request, locals }: RequestEvent) {
     return json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export const prerender = false;

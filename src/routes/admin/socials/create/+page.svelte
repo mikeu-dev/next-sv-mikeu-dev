@@ -93,15 +93,15 @@
 
 			<!-- Icon Picker -->
 			<div class="mb-4">
-				<label class="mb-2 block text-sm font-medium">
+				<label for="icon-picker" class="mb-2 block text-sm font-medium">
 					Icon <span class="text-red-500">*</span>
 				</label>
-				<IconPicker bind:value={iconName} {color} />
+				<IconPicker id="icon-picker" bind:value={iconName} {color} />
 			</div>
 
 			<!-- Color Picker -->
 			<div class="mb-4">
-				<label class="mb-2 block text-sm font-medium">
+				<label for="color-picker" class="mb-2 block text-sm font-medium">
 					Color <span class="text-red-500">*</span>
 				</label>
 				<div class="flex gap-2">
@@ -111,6 +111,7 @@
 						class="h-10 w-20 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700"
 					/>
 					<input
+						id="color-picker"
 						type="text"
 						bind:value={color}
 						required

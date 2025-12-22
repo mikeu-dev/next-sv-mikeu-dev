@@ -43,5 +43,19 @@ export default defineConfig({
 				}
 			}
 		]
+	},
+	build: {
+		chunkSizeWarningLimit: 6000,
+		rollupOptions: {
+			output: {
+				manualChunks: (id) => {
+					if (id.includes('node_modules')) {
+						if (id.includes('@lottiefiles/dotlottie-svelte') || id.includes('lottie-web')) {
+							return 'lottie';
+						}
+					}
+				}
+			}
+		}
 	}
 });

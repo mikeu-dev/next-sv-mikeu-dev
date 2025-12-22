@@ -53,3 +53,5 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
         return json({ message: 'Internal Server Error' }, { status: 500 });
     }
 };
+
+export const prerender = false;

@@ -280,8 +280,11 @@
 
 		<!-- Content (Optional) -->
 		<div>
-			<label class="mb-2 block text-sm font-medium"> Content (Optional Markdown) </label>
+			<label for="content" class="mb-2 block text-sm font-medium">
+				Content (Optional Markdown)
+			</label>
 			<MarkdownEditor
+				id="content"
 				bind:value={content}
 				placeholder="# Project Details
 

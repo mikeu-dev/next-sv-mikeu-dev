@@ -65,3 +65,5 @@ export async function DELETE({ url }: RequestEvent) {
         return json({ error: error.message }, { status: 500 });
     }
 }
+
+export const prerender = false;

@@ -1,6 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { projects as fallbackProjects } from '$lib/data/projects';
 
+export const prerender = false;
+
 export const load: PageServerLoad = async ({ fetch }) => {
 	try {
 		const response = await fetch('/api/projects');

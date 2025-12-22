@@ -8,7 +8,7 @@
 
 	let category = $state(data.category.category);
 	let description = $state(data.category.description);
-	let items = $state(
+	let items = $state<{ name: string; iconName: string; color: string; url: string }[]>(
 		data.category.items.map((item: any) => ({
 			name: item.name,
 			iconName: item.iconName,
@@ -149,10 +149,11 @@
 						<div class="grid gap-4 md:grid-cols-2">
 							<!-- Name -->
 							<div>
-								<label class="mb-2 block text-sm font-medium">
+								<label for="name-{index}" class="mb-2 block text-sm font-medium">
 									Name <span class="text-red-500">*</span>
 								</label>
 								<input
+									id="name-{index}"
 									type="text"
 									bind:value={item.name}
 									required
@@ -163,10 +164,11 @@
 
 							<!-- URL -->
 							<div>
-								<label class="mb-2 block text-sm font-medium">
+								<label for="url-{index}" class="mb-2 block text-sm font-medium">
 									URL <span class="text-red-500">*</span>
 								</label>
 								<input
+									id="url-{index}"
 									type="url"
 									bind:value={item.url}
 									required
@@ -177,15 +179,19 @@
 
 							<!-- Icon Picker -->
 							<div>
-								<label class="mb-2 block text-sm font-medium">
+								<label for="icon-picker-{index}" class="mb-2 block text-sm font-medium">
 									Icon <span class="text-red-500">*</span>
 								</label>
-								<IconPicker bind:value={item.iconName} color={item.color} />
+								<IconPicker
+									id="icon-picker-{index}"
+									bind:value={item.iconName}
+									color={item.color}
+								/>
 							</div>
 
 							<!-- Color Picker -->
 							<div>
-								<label class="mb-2 block text-sm font-medium">
+								<label for="color-picker-{index}" class="mb-2 block text-sm font-medium">
 									Color <span class="text-red-500">*</span>
 								</label>
 								<div class="flex gap-2">
@@ -195,6 +201,7 @@
 										class="h-10 w-20 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700"
 									/>
 									<input
+										id="color-picker-{index}"
 										type="text"
 										bind:value={item.color}
 										required

@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let { value = $bindable(''), placeholder = 'Write your content...' } = $props();
+	let { value = $bindable(''), placeholder = 'Write your content...', id = '' } = $props();
 
-	let textarea: HTMLTextAreaElement;
+	let textarea = $state<HTMLTextAreaElement>();
 	let showPreview = $state(false);
 
 	function insertMarkdown(before: string, after: string = '') {
+		if (!textarea) return;
+
 		const start = textarea.selectionStart;
 		const end = textarea.selectionEnd;
 		const selectedText = value.substring(start, end);
@@ -17,9 +19,11 @@
 
 		// Set cursor position after insertion
 		setTimeout(() => {
-			textarea.focus();
-			const newCursorPos = start + before.length + selectedText.length;
-			textarea.setSelectionRange(newCursorPos, newCursorPos);
+			textarea?.focus();
+			if (textarea) {
+				const newCursorPos = start + before.length + selectedText.length;
+				textarea.setSelectionRange(newCursorPos, newCursorPos);
+			}
 		}, 0);
 	}
 
@@ -191,6 +195,7 @@
 	<div class="relative">
 		{#if !showPreview}
 			<textarea
+				{id}
 				bind:this={textarea}
 				bind:value
 				{placeholder}

@@ -458,3 +458,5 @@ export async function POST({ request }: RequestEvent) {
         return json({ error: error.message }, { status: 500 });
     }
 }
+
+export const prerender = false;
