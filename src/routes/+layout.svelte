@@ -4,8 +4,6 @@
 	import { onMount } from 'svelte';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
-	import { auth } from '$lib/firebase/firebase.client';
-	import { onAuthStateChanged } from 'firebase/auth';
 	import Navbar from '@/lib/components/guest/navbar/navbar.svelte';
 	import Footer from '@/lib/components/guest/footer/footer.svelte';
 	import SEO from '@/lib/components/seo/seo.svelte';
@@ -18,21 +16,20 @@
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 	import { Icon } from 'svelte-icons-pack';
 	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
-	
+
 	let { data, children } = $props();
-	
-	let user;
+
 	let fallingConfetti = $state(false);
 	let scrollBtn: HTMLButtonElement;
-	
+
 	function scrollToTop() {
 		gsap.to(window, { duration: 1, scrollTo: 0 });
 	}
-	
+
 	function handleScroll() {
 		const show = window.scrollY > 300;
 		gsap.registerPlugin(ScrollToPlugin);
-		
+
 		// Animasi smooth: opacity + scale
 		gsap.to(scrollBtn, {
 			duration: 0.4,
@@ -47,11 +44,6 @@
 		scrollBtn = document.getElementById('scrollToTopBtn') as HTMLButtonElement;
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
-	});
-
-	onMount(() => {
-		const unsubscribe = onAuthStateChanged(auth, (newUser) => (user = newUser));
-		return unsubscribe;
 	});
 
 	afterNavigate(() => {
@@ -98,7 +90,7 @@
 </div>
 
 <Button
-	class="pointer-events-none fixed right-8 bottom-8 z-9999 scale-50 cursor-pointer rounded-full p-3 text-white opacity-0 shadow-3xl transition-all dark:bg-teal-400 dark:hover:bg-teal-300"
+	class="shadow-3xl pointer-events-none fixed right-8 bottom-8 z-9999 scale-50 cursor-pointer rounded-full p-3 text-white opacity-0 transition-all dark:bg-teal-400 dark:hover:bg-teal-300"
 	id="scrollToTopBtn"
 	onclick={() => scrollToTop()}
 >
