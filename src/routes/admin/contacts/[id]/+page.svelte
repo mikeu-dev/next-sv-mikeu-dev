@@ -90,6 +90,15 @@
 	function removeTag(tag: string) {
 		tags = tags.filter((t) => t !== tag);
 	}
+
+	function handleReply() {
+		if (!contact?.email) return;
+		const subject = encodeURIComponent(`Re: Project Inquiry - ${contact.company || contact.name}`);
+		const body = encodeURIComponent(
+			`Hi ${contact.name},\n\nThanks for reaching out regarding your project.\n\nBest regards,`
+		);
+		window.open(`mailto:${contact.email}?subject=${subject}&body=${body}`);
+	}
 </script>
 
 <div class="space-y-6">
@@ -120,7 +129,17 @@
 							</div>
 							<div>
 								<Label>Email</Label>
-								<div class="text-lg font-medium">{contact.email}</div>
+								<div class="flex items-center gap-2">
+									<div class="text-lg font-medium">{contact.email}</div>
+									<Button
+										variant="secondary"
+										size="sm"
+										class="h-6 px-2 text-xs"
+										onclick={handleReply}
+									>
+										Reply
+									</Button>
+								</div>
 							</div>
 						</div>
 						<div class="grid grid-cols-2 gap-4">
