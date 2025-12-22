@@ -6,16 +6,20 @@
 	let title_en = $state('');
 	let description_id = $state('');
 	let description_en = $state('');
+	let content = $state('');
 	let repoUrl = $state('');
 	let demoUrl = $state('');
 	let published = $state(false);
+	let pinned = $state(false);
 	let thumbnailFile: File | null = $state(null);
 	let thumbnailPreview = $state('');
+	let imageFiles: File[] = $state([]);
+	let imagePreviews: string[] = $state([]);
 	let uploading = $state(false);
 	let saving = $state(false);
 	let activeTab = $state<'id' | 'en'>('id');
 
-	function handleFileChange(e: Event) {
+	function handleThumbnailChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		const file = target.files?.[0];
 		if (file) {
@@ -28,11 +32,29 @@
 		}
 	}
 
-	async function uploadThumbnail(): Promise<string | null> {
-		if (!thumbnailFile) return null;
+	function handleImagesChange(e: Event) {
+		const target = e.target as HTMLInputElement;
+		const files = Array.from(target.files || []);
+		if (files.length > 0) {
+			imageFiles = [...imageFiles, ...files];
+			files.forEach((file) => {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					imagePreviews = [...imagePreviews, e.target?.result as string];
+				};
+				reader.readAsDataURL(file);
+			});
+		}
+	}
 
+	function removeImage(index: number) {
+		imageFiles = imageFiles.filter((_, i) => i !== index);
+		imagePreviews = imagePreviews.filter((_, i) => i !== index);
+	}
+
+	async function uploadFile(file: File): Promise<string | null> {
 		const formData = new FormData();
-		formData.append('file', thumbnailFile);
+		formData.append('file', file);
 
 		const response = await fetch('/api/projects/upload', {
 			method: 'POST',
@@ -54,12 +76,20 @@
 
 		try {
 			// Upload thumbnail first if exists
+			uploading = true;
 			let thumbnailUrl = '';
 			if (thumbnailFile) {
-				uploading = true;
-				thumbnailUrl = (await uploadThumbnail()) || '';
-				uploading = false;
+				thumbnailUrl = (await uploadFile(thumbnailFile)) || '';
 			}
+
+			// Upload multiple images if exist
+			let imagesUrl: string[] = [];
+			if (imageFiles.length > 0) {
+				const uploadPromises = imageFiles.map((file) => uploadFile(file));
+				const results = await Promise.all(uploadPromises);
+				imagesUrl = results.filter((url): url is string => url !== null);
+			}
+			uploading = false;
 
 			// Create slug from English title
 			const slug = title_en
@@ -76,11 +106,14 @@
 					title_en,
 					description_id,
 					description_en,
+					content: content || undefined,
 					slug,
-					thumbnailUrl,
-					repoUrl,
-					demoUrl,
-					published
+					thumbnailUrl: thumbnailUrl || undefined,
+					imagesUrl: imagesUrl.length > 0 ? imagesUrl : undefined,
+					repoUrl: repoUrl || undefined,
+					demoUrl: demoUrl || undefined,
+					published,
+					pinned
 				})
 			});
 
@@ -201,6 +234,25 @@
 			</div>
 		{/if}
 
+		<!-- Content (Optional) -->
+		<div>
+			<label for="content" class="mb-2 block text-sm font-medium">
+				Content (Optional Markdown)
+			</label>
+			<textarea
+				id="content"
+				bind:value={content}
+				rows="6"
+				class="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+				placeholder="# Project Details
+
+Write detailed content in Markdown format..."
+			></textarea>
+			<p class="mt-1 text-xs text-muted-foreground">
+				Optional: Add detailed project content in Markdown format
+			</p>
+		</div>
+
 		<!-- Thumbnail Upload -->
 		<div>
 			<label for="thumbnail" class="mb-2 block text-sm font-medium">Thumbnail Image</label>
@@ -208,7 +260,7 @@
 				id="thumbnail"
 				type="file"
 				accept="image/jpeg,image/png,image/gif,image/webp"
-				onchange={handleFileChange}
+				onchange={handleThumbnailChange}
 				class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
 			/>
 			{#if thumbnailPreview}
@@ -218,6 +270,53 @@
 						alt="Thumbnail preview"
 						class="h-48 w-auto rounded-lg object-cover"
 					/>
+				</div>
+			{/if}
+		</div>
+
+		<!-- Multiple Images Upload -->
+		<div>
+			<label for="images" class="mb-2 block text-sm font-medium">
+				Additional Images (Optional)
+			</label>
+			<input
+				id="images"
+				type="file"
+				accept="image/jpeg,image/png,image/gif,image/webp"
+				multiple
+				onchange={handleImagesChange}
+				class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+			/>
+			{#if imagePreviews.length > 0}
+				<div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
+					{#each imagePreviews as preview, index (index)}
+						<div class="relative">
+							<img
+								src={preview}
+								alt="Image preview {index + 1}"
+								class="h-32 w-full rounded-lg object-cover"
+							/>
+							<button
+								type="button"
+								onclick={() => removeImage(index)}
+								aria-label="Remove image {index + 1}"
+								class="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-4 w-4"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+							</button>
+						</div>
+					{/each}
 				</div>
 			{/if}
 		</div>
@@ -246,10 +345,16 @@
 			/>
 		</div>
 
-		<!-- Published -->
-		<div class="flex items-center gap-2">
-			<input id="published" type="checkbox" bind:checked={published} class="h-4 w-4" />
-			<label for="published" class="text-sm font-medium">Publish immediately</label>
+		<!-- Published & Pinned -->
+		<div class="flex flex-col gap-3">
+			<div class="flex items-center gap-2">
+				<input id="published" type="checkbox" bind:checked={published} class="h-4 w-4" />
+				<label for="published" class="text-sm font-medium">Publish immediately</label>
+			</div>
+			<div class="flex items-center gap-2">
+				<input id="pinned" type="checkbox" bind:checked={pinned} class="h-4 w-4" />
+				<label for="pinned" class="text-sm font-medium"> Pin to top (featured project) </label>
+			</div>
 		</div>
 
 		<!-- Submit Button -->
@@ -260,7 +365,7 @@
 				class="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
 			>
 				{#if uploading}
-					Uploading image...
+					Uploading images...
 				{:else if saving}
 					Creating project...
 				{:else}
