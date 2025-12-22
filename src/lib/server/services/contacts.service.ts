@@ -54,6 +54,37 @@ export class ContactsService {
 			});
 		}
 
+		if (data.tags) {
+			const oldTags = current.tags || [];
+			const newTags = data.tags;
+
+			// Check for added tags
+			const addedTags = newTags.filter(t => !oldTags.includes(t));
+			addedTags.forEach(tag => {
+				logs.push({
+					id: crypto.randomUUID(),
+					type: 'tag_added',
+					title: 'Tag Added',
+					description: `Tag '${tag}' was added`,
+					createdAt: new Date(),
+					author: actor
+				});
+			});
+
+			// Check for removed tags
+			const removedTags = oldTags.filter(t => !newTags.includes(t));
+			removedTags.forEach(tag => {
+				logs.push({
+					id: crypto.randomUUID(),
+					type: 'tag_removed',
+					title: 'Tag Removed',
+					description: `Tag '${tag}' was removed`,
+					createdAt: new Date(),
+					author: actor
+				});
+			});
+		}
+
 		return this.contactsRepository.update(id, { ...data, logs });
 	}
 }

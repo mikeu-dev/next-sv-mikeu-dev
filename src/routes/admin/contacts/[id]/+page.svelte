@@ -16,8 +16,11 @@
 	let saving = false;
 
 	// Local state for form
+	// Local state for form
 	let status: string = 'new';
 	let notes: string = '';
+	let tags: string[] = [];
+	let newTag: string = '';
 
 	const id = $page.params.id;
 
@@ -30,6 +33,7 @@
 				if (contact) {
 					status = contact.status || 'new';
 					notes = contact.notes || '';
+					tags = contact.tags || [];
 				}
 			} else {
 				toast.error('Failed to load contact');
@@ -48,7 +52,7 @@
 			const res = await fetch('/api/admin/contacts', {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id, status, notes })
+				body: JSON.stringify({ id, status, notes, tags })
 			});
 
 			if (res.ok) {
@@ -56,6 +60,7 @@
 				if (contact) {
 					contact.status = status as any;
 					contact.notes = notes;
+					contact.tags = tags;
 				}
 			} else {
 				toast.error('Failed to update contact');
@@ -74,6 +79,17 @@
 		{ value: 'replied', label: 'Replied' },
 		{ value: 'closed', label: 'Closed' }
 	];
+
+	function addTag() {
+		if (newTag.trim() && !tags.includes(newTag.trim())) {
+			tags = [...tags, newTag.trim()];
+			newTag = '';
+		}
+	}
+
+	function removeTag(tag: string) {
+		tags = tags.filter((t) => t !== tag);
+	}
 </script>
 
 <div class="space-y-6">
@@ -145,6 +161,36 @@
 								{/each}
 							</select>
 						</div>
+
+						<div class="space-y-2">
+							<Label>Tags</Label>
+							<div class="flex flex-wrap gap-2">
+								{#each tags as tag}
+									<span
+										class="inline-flex items-center gap-1 rounded-full border bg-muted px-2.5 py-0.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted/80"
+									>
+										{tag}
+										<button
+											class="ml-1 text-muted-foreground hover:text-foreground"
+											onclick={() => removeTag(tag)}>&times;</button
+										>
+									</span>
+								{/each}
+							</div>
+							<div class="flex gap-2">
+								<Input
+									type="text"
+									placeholder="Add tag..."
+									bind:value={newTag}
+									onkeydown={(e) => e.key === 'Enter' && addTag()}
+								/>
+								<Button variant="outline" size="icon" onclick={addTag}>
+									<span class="sr-only">Add</span>
+									+
+								</Button>
+							</div>
+						</div>
+
 						<div class="space-y-2">
 							<Label>Internal Notes</Label>
 							<Textarea bind:value={notes} placeholder="Add notes here..." rows={6} />

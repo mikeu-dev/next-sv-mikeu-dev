@@ -27,12 +27,13 @@ export interface Contact {
 	status?: 'new' | 'in-review' | 'replied' | 'closed';
 	notes?: string;
 	logs?: ContactLog[]; // New field for activity logs
+	tags?: string[]; // New field for tags
 	createdAt?: Date;
 }
 
 export interface ContactLog {
 	id: string;
-	type: 'status_change' | 'note_added' | 'system';
+	type: 'status_change' | 'note_added' | 'tag_added' | 'tag_removed' | 'system';
 	title: string;
 	description?: string;
 	createdAt: Date;
