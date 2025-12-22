@@ -6,11 +6,18 @@
 	import { Icon } from 'svelte-icons-pack';
 	import { buttonVariants } from '@/lib/components/ui/button';
 	import { getLocale } from '@/lib/paraglide/runtime';
+	import { getLocalizedProject, type LocalizedProject } from '$lib/utils/project-mapper';
 
 	let { data }: { data: PageData } = $props();
 	const { projects }: { projects: Record<string, Project[]> } = data;
-	let initialLocale = $state(getLocale());
-	let projectsData = $derived(projects[initialLocale] || projects['en']);
+
+	let locale = $derived(getLocale());
+
+	// We already have localized arrays coming from the server, but they are still 'Project' type which has the multilingual fields
+	// We want to transform them to 'LocalizedProject' for better type safety in the UI
+	let rawProjects = $derived(projects[locale] || projects['en']);
+
+	let projectsData = $derived(rawProjects.map((p) => getLocalizedProject(p, locale)));
 
 	let allTags = $derived.by(() => {
 		const uniqueTags = Array.from(
@@ -46,7 +53,7 @@
 					<Tooltip.Root>
 						<Tooltip.Trigger
 							onclick={() => filterProjects(tag.name)}
-							class={`${buttonVariants({ variant: selectedTag === tag.name ? 'default' : 'outline'})}
+							class={`${buttonVariants({ variant: selectedTag === tag.name ? 'default' : 'outline' })}
 									cursor-pointer rounded-full border-0
 									${tag.color === '#171d26' ? 'dark:text-white!' : ''}
 							`}

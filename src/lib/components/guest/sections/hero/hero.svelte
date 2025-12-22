@@ -3,13 +3,13 @@
 	import Matter, { type IChamferableBodyDefinition } from 'matter-js';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import * as m from '@/lib/paraglide/messages';
 	import { getLocale } from '@/lib/paraglide/runtime';
 
 	let { skills }: { skills: { en: string[]; id: string[] } } = $props();
 	let locale = $state<string>(getLocale());
-	let skillsData = $derived(skills[locale] || skills['en']);
+	let skillsData = $derived(skills[locale as keyof typeof skills] || skills['en']);
 
 	const { Engine, Runner, Bodies, Composite } = Matter;
 

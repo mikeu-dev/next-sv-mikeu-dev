@@ -50,7 +50,7 @@ export async function migrateBlogPosts() {
                 title: frontmatter.title || 'Untitled',
                 description: frontmatter.description || '',
                 date: frontmatter.date || new Date().toISOString().split('T')[0],
-                published: frontmatter.published === 'true' || frontmatter.published === true,
+                published: String(frontmatter.published) === 'true',
                 content,
                 updatedAt: new Date()
             };

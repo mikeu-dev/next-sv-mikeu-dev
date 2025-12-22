@@ -58,7 +58,7 @@
 
 		try {
 			// Remove the item from the array
-			const updatedItems = data.allItems.filter((_, i) => i !== data.index);
+			const updatedItems = data.allItems.filter((_: any, i: number) => i !== data.index);
 
 			const response = await fetch(`/api/journey/${data.lang}`, {
 				method: 'PUT',

@@ -5,11 +5,17 @@
 	import { useWorkSection } from './work.svelte.js';
 	import { getLocale } from '@/lib/paraglide/runtime.js';
 	import * as m from '@/lib/paraglide/messages.js';
+	import { getLocalizedProject } from '$lib/utils/project-mapper';
 
 	let { projects }: { projects: Record<string, Project[]> } = $props();
 	let initialLocale = $state(getLocale());
 	let projectsData = $derived(projects[initialLocale] || projects['en']);
 	let projectByPinned = $derived(projectsData.filter((project) => project.pinned));
+
+	// Transform for display
+	let localizedProjects = $derived(
+		projectByPinned.map((p) => getLocalizedProject(p, initialLocale))
+	);
 
 	const { workSection, projectCardElements, tooltipOpen, virtualAnchor, tooltipText } =
 		useWorkSection();
@@ -30,7 +36,7 @@
 			</div>
 
 			<div class="projects-grid mb-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-				{#each projectByPinned as project, i (project.id)}
+				{#each localizedProjects as project, i (project.id)}
 					<div bind:this={$projectCardElements[i]} class="will-change-transform">
 						<ProjectCard {project} />
 					</div>

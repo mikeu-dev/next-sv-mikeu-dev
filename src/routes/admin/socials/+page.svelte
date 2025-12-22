@@ -4,7 +4,7 @@
 	import { toast } from 'svelte-sonner';
 	import * as SimpleIcons from 'simple-icons';
 
-	let socials = $state({ links: [] });
+	let socials = $state<{ links: any[] }>({ links: [] });
 	let loading = $state(true);
 
 	onMount(async () => {

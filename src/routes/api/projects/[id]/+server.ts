@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { Project } from '$lib/types';
 import { ProjectsService } from '../../../../lib/server/services/projects.service';
 import { ProjectsRepository } from '../../../../lib/server/repositories/projects.repository';
 import { HttpException } from '../../../../lib/server/exceptions/http.exception';
@@ -52,7 +53,7 @@ export async function PUT({ params, request, locals }: RequestEvent) {
         const validatedData = projectUpdateSchema.parse({ ...data, id: params.id });
         const { id, ...updateData } = validatedData;
 
-        const project = await projectsService.update(params.id, updateData);
+        const project = await projectsService.update(params.id, updateData as unknown as Partial<Omit<Project, 'id' | 'createdAt' | 'updatedAt'>>);
         if (!project) {
             return json({ message: 'Project not found' }, { status: 404 });
         }

@@ -6,9 +6,12 @@
 	import * as m from '@/lib/paraglide/messages.js';
 	import SEO from '@/lib/components/seo/seo.svelte';
 	import type { Project } from '$lib/types';
+	import { getLocalizedProject } from '$lib/utils/project-mapper';
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	let { data } = $props();
-	const { project }: { project: Project } = data;
+	// Transform the raw project data into the localized version immediately
+	let project = $derived(getLocalizedProject(data.project, getLocale()));
 </script>
 
 <SEO title={project.title} description={project.description} image={project.thumbnailUrl} />

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import { ArrowRight, ExternalLink, Github } from '@lucide/svelte';
-	import type { Project, Tag } from '$lib/types';
+	import type { LocalizedProject } from '$lib/utils/project-mapper'; // Use the localized interface
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '@/lib/paraglide/messages';
 	import { getLocale } from '@/lib/paraglide/runtime';
 
-	let { project }: { project: Project } = $props();
-	let locale = $derived(getLocale());
+	let { project }: { project: LocalizedProject } = $props(); // Expect localized project
+	// Localization logic is now handled by the parent/mapper
 
 	let cardElement: HTMLDivElement;
 
@@ -38,7 +38,7 @@
 		<div class="overflow-hidden">
 			<img
 				src={project.thumbnailUrl}
-				alt={locale === 'en' ? project.title_en : project.title_id}
+				alt={project.title}
 				class="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
 			/>
 		</div>
@@ -48,7 +48,7 @@
 		<h3 class="font-poppins mb-2 text-xl font-bold">
 			<a href={`/projects/${project.slug}`} class="text-foreground group-hover:text-primary">
 				<span class="absolute inset-0 z-10" aria-hidden="true"></span>
-				{locale === 'en' ? project.title_en : project.title_id}
+				{project.title}
 			</a>
 		</h3>
 
@@ -56,7 +56,7 @@
 		<p
 			class="relative mb-4 max-h-16 overflow-hidden text-muted-foreground transition-all duration-300 group-hover:max-h-96"
 		>
-			{locale === 'en' ? project.description_en : project.description_id}
+			{project.description}
 			<!-- gradient overlay untuk efek fade -->
 			<span
 				class="absolute bottom-0 left-0 h-6 w-full bg-gradient-to-t from-card to-transparent group-hover:hidden"
@@ -93,9 +93,7 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative z-20 text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="Visit project website for {locale === 'en'
-							? project.title_en
-							: project.title_id}"
+						aria-label="Visit project website for {project.title}"
 						onclick={(e) => e.stopPropagation()}
 					>
 						<ExternalLink class="size-5" />
@@ -107,9 +105,7 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative z-20 text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="View source code on GitHub for {locale === 'en'
-							? project.title_en
-							: project.title_id}"
+						aria-label="View source code on GitHub for {project.title}"
 						onclick={(e) => e.stopPropagation()}
 					>
 						<Github class="size-5" />
