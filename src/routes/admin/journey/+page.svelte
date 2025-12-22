@@ -38,6 +38,12 @@
 		</div>
 		<div class="flex gap-2">
 			<button
+				onclick={() => goto(`/admin/journey/create?lang=${lang}`)}
+				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+			>
+				+ Add Journey
+			</button>
+			<button
 				onclick={() => switchLang('en')}
 				class="rounded-lg px-4 py-2 {lang === 'en'
 					? 'bg-blue-600 text-white'
