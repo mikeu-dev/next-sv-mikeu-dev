@@ -8,6 +8,7 @@ import { techStack } from '$lib/data/techstack';
 import { journey } from '$lib/data/journey';
 import { skills } from '$lib/data/skills';
 import { socialLinks } from '$lib/data/socials';
+import { projects } from '$lib/data/projects';
 
 export async function POST({ request }: RequestEvent) {
     try {
@@ -99,6 +100,54 @@ export async function POST({ request }: RequestEvent) {
                 results.push({ collection: 'socials', status: 'success' });
             } catch (error: any) {
                 results.push({ collection: 'socials', status: 'error', message: error.message });
+            }
+
+            // Migrate Projects
+            try {
+                // Serialize projects - convert tag icon components to icon names
+                const serializeProjects = (projectsList: any[]) => {
+                    return projectsList.map(project => ({
+                        id: project.id,
+                        slug: project.slug,
+                        title: project.title,
+                        description: project.description,
+                        content: project.content,
+                        thumbnailUrl: project.thumbnailUrl,
+                        imagesUrl: project.imagesUrl || [],
+                        repoUrl: project.repoUrl,
+                        demoUrl: project.demoUrl,
+                        published: project.published !== false, // Default true
+                        pinned: project.pinned || false,
+                        tags: project.tags?.map((tag: any) => ({
+                            name: tag.name,
+                            iconName: tag.icon?.name || 'SiDefault',
+                            color: tag.color,
+                            url: tag.url
+                        })) || [],
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }));
+                };
+
+                // Migrate EN projects
+                const enProjects = serializeProjects(projects.en);
+                for (const project of enProjects) {
+                    await db.collection(COLLECTIONS.PROJECTS).doc(`en-${project.id}`).set(project);
+                }
+
+                // Migrate ID projects
+                const idProjects = serializeProjects(projects.id);
+                for (const project of idProjects) {
+                    await db.collection(COLLECTIONS.PROJECTS).doc(`id-${project.id}`).set(project);
+                }
+
+                results.push({
+                    collection: 'projects',
+                    status: 'success',
+                    message: `Migrated ${enProjects.length} EN + ${idProjects.length} ID projects`
+                });
+            } catch (error: any) {
+                results.push({ collection: 'projects', status: 'error', message: error.message });
             }
 
             return json({

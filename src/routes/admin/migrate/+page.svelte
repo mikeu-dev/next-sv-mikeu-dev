@@ -58,6 +58,10 @@
 				<span class="text-2xl">🔗</span>
 				<span>Social Links</span>
 			</li>
+			<li class="flex items-center gap-2">
+				<span class="text-2xl">📁</span>
+				<span>Projects (EN & ID)</span>
+			</li>
 		</ul>
 
 		<button
