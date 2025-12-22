@@ -306,7 +306,7 @@
 
 						<div class="flex gap-2">
 							<button
-								onclick={() => goto(`/admin/projects/${project.id}/edit`)}
+								onclick={() => goto(`/admin/projects/${project.id}`)}
 								class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 							>
 								Edit
