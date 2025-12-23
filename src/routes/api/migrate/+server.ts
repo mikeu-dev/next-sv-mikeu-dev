@@ -58,45 +58,56 @@ function readAndParseFile(fileName: string) {
 
 // Helper to recurse and patch icons
 function patchIcons(data: any, iconMap: Map<string, string>): any {
-    if (Array.isArray(data)) {
-        return data.map(item => patchIcons(item, iconMap));
-    } else if (typeof data === 'object' && data !== null) {
-        // Create a new object to avoid mutating specific non-configurable properties if any, 
-        // and to filter out functions.
-        const newData: any = {};
+    // Handle null/undefined
+    if (data === null || data === undefined) return data;
 
-        let patched = false;
-        if (data.name && iconMap.has(data.name)) {
-            const iconName = iconMap.get(data.name);
-            newData.iconName = iconName;
-            newData.icon = iconName; // Set icon as string
-            patched = true;
-        }
-
-        for (const key in data) {
-            const value = data[key];
-
-            // Skip original 'icon' property if we patched it or if it's a function/component
-            if (key === 'icon') {
-                if (patched) continue; // Already handled
-                if (typeof value === 'function' || typeof value === 'object') {
-                    // If it's a component object that we didn't match via name map,
-                    // we should try to save it as null or something safe, NOT the object.
-                    // But effectively we want to delete it if it's a Svelte component.
-                    // Svelte 5 functional components might be functions.
-                    // Legacy components might be objects with $$render etc.
-                    continue;
-                }
-            }
-
-            // aggressive filtering of non-serializable types
-            if (typeof value === 'function') continue;
-
-            newData[key] = patchIcons(value, iconMap);
-        }
-        return newData;
+    // Handle primitives
+    if (typeof data !== 'object') {
+        if (typeof data === 'function') return undefined; // Filter functions
+        return data;
     }
-    return data;
+
+    // Handle Arrays
+    if (Array.isArray(data)) {
+        return data.map(item => patchIcons(item, iconMap)).filter(item => item !== undefined);
+    }
+
+    // Handle Plain Objects
+    // Sanitize: ensure we are creating a fresh plain object
+    const newData: any = {};
+
+    let patched = false;
+    // Check if this object looks like an item with a name we know
+    if ('name' in data && typeof data.name === 'string' && iconMap.has(data.name)) {
+        const iconName = iconMap.get(data.name);
+        newData.iconName = iconName;
+        newData.icon = iconName;
+        patched = true;
+    }
+
+    for (const key in data) {
+        // Skip prototype properties
+        if (!Object.prototype.hasOwnProperty.call(data, key)) continue;
+
+        const value = data[key];
+
+        // Specific handling for 'icon' key
+        if (key === 'icon') {
+            if (patched) continue; // We already set the correct string name
+            if (typeof value === 'function' || (typeof value === 'object' && value !== null)) {
+                // Skip component objects
+                continue;
+            }
+        }
+
+        // Recursive call
+        const patchedValue = patchIcons(value, iconMap);
+        if (patchedValue !== undefined) {
+            newData[key] = patchedValue;
+        }
+    }
+
+    return newData;
 }
 
 
