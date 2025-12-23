@@ -58,56 +58,20 @@ function readAndParseFile(fileName: string) {
 
 // Helper to recurse and patch icons
 function patchIcons(data: any, iconMap: Map<string, string>): any {
-    // Handle null/undefined
-    if (data === null || data === undefined) return data;
-
-    // Handle primitives
-    if (typeof data !== 'object') {
-        if (typeof data === 'function') return undefined; // Filter functions
-        return data;
-    }
-
-    // Handle Arrays
     if (Array.isArray(data)) {
-        return data.map(item => patchIcons(item, iconMap)).filter(item => item !== undefined);
-    }
-
-    // Handle Plain Objects
-    // Sanitize: ensure we are creating a fresh plain object
-    const newData: any = {};
-
-    let patched = false;
-    // Check if this object looks like an item with a name we know
-    if ('name' in data && typeof data.name === 'string' && iconMap.has(data.name)) {
-        const iconName = iconMap.get(data.name);
-        newData.iconName = iconName;
-        newData.icon = iconName;
-        patched = true;
-    }
-
-    for (const key in data) {
-        // Skip prototype properties
-        if (!Object.prototype.hasOwnProperty.call(data, key)) continue;
-
-        const value = data[key];
-
-        // Specific handling for 'icon' key
-        if (key === 'icon') {
-            if (patched) continue; // We already set the correct string name
-            if (typeof value === 'function' || (typeof value === 'object' && value !== null)) {
-                // Skip component objects
-                continue;
-            }
+        return data.map(item => patchIcons(item, iconMap));
+    } else if (typeof data === 'object' && data !== null) {
+        if (data.name && iconMap.has(data.name)) {
+            const iconName = iconMap.get(data.name);
+            data.iconName = iconName;
+            data.icon = iconName;
         }
 
-        // Recursive call
-        const patchedValue = patchIcons(value, iconMap);
-        if (patchedValue !== undefined) {
-            newData[key] = patchedValue;
+        for (const key in data) {
+            patchIcons(data[key], iconMap); // in-place modification is unsafe if we didn't deep copy, but we did via JSON.parse
         }
     }
-
-    return newData;
+    return data;
 }
 
 
@@ -152,10 +116,31 @@ export const POST = async ({ request }: { request: Request }) => {
 
                 // 3. Get the exported data variable
                 const dataKey = Object.keys(module).find(k => k !== 'default'); // assumes named export matches file or is only export
-                const rawData = dataKey ? (module as any)[dataKey] : (module as any).default;
+                let rawData = dataKey ? (module as any)[dataKey] : (module as any).default;
 
-                // 4. Patch data
-                const patchedData = iconMap ? patchIcons(rawData, iconMap) : rawData;
+                // Nuclear option: JSON stringify/parse to force plain object and remove all functions/non-serializables immediately.
+                // We do this BEFORE patching to get a clean slate, BUT this might remove the 'icon' function objects we need to reference?
+                // Wait, if we stringify, 'icon' (function) becomes undefined or ignored.
+                // WE NEED 'icon' to be present (even if we don't save it) to know the structure if potential regex mismatch?
+                // Actually, regex map relies on 'name'. 
+                // So if we stringify, we lose 'icon' property. THIS IS GOOD.
+                // We just need to re-inject 'iconName' based on 'name'.
+
+                // However, we still need to iterate to re-add iconName.
+                // So: 
+                // 1. Regex Map is ready.
+                // 2. data = JSON.parse(JSON.stringify(rawData, (key, value) => {
+                //      if (key === 'icon') return undefined; // explicitly strip icons
+                //      return value;
+                //    }));
+                // 3. Recursive walk on this clean data to set iconName based on name.
+
+                const cleanData = JSON.parse(JSON.stringify(rawData, (key, value) => {
+                    if (key === 'icon') return undefined; // Strip original icon component
+                    return value;
+                }));
+
+                const patchedData = iconMap ? patchIcons(cleanData, iconMap) : cleanData;
 
                 // 5. Upload to Firestore
                 // Structure depends on file. 
@@ -165,11 +150,18 @@ export const POST = async ({ request }: { request: Request }) => {
 
                 if (file.type === 'techstack' || file.type === 'journey' || file.type === 'skills') {
                     // Assume structure { en: ..., id: ... }
-                    if (patchedData.en) await db.collection(file.collection).doc('en').set(patchedData.en);
-                    if (patchedData.id) await db.collection(file.collection).doc('id').set(patchedData.id);
+                    if (patchedData.en) {
+                        const dataToSave = Array.isArray(patchedData.en) ? { items: patchedData.en } : patchedData.en;
+                        await db.collection(file.collection).doc('en').set(dataToSave);
+                    }
+                    if (patchedData.id) {
+                        const dataToSave = Array.isArray(patchedData.id) ? { items: patchedData.id } : patchedData.id;
+                        await db.collection(file.collection).doc('id').set(dataToSave);
+                    }
                 } else if (file.type === 'socials') {
                     // Socials usually list
-                    await db.collection(file.collection).doc('main').set({ items: patchedData });
+                    const dataToSave = Array.isArray(patchedData) ? { items: patchedData } : patchedData;
+                    await db.collection(file.collection).doc('main').set(dataToSave);
                 }
 
                 results.push({ collection: file.collection, status: 'success' });
