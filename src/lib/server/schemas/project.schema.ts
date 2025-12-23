@@ -4,11 +4,11 @@ import { z } from 'zod';
  * Project creation/update validation schema
  */
 export const projectSchema = z.object({
-    title: z
-        .string()
-        .min(1, 'Title is required')
-        .max(200, 'Title must be less than 200 characters')
-        .trim(),
+    title_id: z.string().min(1, 'Judul (ID) wajib diisi').max(200),
+    title_en: z.string().min(1, 'Title (EN) is required').max(200),
+
+    description_id: z.string().min(1, 'Deskripsi (ID) wajib diisi').max(2000),
+    description_en: z.string().min(1, 'Description (EN) is required').max(2000),
 
     slug: z
         .string()
@@ -17,38 +17,24 @@ export const projectSchema = z.object({
         .regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens')
         .trim(),
 
-    description: z
-        .string()
-        .min(10, 'Description must be at least 10 characters')
-        .max(1000, 'Description must be less than 1000 characters')
-        .trim(),
+    content: z.string().optional(),
 
-    content: z.string().min(1, 'Content is required'),
+    thumbnailUrl: z.string().url('Thumbnail must be a valid URL').optional().or(z.literal('')),
 
-    thumbnail: z.string().url('Thumbnail must be a valid URL').optional(),
+    imagesUrl: z.array(z.string().url('Image must be a valid URL')).optional(),
 
-    images: z.array(z.string().url('Image must be a valid URL')).optional(),
+    repoUrl: z.string().url('GitHub URL must be valid').optional().or(z.literal('')),
 
-    tags: z.array(z.string().max(50)).max(20, 'Maximum 20 tags allowed').optional(),
+    demoUrl: z.string().url('Demo URL must be valid').optional().or(z.literal('')),
 
-    technologies: z.array(z.string().max(50)).max(30, 'Maximum 30 technologies allowed').optional(),
+    published: z.boolean().optional().default(false),
 
-    githubUrl: z.string().url('GitHub URL must be valid').optional().or(z.literal('')),
+    pinned: z.boolean().optional().default(false),
 
-    liveUrl: z.string().url('Live URL must be valid').optional().or(z.literal('')),
+    tags: z.array(z.any()).optional(), // Support Tag[] | SerializedTag[]
 
-    featured: z.boolean().optional().default(false),
-
-    published: z.boolean().optional().default(true),
-
-    publishedAt: z.string().datetime().optional(),
-
-    category: z
-        .enum(['web', 'mobile', 'desktop', 'library', 'other'])
-        .optional()
-        .default('web'),
-
-    status: z.enum(['planning', 'in-progress', 'completed', 'archived']).optional().default('completed')
+    updatedAt: z.any().optional(), // Allow passing dates or strings
+    createdAt: z.any().optional(),
 });
 
 export type ProjectInput = z.infer<typeof projectSchema>;
@@ -61,3 +47,4 @@ export const projectUpdateSchema = projectSchema.partial().extend({
 });
 
 export type ProjectUpdateInput = z.infer<typeof projectUpdateSchema>;
+

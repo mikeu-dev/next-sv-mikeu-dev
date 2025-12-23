@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
+	import TagEditor from '$lib/components/admin/tag-editor.svelte';
+	import type { SerializedTag } from '$lib/types';
 
 	let title_id = $state('');
 	let title_en = $state('');
@@ -12,6 +14,7 @@
 	let demoUrl = $state('');
 	let published = $state(false);
 	let pinned = $state(false);
+	let tags = $state<SerializedTag[]>([]);
 	let thumbnailFile: File | null = $state(null);
 	let thumbnailPreview = $state('');
 	let imageFiles: File[] = $state([]);
@@ -114,7 +117,8 @@
 					repoUrl: repoUrl || undefined,
 					demoUrl: demoUrl || undefined,
 					published,
-					pinned
+					pinned,
+					tags
 				})
 			});
 
@@ -247,6 +251,12 @@
 
 Write detailed content in Markdown format..."
 			/>
+		</div>
+
+		<!-- Tags -->
+		<div>
+			<label for="tags" class="mb-2 block text-sm font-medium"> Tags / Tech Stack </label>
+			<TagEditor bind:tags />
 		</div>
 
 		<!-- Thumbnail Upload -->
