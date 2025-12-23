@@ -103,10 +103,15 @@ export const POST = async ({ request }: { request: Request }) => {
                 let module;
                 try {
                     // explicit dynamic import paths for Vite
-                    if (file.name === 'techstack.ts') module = await import('$lib/data/techstack');
-                    if (file.name === 'journey.ts') module = await import('$lib/data/journey');
-                    if (file.name === 'skills.ts') module = await import('$lib/data/skills');
-                    if (file.name === 'socials.ts') module = await import('$lib/data/socials');
+                    // NOTE: These are commented out to prevent Vercel build errors since src/lib/data is gitignored.
+                    // To run migration locally, uncomment these lines and ensure src/lib/data exists.
+                    // if (file.name === 'techstack.ts') module = await import('$lib/data/techstack');
+                    // if (file.name === 'journey.ts') module = await import('$lib/data/journey');
+                    // if (file.name === 'skills.ts') module = await import('$lib/data/skills');
+                    // if (file.name === 'socials.ts') module = await import('$lib/data/socials');
+
+                    // Allow build to pass by throwing if we're not local/imports are missing
+                    throw new Error("Local data files are git-ignored and not available in production builds.");
                 } catch (err) {
                     results.push({ collection: file.collection, status: 'error', message: `Import failed: ${err}` });
                     continue;
