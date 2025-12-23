@@ -6,10 +6,19 @@
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '$lib/paraglide/messages';
+	import { getLocalizedTag } from '$lib/utils/project-mapper';
 
 	let { data }: { data: PageData } = $props();
 	let initialLocale = $state(getLocale());
-	let techstack = $derived(data.techStack[initialLocale] || data.techStack['en']);
+
+	let techstackRaw = $derived(data.techStack[initialLocale] || data.techStack['en']);
+	let techstack = $derived(
+		techstackRaw.map((category: any) => ({
+			...category,
+			items: category.items.map((item: any) => getLocalizedTag(item))
+		}))
+	);
+
 	let myJourney = $derived(data.journey[initialLocale] || data.journey['en']);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;

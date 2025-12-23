@@ -1,5 +1,6 @@
 import type { Project, Tag, SerializedTag } from '$lib/types';
 import * as Icons from 'svelte-icons-pack/fi';
+import * as SiIcons from 'svelte-icons-pack/si';
 import type { IconType } from 'svelte-icons-pack';
 
 // Create a lookup map for icons - expanding this as needed based on what's used in the app
@@ -9,6 +10,11 @@ for (const key in Icons) {
     // @ts-ignore - Dynamic access to icon pack
     iconMap[key] = Icons[key];
 }
+for (const key in SiIcons) {
+    // @ts-ignore - Dynamic access to icon pack
+    // @ts-ignore
+    iconMap[key] = SiIcons[key];
+}
 
 export interface LocalizedProject extends Omit<Project, 'title_en' | 'title_id' | 'description_en' | 'description_id' | 'tags'> {
     title: string;
@@ -16,10 +22,15 @@ export interface LocalizedProject extends Omit<Project, 'title_en' | 'title_id' 
     tags?: Tag[];
 }
 
-export function getLocalizedTag(tag: Tag | SerializedTag): Tag {
-    if ('iconName' in tag) {
-        // It's a SerializedTag
-        const icon = iconMap[tag.iconName] || Icons.FiHash; // Default to hash icon if not found
+export function getLocalizedTag(tag: Tag | SerializedTag | any): Tag {
+    const iconName = tag.iconName || (typeof tag.icon === 'string' ? tag.icon : null);
+
+    if (iconName) {
+        // It's a SerializedTag or a tag with string icon
+        // Check if icon exists in map, if not, try to find it in SiIcons directly if needed (though map should have it)
+        // Adjust for cases where name might be 'SiSvelte' but key is 'siSvelte' or similar if case mismatch? 
+        // Typically svelte-icons-pack keys are e.g. 'SiSvelte'.
+        const icon = iconMap[iconName] || Icons.FiHash;
         return {
             name: tag.name,
             color: tag.color,
@@ -27,7 +38,7 @@ export function getLocalizedTag(tag: Tag | SerializedTag): Tag {
             icon: icon
         };
     }
-    // It's already a Tag (or close enough)
+    // It's already a Tag (or close enough) with component icon
     return tag as Tag;
 }
 

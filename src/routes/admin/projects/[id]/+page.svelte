@@ -3,22 +3,28 @@
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
+	import TagEditor from '$lib/components/admin/tag-editor.svelte';
+	import type { SerializedTag } from '$lib/types';
 
 	let { data }: { data: PageData } = $props();
 
-	let title_id = $state(data.project.title_id || '');
-	let title_en = $state(data.project.title_en || '');
-	let description_id = $state(data.project.description_id || '');
-	let description_en = $state(data.project.description_en || '');
+	// Handle legacy data structure
+	const project = data.project as any;
+
+	let title_id = $state(data.project.title_id || project.title || '');
+	let title_en = $state(data.project.title_en || project.title || '');
+	let description_id = $state(data.project.description_id || project.description || '');
+	let description_en = $state(data.project.description_en || project.description || '');
 	let content = $state(data.project.content || '');
 	let repoUrl = $state(data.project.repoUrl || '');
 	let demoUrl = $state(data.project.demoUrl || '');
 	let published = $state(data.project.published || false);
 	let pinned = $state(data.project.pinned || false);
+	let tags = $state<SerializedTag[]>((data.project.tags as SerializedTag[]) || []);
 	let thumbnailFile: File | null = $state(null);
-	let thumbnailPreview = $state(data.project.thumbnailUrl || '');
+	let thumbnailPreview = $state(data.project.thumbnailUrl || project.thumbnail || '');
 	let imageFiles: File[] = $state([]);
-	let imagePreviews: string[] = $state(data.project.imagesUrl || []);
+	let imagePreviews: string[] = $state(data.project.imagesUrl || project.images || []);
 	let uploading = $state(false);
 	let saving = $state(false);
 	let activeTab = $state<'id' | 'en'>('id');
@@ -126,7 +132,8 @@
 					repoUrl: repoUrl || undefined,
 					demoUrl: demoUrl || undefined,
 					published,
-					pinned
+					pinned,
+					tags
 				})
 			});
 
@@ -290,6 +297,12 @@
 
 Write detailed content in Markdown format..."
 			/>
+		</div>
+
+		<!-- Tags -->
+		<div>
+			<label for="tags" class="mb-2 block text-sm font-medium"> Tags / Tech Stack </label>
+			<TagEditor bind:tags />
 		</div>
 
 		<!-- Thumbnail Upload -->
