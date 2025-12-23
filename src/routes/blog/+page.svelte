@@ -1,10 +1,11 @@
 <script lang="ts">
 	import * as m from '@/lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import type { Post } from './+page.server';
 	let { data }: { data: { posts: Post[] } } = $props();
 </script>
 
-<div class="space-y-12 mt-20">
+<div class="mt-20 space-y-12">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.blog_title()}</h1>
 		<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
@@ -22,7 +23,7 @@
 						</h2>
 					</a>
 					<p class="text-sm text-muted-foreground">
-						{new Date(post.date).toLocaleDateString('en-US', {
+						{new Date(post.date).toLocaleDateString(getLocale(), {
 							year: 'numeric',
 							month: 'long',
 							day: 'numeric'

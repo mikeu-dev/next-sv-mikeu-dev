@@ -7,6 +7,7 @@
 	import { buttonVariants } from '@/lib/components/ui/button';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { getLocalizedProject, type LocalizedProject } from '$lib/utils/project-mapper';
+	import * as m from '@/lib/paraglide/messages';
 
 	let { data }: { data: PageData } = $props();
 	const { projects }: { projects: Record<string, Project[]> } = data;
@@ -39,10 +40,9 @@
 
 <div class="mt-20 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">All Projects</h1>
+		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.projects_title()}</h1>
 		<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-			Here's a collection of my work, including personal projects, open-source contributions, and
-			experiments.
+			{m.projects_subtitle()}
 		</p>
 	</section>
 
@@ -64,10 +64,10 @@
 							{#if tag.icon}
 								<Icon src={tag.icon} size={16} />
 							{/if}
-							{tag.name}
+							{tag.name === 'All' ? m.projects_filter_all() : tag.name}
 						</Tooltip.Trigger>
 						<Tooltip.Content>
-							<p>Select to filter projects by this tag.</p>
+							<p>{m.projects_filter_tooltip()}</p>
 						</Tooltip.Content>
 					</Tooltip.Root>
 				</Tooltip.Provider>

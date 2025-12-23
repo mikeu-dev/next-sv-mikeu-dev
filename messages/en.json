@@ -39,5 +39,15 @@
 	"project_button_back": "Back to Projects",
 	"project_content_not_found": "Detailed project description is not yet available. Please check back later!",
 	"project_button_demo": "Live Demo",
-	"project_button_view_code": "View on GitHub"
+	"project_button_view_code": "View on GitHub",
+	"projects_title": "All Projects",
+	"projects_subtitle": "Here's a collection of my work, including personal projects, open-source contributions, and experiments.",
+	"projects_filter_tooltip": "Select to filter projects by this tag.",
+	"projects_filter_all": "All",
+	"contact_field_company": "Company",
+	"contact_field_company_placeholder": "Your Company Name",
+	"contact_field_optional": "Optional",
+	"contact_field_budget": "Budget",
+	"contact_field_budget_placeholder": "e.g. $1,000 - $5,000",
+	"contact_field_budget_description": "Estimate budget for the project"
 }

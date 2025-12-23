@@ -39,5 +39,15 @@
 	"project_button_back": "Kembali ke Proyek",
 	"project_content_not_found": "Deskripsi detail proyek belum tersedia. Silakan periksa kembali nanti!",
 	"project_button_demo": "Lihat Demo",
-	"project_button_view_code": "Lihat di GitHub"
+	"project_button_view_code": "Lihat di GitHub",
+	"projects_title": "Semua Proyek",
+	"projects_subtitle": "Berikut adalah koleksi pekerjaan saya, termasuk proyek pribadi, kontribusi open-source, dan eksperimen.",
+	"projects_filter_tooltip": "Pilih untuk menyaring proyek berdasarkan tag ini.",
+	"projects_filter_all": "Semua",
+	"contact_field_company": "Perusahaan",
+	"contact_field_company_placeholder": "Nama Perusahaan Anda",
+	"contact_field_optional": "Opsional",
+	"contact_field_budget": "Anggaran",
+	"contact_field_budget_placeholder": "misal Rp 1.000.000 - Rp 5.000.000",
+	"contact_field_budget_description": "Perkiraan anggaran untuk proyek ini"
 }
