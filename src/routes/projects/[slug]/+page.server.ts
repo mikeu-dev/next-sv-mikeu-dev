@@ -17,7 +17,16 @@ export const load: PageServerLoad = async ({ params }) => {
 		error(404, 'Project not found');
 	}
 
+	// Serialize Firestore Timestamps to JS Dates which SvelteKit can handle
+	const serializedProject = {
+		...project,
+		// @ts-ignore - Handle Firestore Timestamp conversion
+		updatedAt: project.updatedAt?.toDate?.() ?? project.updatedAt,
+		// @ts-ignore - Handle Firestore Timestamp conversion
+		createdAt: project.createdAt?.toDate?.() ?? project.createdAt
+	};
+
 	return {
-		project
+		project: serializedProject
 	};
 };
