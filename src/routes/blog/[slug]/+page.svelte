@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { BlogPageData } from './+page.server';
 	import * as m from '@/lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import { ArrowLeft } from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
 
@@ -21,7 +22,7 @@
 		<h1 class="text-4xl font-bold tracking-tight">{data.meta.title}</h1>
 		{#if data.meta.date}
 			<p class="mt-4 text-muted-foreground">
-				{new Date(data.meta.date).toLocaleDateString('id-ID', {
+				{new Date(data.meta.date).toLocaleDateString(getLocale(), {
 					year: 'numeric',
 					month: 'long',
 					day: 'numeric'
