@@ -57,7 +57,7 @@ function readAndParseFile(fileName: string) {
 }
 
 // Helper to recurse and patch icons
-function patchIcons(data: any, iconMap: Map<string, string>) {
+function patchIcons(data: any, iconMap: Map<string, string>): any {
     if (Array.isArray(data)) {
         return data.map(item => patchIcons(item, iconMap));
     } else if (typeof data === 'object' && data !== null) {
