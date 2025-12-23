@@ -79,14 +79,24 @@
 			</div>
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
-					<Label for="company">Company</Label>
-					<Input type="text" id="company" name="company" placeholder="Your Company Name" />
-					<p class="text-sm text-muted-foreground">Optional</p>
+					<Label for="company">{m.contact_field_company()}</Label>
+					<Input
+						type="text"
+						id="company"
+						name="company"
+						placeholder={m.contact_field_company_placeholder()}
+					/>
+					<p class="text-sm text-muted-foreground">{m.contact_field_optional()}</p>
 				</div>
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
-					<Label for="budget">Budget</Label>
-					<Input type="text" id="budget" name="budget" placeholder="e.g. $1,000 - $5,000" />
-					<p class="text-sm text-muted-foreground">Estimate budget for the project</p>
+					<Label for="budget">{m.contact_field_budget()}</Label>
+					<Input
+						type="text"
+						id="budget"
+						name="budget"
+						placeholder={m.contact_field_budget_placeholder()}
+					/>
+					<p class="text-sm text-muted-foreground">{m.contact_field_budget_description()}</p>
 				</div>
 			</div>
 			<div class="flex w-full max-w-2xl flex-col gap-1.5">
