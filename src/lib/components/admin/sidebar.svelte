@@ -12,7 +12,7 @@
 		Database,
 		Menu,
 		X
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
 	import { fade, slide } from 'svelte/transition';
@@ -81,9 +81,10 @@
 
 <!-- Overlay for mobile -->
 {#if isOpen}
-	<div
-		class="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+	<button
+		class="fixed inset-0 z-30 w-full cursor-default bg-black/50 backdrop-blur-sm md:hidden"
 		transition:fade
 		onclick={toggleSidebar}
-	></div>
+		aria-label="Close sidebar"
+	></button>
 {/if}
