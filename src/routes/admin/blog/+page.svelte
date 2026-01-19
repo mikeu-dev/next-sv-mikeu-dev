@@ -20,8 +20,9 @@
 	let filterStatus = $state<'all' | 'published' | 'draft'>('all');
 
 	// Computed filtered posts
+	// Computed filtered posts
 	let filteredPosts = $derived(() => {
-		let result = posts;
+		let result = [...posts]; // Create a copy first to avoid mutation of state
 
 		// Filter by locale
 		if (filterLocale !== 'all') {
@@ -35,6 +36,7 @@
 			result = result.filter((p) => p.published !== true);
 		}
 
+		// Use toSorted() if available or sort copy
 		return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 	});
 
