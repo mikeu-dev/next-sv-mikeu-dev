@@ -4,6 +4,8 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
+	import Sidebar from '$lib/components/admin/sidebar.svelte';
+
 	let { children } = $props();
 
 	$effect(() => {
@@ -14,21 +16,27 @@
 </script>
 
 {#if authState.user}
-	<div class="min-h-screen bg-background">
-		<header class="border-b">
-			<div class="container flex h-16 items-center justify-between px-4">
-				<h1 class="text-xl font-bold">Admin Dashboard</h1>
-				<div class="flex items-center gap-4">
+	<div class="flex min-h-screen bg-background">
+		<!-- Sidebar -->
+		<Sidebar />
+
+		<!-- Main Content -->
+		<div class="flex-1 md:ml-64">
+			<header
+				class="sticky top-0 z-30 flex h-16 items-center border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+			>
+				<div class="ml-auto flex items-center gap-4">
 					<span class="text-sm text-muted-foreground">{authState.user.email}</span>
 				</div>
-			</div>
-		</header>
-		<main class="container px-4 py-8">
-			{@render children()}
-		</main>
+			</header>
+
+			<main class="container p-6 md:p-8">
+				{@render children()}
+			</main>
+		</div>
 	</div>
 {:else}
 	<div class="flex min-h-screen items-center justify-center">
-		<p>Loading...</p>
+		<p class="text-muted-foreground">Loading admin panel...</p>
 	</div>
 {/if}
