@@ -44,6 +44,10 @@ export const load: PageServerLoad = async () => {
     // Count skills
     const skillsCount = skills?.items?.length || 0;
 
+    // Serialize to plain objects to avoid "non-POJO" errors with Dates/Timestamps
+    const serializedMessages = JSON.parse(JSON.stringify(recentMessages));
+    const serializedPosts = JSON.parse(JSON.stringify(recentPosts));
+
     return {
         stats: {
             projects: projects?.length || 0,
@@ -53,8 +57,8 @@ export const load: PageServerLoad = async () => {
             skills: skillsCount
         },
         recent: {
-            messages: recentMessages,
-            posts: recentPosts
+            messages: serializedMessages,
+            posts: serializedPosts
         }
     };
 };
