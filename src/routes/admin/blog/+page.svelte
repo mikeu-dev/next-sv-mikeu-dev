@@ -16,7 +16,7 @@
 
 	let posts = $state<BlogPost[]>([]);
 	let loading = $state(true);
-	let filterLocale = $state<'all' | 'en' | 'id'>('all');
+	let activeTab = $state<'en' | 'id'>('en');
 	let filterStatus = $state<'all' | 'published' | 'draft'>('all');
 
 	// Computed filtered posts
@@ -24,10 +24,7 @@
 	let filteredPosts = $derived(() => {
 		let result = [...posts]; // Create a copy first to avoid mutation of state
 
-		// Filter by locale
-		if (filterLocale !== 'all') {
-			result = result.filter((p) => p.locale === filterLocale);
-		}
+		result = result.filter((p) => p.locale === activeTab);
 
 		// Filter by published status
 		if (filterStatus === 'published') {
@@ -90,38 +87,32 @@
 		</div>
 	</div>
 
+	<!-- Language Tabs -->
+	<div class="mb-6">
+		<div class="flex gap-2 border-b border-gray-300 dark:border-gray-700">
+			<button
+				onclick={() => (activeTab = 'en')}
+				class="px-4 py-2 font-medium transition-colors {activeTab === 'en'
+					? 'border-b-2 border-blue-600 text-blue-600'
+					: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+			>
+				🇬🇧 English
+			</button>
+			<button
+				onclick={() => (activeTab = 'id')}
+				class="px-4 py-2 font-medium transition-colors {activeTab === 'id'
+					? 'border-b-2 border-blue-600 text-blue-600'
+					: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+			>
+				🇮🇩 Indonesia
+			</button>
+		</div>
+	</div>
+
 	<!-- Filters Section -->
 	<div class="mb-6 flex flex-wrap gap-4">
-		<!-- Locale Filter -->
-		<div class="flex items-center gap-2">
-			<span class="text-sm font-medium text-muted-foreground">Locale:</span>
-			<div class="flex gap-1">
-				<button
-					onclick={() => (filterLocale = 'all')}
-					class="rounded-lg px-3 py-1.5 text-sm {filterLocale === 'all'
-						? 'bg-blue-600 text-white'
-						: 'border border-gray-300 dark:border-gray-700'}"
-				>
-					All
-				</button>
-				<button
-					onclick={() => (filterLocale = 'en')}
-					class="rounded-lg px-3 py-1.5 text-sm {filterLocale === 'en'
-						? 'bg-blue-600 text-white'
-						: 'border border-gray-300 dark:border-gray-700'}"
-				>
-					🇬🇧 EN
-				</button>
-				<button
-					onclick={() => (filterLocale = 'id')}
-					class="rounded-lg px-3 py-1.5 text-sm {filterLocale === 'id'
-						? 'bg-blue-600 text-white'
-						: 'border border-gray-300 dark:border-gray-700'}"
-				>
-					🇮🇩 ID
-				</button>
-			</div>
-		</div>
+		<!-- Language Tabs (Moved to top level) -->
+		<!-- Just Status Filter here -->
 
 		<!-- Status Filter -->
 		<div class="flex items-center gap-2">
@@ -182,7 +173,6 @@
 			<button
 				onclick={() => {
 					filterStatus = 'all';
-					filterLocale = 'all';
 				}}
 				class="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>

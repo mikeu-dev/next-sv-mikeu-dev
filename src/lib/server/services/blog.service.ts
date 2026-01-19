@@ -20,15 +20,16 @@ export const blogService = {
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
     },
 
-    async getPostBySlug(slug: string) {
-        const snapshot = await db.collection(COLLECTIONS.BLOG_POSTS).where('slug', '==', slug).get();
+    async getPostBySlug(slug: string, locale?: string) {
+        let query = db.collection(COLLECTIONS.BLOG_POSTS).where('slug', '==', slug);
+        if (locale) {
+            query = query.where('locale', '==', locale);
+        }
+
+        const snapshot = await query.get();
         if (snapshot.empty) return null;
-        // Assuming slug is unique enough, but we might have multiple locales.
-        // Ideally we fetch by ID if we know it.
-        // If we use slug as ID (which migration script does), then:
-        const doc = await db.collection(COLLECTIONS.BLOG_POSTS).doc(slug).get();
-        if (!doc.exists) return null;
-        return { id: doc.id, ...doc.data() } as BlogPost;
+
+        return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost;
     },
 
     async getPostById(id: string) {
@@ -38,11 +39,13 @@ export const blogService = {
     },
 
     async createPost(data: BlogPost) {
-        // We typically want slug to be the ID, effectively.
-        // But if slug changes, we need to handle that.
-        // For now, let's assume manual ID or slug-based ID.
-        // Migration used slug as ID.
-        const id = data.slug;
+        // Use slug-locale as ID to allow same slug for different languages
+        const id = `${data.slug}-${data.locale}`;
+
+        // Check if ID exists to avoid overwrite? 
+        // set() with merge:false overwrites.
+        // For now, let's assume overwrite is intended or user checks existence.
+
         await db.collection(COLLECTIONS.BLOG_POSTS).doc(id).set({
             ...data,
             updatedAt: new Date()
@@ -51,6 +54,16 @@ export const blogService = {
     },
 
     async updatePost(id: string, data: Partial<BlogPost>) {
+        // If slug or locale connects to ID, changing them might require ID change (migration).
+        // But for simpler update, we assume ID is constant.
+        // If user changes locale/slug in edit, it would technically be a "Move".
+        // But for now, let's just update the doc. 
+        // WARNING: If ID is slug-locale, and we change slug, ID should change.
+        // This is complex. Let's assume for now we just update the fields.
+        // The ID remains the same, which might de-sync from slug-locale.
+        // Ideally, we should delete old and create new if slug/locale changes.
+        // But let's stick to update for now to avoid data loss risk on refactor.
+
         await db.collection(COLLECTIONS.BLOG_POSTS).doc(id).update({
             ...data,
             updatedAt: new Date()

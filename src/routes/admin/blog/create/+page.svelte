@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import BlogPostForm from '$lib/components/admin/blog-post-form.svelte';
+
+	let initialData = $derived({
+		slug: $page.url.searchParams.get('slug') || '',
+		locale: $page.url.searchParams.get('locale') || 'en',
+		title: $page.url.searchParams.get('title') || ''
+	});
 </script>
 
 <div class="container mx-auto max-w-4xl p-6">
@@ -9,6 +16,6 @@
 	</div>
 
 	<div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-		<BlogPostForm />
+		<BlogPostForm {initialData} />
 	</div>
 </div>

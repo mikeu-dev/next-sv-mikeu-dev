@@ -41,6 +41,62 @@
 			.replace(/^-+|-+$/g, '');
 	}
 
+	async function changeLocale(newLocale: string) {
+		if (newLocale === formData.locale) return;
+
+		if (isEditing) {
+			// Check for unsaved changes (simple dirty check by comparing with initialData?)
+			// For now, let's just warn
+			// Ideally we implement dirty check but 'formData' is deep object.
+			if (
+				!confirm(
+					`Switch to ${newLocale === 'en' ? 'English' : 'Indonesian'} version? Unsaved changes will be lost.`
+				)
+			) {
+				// Reset select value to current locale (this requires binding to a separate var or forcing update)
+				// Since we bind to formData.locale, we might need to revert it if user cancels.
+				// But wait, if I bind to formData.locale, it ALREADY changed.
+				// I should bind select to a separate variable or handle 'change' event manually.
+				return;
+			}
+
+			// Try to find the other post
+			loading = true;
+			try {
+				const response = await fetch(`/api/admin/blog?slug=${formData.slug}&locale=${newLocale}`);
+				if (response.ok) {
+					const otherPost = await response.json();
+					goto(`/admin/blog/${otherPost.id}`); // This assumes ID is the key to navigate
+				} else {
+					// Not found
+					if (
+						confirm(
+							`The ${newLocale === 'en' ? 'English' : 'Indonesian'} version of "${formData.slug}" does not exist. Create it?`
+						)
+					) {
+						// Navigate to create page with prefilled data?
+						// Or just stay here?
+						// If we stay here and change formData.locale, we are "Moving" the current post if we save.
+						// But we want to CREATE a new linked post.
+						// Best way: Navigate to create page?
+						goto(
+							`/admin/blog/create?slug=${formData.slug}&locale=${newLocale}&title=${formData.title}`
+						);
+						// Note: Create page needs to handle params.
+					}
+				}
+			} catch (e) {
+				console.error(e);
+				toast.error('Failed to check language version');
+			} finally {
+				loading = false;
+			}
+		} else {
+			// Creation mode: just update the locale field
+			formData.locale = newLocale;
+		}
+	}
+
 	async function handleSubmit() {
 		if (!formData.title || !formData.slug || !formData.content) {
 			toast.error('Please fill in all required fields');
@@ -53,10 +109,13 @@
 			const url = '/api/admin/blog';
 			const method = isEditing ? 'PUT' : 'POST';
 
+			// Ensure ID is sent for updates
+			const payload = isEditing ? { ...formData, id: initialData?.id } : formData;
+
 			const response = await fetch(url, {
 				method,
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(formData)
+				body: JSON.stringify(payload)
 			});
 
 			const result = await response.json();
@@ -128,9 +187,14 @@
 		<div class="space-y-4">
 			<div>
 				<label for="locale" class="mb-1 block text-sm font-medium">Language</label>
+				<!-- Use onchange instead of bind:value for better control in Edit mode? -->
+				<!-- Or just bind and watch? Svelte 5 $effect? -->
+				<!-- Let's use simple binding but intercept with onchange logic if needed, 
+                     OR just use manual value + onchange for full control. -->
 				<select
 					id="locale"
-					bind:value={formData.locale}
+					value={formData.locale}
+					onchange={(e) => changeLocale(e.currentTarget.value)}
 					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
 				>
 					<option value="en">🇬🇧 English</option>

@@ -6,8 +6,19 @@ import { blogService } from '$lib/server/services/blog.service';
 export async function GET({ url }: RequestEvent) {
     try {
         const id = url.searchParams.get('id');
+        const slug = url.searchParams.get('slug');
+        const locale = url.searchParams.get('locale');
+
         if (id) {
             const post = await blogService.getPostById(id);
+            if (!post) {
+                return json({ error: 'Post not found' }, { status: 404 });
+            }
+            return json(post);
+        }
+
+        if (slug) {
+            const post = await blogService.getPostBySlug(slug, locale || undefined);
             if (!post) {
                 return json({ error: 'Post not found' }, { status: 404 });
             }
