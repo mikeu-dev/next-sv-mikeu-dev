@@ -18,15 +18,18 @@ export const load: PageLoad = async ({ params, fetch }) => {
         const data = await response.json();
         const categoryIndex = parseInt(index);
 
-        if (isNaN(categoryIndex) || categoryIndex < 0 || categoryIndex >= data.categories.length) {
+        // Handle API response structure (items or categories)
+        const categories = data.categories || data.items || [];
+
+        if (isNaN(categoryIndex) || categoryIndex < 0 || categoryIndex >= categories.length) {
             throw error(404, 'Category not found');
         }
 
         return {
             lang,
             index: categoryIndex,
-            category: data.categories[categoryIndex],
-            allCategories: data.categories
+            category: categories[categoryIndex],
+            allCategories: categories
         };
     } catch (err) {
         throw error(500, 'Failed to load techstack');

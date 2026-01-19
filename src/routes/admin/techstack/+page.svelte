@@ -17,7 +17,19 @@
 		try {
 			const response = await fetch(`/api/techstack?lang=${lang}`);
 			if (!response.ok) throw new Error('Failed to load data');
-			techstack = await response.json();
+			const data = await response.json();
+			// API might return 'items' or 'categories' as the top-level array of categories
+			const categoriesData = data.categories || data.items || [];
+
+			techstack = {
+				categories: categoriesData.map((category: any) => ({
+					...category,
+					items: (category.items || []).map((item: any) => ({
+						...item,
+						iconSvg: getIconSvg(item.iconName)
+					}))
+				}))
+			};
 		} catch (error: any) {
 			toast.error(error.message || 'Failed to load techstack');
 		} finally {
@@ -107,7 +119,7 @@
 									class="flex h-10 w-10 items-center justify-center rounded-lg"
 									style="background-color: {item.color}20; color: {item.color}"
 								>
-									{@html getIconSvg(item.iconName)}
+									{@html item.iconSvg}
 								</div>
 								<div class="flex-1">
 									<div class="font-medium">{item.name}</div>

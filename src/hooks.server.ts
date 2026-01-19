@@ -24,7 +24,7 @@ const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
 			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 			"img-src 'self' data: https: blob:",
 			"font-src 'self' https://fonts.gstatic.com",
-			"connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com",
+			"connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com https://lottie.host",
 			"frame-ancestors 'none'",
 			"base-uri 'self'",
 			"form-action 'self'"
