@@ -8,7 +8,11 @@
 		ArrowRight,
 		Plus,
 		Hammer,
-		Users
+		Users,
+		Monitor,
+		Smartphone,
+		Globe,
+		MapPin
 	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
@@ -104,115 +108,161 @@
 
 	<div class="grid gap-8 lg:grid-cols-3">
 		<!-- Recent Activity (Messages) -->
-		<div class="rounded-xl border bg-card shadow-sm lg:col-span-2">
-			<div class="flex items-center justify-between border-b p-6">
-				<div>
-					<h2 class="text-lg font-semibold">Recent Inquiries</h2>
-					<p class="text-sm text-muted-foreground">Latest messages from contact form</p>
+		<!-- Recent Activity (Messages) -->
+		<div class="space-y-8 lg:col-span-2">
+			<div class="rounded-xl border bg-card shadow-sm">
+				<div class="flex items-center justify-between border-b p-6">
+					<div>
+						<h2 class="text-lg font-semibold">Recent Inquiries</h2>
+						<p class="text-sm text-muted-foreground">Latest messages from contact form</p>
+					</div>
+					<button
+						class="text-sm font-medium text-primary hover:underline"
+						onclick={() => goto('/admin/contacts')}
+					>
+						View all
+					</button>
 				</div>
-				<button
-					class="text-sm font-medium text-primary hover:underline"
-					onclick={() => goto('/admin/contacts')}
-				>
-					View all
-				</button>
-			</div>
-			<div class="p-6">
-				{#if data.recent.messages.length > 0}
-					<div class="space-y-6">
-						{#each data.recent.messages as msg}
-							<div class="flex items-start justify-between">
-								<div class="flex gap-4">
-									<div
-										class="flex h-10 w-10 items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground"
-									>
-										{(msg.name || '?').charAt(0).toUpperCase()}
-									</div>
-									<div class="min-w-0 flex-1">
-										<p class="truncate font-medium">{msg.name || 'Anonymous'}</p>
-										<p class="line-clamp-1 text-sm break-all text-muted-foreground">
-											{msg.message}
-										</p>
-										<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-											<span>{msg.email}</span>
-											<span>•</span>
-											<span
-												>{msg.createdAt
-													? new Date(msg.createdAt).toLocaleDateString()
-													: 'N/A'}</span
-											>
+				<div class="p-6">
+					{#if data.recent.messages.length > 0}
+						<div class="space-y-6">
+							{#each data.recent.messages as msg}
+								<div class="flex items-start justify-between">
+									<div class="flex gap-4">
+										<div
+											class="flex h-10 w-10 items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground"
+										>
+											{(msg.name || '?').charAt(0).toUpperCase()}
+										</div>
+										<div class="min-w-0 flex-1">
+											<p class="truncate font-medium">{msg.name || 'Anonymous'}</p>
+											<p class="line-clamp-1 text-sm break-all text-muted-foreground">
+												{msg.message}
+											</p>
+											<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+												<span>{msg.email}</span>
+												<span>•</span>
+												<span
+													>{msg.createdAt
+														? new Date(msg.createdAt).toLocaleDateString()
+														: 'N/A'}</span
+												>
+											</div>
 										</div>
 									</div>
-								</div>
-								<span
-									class={`ml-2 inline-flex flex-shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
+									<span
+										class={`ml-2 inline-flex flex-shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
 									${msg.status === 'new' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : ''}
 									${msg.status === 'in-review' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : ''}
 									${msg.status === 'replied' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : ''}
                                     ${msg.status === 'closed' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400' : ''}
 								`}
-								>
-									{msg.status || 'new'}
-								</span>
-							</div>
-						{/each}
-					</div>
-				{:else}
-					<div
-						class="flex flex-col items-center justify-center py-8 text-center text-muted-foreground"
-					>
-						<MessageSquare class="mb-2 h-10 w-10 opacity-20" />
-						<p>No messages yet</p>
-					</div>
-				{/if}
+									>
+										{msg.status || 'new'}
+									</span>
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<div
+							class="flex flex-col items-center justify-center py-8 text-center text-muted-foreground"
+						>
+							<MessageSquare class="mb-2 h-10 w-10 opacity-20" />
+							<p>No messages yet</p>
+						</div>
+					{/if}
+				</div>
 			</div>
 
 			<!-- Recent Visitors -->
-			<div class="mt-8 border-t pt-8">
-				<div class="mb-4">
-					<h2 class="text-lg font-semibold">Recent Visitors</h2>
-					<p class="text-sm text-muted-foreground">Latest 10 visitors</p>
+			<div class="rounded-xl border bg-card shadow-sm">
+				<div class="flex items-center justify-between border-b p-6">
+					<div>
+						<h2 class="text-lg font-semibold">Recent Visitors</h2>
+						<p class="text-sm text-muted-foreground">Latest 10 visitors</p>
+					</div>
 				</div>
-
-				<div class="relative overflow-x-auto rounded-lg border">
-					<table class="w-full text-left text-sm">
-						<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
-							<tr>
-								<th class="px-4 py-3">Time</th>
-								<th class="px-4 py-3">IP Address</th>
-								<th class="px-4 py-3">Browser / OS</th>
-								<th class="px-4 py-3">Device</th>
-								<th class="px-4 py-3">Page</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y">
-							{#each data.recent.visitors as visitor}
-								<tr class="bg-card hover:bg-muted/50">
-									<td class="px-4 py-3 whitespace-nowrap text-muted-foreground">
-										{visitor.timestamp ? new Date(visitor.timestamp).toLocaleString() : 'N/A'}
-									</td>
-									<td class="px-4 py-3 font-medium">{visitor.ip || 'Unknown'}</td>
-									<td class="px-4 py-3">
-										<div class="flex flex-col">
-											<span>{visitor.browser}</span>
-											<span class="text-xs text-muted-foreground">{visitor.os}</span>
-										</div>
-									</td>
-									<td class="px-4 py-3">{visitor.device}</td>
-									<td
-										class="max-w-[200px] truncate px-4 py-3 text-muted-foreground"
-										title={visitor.path}>{visitor.path}</td
-									>
-								</tr>
-							{:else}
+				<div class="p-0">
+					<div class="relative overflow-x-auto">
+						<table class="w-full text-left text-sm">
+							<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
 								<tr>
-									<td colspan="5" class="py-8 text-center text-muted-foreground">
-										No visitor logs found.
-									</td>
+									<th class="px-6 py-3 font-medium">Visitor</th>
+									<th class="px-6 py-3 font-medium">Device</th>
+									<th class="px-6 py-3 font-medium">Target</th>
+									<th class="px-6 py-3 text-right font-medium">Time</th>
 								</tr>
-							{/each}
-						</tbody>
-					</table>
+							</thead>
+							<tbody class="divide-y border-t border-border/50">
+								{#each data.recent.visitors as visitor}
+									<tr class="hover:bg-muted/50">
+										<!-- IP & Browser -->
+										<td class="px-6 py-4">
+											<div class="flex items-center gap-3">
+												<div
+													class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+												>
+													<Globe class="h-4 w-4" />
+												</div>
+												<div class="flex flex-col">
+													<span class="font-medium text-foreground">{visitor.ip || 'Unknown'}</span>
+													<span class="text-xs text-muted-foreground"
+														>{visitor.browser} • {visitor.os}</span
+													>
+												</div>
+											</div>
+										</td>
+
+										<!-- Device -->
+										<td class="px-6 py-4">
+											<div class="flex items-center gap-2 text-muted-foreground">
+												{#if (visitor.device || '').toLowerCase().includes('mobile')}
+													<Smartphone class="h-4 w-4" />
+												{:else}
+													<Monitor class="h-4 w-4" />
+												{/if}
+												<span class="capitalize">{visitor.device || 'Desktop'}</span>
+											</div>
+										</td>
+
+										<!-- Page Path -->
+										<td class="px-6 py-4">
+											<div
+												class="max-w-[200px] truncate rounded bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
+											>
+												{visitor.path}
+											</div>
+										</td>
+
+										<!-- Time -->
+										<td class="px-6 py-4 text-right text-muted-foreground">
+											<div class="flex flex-col items-end">
+												<span class="text-sm"
+													>{visitor.timestamp
+														? new Date(visitor.timestamp).toLocaleTimeString([], {
+																hour: '2-digit',
+																minute: '2-digit'
+															})
+														: 'N/A'}</span
+												>
+												<span class="text-xs text-muted-foreground/60"
+													>{visitor.timestamp
+														? new Date(visitor.timestamp).toLocaleDateString()
+														: ''}</span
+												>
+											</div>
+										</td>
+									</tr>
+								{:else}
+									<tr>
+										<td colspan="4" class="py-8 text-center text-muted-foreground">
+											No visitor logs found.
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
