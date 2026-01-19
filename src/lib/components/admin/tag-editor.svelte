@@ -12,7 +12,9 @@
 		url: ''
 	});
 
-	function addTag() {
+	let editingIndex = $state<number | null>(null);
+
+	function saveTag() {
 		if (!newTag.name.trim()) {
 			toast.error('Tag name is required');
 			return;
@@ -22,19 +24,43 @@
 			return;
 		}
 
-		tags = [...tags, { ...newTag }];
+		if (editingIndex !== null) {
+			// Update existing tag
+			tags[editingIndex] = { ...newTag };
+			tags = [...tags]; // Trigger reactivity if needed, though $state array mutation might handle it, spreading helps ensure updates
+			editingIndex = null;
+			toast.success('Tag updated');
+		} else {
+			// Add new tag
+			tags = [...tags, { ...newTag }];
+			toast.success('Tag added');
+		}
 
-		// Reset form
+		resetForm();
+	}
+
+	function resetForm() {
 		newTag = {
 			name: '',
 			iconName: '',
 			color: '#000000',
 			url: ''
 		};
+		editingIndex = null;
+	}
+
+	function editTag(index: number) {
+		editingIndex = index;
+		newTag = { ...tags[index] };
 	}
 
 	function removeTag(index: number) {
 		tags = tags.filter((_: SerializedTag, i: number) => i !== index);
+		if (editingIndex === index) {
+			resetForm();
+		} else if (editingIndex !== null && editingIndex > index) {
+			editingIndex--;
+		}
 	}
 
 	// Helper to get Simple Icons SVG (this logic duplicates IconPicker execution but needed for list display.
@@ -99,7 +125,7 @@
 		</div>
 
 		<!-- URL Input -->
-		<div class="col-span-12 md:col-span-3">
+		<div class="col-span-12 md:col-span-2">
 			<label for="tag-url" class="mb-1 block text-xs font-medium text-gray-500">URL</label>
 			<input
 				id="tag-url"
@@ -110,14 +136,23 @@
 			/>
 		</div>
 
-		<!-- Add Button -->
-		<div class="col-span-12 flex items-end md:col-span-1">
+		<!-- Actions -->
+		<div class="col-span-12 flex items-end gap-2 md:col-span-2">
+			{#if editingIndex !== null}
+				<button
+					type="button"
+					onclick={resetForm}
+					class="w-full rounded-md border border-gray-300 bg-white py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+				>
+					Cancel
+				</button>
+			{/if}
 			<button
 				type="button"
-				onclick={addTag}
-				class="w-full rounded-md bg-blue-600 py-2 text-white hover:bg-blue-700"
+				onclick={saveTag}
+				class="w-full rounded-md bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700"
 			>
-				Add
+				{editingIndex !== null ? 'Update' : 'Add'}
 			</button>
 		</div>
 	</div>
@@ -147,21 +182,44 @@
 						Link
 					</a>
 				</div>
-				<button
-					type="button"
-					onclick={() => removeTag(i)}
-					aria-label="Remove Tag"
-					class="text-gray-400 hover:text-red-500"
-				>
-					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M6 18L18 6M6 6l12 12"
-						/>
-					</svg>
-				</button>
+				<div class="flex gap-1">
+					<button
+						type="button"
+						onclick={() => editTag(i)}
+						aria-label="Edit Tag"
+						class="text-gray-400 hover:text-blue-500"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-4 w-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+							/>
+						</svg>
+					</button>
+					<button
+						type="button"
+						onclick={() => removeTag(i)}
+						aria-label="Remove Tag"
+						class="text-gray-400 hover:text-red-500"
+					>
+						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
+						</svg>
+					</button>
+				</div>
 			</div>
 		{/each}
 	</div>
