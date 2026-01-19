@@ -63,11 +63,9 @@
 			try {
 				// Fetch other locale data
 				const otherLocale = initialData?.locale === 'en' ? 'id' : 'en';
-				console.log(`Fetching other locale: ${otherLocale} for slug: ${commonData.slug}`);
 				const res = await fetch(`/api/admin/blog?slug=${commonData.slug}&locale=${otherLocale}`);
 				if (res.ok) {
 					const otherData = await res.json();
-					console.log('Found other locale data:', otherData);
 					contentData[otherLocale] = {
 						title: otherData.title,
 						description: otherData.description,
@@ -75,7 +73,7 @@
 						published: otherData.published
 					};
 				} else {
-					console.log('Other locale not found, status:', res.status);
+					// Other locale not found, status: res.status
 				}
 			} catch (e) {
 				console.error('Failed to load other language version', e);
