@@ -56,8 +56,8 @@ export const load: PageServerLoad = async (event) => {
 			},
 			content: data.content || ''
 		};
-	} catch (err: any) {
-		if (err.status === 404) throw err;
+	} catch (err: unknown) {
+		if ((err as { status?: number }).status === 404) throw err;
 		console.error('Error fetching blog post:', err);
 		throw error(500, 'Terjadi kesalahan saat memuat artikel');
 	}

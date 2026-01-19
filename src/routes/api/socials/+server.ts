@@ -12,9 +12,10 @@ export async function GET() {
 	try {
 		const data = await socialsService.getSocials();
 		return json(data);
-	} catch (error: any) {
+	} catch (error: unknown) {
 		logError('API:Socials:GET', error);
-		return json({ error: error.message }, { status: 500 });
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 }
 
@@ -50,9 +51,10 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 		});
 
 		return json({ success: true, message: 'Socials updated successfully' });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		logError('API:Socials:PUT', error);
-		return json({ error: error.message || 'Failed to update socials' }, { status: 500 });
+		const message = error instanceof Error ? error.message : 'Failed to update socials';
+		return json({ error: message }, { status: 500 });
 	}
 };
 

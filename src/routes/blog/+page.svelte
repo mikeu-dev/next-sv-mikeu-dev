@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as m from '@/lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { base } from '$app/paths';
 	import type { Post } from './+page.server';
 	let { data }: { data: { posts: Post[] } } = $props();
 </script>
@@ -15,9 +16,9 @@
 
 	<section class="mx-auto max-w-3xl">
 		<div class="space-y-8">
-			{#each data.posts as post}
+			{#each data.posts as post (post.slug)}
 				<article>
-					<a href={`/blog/${post.slug}`}>
+					<a href={`${base}/blog/${post.slug}`}>
 						<h2 class="font-poppins text-2xl font-bold tracking-tight hover:text-primary">
 							{post.title}
 						</h2>
@@ -31,7 +32,7 @@
 					</p>
 					<p class="mt-2 text-muted-foreground">{post.description}</p>
 					<a
-						href={`/blog/${post.slug}`}
+						href={`${base}/blog/${post.slug}`}
 						class="mt-4 inline-block text-sm font-medium text-primary hover:underline"
 						>{m.blog_card_button()}</a
 					>

@@ -32,9 +32,10 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		});
 
 		return json({ success: true, message: 'Skills updated successfully' });
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Update skills error:', error);
-		return json({ error: error.message || 'Failed to update skills' }, { status: 500 });
+		const message = error instanceof Error ? error.message : 'Failed to update skills';
+		return json({ error: message }, { status: 500 });
 	}
 };
 

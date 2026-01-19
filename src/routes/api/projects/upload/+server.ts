@@ -43,9 +43,11 @@ export async function POST(event: RequestEvent) {
 			size: uploadedFile.size,
 			mimeType: uploadedFile.mimeType
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		logError('API:Projects:Upload', error);
-		return json({ error: error.message || 'Upload failed' }, { status: error.status || 500 });
+		const message = error instanceof Error ? error.message : 'Upload failed';
+		const status = (error as { status?: number }).status || 500;
+		return json({ error: message }, { status });
 	}
 }
 
@@ -63,54 +65,57 @@ function parseMultipartFile(event: RequestEvent): Promise<ParsedFile | null> {
 
 		let fileData: ParsedFile | null = null;
 
-		bb.on('file', (fieldname: string, file: Readable, info: any) => {
-			const { filename, mimeType } = info;
+		bb.on(
+			'file',
+			(fieldname: string, file: Readable, info: { filename: string; mimeType: string }) => {
+				const { filename, mimeType } = info;
 
-			if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
-				file.resume(); // Drain the stream
-				return reject({ status: 400, message: 'Invalid file type' });
-			}
-
-			if (!filename) {
-				file.resume();
-				return reject({ status: 400, message: 'File is missing a name' });
-			}
-
-			const chunks: Buffer[] = [];
-			let size = 0;
-
-			file.on('data', (chunk: Buffer) => {
-				size += chunk.length;
-				if (size > MAX_FILE_SIZE) {
+				if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
 					file.resume(); // Drain the stream
-					return reject({ status: 400, message: 'File size limit exceeded' });
+					return reject({ status: 400, message: 'Invalid file type' });
 				}
-				chunks.push(chunk);
-			});
 
-			file.on('end', () => {
-				// Validate file
-				const buffer = Buffer.concat(chunks);
-				const validation = validateFile(buffer, filename, mimeType, {
-					allowedMimeTypes: ALLOWED_MIME_TYPES,
-					maxSize: MAX_FILE_SIZE
+				if (!filename) {
+					file.resume();
+					return reject({ status: 400, message: 'File is missing a name' });
+				}
+
+				const chunks: Buffer[] = [];
+				let size = 0;
+
+				file.on('data', (chunk: Buffer) => {
+					size += chunk.length;
+					if (size > MAX_FILE_SIZE) {
+						file.resume(); // Drain the stream
+						return reject({ status: 400, message: 'File size limit exceeded' });
+					}
+					chunks.push(chunk);
 				});
 
-				if (!validation.valid) {
-					return reject({ status: 400, message: validation.error });
-				}
+				file.on('end', () => {
+					// Validate file
+					const buffer = Buffer.concat(chunks);
+					const validation = validateFile(buffer, filename, mimeType, {
+						allowedMimeTypes: ALLOWED_MIME_TYPES,
+						maxSize: MAX_FILE_SIZE
+					});
 
-				// Generate safe filename
-				const safeFilename = generateSafeFilename(filename);
+					if (!validation.valid) {
+						return reject({ status: 400, message: validation.error });
+					}
 
-				fileData = {
-					buffer,
-					filename: safeFilename,
-					mimeType,
-					size
-				};
-			});
-		});
+					// Generate safe filename
+					const safeFilename = generateSafeFilename(filename);
+
+					fileData = {
+						buffer,
+						filename: safeFilename,
+						mimeType,
+						size
+					};
+				});
+			}
+		);
 
 		bb.on('finish', () => {
 			resolve(fileData);

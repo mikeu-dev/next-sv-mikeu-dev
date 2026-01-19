@@ -1,6 +1,5 @@
 import { ProjectsService } from '$lib/server/services/projects.service';
 import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
-import { locales } from '$lib/paraglide/runtime';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
@@ -17,7 +16,7 @@ export async function GET({ url }) {
 	const blogPosts = [];
 
 	for (const path in allPostsModules) {
-		const mod = allPostsModules[path] as any;
+		const mod = allPostsModules[path] as { metadata: { published: string } };
 		// Check if it's metadata/frontmatter available
 		if (mod.metadata && mod.metadata.published === 'true') {
 			const slug = path.split('/').pop()?.replace('.svx', '');

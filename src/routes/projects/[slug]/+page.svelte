@@ -8,6 +8,7 @@
 	import type { Project } from '$lib/types';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { base } from '$app/paths';
 
 	let { data } = $props();
 	// Transform the raw project data into the localized version immediately
@@ -19,7 +20,7 @@
 <div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
 	<div class="mb-8">
 		<a
-			href="/projects"
+			href="{base}/projects"
 			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"
 		>
 			<ArrowLeft class="mr-2 size-4" />
@@ -34,7 +35,7 @@
 
 			<div class="mt-4 flex flex-wrap gap-2">
 				{#if project.tags && project.tags.length > 0}
-					{#each project.tags as tag}
+					{#each project.tags as tag (tag.name)}
 						<span
 							class={`group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors ${tag.color === '#171d26' ? 'dark:text-white!' : ''}`}
 							style="background-color: {tag.color}1A; color: {tag.color};"
@@ -51,7 +52,7 @@
 
 		{#if project.imagesUrl && project.imagesUrl.length > 0}
 			<Splide aria-label="Project Images" class="mb-8" options={{ rewind: true, autoplay: true }}>
-				{#each project.imagesUrl as url}
+				{#each project.imagesUrl as url (url)}
 					<SplideSlide>
 						<img src={url} alt={project.title} />
 					</SplideSlide>
@@ -67,6 +68,7 @@
 
 		<div class="prose prose-lg max-w-none dark:prose-invert">
 			{#if project.content}
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html project.content}
 			{:else}
 				<p>{m.project_content_not_found()}</p>

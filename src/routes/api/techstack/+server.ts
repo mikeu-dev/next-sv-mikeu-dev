@@ -9,9 +9,10 @@ export async function GET({ url }) {
 		const lang = (url.searchParams.get('lang') || 'en') as 'en' | 'id';
 		const data = await techStackService.getTechStack(lang);
 		return json(data);
-	} catch (error: any) {
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 		logError('API:TechStack:GET', error);
-		return json({ error: error.message }, { status: 500 });
+		return json({ error: errorMessage }, { status: 500 });
 	}
 }
 

@@ -9,9 +9,10 @@ export async function GET({ url }) {
 		const lang = (url.searchParams.get('lang') || 'en') as 'en' | 'id';
 		const data = await skillsService.getSkills(lang);
 		return json(data);
-	} catch (error: any) {
+	} catch (error: unknown) {
 		logError('API:Skills:GET', error);
-		return json({ error: error.message }, { status: 500 });
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 }
 

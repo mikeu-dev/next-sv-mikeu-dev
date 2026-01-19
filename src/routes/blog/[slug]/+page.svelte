@@ -4,6 +4,7 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { ArrowLeft } from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
+	import { base } from '$app/paths';
 
 	let { data }: { data: BlogPageData } = $props();
 </script>
@@ -11,7 +12,7 @@
 <article class="mx-auto prose prose-lg mt-20 max-w-3xl py-8 prose-neutral dark:prose-invert">
 	<div class="mb-8">
 		<a
-			href="/blog"
+			href="{base}/blog"
 			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"
 		>
 			<ArrowLeft class="mr-2 size-4" />

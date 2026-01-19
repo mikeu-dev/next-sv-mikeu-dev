@@ -48,7 +48,7 @@
 
 	<section class="space-y-8">
 		<div class="flex flex-wrap justify-center gap-2">
-			{#each allTags as tag}
+			{#each allTags as tag (tag.name)}
 				<Tooltip.Provider>
 					<Tooltip.Root>
 						<Tooltip.Trigger
