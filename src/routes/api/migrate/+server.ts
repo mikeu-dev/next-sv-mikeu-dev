@@ -121,7 +121,12 @@ export const POST = async ({ request }: { request: Request }) => {
 
                 // 3. Get the exported data variable
                 const dataKey = Object.keys(module).find(k => k !== 'default'); // assumes named export matches file or is only export
-                let rawData = dataKey ? (module as any)[dataKey] : (module as any).default;
+                let rawData: any;
+                if (dataKey) {
+                    rawData = (module as any)[dataKey as string];
+                } else {
+                    rawData = (module as any).default;
+                }
 
                 // Nuclear option: JSON stringify/parse to force plain object and remove all functions/non-serializables immediately.
                 // We do this BEFORE patching to get a clean slate, BUT this might remove the 'icon' function objects we need to reference?
@@ -145,7 +150,7 @@ export const POST = async ({ request }: { request: Request }) => {
                     return value;
                 }));
 
-                const patchedData = iconMap ? patchIcons(cleanData, iconMap) : cleanData;
+                const patchedData = iconMap ? patchIcons(cleanData, iconMap as Map<string, string>) : cleanData;
 
                 // 5. Upload to Firestore
                 // Structure depends on file. 

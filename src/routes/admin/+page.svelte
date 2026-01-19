@@ -8,7 +8,7 @@
 		ArrowRight,
 		Plus,
 		Hammer
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 
