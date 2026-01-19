@@ -6,7 +6,7 @@
 	import { Icon } from 'svelte-icons-pack';
 	import { buttonVariants } from '@/lib/components/ui/button';
 	import { getLocale } from '@/lib/paraglide/runtime';
-	import { getLocalizedProject, type LocalizedProject } from '$lib/utils/project-mapper';
+	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import * as m from '@/lib/paraglide/messages';
 
 	let { data }: { data: PageData } = $props();

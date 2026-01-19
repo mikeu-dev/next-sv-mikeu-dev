@@ -6,7 +6,6 @@
 	import { toast } from 'svelte-sonner';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { signInWithEmailAndPassword } from 'firebase/auth';
-	import { goto } from '$app/navigation';
 
 	let email = $state('');
 	let password = $state('');

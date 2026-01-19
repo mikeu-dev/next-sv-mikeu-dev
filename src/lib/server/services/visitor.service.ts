@@ -15,7 +15,7 @@ export interface VisitorLogData {
 	referer: string | null;
 	language: string | null;
 	path: string;
-	timestamp?: any;
+	timestamp?: object | null;
 }
 
 export class VisitorService {

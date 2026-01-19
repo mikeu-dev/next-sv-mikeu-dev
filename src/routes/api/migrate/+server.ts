@@ -13,7 +13,7 @@ function readAndParseFile(fileName: string) {
 			return null;
 		}
 
-		let content = fs.readFileSync(filePath, 'utf-8');
+		const content = fs.readFileSync(filePath, 'utf-8');
 
 		// Regex to find "icon: SiName" and replace with "iconName: 'SiName'"
 		// This is a simple regex assumption that data is formatted as 'icon: SiName'
@@ -57,18 +57,19 @@ function readAndParseFile(fileName: string) {
 }
 
 // Helper to recurse and patch icons
-function patchIcons(data: any, iconMap: Map<string, string>): any {
+function patchIcons(data: unknown, iconMap: Map<string, string>): unknown {
 	if (Array.isArray(data)) {
 		return data.map((item) => patchIcons(item, iconMap));
 	} else if (typeof data === 'object' && data !== null) {
-		if (data.name && iconMap.has(data.name)) {
-			const iconName = iconMap.get(data.name);
-			data.iconName = iconName;
-			data.icon = iconName;
+		const obj = data as Record<string, unknown>;
+		if (typeof obj.name === 'string' && iconMap.has(obj.name)) {
+			const iconName = iconMap.get(obj.name);
+			obj.iconName = iconName;
+			obj.icon = iconName;
 		}
 
-		for (const key in data) {
-			patchIcons(data[key], iconMap); // in-place modification is unsafe if we didn't deep copy, but we did via JSON.parse
+		for (const key in obj) {
+			patchIcons(obj[key], iconMap); // in-place modification
 		}
 	}
 	return data;
@@ -126,11 +127,11 @@ export const POST = async ({ request }: { request: Request }) => {
 
 				// 3. Get the exported data variable
 				const dataKey = Object.keys(module).find((k) => k !== 'default'); // assumes named export matches file or is only export
-				let rawData: any;
+				let rawData: unknown;
 				if (dataKey) {
-					rawData = (module as any)[dataKey as string];
+					rawData = (module as Record<string, unknown>)[dataKey as string];
 				} else {
-					rawData = (module as any).default;
+					rawData = (module as Record<string, unknown>).default;
 				}
 
 				// Nuclear option: JSON stringify/parse to force plain object and remove all functions/non-serializables immediately.
@@ -188,14 +189,16 @@ export const POST = async ({ request }: { request: Request }) => {
 				}
 
 				results.push({ collection: file.collection, status: 'success' });
-			} catch (err: any) {
+			} catch (err: unknown) {
 				console.error(`Error migrating ${file.name}:`, err);
-				results.push({ collection: file.collection, status: 'error', message: err.message });
+				const message = err instanceof Error ? err.message : 'Unknown error';
+				results.push({ collection: file.collection, status: 'error', message });
 			}
 		}
 
 		return json({ results });
-	} catch (error: any) {
-		return json({ error: error.message }, { status: 500 });
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 };

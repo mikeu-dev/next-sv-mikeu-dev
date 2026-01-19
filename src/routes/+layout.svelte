@@ -16,8 +16,7 @@
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 	import { Icon } from 'svelte-icons-pack';
 	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
-	import { auth } from '$lib/firebase/firebase.client';
-	import { signOut } from 'firebase/auth';
+
 	import { authState } from '$lib/stores/auth.svelte';
 
 	let { data, children } = $props();
@@ -101,7 +100,8 @@
 
 <!-- 🌐 Hidden locale links -->
 <div style="display: none">
-	{#each locales as locale}
+	{#each locales as locale (locale)}
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 	{/each}
 </div>

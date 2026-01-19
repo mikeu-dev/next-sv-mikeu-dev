@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		LayoutDashboard,
 		FolderKanban,
 		FileText,
 		MessageSquare,
@@ -11,10 +10,10 @@
 		Users,
 		Monitor,
 		Smartphone,
-		Globe,
-		MapPin
+		Globe
 	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -26,7 +25,7 @@
 			icon: FolderKanban,
 			color: 'text-blue-600',
 			bg: 'bg-blue-100 dark:bg-blue-900/20',
-			href: '/admin/projects'
+			href: `${base}/admin/projects`
 		},
 		{
 			label: 'Total Articles',
@@ -34,7 +33,7 @@
 			icon: FileText,
 			color: 'text-green-600',
 			bg: 'bg-green-100 dark:bg-green-900/20',
-			href: '/admin/blog'
+			href: `${base}/admin/blog`
 		},
 		{
 			label: 'Total Messages',
@@ -42,7 +41,7 @@
 			icon: MessageSquare,
 			color: 'text-orange-600',
 			bg: 'bg-orange-100 dark:bg-orange-900/20',
-			href: '/admin/contacts'
+			href: `${base}/admin/contacts`
 		},
 		{
 			label: 'Tech Stack Items',
@@ -50,7 +49,7 @@
 			icon: Layers,
 			color: 'text-purple-600',
 			bg: 'bg-purple-100 dark:bg-purple-900/20',
-			href: '/admin/techstack'
+			href: `${base}/admin/techstack`
 		},
 		{
 			label: 'Total Visitors',
@@ -73,13 +72,19 @@
 		<div class="flex gap-2">
 			<button
 				class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
-				onclick={() => goto('/admin/projects/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/projects/create`);
+				}}
 			>
 				<Plus class="h-4 w-4" /> New Project
 			</button>
 			<button
 				class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-				onclick={() => goto('/admin/blog/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/blog/create`);
+				}}
 			>
 				<Plus class="h-4 w-4" /> New Post
 			</button>
@@ -88,10 +93,13 @@
 
 	<!-- Stats Grid -->
 	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-		{#each stats as stat}
+		{#each stats as stat (stat.label)}
 			<button
 				class="relative overflow-hidden rounded-xl border bg-card p-6 text-left shadow-sm transition-all hover:shadow-md"
-				onclick={() => goto(stat.href)}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(stat.href);
+				}}
 			>
 				<div class="flex items-center justify-between">
 					<div>
@@ -118,7 +126,10 @@
 					</div>
 					<button
 						class="text-sm font-medium text-primary hover:underline"
-						onclick={() => goto('/admin/contacts')}
+						onclick={() => {
+							// eslint-disable-next-line svelte/no-navigation-without-resolve
+							goto(`${base}/admin/contacts`);
+						}}
 					>
 						View all
 					</button>
@@ -126,7 +137,7 @@
 				<div class="p-6">
 					{#if data.recent.messages.length > 0}
 						<div class="space-y-6">
-							{#each data.recent.messages as msg}
+							{#each data.recent.messages as msg (msg.id || msg.email)}
 								<div class="flex items-start justify-between">
 									<div class="flex gap-4">
 										<div
@@ -142,11 +153,9 @@
 											<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
 												<span>{msg.email}</span>
 												<span>•</span>
-												<span
-													>{msg.createdAt
-														? new Date(msg.createdAt).toLocaleDateString()
-														: 'N/A'}</span
-												>
+												<span>
+													{msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'N/A'}
+												</span>
 											</div>
 										</div>
 									</div>
@@ -194,7 +203,7 @@
 								</tr>
 							</thead>
 							<tbody class="divide-y border-t border-border/50">
-								{#each data.recent.visitors as visitor}
+								{#each data.recent.visitors as visitor (visitor.timestamp)}
 									<tr class="hover:bg-muted/50">
 										<!-- IP & Browser -->
 										<td class="px-6 py-4">
@@ -275,7 +284,10 @@
 					<h2 class="text-lg font-semibold">Latest Articles</h2>
 					<button
 						class="text-sm font-medium text-primary hover:underline"
-						onclick={() => goto('/admin/blog')}
+						onclick={() => {
+							// eslint-disable-next-line svelte/no-navigation-without-resolve
+							goto(`${base}/admin/blog`);
+						}}
 					>
 						View all
 					</button>
@@ -283,8 +295,9 @@
 				<div class="p-6">
 					{#if data.recent.posts.length > 0}
 						<div class="space-y-6">
-							{#each data.recent.posts as post}
-								<a href={`/admin/blog/${post.id}`} class="group block">
+							{#each data.recent.posts as post (post.id)}
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+								<a href={`${base}/admin/blog/${post.id}`} class="group block">
 									<p class="line-clamp-1 font-medium transition-colors group-hover:text-primary">
 										{post.title}
 									</p>
@@ -317,7 +330,10 @@
 					<div class="space-y-2">
 						<button
 							class="group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"
-							onclick={() => goto('/admin/skills')}
+							onclick={() => {
+								// eslint-disable-next-line svelte/no-navigation-without-resolve
+								goto(`${base}/admin/skills`);
+							}}
 						>
 							<span>Manage Skills</span>
 							<span class="text-xs text-muted-foreground">{data.stats.skills} skills</span>

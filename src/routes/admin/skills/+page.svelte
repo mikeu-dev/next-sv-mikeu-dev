@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	let skills = $state({ items: [] });
+	let skills = $state<{ items: string[] }>({ items: [] });
 	let loading = $state(true);
 	let lang = $state<'en' | 'id'>('en');
 
@@ -17,8 +18,9 @@
 			const response = await fetch(`/api/skills?lang=${lang}`);
 			if (!response.ok) throw new Error('Failed to load data');
 			skills = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load skills');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load skills';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -67,7 +69,10 @@
 			<div class="mb-4 flex items-center justify-between">
 				<h2 class="text-xl font-semibold">Skills List</h2>
 				<button
-					onclick={() => goto(`/admin/skills/edit/${lang}`)}
+					onclick={() => {
+						// eslint-disable-next-line svelte/no-navigation-without-resolve
+						goto(`${base}/admin/skills/edit/${lang}`);
+					}}
 					class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 				>
 					Edit Skills
@@ -75,7 +80,7 @@
 			</div>
 
 			<div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-				{#each skills.items as skill}
+				{#each skills.items as skill (skill)}
 					<div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
 						<span class="font-medium">{skill}</span>
 					</div>

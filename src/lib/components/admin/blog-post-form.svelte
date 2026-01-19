@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	interface BlogPost {
 		id?: string;
@@ -154,8 +155,9 @@
 
 			await Promise.all(promises);
 			toast.success('Changes saved successfully');
-			goto('/admin/blog');
-		} catch (e: any) {
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/blog`);
+		} catch (e: unknown) {
 			console.error(e);
 			toast.error('Failed to save');
 		} finally {
@@ -290,7 +292,10 @@
 	>
 		<button
 			type="button"
-			onclick={() => goto('/admin/blog')}
+			onclick={() => {
+				// eslint-disable-next-line svelte/no-navigation-without-resolve
+				goto(`${base}/admin/blog`);
+			}}
 			class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 		>
 			Cancel

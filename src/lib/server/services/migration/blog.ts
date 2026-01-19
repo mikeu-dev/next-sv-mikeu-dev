@@ -82,11 +82,11 @@ export async function migrateBlogPosts() {
 			message: `Migrated ${results.length} posts`,
 			details: results
 		};
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Blog migration error:', error);
 		return {
 			success: false,
-			message: error.message,
+			message: (error as Error).message,
 			error
 		};
 	}

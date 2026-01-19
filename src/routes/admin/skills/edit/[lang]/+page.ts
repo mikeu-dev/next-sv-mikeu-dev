@@ -21,7 +21,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 			lang,
 			items: data.items || []
 		};
-	} catch (err) {
+	} catch {
 		throw error(500, 'Failed to load skills');
 	}
 };

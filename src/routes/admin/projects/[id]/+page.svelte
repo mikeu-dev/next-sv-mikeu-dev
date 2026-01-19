@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
@@ -9,7 +10,7 @@
 	let { data }: { data: PageData } = $props();
 
 	// Handle legacy data structure
-	const project = data.project as any;
+	const project = data.project as Record<string, unknown>;
 
 	let title_id = $state(data.project.title_id || project.title || '');
 	let title_en = $state(data.project.title_en || project.title || '');
@@ -143,9 +144,11 @@
 			}
 
 			toast.success('Project updated successfully!');
-			goto('/admin/projects');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to update project');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/projects`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to update project';
+			toast.error(message);
 		} finally {
 			saving = false;
 			uploading = false;
@@ -167,9 +170,11 @@
 			}
 
 			toast.success('Project deleted successfully!');
-			goto('/admin/projects');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to delete project');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/projects`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to delete project';
+			toast.error(message);
 		}
 	}
 </script>
@@ -426,7 +431,10 @@ Write detailed content in Markdown format..."
 			</button>
 			<button
 				type="button"
-				onclick={() => goto('/admin/projects')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/projects`);
+				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>
 				Cancel

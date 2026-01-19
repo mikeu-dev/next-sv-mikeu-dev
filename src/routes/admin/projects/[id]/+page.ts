@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
 		const project = await response.json();
 		return { project };
-	} catch (err) {
+	} catch {
 		throw error(404, 'Project not found');
 	}
 };

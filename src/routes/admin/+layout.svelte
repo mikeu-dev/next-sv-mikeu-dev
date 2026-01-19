@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { authState } from '@/lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	import Sidebar from '$lib/components/admin/sidebar.svelte';
@@ -10,6 +9,7 @@
 
 	$effect(() => {
 		if (browser && authState.initialized && !authState.user) {
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto('/auth/login');
 		}
 	});

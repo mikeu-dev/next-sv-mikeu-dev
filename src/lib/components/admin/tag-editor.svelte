@@ -76,13 +76,16 @@
 		// BUT IconPicker logic says: keys are like 'siGithub'.
 		// So we need to construct it.
 		const normalized = 'si' + iconKeyClean; // e.g. siGithub
+		const anySimpleIcons = SimpleIcons as Record<string, { svg: string }>;
 		const icon =
-			(SimpleIcons as any)[normalized] ||
-			(SimpleIcons as any)[iconKeyClean.toLowerCase()] ||
-			(SimpleIcons as any)['si' + iconKeyClean.charAt(0).toUpperCase() + iconKeyClean.slice(1)];
+			anySimpleIcons[normalized] ||
+			anySimpleIcons[iconKeyClean.toLowerCase()] ||
+			anySimpleIcons['si' + iconKeyClean.charAt(0).toUpperCase() + iconKeyClean.slice(1)];
 		return icon?.svg || '';
 	}
 </script>
+
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 
 <div
 	class="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/50"
@@ -161,7 +164,7 @@
 <!-- Tags List -->
 {#if tags.length > 0}
 	<div class="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
-		{#each tags as tag, i}
+		{#each tags as tag, i (tag.name)}
 			<div
 				class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-2 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 			>
@@ -169,10 +172,12 @@
 					class="flex h-8 w-8 items-center justify-center rounded p-1.5"
 					style="background-color: {tag.color}20; color: {tag.color}"
 				>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html getIconSvg(tag.iconName)}
 				</div>
 				<div class="min-w-0 flex-1">
 					<div class="truncate text-sm font-medium">{tag.name}</div>
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 					<a
 						href={tag.url}
 						target="_blank"

@@ -28,7 +28,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 			item: data.items[itemIndex],
 			allItems: data.items
 		};
-	} catch (err) {
+	} catch {
 		throw error(500, 'Failed to load journey');
 	}
 };

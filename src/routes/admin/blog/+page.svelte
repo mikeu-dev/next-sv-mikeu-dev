@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -46,8 +47,9 @@
 			const response = await fetch('/api/admin/blog');
 			if (!response.ok) throw new Error('Failed to load posts');
 			posts = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load posts');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load posts';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -65,8 +67,9 @@
 
 			toast.success('Post deleted successfully');
 			await loadPosts();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to delete post');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to delete post';
+			toast.error(message);
 		}
 	}
 </script>
@@ -78,8 +81,12 @@
 			<p class="text-muted-foreground">Manage your blog content</p>
 		</div>
 		<div class="flex gap-2">
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<button
-				onclick={() => goto('/admin/blog/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/blog/create`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				+ New Post
@@ -160,8 +167,12 @@
 	{:else if posts.length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
 			<p class="mb-4 text-muted-foreground">No posts yet</p>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<button
-				onclick={() => goto('/admin/blog/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/blog/create`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				Create your first post
@@ -221,8 +232,12 @@
 					</div>
 
 					<div class="flex gap-2 border-t border-gray-100 p-4 dark:border-gray-800">
+						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 						<button
-							onclick={() => goto(`/admin/blog/${post.id}`)}
+							onclick={() => {
+								// eslint-disable-next-line svelte/no-navigation-without-resolve
+								goto(`${base}/admin/blog/${post.id}`);
+							}}
 							class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>
 							Edit

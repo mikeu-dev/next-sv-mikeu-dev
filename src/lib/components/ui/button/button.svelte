@@ -55,7 +55,9 @@
 	}: ButtonProps = $props();
 </script>
 
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 {#if href}
+	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 	<a
 		bind:this={ref}
 		data-slot="button"

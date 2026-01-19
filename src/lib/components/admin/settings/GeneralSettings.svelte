@@ -6,9 +6,17 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import type { GeneralSettings } from '$lib/server/schemas/settings.schema';
 
+	type FormState = {
+		type?: string;
+		message?: string;
+		success?: boolean;
+		data?: { siteName?: string; siteUrl?: string };
+		errors?: { siteName?: string[]; siteUrl?: string[] };
+	};
+
 	let { data, form } = $props<{
 		data: GeneralSettings;
-		form?: any;
+		form?: FormState;
 	}>();
 
 	let loading = $state(false);

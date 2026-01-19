@@ -9,8 +9,10 @@
 	let { data }: { data: BlogPageData } = $props();
 </script>
 
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <article class="mx-auto prose prose-lg mt-20 max-w-3xl py-8 prose-neutral dark:prose-invert">
 	<div class="mb-8">
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a
 			href="{base}/blog"
 			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"

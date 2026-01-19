@@ -1,9 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	let journey = $state<{ items: any[] }>({ items: [] });
+	interface JourneyItem {
+		year: string;
+		title: string;
+		description: string;
+		[key: string]: unknown;
+	}
+
+	let journey = $state<{ items: JourneyItem[] }>({ items: [] });
 	let loading = $state(true);
 	let lang = $state<'en' | 'id'>('en');
 
@@ -17,8 +25,9 @@
 			const response = await fetch(`/api/journey?lang=${lang}`);
 			if (!response.ok) throw new Error('Failed to load data');
 			journey = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load journey');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load journey';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -38,7 +47,10 @@
 		</div>
 		<div class="flex gap-2">
 			<button
-				onclick={() => goto(`/admin/journey/create?lang=${lang}`)}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/journey/create?lang=${lang}`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				+ Add Journey
@@ -68,7 +80,7 @@
 		</div>
 	{:else}
 		<div class="space-y-4">
-			{#each journey.items as item, idx}
+			{#each journey.items as item, idx (item.year + item.title)}
 				<div
 					class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
 				>
@@ -85,7 +97,10 @@
 							<p class="text-muted-foreground">{item.description}</p>
 						</div>
 						<button
-							onclick={() => goto(`/admin/journey/edit/${lang}/${idx}`)}
+							onclick={() => {
+								// eslint-disable-next-line svelte/no-navigation-without-resolve
+								goto(`${base}/admin/journey/edit/${lang}/${idx}`);
+							}}
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>
 							Edit

@@ -51,9 +51,9 @@ export class GitHubStorageService {
 				if (data && !Array.isArray(data) && data.sha) {
 					sha = data.sha;
 				}
-			} catch (error: any) {
+			} catch (error: unknown) {
 				// Ignored: File likely doesn't exist, so we will create it.
-				if (error.status !== 404) console.warn('Error checking file existence:', error);
+				if ((error as { status: number }).status !== 404) console.warn('Error checking file existence:', error);
 			}
 
 			await this.octokit.rest.repos.createOrUpdateFileContents({
@@ -70,9 +70,9 @@ export class GitHubStorageService {
 			// Format: https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}
 			const publicUrl = `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${path}`;
 			return publicUrl;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('GitHub Upload Error:', error);
-			throw new HttpException(500, `Failed to upload to GitHub: ${error.message}`);
+			throw new HttpException(500, `Failed to upload to GitHub: ${(error as Error).message}`);
 		}
 	}
 

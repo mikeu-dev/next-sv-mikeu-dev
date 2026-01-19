@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
 	import { page } from '$app/stores';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
+	import { base } from '$app/paths';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import Id from 'svelte-flags/Id.svelte';
@@ -115,6 +115,7 @@
 		force={35}
 	/>
 {/if}
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <!-- ===================== HEADER ===================== -->
 <header
 	bind:this={headerElement}
@@ -125,7 +126,7 @@
 		class="relative z-10 mx-2 flex items-center justify-between rounded-b-4xl bg-white/30 p-6 shadow backdrop-blur-md lg:px-8 dark:bg-gray-900/30 dark:shadow-sm dark:shadow-gray-600"
 	>
 		<a
-			href="/"
+			href="{base}/"
 			bind:this={anchorElement}
 			class="relative flex items-center gap-2 text-lg font-bold"
 		>
@@ -148,9 +149,9 @@
 
 		<!-- Desktop Navigation -->
 		<div class="hidden items-center space-x-6 text-sm font-medium md:flex">
-			{#each navLinksData as link}
+			{#each navLinksData as link (link.href)}
 				<a
-					href={link.href}
+					href={`${base}${link.href}`}
 					class="transition-colors hover:text-foreground/80"
 					class:text-foreground={currentPath === link.href}
 					class:text-muted-foreground={currentPath !== link.href}
@@ -275,9 +276,9 @@
 
 		<!-- Nav Links -->
 		<nav class="flex flex-col gap-3 px-6 py-8 text-base">
-			{#each navLinksData as link}
+			{#each navLinksData as link (link.href)}
 				<a
-					href={link.href}
+					href={`${base}${link.href}`}
 					onclick={toggleMobileMenu}
 					class="rounded-md px-3 py-2 font-medium transition-all duration-200 hover:bg-accent/10"
 					class:text-foreground={currentPath === link.href}

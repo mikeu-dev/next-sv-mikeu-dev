@@ -27,12 +27,13 @@
 				/^> (.*$)/gim,
 				'<blockquote class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4">$1</blockquote>'
 			)
-			.replace(/^\- (.*$)/gim, '<li class="ml-6 mb-1">$1</li>')
+			.replace(/^- (.*$)/gim, '<li class="ml-6 mb-1">$1</li>')
 			.replace(/^\d+\. (.*$)/gim, '<li class="ml-6 mb-1">$1</li>')
 			.replace(/\n/gim, '<br>');
 	}
 </script>
 
 <div class="prose-content">
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html parse(content)}
 </div>

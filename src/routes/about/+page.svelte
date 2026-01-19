@@ -13,9 +13,9 @@
 
 	let techstackRaw = $derived(data.techStack[initialLocale] || data.techStack['en']);
 	let techstack = $derived(
-		techstackRaw.map((category: any) => ({
+		techstackRaw.map((category: { items: unknown[]; category: string; description: string }) => ({
 			...category,
-			items: category.items.map((item: any) => getLocalizedTag(item))
+			items: category.items.map((item: unknown) => getLocalizedTag(item))
 		}))
 	);
 
@@ -98,9 +98,11 @@
 			</h2>
 			<div class="prose max-w-none space-y-4 text-muted-foreground lg:prose-lg">
 				<p>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html m.about_desc_first_part()}
 				</p>
 				<p>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html m.about_desc_second_part()}
 				</p>
 			</div>
@@ -120,7 +122,7 @@
 
 			<!-- Timeline Items -->
 			<div class="space-y-16">
-				{#each myJourney as item, i}
+				{#each myJourney as item, i (i)}
 					<div class="relative flex flex-col md:flex-row md:items-center">
 						<!-- Kolom kiri -->
 						<div class="hidden w-1/2 justify-end pr-12 text-right md:flex">
@@ -179,12 +181,12 @@
 			{m.about_teckstack_title()}
 		</h2>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-			{#each techstack as skillCategory}
+			{#each techstack as skillCategory, i (skillCategory.category || i)}
 				<div class="rounded-lg border bg-card p-6 text-card-foreground">
 					<h3 class="font-poppins mb-2 text-xl font-bold">{skillCategory.category}</h3>
 					<p class="mb-4 text-sm text-muted-foreground">{skillCategory.description}</p>
 					<div class="flex flex-wrap gap-2">
-						{#each skillCategory.items as tech}
+						{#each skillCategory.items as tech (tech.name)}
 							<span
 								class={`group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors
             ${tech.color === '#171d26' ? 'dark:text-white!' : ''}`}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import IconPicker from '$lib/components/admin/icon-picker.svelte';
 
@@ -42,9 +43,11 @@
 			}
 
 			toast.success('Social link created successfully!');
-			goto('/admin/socials');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to create social link');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/socials`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to create social link';
+			toast.error(message);
 		} finally {
 			saving = false;
 		}
@@ -135,7 +138,10 @@
 			</button>
 			<button
 				type="button"
-				onclick={() => goto('/admin/socials')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/socials`);
+				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>
 				Cancel

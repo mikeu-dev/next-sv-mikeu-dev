@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 
@@ -41,9 +42,11 @@
 			}
 
 			toast.success('Skills updated successfully!');
-			goto('/admin/skills');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to update skills');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/skills`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to update skills';
+			toast.error(message);
 		} finally {
 			saving = false;
 		}
@@ -74,7 +77,8 @@
 			</div>
 
 			<div class="space-y-3">
-				{#each items as skill, index (index)}
+				<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+				{#each items as _, index (index)}
 					<div class="flex gap-2">
 						<input
 							type="text"
@@ -120,7 +124,10 @@
 			</button>
 			<button
 				type="button"
-				onclick={() => goto('/admin/skills')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/skills`);
+				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>
 				Cancel

@@ -10,7 +10,7 @@ export interface BlogPost {
 	date: string;
 	published: boolean;
 	content: string;
-	updatedAt?: any;
+	updatedAt?: unknown;
 }
 
 export const blogService = {

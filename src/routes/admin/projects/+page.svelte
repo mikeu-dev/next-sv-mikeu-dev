@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import type { Project } from '$lib/types';
@@ -40,8 +41,9 @@
 			const response = await fetch('/api/projects');
 			if (!response.ok) throw new Error('Failed to load projects');
 			projects = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load projects');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load projects';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -56,7 +58,7 @@
 	// Helper function to get title based on language with fallback
 	// Supports both old format (lang field) and new format (bilingual fields)
 	function getTitle(project: Project, lang: 'en' | 'id'): string {
-		const projectAny = project as any;
+		const projectAny = project as unknown as Record<string, unknown>;
 
 		// New format: bilingual fields
 		if (lang === 'en') {
@@ -68,9 +70,9 @@
 		// Old format: single title with lang field
 		if (projectAny.title) {
 			// If project has lang field matching current lang, use it
-			if (projectAny.lang === lang) return projectAny.title;
+			if (projectAny.lang === lang) return projectAny.title as string;
 			// Otherwise still show it (better than nothing)
-			return projectAny.title;
+			return projectAny.title as string;
 		}
 
 		// Fallback
@@ -80,7 +82,7 @@
 	// Helper function to get description based on language with fallback
 	// Supports both old format (lang field) and new format (bilingual fields)
 	function getDescription(project: Project, lang: 'en' | 'id'): string {
-		const projectAny = project as any;
+		const projectAny = project as unknown as Record<string, unknown>;
 
 		// New format: bilingual fields
 		if (lang === 'en') {
@@ -92,9 +94,9 @@
 		// Old format: single description with lang field
 		if (projectAny.description) {
 			// If project has lang field matching current lang, use it
-			if (projectAny.lang === lang) return projectAny.description;
+			if (projectAny.lang === lang) return projectAny.description as string;
 			// Otherwise still show it (better than nothing)
-			return projectAny.description;
+			return projectAny.description as string;
 		}
 
 		// Fallback
@@ -113,8 +115,11 @@
 
 			toast.success('Project deleted successfully');
 			await loadProjects();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to delete project');
+			toast.success('Project deleted successfully');
+			await loadProjects();
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to delete project';
+			toast.error(message);
 		}
 	}
 </script>
@@ -127,7 +132,10 @@
 		</div>
 		<div class="flex gap-2">
 			<button
-				onclick={() => goto('/admin/projects/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/projects/create`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				+ New Project
@@ -238,7 +246,10 @@
 		<div class="flex flex-col items-center justify-center py-12">
 			<p class="mb-4 text-muted-foreground">No projects yet</p>
 			<button
-				onclick={() => goto('/admin/projects/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/projects/create`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				Create your first project
@@ -306,7 +317,10 @@
 
 						<div class="flex gap-2">
 							<button
-								onclick={() => goto(`/admin/projects/${project.id}`)}
+								onclick={() => {
+									// eslint-disable-next-line svelte/no-navigation-without-resolve
+									goto(`${base}/admin/projects/${project.id}`);
+								}}
 								class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 							>
 								Edit

@@ -4,7 +4,7 @@ import fs from 'fs';
 import type { Readable } from 'stream';
 import path from 'path';
 import { getFilePath, getFileUrl } from '../storage/storage.helper';
-import type { RequestEvent } from '@sveltejs/kit';
+// RequestEvent removed
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];

@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 			link: data.links[linkIndex],
 			allLinks: data.links
 		};
-	} catch (err) {
+	} catch {
 		throw error(500, 'Failed to load social link');
 	}
 };

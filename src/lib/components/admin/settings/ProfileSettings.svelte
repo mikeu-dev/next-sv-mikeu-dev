@@ -7,9 +7,17 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { ProfileSettings } from '$lib/server/schemas/settings.schema';
 
+	type FormState = {
+		type?: string;
+		message?: string;
+		success?: boolean;
+		data?: { username?: string; bio?: string };
+		errors?: { username?: string[]; bio?: string[] };
+	};
+
 	let { data, form } = $props<{
 		data: ProfileSettings;
-		form?: any;
+		form?: FormState;
 	}>();
 
 	let loading = $state(false);

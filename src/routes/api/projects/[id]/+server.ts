@@ -51,7 +51,7 @@ export async function PUT({ params, request, locals }: RequestEvent) {
 
 		// Validate input (partial update)
 		const validatedData = projectUpdateSchema.parse({ ...data, id: params.id });
-		const { id, ...updateData } = validatedData;
+		const { ...updateData } = validatedData;
 
 		const project = await projectsService.update(
 			params.id,

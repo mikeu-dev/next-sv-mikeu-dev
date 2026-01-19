@@ -7,12 +7,11 @@ import type { IconType } from 'svelte-icons-pack';
 // Ideally we should import all icons or have a better way to map names to icons
 const iconMap: Record<string, IconType> = {};
 for (const key in Icons) {
-	// @ts-ignore - Dynamic access to icon pack
+	// @ts-expect-error - Dynamic access to icon pack
 	iconMap[key] = Icons[key];
 }
 for (const key in SiIcons) {
-	// @ts-ignore - Dynamic access to icon pack
-	// @ts-ignore
+	// @ts-expect-error - Dynamic access to icon pack
 	iconMap[key] = SiIcons[key];
 }
 
@@ -23,8 +22,9 @@ export interface LocalizedProject
 	tags?: Tag[];
 }
 
-export function getLocalizedTag(tag: Tag | SerializedTag | any): Tag {
-	const iconName = tag.iconName || (typeof tag.icon === 'string' ? tag.icon : null);
+export function getLocalizedTag(tag: Tag | SerializedTag | unknown): Tag {
+	const tagRecord = tag as Record<string, unknown>;
+	const iconName = (tagRecord.iconName as string) || (typeof tagRecord.icon === 'string' ? tagRecord.icon : null);
 
 	if (iconName) {
 		// It's a SerializedTag or a tag with string icon
@@ -33,9 +33,9 @@ export function getLocalizedTag(tag: Tag | SerializedTag | any): Tag {
 		// Typically svelte-icons-pack keys are e.g. 'SiSvelte'.
 		const icon = iconMap[iconName] || Icons.FiHash;
 		return {
-			name: tag.name,
-			color: tag.color,
-			url: tag.url,
+			name: tagRecord.name as string,
+			color: tagRecord.color as string,
+			url: tagRecord.url as string,
 			icon: icon
 		};
 	}

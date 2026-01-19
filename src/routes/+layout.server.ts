@@ -5,13 +5,13 @@ import { VisitorService } from '$lib/server/services/visitor.service';
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const socialsService = new SocialsService();
 	const visitorService = new VisitorService();
-	let socials = [];
+	let socials: unknown[] = [];
 	let visitorStats = { total: 0, today: 0 };
 
 	try {
 		const socialData = await socialsService.getSocials();
 		// Assuming socialService returns { links: [...] } based on previous findings
-		socials = (socialData as any).links || [];
+		socials = (socialData as { links: unknown[] }).links || [];
 	} catch (error) {
 		console.error('Failed to fetch socials:', error);
 	}

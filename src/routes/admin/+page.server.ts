@@ -6,7 +6,7 @@ import { TechStackService } from '$lib/server/services/techstack.service';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { SkillsService } from '$lib/server/services/skills.service';
 import type { PageServerLoad } from './$types';
-import { env } from '$env/dynamic/private';
+
 
 export const load: PageServerLoad = async () => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
@@ -25,12 +25,18 @@ export const load: PageServerLoad = async () => {
 
 	// Sort recent messages
 	const recentMessages = (contacts || [])
-		.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+		.sort(
+			(a: Record<string, unknown>, b: Record<string, unknown>) =>
+				new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime()
+		)
 		.slice(0, 5);
 
 	// Sort recent posts
 	const recentPosts = (posts || [])
-		.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+		.sort(
+			(a: Record<string, unknown>, b: Record<string, unknown>) =>
+				new Date(b.date as string).getTime() - new Date(a.date as string).getTime()
+		)
 		.slice(0, 5);
 
 	// Count tech stack items (sum of items in all categories)
@@ -48,7 +54,7 @@ export const load: PageServerLoad = async () => {
 
 	// Calculate techstack count manually since service doesn't provide it
 	const techStackItemsCount =
-		techstack?.categories?.reduce((acc: number, category: any) => {
+		techstack?.categories?.reduce((acc: number, category: { items: unknown[] }) => {
 			return acc + (category.items?.length || 0);
 		}, 0) || 0;
 

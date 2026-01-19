@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 	import IconPicker from '$lib/components/admin/icon-picker.svelte';
@@ -9,12 +10,14 @@
 	let category = $state(data.category.category);
 	let description = $state(data.category.description);
 	let items = $state<{ name: string; iconName: string; color: string; url: string }[]>(
-		data.category.items.map((item: any) => ({
-			name: item.name,
-			iconName: item.iconName,
-			color: item.color,
-			url: item.url
-		}))
+		data.category.items.map(
+			(item: { name: string; iconName: string; color: string; url: string }) => ({
+				name: item.name,
+				iconName: item.iconName,
+				color: item.color,
+				url: item.url
+			})
+		)
 	);
 	let saving = $state(false);
 
@@ -58,9 +61,11 @@
 			}
 
 			toast.success('Techstack updated successfully!');
-			goto('/admin/techstack');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to update techstack');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/techstack`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to update techstack';
+			toast.error(message);
 		} finally {
 			saving = false;
 		}
@@ -244,7 +249,10 @@
 			</button>
 			<button
 				type="button"
-				onclick={() => goto('/admin/techstack')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/techstack`);
+				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>
 				Cancel

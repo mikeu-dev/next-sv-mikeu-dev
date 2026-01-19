@@ -5,7 +5,7 @@ export const prerender = false;
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const skillsService = new SkillsService();
-	let projectsResult: Record<string, any[]> = { en: [], id: [] };
+	let projectsResult: Record<string, unknown[]> = { en: [], id: [] };
 
 	try {
 		const response = await fetch('/api/projects');
@@ -25,8 +25,8 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	}
 
 	// Fetch skills for hero section
-	let skillsEn: any = { items: [] };
-	let skillsId: any = { items: [] };
+	let skillsEn: unknown = { items: [] };
+	let skillsId: unknown = { items: [] };
 	try {
 		const [en, id] = await Promise.all([
 			skillsService.getSkills('en'),
@@ -41,8 +41,8 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	return {
 		projects: projectsResult,
 		skills: {
-			en: skillsEn.items || [],
-			id: skillsId.items || []
+			en: (skillsEn as { items: string[] }).items || [],
+			id: (skillsId as { items: string[] }).items || []
 		}
 	};
 };

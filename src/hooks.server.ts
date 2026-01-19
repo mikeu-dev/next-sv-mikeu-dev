@@ -4,7 +4,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { AuthService } from '$lib/server/services/auth.service';
 import { redirect } from '@sveltejs/kit';
 import { env } from '$lib/server/config/env';
-import { logError, logWarning } from '$lib/server/utils/logger';
+import { logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { UAParser } from 'ua-parser-js';
 
@@ -122,7 +122,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		try {
 			const decodedClaims = await authService.verifySessionCookie(session);
 			event.locals.user = decodedClaims;
-		} catch (error) {
+		} catch {
 			// Session invalid/expired, locals.user remains undefined
 			console.log('Session verification failed or expired');
 		}
@@ -136,9 +136,9 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 
 		// Verify owner email
-		if (event.locals.user.email !== env.OWNER_EMAIL) {
+		if ((event.locals.user as { email: string }).email !== env.OWNER_EMAIL) {
 			logWarning('Auth:OwnerCheck', 'Non-owner attempted to access admin', {
-				email: event.locals.user.email,
+				email: (event.locals.user as { email: string }).email,
 				path: event.url.pathname
 			});
 			console.log('🔴 Email mismatch, redirecting to login');

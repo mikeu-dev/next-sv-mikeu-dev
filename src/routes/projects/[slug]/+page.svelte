@@ -5,7 +5,7 @@
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '@/lib/paraglide/messages.js';
 	import SEO from '@/lib/components/seo/seo.svelte';
-	import type { Project } from '$lib/types';
+
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { base } from '$app/paths';
@@ -17,8 +17,10 @@
 
 <SEO title={project.title} description={project.description} image={project.thumbnailUrl} />
 
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
 	<div class="mb-8">
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a
 			href="{base}/projects"
 			class="inline-flex items-center text-sm text-muted-foreground no-underline hover:text-foreground"

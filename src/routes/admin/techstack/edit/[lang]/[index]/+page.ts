@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 			category: categories[categoryIndex],
 			allCategories: categories
 		};
-	} catch (err) {
+	} catch {
 		throw error(500, 'Failed to load techstack');
 	}
 };

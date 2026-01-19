@@ -10,7 +10,7 @@
 	const allIcons = Object.keys(SimpleIcons)
 		.filter((key) => key.startsWith('si'))
 		.map((key) => {
-			const iconData = (SimpleIcons as any)[key];
+			const iconData = (SimpleIcons as unknown as Record<string, { hex: string }>)[key];
 			return {
 				key,
 				name: key.slice(2), // Remove 'si' prefix
@@ -29,7 +29,7 @@
 	);
 
 	function getIconSvg(iconKey: string): string {
-		const icon = (SimpleIcons as any)[iconKey];
+		const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[iconKey];
 		if (!icon?.svg) return '';
 		// Inject class for styling
 		return icon.svg.replace('<svg', '<svg class="w-full h-full fill-current"');
@@ -81,6 +81,7 @@
 				class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded"
 				style="background-color: {color}15; color: {color}"
 			>
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html getIconSvg(value.charAt(0).toLowerCase() + value.slice(1))}
 			</div>
 		{:else}
@@ -160,6 +161,7 @@
 									class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
 									style="color: #{icon.hex}"
 								>
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 									{@html getIconSvg(icon.key)}
 								</div>
 								<span class="truncate text-sm font-medium">{icon.displayName}</span>

@@ -13,8 +13,8 @@ const userService = new UserService();
 
 export async function POST(event: RequestEvent) {
 	// Rate limiting - 5 requests per minute
-	// const rateLimitResult = checkRateLimit(event, RateLimitPresets.AUTH);
-	// if (rateLimitResult) return rateLimitResult;
+	const rateLimitResult = checkRateLimit(event, RateLimitPresets.AUTH);
+	if (rateLimitResult) return rateLimitResult;
 
 	try {
 		const { token, username, email } = await event.request.json();

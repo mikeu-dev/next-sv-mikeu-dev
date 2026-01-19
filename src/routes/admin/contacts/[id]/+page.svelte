@@ -10,6 +10,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	let contact: Contact | null = null;
 	let loading = true;
@@ -58,6 +59,7 @@
 			if (res.ok) {
 				toast.success('Contact updated');
 				if (contact) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					contact.status = status as any;
 					contact.notes = notes;
 					contact.tags = tags;
@@ -104,7 +106,10 @@
 <div class="space-y-6">
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-4">
-			<Button variant="ghost" size="sm" onclick={() => goto('/admin/contacts')}>&larr; Back</Button>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+			<Button variant="ghost" size="sm" onclick={() => goto(`${base}/admin/contacts`)}
+				>&larr; Back</Button
+			>
 			<h2 class="text-3xl font-bold tracking-tight">Contact Details</h2>
 		</div>
 	</div>
@@ -176,7 +181,7 @@
 									{statusOptions.find((o) => o.value === status)?.label ?? 'Select status'}
 								</Select.Trigger>
 								<Select.Content>
-									{#each statusOptions as option}
+									{#each statusOptions as option (option.value)}
 										<Select.Item value={option.value} label={option.label} />
 									{/each}
 								</Select.Content>
@@ -186,7 +191,7 @@
 						<div class="space-y-2">
 							<Label>Tags</Label>
 							<div class="flex flex-wrap gap-2">
-								{#each tags as tag}
+								{#each tags as tag (tag)}
 									<span
 										class="inline-flex items-center gap-1 rounded-full border bg-muted px-2.5 py-0.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted/80"
 									>
@@ -229,7 +234,7 @@
 					<Card.Content>
 						{#if contact.logs && contact.logs.length > 0}
 							<div class="space-y-4">
-								{#each contact.logs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) as log}
+								{#each contact.logs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) as log (log.createdAt + log.title)}
 									<div class="flex flex-col gap-1 border-b pb-3 last:border-0 last:pb-0">
 										<div class="flex items-center justify-between">
 											<span class="text-sm font-semibold">{log.title}</span>

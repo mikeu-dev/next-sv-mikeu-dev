@@ -26,8 +26,9 @@ export async function GET({ url }: RequestEvent) {
 
 		const posts = await blogService.getAllPosts();
 		return json(posts);
-	} catch (error: any) {
-		return json({ error: error.message }, { status: 500 });
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 }
 
@@ -42,8 +43,9 @@ export async function POST({ request }: RequestEvent) {
 
 		const result = await blogService.createPost(data);
 		return json(result);
-	} catch (error: any) {
-		return json({ error: error.message }, { status: 500 });
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 }
 
@@ -57,8 +59,9 @@ export async function PUT({ request }: RequestEvent) {
 		const { id, ...updateData } = data;
 		const result = await blogService.updatePost(id, updateData);
 		return json(result);
-	} catch (error: any) {
-		return json({ error: error.message }, { status: 500 });
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 }
 
@@ -71,8 +74,9 @@ export async function DELETE({ url }: RequestEvent) {
 
 		await blogService.deletePost(id);
 		return json({ success: true });
-	} catch (error: any) {
-		return json({ error: error.message }, { status: 500 });
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return json({ error: message }, { status: 500 });
 	}
 }
 
