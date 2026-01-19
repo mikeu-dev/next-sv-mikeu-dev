@@ -13,8 +13,8 @@ const userService = new UserService();
 
 export async function POST(event: RequestEvent) {
 	// Rate limiting - 5 requests per minute
-	const rateLimitResult = checkRateLimit(event, RateLimitPresets.AUTH);
-	if (rateLimitResult) return rateLimitResult;
+	// const rateLimitResult = checkRateLimit(event, RateLimitPresets.AUTH);
+	// if (rateLimitResult) return rateLimitResult;
 
 	try {
 		const { token, username, email } = await event.request.json();
@@ -24,6 +24,7 @@ export async function POST(event: RequestEvent) {
 		if (decodedToken.auth_time === decodedToken.iat && username && email) {
 			await userService.createUser(decodedToken.uid, email, username);
 		}
+
 		const sessionCookie = await authService.createSessionCookie(token);
 
 		event.cookies.set('__session', sessionCookie, {

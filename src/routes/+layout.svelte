@@ -60,15 +60,18 @@
 	$effect(() => {
 		if (authState.initialized && authState.user && !data.user) {
 			console.log(
-				'⚠️ Session mismatch detected (Server: Logged out, Client: Logged in). Signing out...'
+				'⚠️ Session mismatch detected (Server: Logged out, Client: Logged in). Auto-logout disabled for debugging/stability.'
 			);
+			/*
 			signOut(auth).then(async () => {
 				await fetch('/api/auth', { method: 'DELETE' });
 				// data.user is static from load function, so we might need to invalidateAll or reload
 				// but since simple signout clears authState, UI should update immediately.
 				// However, to be safe and clear cookies properly:
-				window.location.reload();
+				// window.location.reload();
+				console.log('⚠️ Session mismatch tried to reload, but blocked for debugging.');
 			});
+			*/
 		}
 	});
 	let isAdmin = $derived(page.url.pathname.startsWith('/admin'));
