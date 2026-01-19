@@ -171,14 +171,16 @@
 					<Card.Content class="space-y-4">
 						<div class="space-y-2">
 							<Label>Status</Label>
-							<select
-								class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-								bind:value={status}
-							>
-								{#each statusOptions as option}
-									<option value={option.value}>{option.label}</option>
-								{/each}
-							</select>
+							<Select.Root type="single" bind:value={status}>
+								<Select.Trigger class="w-full">
+									{statusOptions.find((o) => o.value === status)?.label ?? 'Select status'}
+								</Select.Trigger>
+								<Select.Content>
+									{#each statusOptions as option}
+										<Select.Item value={option.value} label={option.label} />
+									{/each}
+								</Select.Content>
+							</Select.Root>
 						</div>
 
 						<div class="space-y-2">
