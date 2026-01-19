@@ -5,8 +5,10 @@ import { AuthService } from '$lib/server/services/auth.service';
 import { redirect } from '@sveltejs/kit';
 import { env } from '$lib/server/config/env';
 import { logError, logWarning } from '$lib/server/utils/logger';
+import { VisitorService } from '$lib/server/services/visitor.service';
 
 const authService = new AuthService();
+const visitorService = new VisitorService();
 
 /**
  * Security headers middleware
@@ -65,6 +67,34 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 	});
 
 /**
+ * Visitor tracking middleware
+ * Checks for cookie and increments counter if new visitor
+ */
+const handleVisitor: Handle = async ({ event, resolve }) => {
+	const VISITOR_COOKIE = 'visitor_log';
+	const hasVisited = event.cookies.get(VISITOR_COOKIE);
+
+	if (!hasVisited && !event.url.pathname.startsWith('/admin')) {
+		// Only track public pages
+		try {
+			await visitorService.increment();
+
+			// Set cookie for 24 hours
+			event.cookies.set(VISITOR_COOKIE, 'true', {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'lax',
+				maxAge: 60 * 60 * 24 // 1 day
+			});
+		} catch (error) {
+			console.error('Failed to track visitor', error);
+		}
+	}
+
+	return resolve(event);
+};
+
+/**
  * Authentication middleware
  * Protects /admin routes and verifies owner email
  */
@@ -102,4 +132,4 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleSecurityHeaders, handleParaglide, handleAuth);
+export const handle: Handle = sequence(handleSecurityHeaders, handleParaglide, handleVisitor, handleAuth);

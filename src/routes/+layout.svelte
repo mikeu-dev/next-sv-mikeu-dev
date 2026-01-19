@@ -95,7 +95,7 @@
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}
-		<Footer {socials} />
+		<Footer {socials} visitorStats={data.visitorStats} />
 	{/if}
 </div>
 

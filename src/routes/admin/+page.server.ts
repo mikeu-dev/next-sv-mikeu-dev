@@ -3,13 +3,16 @@ import { ProjectsRepository } from '$lib/server/repositories/projects.repository
 import { blogService } from '$lib/server/services/blog.service';
 import { ContactsService } from '$lib/server/services/contacts.service';
 import { TechStackService } from '$lib/server/services/techstack.service';
+import { VisitorService } from '$lib/server/services/visitor.service';
 import { SkillsService } from '$lib/server/services/skills.service';
 import type { PageServerLoad } from './$types';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async () => {
     const projectsService = new ProjectsService(new ProjectsRepository());
     const contactsService = new ContactsService();
     const techStackService = new TechStackService();
+    const visitorService = new VisitorService();
     const skillsService = new SkillsService();
 
     const [projects, posts, contacts, techstack, skills] = await Promise.all([
@@ -22,27 +25,33 @@ export const load: PageServerLoad = async () => {
 
     // Sort recent messages
     const recentMessages = (contacts || [])
-        .sort((a, b) => {
-            const timeA = a.createdAt ? (a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime()) : 0;
-            const timeB = b.createdAt ? (b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime()) : 0;
-            return timeB - timeA;
-        })
+        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 5);
 
     // Sort recent posts
     const recentPosts = (posts || [])
-        .sort((a, b) => {
-            const timeA = a.date ? new Date(a.date).getTime() : 0;
-            const timeB = b.date ? new Date(b.date).getTime() : 0;
-            return timeB - timeA;
-        })
+        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5);
 
     // Count tech stack items (sum of items in all categories)
-    const techStackCount = techstack?.categories?.reduce((acc: number, cat: any) => acc + (cat.items?.length || 0), 0) || 0;
+    // This line is effectively replaced by the new techStackItemsCount calculation below,
+    // but keeping it commented out for context if it was meant to be removed.
+    // const techStackCount = techstack?.categories?.reduce((acc: number, cat: any) => acc + (cat.items?.length || 0), 0) || 0;
 
     // Count skills
     const skillsCount = skills?.items?.length || 0;
+
+    // Fetch individual counts and visitor stats
+    const projectsCount = projects?.length || 0;
+    const blogsCount = posts?.length || 0;
+    const contactsCount = contacts?.length || 0;
+
+    // Calculate techstack count manually since service doesn't provide it
+    const techStackItemsCount = techstack?.categories?.reduce((acc: number, category: any) => {
+        return acc + (category.items?.length || 0);
+    }, 0) || 0;
+
+    const visitorStats = await visitorService.getStats();
 
     // Serialize to plain objects to avoid "non-POJO" errors with Dates/Timestamps
     const serializedMessages = JSON.parse(JSON.stringify(recentMessages));
@@ -50,10 +59,11 @@ export const load: PageServerLoad = async () => {
 
     return {
         stats: {
-            projects: projects?.length || 0,
-            blogs: posts?.length || 0,
-            contacts: contacts?.length || 0,
-            techstack: techStackCount,
+            projects: projectsCount,
+            blogs: blogsCount,
+            contacts: contactsCount,
+            techstack: techStackItemsCount,
+            visitors: visitorStats,
             skills: skillsCount
         },
         recent: {

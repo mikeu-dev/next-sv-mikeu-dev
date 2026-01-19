@@ -7,7 +7,8 @@
 		Layers,
 		ArrowRight,
 		Plus,
-		Hammer
+		Hammer,
+		Users
 	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
@@ -46,6 +47,14 @@
 			color: 'text-purple-600',
 			bg: 'bg-purple-100 dark:bg-purple-900/20',
 			href: '/admin/techstack'
+		},
+		{
+			label: 'Total Visitors',
+			value: data.stats.visitors.total,
+			icon: Users,
+			color: 'text-pink-600',
+			bg: 'bg-pink-100 dark:bg-pink-900/20',
+			href: '#' // No specific page for now, or could link to detailed analytics later
 		}
 	];
 </script>
@@ -74,7 +83,7 @@
 	</div>
 
 	<!-- Stats Grid -->
-	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 		{#each stats as stat}
 			<button
 				class="relative overflow-hidden rounded-xl border bg-card p-6 text-left shadow-sm transition-all hover:shadow-md"

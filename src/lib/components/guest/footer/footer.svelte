@@ -3,7 +3,7 @@
 	import * as m from '@/lib/paraglide/messages';
 	import { Github, Instagram, Linkedin, Mail } from '@lucide/svelte';
 
-	let { socials } = $props();
+	let { socials, visitorStats = { total: 0, today: 0 } } = $props();
 
 	const iconMap: Record<string, any> = {
 		Github: Github,
@@ -56,4 +56,12 @@
 			{/each}
 		</div>
 	</div>
+	{#if visitorStats.total > 0}
+		<div class="mt-4 flex w-full justify-center border-t border-border/50 pt-2 md:justify-end">
+			<div class="flex gap-4 text-xs text-muted-foreground/50">
+				<span>Visitors: {visitorStats.total.toLocaleString()}</span>
+				<span>Today: {visitorStats.today.toLocaleString()}</span>
+			</div>
+		</div>
+	{/if}
 </footer>
