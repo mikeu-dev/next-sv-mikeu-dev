@@ -23,13 +23,11 @@
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		console.log('Starting authentication...', { authMode, email, username });
 		let authEmail = email;
 
 		try {
 			let result;
 			if (authMode === 'signIn') {
-				console.log('Fetching user by username...');
 				const res = await fetch(`/api/users/find-by-username`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -38,29 +36,21 @@
 
 				if (!res.ok) {
 					const errorData = await res.json();
-					console.error('User lookup failed:', errorData);
 					throw new Error(errorData.message || 'User not found');
 				}
 				const { email: foundEmail } = await res.json();
 				authEmail = foundEmail;
-				console.log('User found, email:', authEmail);
 			}
 
 			if (authMode === 'signIn') {
-				console.log('Attempting Firebase sign-in...');
 				result = await signInWithEmailAndPassword(auth, authEmail, password);
-				console.log('Firebase sign-in success:', result.user.uid);
 				toast.success('Signed in successfully');
 			} else {
-				console.log('Attempting Firebase sign-up...');
 				result = await createUserWithEmailAndPassword(auth, authEmail, password);
-				console.log('Firebase sign-up success:', result.user.uid);
 				toast.success('Account created successfully');
 			}
 
-			console.log('Getting ID token...');
 			const token = await result.user.getIdToken();
-			console.log('Sending token to server...');
 			const res = await fetch('/api/auth', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -68,15 +58,12 @@
 			});
 
 			if (res.ok) {
-				console.log('Server auth success. Invalidating data...');
 				await invalidateAll();
-				toast.success('Login successful!');
 			} else {
-				console.error('Server auth failed:', res.status, res.statusText);
 				toast.error('Authentication with server failed.');
 			}
 		} catch (e: unknown) {
-			console.error('Authentication error details:', e);
+			console.error('Authentication error:', e);
 			let message = e instanceof Error ? e.message : 'An unknown error occurred.';
 			toast.error(message);
 		}
