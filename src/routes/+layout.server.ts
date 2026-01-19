@@ -1,7 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 import { SocialsService } from '$lib/server/services/socials.service';
 
-export const load: LayoutServerLoad = async () => {
+export const load: LayoutServerLoad = async ({ locals }) => {
     const socialsService = new SocialsService();
     let socials = [];
 
@@ -14,6 +14,7 @@ export const load: LayoutServerLoad = async () => {
     }
 
     return {
-        socials
+        socials,
+        user: locals.user
     };
 };
