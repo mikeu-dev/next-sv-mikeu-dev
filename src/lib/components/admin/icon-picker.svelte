@@ -9,11 +9,15 @@
 	// Get all available icons
 	const allIcons = Object.keys(SimpleIcons)
 		.filter((key) => key.startsWith('si'))
-		.map((key) => ({
-			key,
-			name: key.slice(2), // Remove 'si' prefix
-			displayName: key.charAt(2).toUpperCase() + key.slice(3) // Capitalize
-		}));
+		.map((key) => {
+			const iconData = (SimpleIcons as any)[key];
+			return {
+				key,
+				name: key.slice(2), // Remove 'si' prefix
+				displayName: key.charAt(2).toUpperCase() + key.slice(3), // Capitalize
+				hex: iconData.hex
+			};
+		});
 
 	// Filter icons based on search
 	let filteredIcons = $derived(
@@ -24,10 +28,11 @@
 			: allIcons.slice(0, 100) // Show first 100 by default
 	);
 
-	// Get SVG for an icon
 	function getIconSvg(iconKey: string): string {
 		const icon = (SimpleIcons as any)[iconKey];
-		return icon?.svg || '';
+		if (!icon?.svg) return '';
+		// Inject class for styling
+		return icon.svg.replace('<svg', '<svg class="w-full h-full fill-current"');
 	}
 
 	// Get selected icon display name
@@ -137,7 +142,7 @@
 			<!-- Icons Grid -->
 			<div class="max-h-80 overflow-y-auto p-4">
 				{#if filteredIcons.length > 0}
-					<div class="grid grid-cols-8 gap-2">
+					<div class="grid grid-cols-2 gap-2">
 						{#each filteredIcons as icon (icon.key)}
 							<button
 								type="button"
@@ -145,18 +150,19 @@
 									e.stopPropagation();
 									selectIcon(icon);
 								}}
-								class="group flex items-center justify-center rounded-lg border p-3 transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 {value ===
+								class="group flex items-center gap-3 rounded-lg border p-2 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 {value ===
 								'Si' + icon.name
 									? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
 									: 'border-gray-200 dark:border-gray-700'}"
 								title={icon.displayName}
 							>
 								<div
-									class="icon-container flex h-6 w-6 items-center justify-center transition-transform group-hover:scale-110"
-									style="color: {color}"
+									class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
+									style="color: #{icon.hex}"
 								>
 									{@html getIconSvg(icon.key)}
 								</div>
+								<span class="truncate text-sm font-medium">{icon.displayName}</span>
 							</button>
 						{/each}
 					</div>
