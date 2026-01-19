@@ -4,8 +4,20 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
+	interface BlogPost {
+		id: string;
+		slug: string;
+		locale: string;
+		title: string;
+		description: string;
+		date: string;
+		published: boolean;
+		content: string;
+		[key: string]: unknown;
+	}
+
 	let id = $derived($page.params.slug); // Note: We created directory named [slug] but usually refer to it as ID
-	let post = $state<any>(null);
+	let post = $state<BlogPost | null>(null);
 	let loading = $state(true);
 
 	onMount(async () => {
@@ -13,8 +25,9 @@
 			const response = await fetch(`/api/admin/blog?id=${id}`);
 			if (!response.ok) throw new Error('Failed to load post');
 			post = await response.json();
-		} catch (error: any) {
-			toast.error(error.message);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load post';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}

@@ -1,10 +1,25 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import * as SimpleIcons from 'simple-icons';
 
-	let techstack = $state<any>({ categories: [] });
+	interface TechItem {
+		name: string;
+		iconName: string;
+		url: string;
+		color: string;
+		iconSvg?: string;
+	}
+
+	interface TechCategory {
+		category: string;
+		description: string;
+		items: TechItem[];
+	}
+
+	let techstack = $state<{ categories: TechCategory[] }>({ categories: [] });
 	let loading = $state(true);
 	let lang = $state<'en' | 'id'>('en');
 
@@ -17,9 +32,28 @@
 		try {
 			const response = await fetch(`/api/techstack?lang=${lang}`);
 			if (!response.ok) throw new Error('Failed to load data');
-			techstack = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load techstack');
+			const data = await response.json();
+			// API might return 'items' or 'categories' as the top-level array of categories
+			const categoriesData = data.categories || data.items || [];
+
+			techstack = {
+				categories: categoriesData.map((category: unknown) => {
+					const cat = category as Record<string, unknown>;
+					return {
+						...cat,
+						items: ((cat.items as unknown[]) || []).map((item: unknown) => {
+							const it = item as Record<string, unknown>;
+							return {
+								...it,
+								iconSvg: getIconSvg(it.iconName as string)
+							};
+						})
+					};
+				})
+			};
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load techstack';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -35,12 +69,12 @@
 		try {
 			// Convert "SiReact" to "siReact" format used by simple-icons
 			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
-			const icon = (SimpleIcons as any)[key];
+			const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[key];
 
 			if (icon && icon.svg) {
 				return icon.svg;
 			}
-		} catch (e) {
+		} catch {
 			console.warn(`Icon not found: ${iconName}`);
 		}
 
@@ -81,7 +115,7 @@
 		</div>
 	{:else}
 		<div class="space-y-6">
-			{#each techstack.categories as category, idx}
+			{#each techstack.categories as category, idx (category.category || idx)}
 				<div
 					class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
 				>
@@ -91,7 +125,10 @@
 							<p class="text-sm text-muted-foreground">{category.description}</p>
 						</div>
 						<button
-							onclick={() => goto(`/admin/techstack/edit/${lang}/${idx}`)}
+							onclick={() => {
+								// eslint-disable-next-line svelte/no-navigation-without-resolve
+								goto(`${base}/admin/techstack/edit/${lang}/${idx}`);
+							}}
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>
 							Edit
@@ -99,7 +136,7 @@
 					</div>
 
 					<div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-						{#each category.items as item}
+						{#each category.items as item (item.name)}
 							<div
 								class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 dark:border-gray-800"
 							>
@@ -107,10 +144,12 @@
 									class="flex h-10 w-10 items-center justify-center rounded-lg"
 									style="background-color: {item.color}20; color: {item.color}"
 								>
-									{@html getIconSvg(item.iconName)}
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+									{@html item.iconSvg}
 								</div>
 								<div class="flex-1">
 									<div class="font-medium">{item.name}</div>
+									<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 									<a href={item.url} target="_blank" class="text-xs text-blue-600 hover:underline">
 										{item.url}
 									</a>

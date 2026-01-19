@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import TagEditor from '$lib/components/admin/tag-editor.svelte';
@@ -128,9 +129,11 @@
 			}
 
 			toast.success('Project created successfully!');
-			goto('/admin/projects');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to create project');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/projects`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to create project';
+			toast.error(message);
 		} finally {
 			saving = false;
 			uploading = false;
@@ -380,7 +383,10 @@ Write detailed content in Markdown format..."
 			</button>
 			<button
 				type="button"
-				onclick={() => goto('/admin/projects')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/projects`);
+				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>
 				Cancel

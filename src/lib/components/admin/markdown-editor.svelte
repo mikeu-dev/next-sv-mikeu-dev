@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	let { value = $bindable(''), placeholder = 'Write your content...', id = '' } = $props();
 
 	let textarea = $state<HTMLTextAreaElement>();
@@ -127,7 +125,7 @@
 			class="rounded px-2 py-1 font-mono text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
 			title="Inline Code"
 		>
-			{'</>'}
+			&lt;/&gt;
 		</button>
 		<button
 			type="button"
@@ -206,6 +204,7 @@
 			<div class="max-w-none p-4 text-sm">
 				{#if value.trim()}
 					<div class="prose-content">
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						{@html value
 							.replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mb-2 mt-4">$1</h3>')
 							.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mb-3 mt-5">$1</h2>')
@@ -229,7 +228,7 @@
 								/^> (.*$)/gim,
 								'<blockquote class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4">$1</blockquote>'
 							)
-							.replace(/^\- (.*$)/gim, '<li class="ml-6 mb-1">$1</li>')
+							.replace(/^- (.*$)/gim, '<li class="ml-6 mb-1">$1</li>')
 							.replace(/^\d+\. (.*$)/gim, '<li class="ml-6 mb-1">$1</li>')
 							.replace(/\n/gim, '<br>')}
 					</div>

@@ -4,6 +4,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { toast } from 'svelte-sonner';
+	import { base } from '$app/paths';
 
 	let contacts: Contact[] = [];
 	let loading = true;
@@ -116,7 +117,8 @@
 									<span class={getStatusClass(contact.status)}>{contact.status}</span>
 								</td>
 								<td class="p-4 text-right align-middle">
-									<a href="/admin/contacts/{contact.id}" class="text-primary hover:underline"
+									<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+									<a href="{base}/admin/contacts/{contact.id}" class="text-primary hover:underline"
 										>View</a
 									>
 								</td>

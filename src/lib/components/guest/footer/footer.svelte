@@ -3,9 +3,9 @@
 	import * as m from '@/lib/paraglide/messages';
 	import { Github, Instagram, Linkedin, Mail } from '@lucide/svelte';
 
-	let { socials } = $props();
+	let { socials, visitorStats = { total: 0, today: 0 } } = $props();
 
-	const iconMap: Record<string, any> = {
+	const iconMap: Record<string, unknown> = {
 		Github: Github,
 		Instagram: Instagram,
 		LinkedIn: Linkedin,
@@ -13,10 +13,11 @@
 	};
 
 	function getIcon(name: string) {
-		return iconMap[name] || Mail;
+		return (iconMap[name] as typeof Github) || Mail;
 	}
 </script>
 
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <footer
 	class="border-t bg-gradient-to-b from-slate-100 to-background px-4 py-6 dark:from-slate-900"
 >
@@ -31,11 +32,12 @@
 		</p>
 
 		<div class="flex flex-wrap items-center justify-center gap-4">
-			{#each socials as link}
+			{#each socials as link (link.href)}
 				{@const Icon = getIcon(link.iconName)}
 				<Tooltip.Provider>
 					<Tooltip.Root>
 						<Tooltip.Trigger>
+							<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 							<a
 								href={link.href}
 								target="_blank"
@@ -56,4 +58,12 @@
 			{/each}
 		</div>
 	</div>
+	{#if visitorStats.total > 0}
+		<div class="mt-4 flex w-full justify-center border-t border-border/50 pt-2 md:justify-end">
+			<div class="flex gap-4 text-xs text-muted-foreground/50">
+				<span>Visitors: {visitorStats.total.toLocaleString()}</span>
+				<span>Today: {visitorStats.today.toLocaleString()}</span>
+			</div>
+		</div>
+	{/if}
 </footer>

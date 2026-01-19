@@ -1,10 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import * as SimpleIcons from 'simple-icons';
 
-	let socials = $state<{ links: any[] }>({ links: [] });
+	interface SocialLink {
+		label: string;
+		href: string;
+		iconName: string;
+		color: string;
+	}
+
+	let socials = $state<{ links: SocialLink[] }>({ links: [] });
 	let loading = $state(true);
 
 	onMount(async () => {
@@ -17,8 +25,9 @@
 			const response = await fetch('/api/socials');
 			if (!response.ok) throw new Error('Failed to load data');
 			socials = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load socials');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load socials';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -28,9 +37,9 @@
 	function getIconSvg(iconName: string): string {
 		try {
 			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
-			const icon = (SimpleIcons as any)[key];
+			const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[key];
 			return icon?.svg || '';
-		} catch (e) {
+		} catch {
 			return '';
 		}
 	}
@@ -43,7 +52,10 @@
 			<p class="text-muted-foreground">Manage your social media links</p>
 		</div>
 		<button
-			onclick={() => goto('/admin/socials/create')}
+			onclick={() => {
+				// eslint-disable-next-line svelte/no-navigation-without-resolve
+				goto(`${base}/admin/socials/create`);
+			}}
 			class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 		>
 			+ Add Social Link
@@ -56,7 +68,7 @@
 		</div>
 	{:else}
 		<div class="grid gap-4 md:grid-cols-2">
-			{#each socials.links as link, idx}
+			{#each socials.links as link, idx (idx)}
 				<div
 					class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
 				>
@@ -66,17 +78,22 @@
 								class="flex h-12 w-12 items-center justify-center rounded-lg"
 								style="background-color: {link.color}20; color: {link.color}"
 							>
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 								{@html getIconSvg(link.iconName)}
 							</div>
 							<div>
 								<h3 class="font-semibold">{link.label}</h3>
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 								<a href={link.href} target="_blank" class="text-sm text-blue-600 hover:underline">
 									{link.href}
 								</a>
 							</div>
 						</div>
 						<button
-							onclick={() => goto(`/admin/socials/edit/${idx}`)}
+							onclick={() => {
+								// eslint-disable-next-line svelte/no-navigation-without-resolve
+								goto(`${base}/admin/socials/edit/${idx}`);
+							}}
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>
 							Edit

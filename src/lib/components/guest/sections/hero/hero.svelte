@@ -138,7 +138,7 @@
         text-[3rem] leading-[1.1] font-extrabold text-gray-900
         drop-shadow-sm md:text-[5rem] dark:text-gray-100"
 		>
-			{#each titleChars as char, i}
+			{#each titleChars as char, i (i)}
 				<span bind:this={letterElements[i]} class="inline-block" style="white-space: pre;">
 					{char}
 				</span>
@@ -159,7 +159,7 @@
 		class="mt-6 flex flex-wrap justify-center gap-4 text-sm
         text-gray-600 transition-colors duration-300 md:text-base dark:text-gray-300"
 	>
-		{#each skillsData as skill}
+		{#each skillsData as skill (skill)}
 			<li class="inline-flex items-center gap-2">
 				<span class="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400"></span>
 				{skill}

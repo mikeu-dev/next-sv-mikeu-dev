@@ -1,9 +1,11 @@
 import type { PageServerLoad } from './$types';
 
+import type { Project } from '$lib/types';
+
 export const prerender = false;
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	let projectsResult: Record<string, any[]> = { en: [], id: [] };
+	let projectsResult: Record<string, Project[]> = { en: [], id: [] };
 
 	try {
 		const response = await fetch('/api/projects');

@@ -59,8 +59,8 @@ export class ContactsService {
 			const newTags = data.tags;
 
 			// Check for added tags
-			const addedTags = newTags.filter(t => !oldTags.includes(t));
-			addedTags.forEach(tag => {
+			const addedTags = newTags.filter((t) => !oldTags.includes(t));
+			addedTags.forEach((tag) => {
 				logs.push({
 					id: crypto.randomUUID(),
 					type: 'tag_added',
@@ -72,8 +72,8 @@ export class ContactsService {
 			});
 
 			// Check for removed tags
-			const removedTags = oldTags.filter(t => !newTags.includes(t));
-			removedTags.forEach(tag => {
+			const removedTags = oldTags.filter((t) => !newTags.includes(t));
+			removedTags.forEach((tag) => {
 				logs.push({
 					id: crypto.randomUUID(),
 					type: 'tag_removed',

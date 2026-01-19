@@ -24,6 +24,7 @@ export async function POST(event: RequestEvent) {
 		if (decodedToken.auth_time === decodedToken.iat && username && email) {
 			await userService.createUser(decodedToken.uid, email, username);
 		}
+
 		const sessionCookie = await authService.createSessionCookie(token);
 
 		event.cookies.set('__session', sessionCookie, {
@@ -68,4 +69,3 @@ export async function DELETE({ cookies }: RequestEvent) {
 		return json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
-

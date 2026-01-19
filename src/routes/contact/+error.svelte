@@ -6,8 +6,10 @@
 	import { DotLottieSvelte } from '@lottiefiles/dotlottie-svelte';
 </script>
 
-<div class="flex min-h-[70vh] w-full items-center justify-center p-4 mt-20">
-	<Card.Root class="w-full max-w-3xl text-center border-0 shadow-none bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-background">
+<div class="mt-20 flex min-h-[70vh] w-full items-center justify-center p-4">
+	<Card.Root
+		class="w-full max-w-3xl border-0 bg-gradient-to-b from-gray-50 to-white text-center shadow-none dark:from-gray-900 dark:to-background"
+	>
 		<Card.Header>
 			<Card.Title class="text-3xl font-bold text-destructive">{page.status}</Card.Title>
 			<Card.Description class="text-lg">Terjadi Kesalahan</Card.Description>

@@ -4,9 +4,12 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { AuthService } from '$lib/server/services/auth.service';
 import { redirect } from '@sveltejs/kit';
 import { env } from '$lib/server/config/env';
-import { logError, logWarning } from '$lib/server/utils/logger';
+import { logWarning } from '$lib/server/utils/logger';
+import { VisitorService } from '$lib/server/services/visitor.service';
+import { UAParser } from 'ua-parser-js';
 
 const authService = new AuthService();
+const visitorService = new VisitorService();
 
 /**
  * Security headers middleware
@@ -24,7 +27,7 @@ const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
 			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 			"img-src 'self' data: https: blob:",
 			"font-src 'self' https://fonts.gstatic.com",
-			"connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com",
+			"connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com https://cdn.jsdelivr.net https://unpkg.com https://lottie.host",
 			"frame-ancestors 'none'",
 			"base-uri 'self'",
 			"form-action 'self'"
@@ -65,6 +68,50 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 	});
 
 /**
+ * Visitor tracking middleware
+ * Checks for cookie and increments counter if new visitor
+ */
+const handleVisitor: Handle = async ({ event, resolve }) => {
+	const VISITOR_COOKIE = 'visitor_log';
+	const hasVisited = event.cookies.get(VISITOR_COOKIE);
+
+	if (!hasVisited && !event.url.pathname.startsWith('/admin')) {
+		// Only track public pages
+		try {
+			const uaString = event.request.headers.get('user-agent') || '';
+			const parser = new UAParser(uaString);
+			const browser = parser.getBrowser();
+			const os = parser.getOS();
+			const device = parser.getDevice();
+
+			const visitorData = {
+				ip: event.getClientAddress(),
+				browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
+				os: `${os.name || 'Unknown'} ${os.version || ''}`.trim(),
+				device: device.type || 'desktop',
+				referer: event.request.headers.get('referer') || null,
+				language: event.request.headers.get('accept-language') || null,
+				path: event.url.pathname
+			};
+
+			await visitorService.increment(visitorData);
+
+			// Set cookie for 24 hours
+			event.cookies.set(VISITOR_COOKIE, 'true', {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'lax',
+				maxAge: 60 * 60 * 24 // 1 day
+			});
+		} catch (error) {
+			console.error('Failed to track visitor', error);
+		}
+	}
+
+	return resolve(event);
+};
+
+/**
  * Authentication middleware
  * Protects /admin routes and verifies owner email
  */
@@ -75,7 +122,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		try {
 			const decodedClaims = await authService.verifySessionCookie(session);
 			event.locals.user = decodedClaims;
-		} catch (error) {
+		} catch {
 			// Session invalid/expired, locals.user remains undefined
 			console.log('Session verification failed or expired');
 		}
@@ -89,9 +136,9 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 
 		// Verify owner email
-		if (event.locals.user.email !== env.OWNER_EMAIL) {
+		if ((event.locals.user as { email: string }).email !== env.OWNER_EMAIL) {
 			logWarning('Auth:OwnerCheck', 'Non-owner attempted to access admin', {
-				email: event.locals.user.email,
+				email: (event.locals.user as { email: string }).email,
 				path: event.url.pathname
 			});
 			console.log('🔴 Email mismatch, redirecting to login');
@@ -102,4 +149,9 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleSecurityHeaders, handleParaglide, handleAuth);
+export const handle: Handle = sequence(
+	handleSecurityHeaders,
+	handleParaglide,
+	handleVisitor,
+	handleAuth
+);

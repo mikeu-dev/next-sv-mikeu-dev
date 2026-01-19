@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 
+	interface MigrationResult {
+		collection: string;
+		status: 'success' | 'error';
+		message?: string;
+	}
+
 	let migrating = $state(false);
-	let results = $state<any[]>([]);
+	let results = $state<MigrationResult[]>([]);
 
 	async function runMigration() {
 		if (!confirm('Are you sure you want to migrate all local data to Firestore?')) return;
@@ -25,8 +31,9 @@
 			} else {
 				toast.error(data.error || 'Migration failed');
 			}
-		} catch (error: any) {
-			toast.error(error.message || 'Migration failed');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Migration failed';
+			toast.error(message);
 		} finally {
 			migrating = false;
 		}
@@ -87,7 +94,7 @@
 			<div class="mt-6">
 				<h3 class="mb-3 text-lg font-semibold">Migration Results:</h3>
 				<div class="space-y-2">
-					{#each results as result}
+					{#each results as result (result.collection)}
 						<div
 							class="flex items-center justify-between rounded-lg border p-3 {result.status ===
 							'success'

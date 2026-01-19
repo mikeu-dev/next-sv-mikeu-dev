@@ -2,6 +2,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { toast } from 'svelte-sonner';
+	import { invalidateAll } from '$app/navigation';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -32,6 +33,7 @@
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ username })
 				});
+
 				if (!res.ok) {
 					const errorData = await res.json();
 					throw new Error(errorData.message || 'User not found');
@@ -55,8 +57,11 @@
 				body: JSON.stringify({ token, username, email: authEmail })
 			});
 
-			if (res.ok) window.location.reload();
-			else toast.error('Authentication with server failed.');
+			if (res.ok) {
+				await invalidateAll();
+			} else {
+				toast.error('Authentication with server failed.');
+			}
 		} catch (e: unknown) {
 			console.error('Authentication error:', e);
 			let message = e instanceof Error ? e.message : 'An unknown error occurred.';

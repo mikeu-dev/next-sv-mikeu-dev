@@ -1,4 +1,3 @@
-
 import { error } from '@sveltejs/kit';
 import { getLocale } from '@/lib/paraglide/runtime';
 import type { PageServerLoad } from './$types';
@@ -21,13 +20,14 @@ export const load: PageServerLoad = async (event) => {
 		// Find post by slug and locale
 		// Since we migrated utilizing slug as ID, we might try to fetch by ID first if slug matches ID
 		// But better to query by slug field to be sure.
-		// Wait, migration: doc(slug).set(postData). 
+		// Wait, migration: doc(slug).set(postData).
 		// If "slug" is unique across ALL locales, then doc(slug) works.
 		// But "hello-world" (en) and "halo-dunia" (id) have different slugs.
 		// If "why-moved..." (en) and "kenapa-pindah..." (id) have different slugs, then they are different docs.
 		// So query by slug field should work and be correct.
 
-		const snapshot = await db.collection(COLLECTIONS.BLOG_POSTS)
+		const snapshot = await db
+			.collection(COLLECTIONS.BLOG_POSTS)
 			.where('slug', '==', slug)
 			.where('locale', '==', locale)
 			.limit(1)
@@ -52,13 +52,12 @@ export const load: PageServerLoad = async (event) => {
 			meta: {
 				title: data.title,
 				date: data.date,
-				description: data.description,
+				description: data.description
 			},
 			content: data.content || ''
 		};
-
-	} catch (err: any) {
-		if (err.status === 404) throw err;
+	} catch (err: unknown) {
+		if ((err as { status?: number }).status === 404) throw err;
 		console.error('Error fetching blog post:', err);
 		throw error(500, 'Terjadi kesalahan saat memuat artikel');
 	}

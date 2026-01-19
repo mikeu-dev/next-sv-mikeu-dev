@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -16,17 +17,15 @@
 
 	let posts = $state<BlogPost[]>([]);
 	let loading = $state(true);
-	let filterLocale = $state<'all' | 'en' | 'id'>('all');
+	let activeTab = $state<'en' | 'id'>('en');
 	let filterStatus = $state<'all' | 'published' | 'draft'>('all');
 
 	// Computed filtered posts
+	// Computed filtered posts
 	let filteredPosts = $derived(() => {
-		let result = posts;
+		let result = [...posts]; // Create a copy first to avoid mutation of state
 
-		// Filter by locale
-		if (filterLocale !== 'all') {
-			result = result.filter((p) => p.locale === filterLocale);
-		}
+		result = result.filter((p) => p.locale === activeTab);
 
 		// Filter by published status
 		if (filterStatus === 'published') {
@@ -35,6 +34,7 @@
 			result = result.filter((p) => p.published !== true);
 		}
 
+		// Use toSorted() if available or sort copy
 		return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 	});
 
@@ -47,8 +47,9 @@
 			const response = await fetch('/api/admin/blog');
 			if (!response.ok) throw new Error('Failed to load posts');
 			posts = await response.json();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to load posts');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to load posts';
+			toast.error(message);
 		} finally {
 			loading = false;
 		}
@@ -66,8 +67,9 @@
 
 			toast.success('Post deleted successfully');
 			await loadPosts();
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to delete post');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to delete post';
+			toast.error(message);
 		}
 	}
 </script>
@@ -79,8 +81,12 @@
 			<p class="text-muted-foreground">Manage your blog content</p>
 		</div>
 		<div class="flex gap-2">
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<button
-				onclick={() => goto('/admin/blog/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/blog/create`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				+ New Post
@@ -88,38 +94,32 @@
 		</div>
 	</div>
 
+	<!-- Language Tabs -->
+	<div class="mb-6">
+		<div class="flex gap-2 border-b border-gray-300 dark:border-gray-700">
+			<button
+				onclick={() => (activeTab = 'en')}
+				class="px-4 py-2 font-medium transition-colors {activeTab === 'en'
+					? 'border-b-2 border-blue-600 text-blue-600'
+					: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+			>
+				🇬🇧 English
+			</button>
+			<button
+				onclick={() => (activeTab = 'id')}
+				class="px-4 py-2 font-medium transition-colors {activeTab === 'id'
+					? 'border-b-2 border-blue-600 text-blue-600'
+					: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+			>
+				🇮🇩 Indonesia
+			</button>
+		</div>
+	</div>
+
 	<!-- Filters Section -->
 	<div class="mb-6 flex flex-wrap gap-4">
-		<!-- Locale Filter -->
-		<div class="flex items-center gap-2">
-			<span class="text-sm font-medium text-muted-foreground">Locale:</span>
-			<div class="flex gap-1">
-				<button
-					onclick={() => (filterLocale = 'all')}
-					class="rounded-lg px-3 py-1.5 text-sm {filterLocale === 'all'
-						? 'bg-blue-600 text-white'
-						: 'border border-gray-300 dark:border-gray-700'}"
-				>
-					All
-				</button>
-				<button
-					onclick={() => (filterLocale = 'en')}
-					class="rounded-lg px-3 py-1.5 text-sm {filterLocale === 'en'
-						? 'bg-blue-600 text-white'
-						: 'border border-gray-300 dark:border-gray-700'}"
-				>
-					🇬🇧 EN
-				</button>
-				<button
-					onclick={() => (filterLocale = 'id')}
-					class="rounded-lg px-3 py-1.5 text-sm {filterLocale === 'id'
-						? 'bg-blue-600 text-white'
-						: 'border border-gray-300 dark:border-gray-700'}"
-				>
-					🇮🇩 ID
-				</button>
-			</div>
-		</div>
+		<!-- Language Tabs (Moved to top level) -->
+		<!-- Just Status Filter here -->
 
 		<!-- Status Filter -->
 		<div class="flex items-center gap-2">
@@ -167,8 +167,12 @@
 	{:else if posts.length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
 			<p class="mb-4 text-muted-foreground">No posts yet</p>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<button
-				onclick={() => goto('/admin/blog/create')}
+				onclick={() => {
+					// eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto(`${base}/admin/blog/create`);
+				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
 				Create your first post
@@ -180,7 +184,6 @@
 			<button
 				onclick={() => {
 					filterStatus = 'all';
-					filterLocale = 'all';
 				}}
 				class="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>
@@ -229,8 +232,12 @@
 					</div>
 
 					<div class="flex gap-2 border-t border-gray-100 p-4 dark:border-gray-800">
+						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 						<button
-							onclick={() => goto(`/admin/blog/${post.id}`)}
+							onclick={() => {
+								// eslint-disable-next-line svelte/no-navigation-without-resolve
+								goto(`${base}/admin/blog/${post.id}`);
+							}}
 							class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>
 							Edit

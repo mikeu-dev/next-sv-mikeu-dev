@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { base } from '$app/paths';
 	import {
 		LayoutDashboard,
 		FolderGit2,
@@ -11,11 +12,12 @@
 		Users,
 		Database,
 		Menu,
-		X
+		X,
+		Settings
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	let isOpen = $state(false);
 
@@ -28,13 +30,16 @@
 		{ href: '/admin/techstack', label: 'Tech Stack', icon: Cpu },
 		{ href: '/admin/socials', label: 'Socials', icon: Share2 },
 		{ href: '/admin/contacts', label: 'Contacts', icon: Users },
-		{ href: '/admin/migrate', label: 'Migrate', icon: Database }
+		{ href: '/admin/migrate', label: 'Migrate', icon: Database },
+		{ href: '/admin/settings', label: 'Settings', icon: Settings }
 	];
 
 	function toggleSidebar() {
 		isOpen = !isOpen;
 	}
 </script>
+
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 
 <!-- Mobile Toggle -->
 <div class="fixed top-3 left-4 z-50 md:hidden">
@@ -55,15 +60,15 @@
 	)}
 >
 	<div class="flex h-16 items-center justify-center border-b px-6">
-		<a href="/admin" class="flex items-center gap-2 text-xl font-bold">
+		<a href="{base}/admin" class="flex items-center gap-2 text-xl font-bold">
 			<span>Admin Panel</span>
 		</a>
 	</div>
 
 	<nav class="flex flex-col gap-1 p-4">
-		{#each links as link}
+		{#each links as link (link.href)}
 			<a
-				href={link.href}
+				href={`${base}${link.href}`}
 				onclick={() => (isOpen = false)}
 				class={cn(
 					'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',

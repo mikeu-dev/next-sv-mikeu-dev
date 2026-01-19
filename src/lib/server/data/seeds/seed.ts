@@ -1,15 +1,14 @@
-
 import { db, auth } from '@/lib/server/firebase/firebase.server';
 import { env } from '$env/dynamic/private';
 
 if (!env.EMAIL) {
-    throw new Error('EMAIL is not defined');
+	throw new Error('EMAIL is not defined');
 }
 if (!env.USERNAME) {
-    throw new Error('USERNAME is not defined');
+	throw new Error('USERNAME is not defined');
 }
 if (!env.PASSWORD) {
-    throw new Error('PASSWORD is not defined');
+	throw new Error('PASSWORD is not defined');
 }
 // Daftar pengguna yang akan dibuat
 const usersToSeed = [
@@ -36,7 +35,10 @@ export async function seedUsers() {
 			}
 
 			// Cek apakah username sudah ada di Firestore
-			const usernameQuery = await db.collection('users').where('username', '==', normalizedUsername).get();
+			const usernameQuery = await db
+				.collection('users')
+				.where('username', '==', normalizedUsername)
+				.get();
 			if (!usernameQuery.empty) {
 				console.log(`⏩ User with username ${username} already exists in Firestore. Skipping.`);
 				continue;
@@ -72,4 +74,3 @@ export async function seedUsers() {
 }
 
 seedUsers().catch(console.error);
-

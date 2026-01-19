@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 
@@ -41,9 +42,11 @@
 			}
 
 			toast.success('Journey updated successfully!');
-			goto('/admin/journey');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to update journey');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/journey`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to update journey';
+			toast.error(message);
 		} finally {
 			saving = false;
 		}
@@ -58,7 +61,7 @@
 
 		try {
 			// Remove the item from the array
-			const updatedItems = data.allItems.filter((_: any, i: number) => i !== data.index);
+			const updatedItems = data.allItems.filter((_: unknown, i: number) => i !== data.index);
 
 			const response = await fetch(`/api/journey/${data.lang}`, {
 				method: 'PUT',
@@ -71,9 +74,11 @@
 			}
 
 			toast.success('Journey deleted successfully!');
-			goto('/admin/journey');
-		} catch (error: any) {
-			toast.error(error.message || 'Failed to delete journey');
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
+			goto(`${base}/admin/journey`);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Failed to delete journey';
+			toast.error(message);
 		} finally {
 			deleting = false;
 		}
@@ -183,7 +188,10 @@
 			<div class="flex gap-4">
 				<button
 					type="button"
-					onclick={() => goto('/admin/journey')}
+					onclick={() => {
+						// eslint-disable-next-line svelte/no-navigation-without-resolve
+						goto(`${base}/admin/journey`);
+					}}
 					class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 				>
 					Cancel

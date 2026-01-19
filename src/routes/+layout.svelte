@@ -16,8 +16,7 @@
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 	import { Icon } from 'svelte-icons-pack';
 	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
-	import { auth } from '$lib/firebase/firebase.client';
-	import { signOut } from 'firebase/auth';
+
 	import { authState } from '$lib/stores/auth.svelte';
 
 	let { data, children } = $props();
@@ -59,16 +58,9 @@
 
 	$effect(() => {
 		if (authState.initialized && authState.user && !data.user) {
-			console.log(
-				'⚠️ Session mismatch detected (Server: Logged out, Client: Logged in). Signing out...'
-			);
-			signOut(auth).then(async () => {
-				await fetch('/api/auth', { method: 'DELETE' });
-				// data.user is static from load function, so we might need to invalidateAll or reload
-				// but since simple signout clears authState, UI should update immediately.
-				// However, to be safe and clear cookies properly:
-				window.location.reload();
-			});
+			// Session mismatch detected (Server: Logged out, Client: Logged in).
+			// Auto-logout disabled to prevent login loops.
+			// console.warn('Session mismatch detected.');
 		}
 	});
 	let isAdmin = $derived(page.url.pathname.startsWith('/admin'));
@@ -102,13 +94,14 @@
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}
-		<Footer {socials} />
+		<Footer {socials} visitorStats={data.visitorStats} />
 	{/if}
 </div>
 
 <!-- 🌐 Hidden locale links -->
 <div style="display: none">
-	{#each locales as locale}
+	{#each locales as locale (locale)}
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 	{/each}
 </div>

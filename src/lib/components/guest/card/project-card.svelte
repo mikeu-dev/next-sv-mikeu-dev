@@ -6,7 +6,8 @@
 	import type { LocalizedProject } from '$lib/utils/project-mapper'; // Use the localized interface
 	import { Icon } from 'svelte-icons-pack';
 	import * as m from '@/lib/paraglide/messages';
-	import { getLocale } from '@/lib/paraglide/runtime';
+	import { base } from '$app/paths';
+	// import { getLocale } from '@/lib/paraglide/runtime';
 
 	let { project }: { project: LocalizedProject } = $props(); // Expect localized project
 	// Localization logic is now handled by the parent/mapper
@@ -30,6 +31,7 @@
 	});
 </script>
 
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <div
 	bind:this={cardElement}
 	class="group relative flex flex-col overflow-hidden rounded border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
@@ -46,8 +48,9 @@
 
 	<div class="flex grow flex-col p-6">
 		<h3 class="font-poppins mb-2 text-xl font-bold">
-			<a href={`/projects/${project.slug}`} class="text-foreground group-hover:text-primary">
+			<a href={`${base}/projects/${project.slug}`} class="text-foreground group-hover:text-primary">
 				<span class="absolute inset-0 z-10" aria-hidden="true"></span>
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 				{project.title}
 			</a>
 		</h3>
@@ -65,7 +68,7 @@
 
 		{#if project.tags && project.tags.length > 0}
 			<div class="mb-4 flex flex-wrap gap-2">
-				{#each project.tags as tag}
+				{#each project.tags as tag (tag.name)}
 					<span
 						class={`group-hover:bg-opacity-20 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors ${
 							tag.color === '#171d26' ? 'dark:text-white!' : ''
@@ -88,6 +91,7 @@
 			</span>
 			<div class="flex items-center gap-4">
 				{#if project.demoUrl}
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 					<a
 						href={project.demoUrl}
 						target="_blank"
@@ -100,6 +104,7 @@
 					</a>
 				{/if}
 				{#if project.repoUrl}
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 					<a
 						href={project.repoUrl}
 						target="_blank"
