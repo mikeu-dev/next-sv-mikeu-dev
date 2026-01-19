@@ -71,6 +71,7 @@
 			});
 		}
 	});
+	let isAdmin = $derived(page.url.pathname.startsWith('/admin'));
 </script>
 
 <svelte:head>
@@ -94,11 +95,15 @@
 
 <!-- 🧩 Layout utama -->
 <div class="flex min-h-dvh flex-col">
-	<Navbar />
+	{#if !isAdmin}
+		<Navbar />
+	{/if}
 	<main class="container mx-auto flex-1 px-4 py-8">
 		{@render children?.()}
 	</main>
-	<Footer {socials} />
+	{#if !isAdmin}
+		<Footer {socials} />
+	{/if}
 </div>
 
 <!-- 🌐 Hidden locale links -->
