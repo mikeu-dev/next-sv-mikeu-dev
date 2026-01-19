@@ -69,4 +69,3 @@ export async function DELETE({ cookies }: RequestEvent) {
 		return json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
-

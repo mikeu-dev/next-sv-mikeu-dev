@@ -1,4 +1,4 @@
-import type { IconType } from "svelte-icons-pack";
+import type { IconType } from 'svelte-icons-pack';
 
 export interface Project {
 	id: string;

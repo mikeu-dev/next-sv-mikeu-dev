@@ -149,4 +149,9 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleSecurityHeaders, handleParaglide, handleVisitor, handleAuth);
+export const handle: Handle = sequence(
+	handleSecurityHeaders,
+	handleParaglide,
+	handleVisitor,
+	handleAuth
+);
