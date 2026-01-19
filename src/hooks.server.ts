@@ -6,7 +6,7 @@ import { redirect } from '@sveltejs/kit';
 import { env } from '$lib/server/config/env';
 import { logError, logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
-import UAParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
