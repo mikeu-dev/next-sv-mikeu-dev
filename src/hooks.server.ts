@@ -6,6 +6,7 @@ import { redirect } from '@sveltejs/kit';
 import { env } from '$lib/server/config/env';
 import { logError, logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
+import UAParser from 'ua-parser-js';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
@@ -77,7 +78,23 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 	if (!hasVisited && !event.url.pathname.startsWith('/admin')) {
 		// Only track public pages
 		try {
-			await visitorService.increment();
+			const uaString = event.request.headers.get('user-agent') || '';
+			const parser = new UAParser(uaString);
+			const browser = parser.getBrowser();
+			const os = parser.getOS();
+			const device = parser.getDevice();
+
+			const visitorData = {
+				ip: event.getClientAddress(),
+				browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
+				os: `${os.name || 'Unknown'} ${os.version || ''}`.trim(),
+				device: device.type || 'desktop',
+				referer: event.request.headers.get('referer') || null,
+				language: event.request.headers.get('accept-language') || null,
+				path: event.url.pathname
+			};
+
+			await visitorService.increment(visitorData);
 
 			// Set cookie for 24 hours
 			event.cookies.set(VISITOR_COOKIE, 'true', {

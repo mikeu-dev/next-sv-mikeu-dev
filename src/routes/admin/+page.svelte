@@ -166,6 +166,55 @@
 					</div>
 				{/if}
 			</div>
+
+			<!-- Recent Visitors -->
+			<div class="mt-8 border-t pt-8">
+				<div class="mb-4">
+					<h2 class="text-lg font-semibold">Recent Visitors</h2>
+					<p class="text-sm text-muted-foreground">Latest 10 visitors</p>
+				</div>
+
+				<div class="relative overflow-x-auto rounded-lg border">
+					<table class="w-full text-left text-sm">
+						<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
+							<tr>
+								<th class="px-4 py-3">Time</th>
+								<th class="px-4 py-3">IP Address</th>
+								<th class="px-4 py-3">Browser / OS</th>
+								<th class="px-4 py-3">Device</th>
+								<th class="px-4 py-3">Page</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y">
+							{#each data.recent.visitors as visitor}
+								<tr class="bg-card hover:bg-muted/50">
+									<td class="px-4 py-3 whitespace-nowrap text-muted-foreground">
+										{visitor.timestamp ? new Date(visitor.timestamp).toLocaleString() : 'N/A'}
+									</td>
+									<td class="px-4 py-3 font-medium">{visitor.ip || 'Unknown'}</td>
+									<td class="px-4 py-3">
+										<div class="flex flex-col">
+											<span>{visitor.browser}</span>
+											<span class="text-xs text-muted-foreground">{visitor.os}</span>
+										</div>
+									</td>
+									<td class="px-4 py-3">{visitor.device}</td>
+									<td
+										class="max-w-[200px] truncate px-4 py-3 text-muted-foreground"
+										title={visitor.path}>{visitor.path}</td
+									>
+								</tr>
+							{:else}
+								<tr>
+									<td colspan="5" class="py-8 text-center text-muted-foreground">
+										No visitor logs found.
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 
 		<!-- Latest Posts & Quick Links -->

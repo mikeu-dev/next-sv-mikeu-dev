@@ -7,19 +7,31 @@ export interface VisitorStats {
     lastUpdated: string; // ISO date string YYYY-MM-DD
 }
 
+export interface VisitorLogData {
+    ip: string;
+    browser: string;
+    os: string;
+    device: string;
+    referer: string | null;
+    language: string | null;
+    path: string;
+    timestamp?: any;
+}
+
 export class VisitorService {
     private readonly collection = 'counters';
+    private readonly logCollection = 'visitor_logs';
     private readonly docId = 'visitors';
 
     /**
-     * Increment visitor count.
+     * Increment visitor count and log details.
      * Logic:
      * - Always increment 'total'
      * - Check 'lastUpdated'
      * - If date changed: set 'today' = 1, update 'lastUpdated'
      * - If same date: increment 'today'
      */
-    async increment(): Promise<void> {
+    async increment(logData?: VisitorLogData): Promise<void> {
         const ref = db.collection(this.collection).doc(this.docId);
         const todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }); // YYYY-MM-DD
 
@@ -46,6 +58,13 @@ export class VisitorService {
                     lastUpdated: todayDate
                 });
             });
+
+            if (logData) {
+                await db.collection(this.logCollection).add({
+                    ...logData,
+                    timestamp: FieldValue.serverTimestamp()
+                });
+            }
         } catch (error) {
             console.error('VisitorService: Failed to increment visitor count', error);
         }
@@ -78,6 +97,26 @@ export class VisitorService {
         } catch (error) {
             console.error('VisitorService: Failed to get stats', error);
             return { total: 0, today: 0, lastUpdated: '' };
+        }
+    }
+
+    async getRecentLogs(limit: number = 20): Promise<VisitorLogData[]> {
+        try {
+            const snapshot = await db.collection(this.logCollection)
+                .orderBy('timestamp', 'desc')
+                .limit(limit)
+                .get();
+
+            return snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    ...data,
+                    timestamp: data.timestamp?.toDate().toISOString() || new Date().toISOString()
+                } as VisitorLogData;
+            });
+        } catch (error) {
+            console.error('VisitorService: Failed to get recent logs', error);
+            return [];
         }
     }
 }

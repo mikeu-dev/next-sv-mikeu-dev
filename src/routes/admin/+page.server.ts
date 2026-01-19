@@ -52,10 +52,12 @@ export const load: PageServerLoad = async () => {
     }, 0) || 0;
 
     const visitorStats = await visitorService.getStats();
+    const visitorLogs = await visitorService.getRecentLogs(10); // Fetch last 10 visitors
 
     // Serialize to plain objects to avoid "non-POJO" errors with Dates/Timestamps
     const serializedMessages = JSON.parse(JSON.stringify(recentMessages));
     const serializedPosts = JSON.parse(JSON.stringify(recentPosts));
+    const serializedVisitorLogs = JSON.parse(JSON.stringify(visitorLogs));
 
     return {
         stats: {
@@ -68,7 +70,8 @@ export const load: PageServerLoad = async () => {
         },
         recent: {
             messages: serializedMessages,
-            posts: serializedPosts
+            posts: serializedPosts, // Use serialized to avoid date issues
+            visitors: serializedVisitorLogs
         }
     };
 };
