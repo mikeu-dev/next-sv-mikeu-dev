@@ -16,6 +16,9 @@
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 	import { Icon } from 'svelte-icons-pack';
 	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
+	import { auth } from '$lib/firebase/firebase.client';
+	import { signOut } from 'firebase/auth';
+	import { authState } from '$lib/stores/auth.svelte';
 
 	let { data, children } = $props();
 	const { socials } = data;
@@ -51,6 +54,21 @@
 		if (page.url.pathname === '/') {
 			fallingConfetti = true;
 			setTimeout(() => (fallingConfetti = false), 5000);
+		}
+	});
+
+	$effect(() => {
+		if (authState.initialized && authState.user && !data.user) {
+			console.log(
+				'⚠️ Session mismatch detected (Server: Logged out, Client: Logged in). Signing out...'
+			);
+			signOut(auth).then(async () => {
+				await fetch('/api/auth', { method: 'DELETE' });
+				// data.user is static from load function, so we might need to invalidateAll or reload
+				// but since simple signout clears authState, UI should update immediately.
+				// However, to be safe and clear cookies properly:
+				window.location.reload();
+			});
 		}
 	});
 </script>

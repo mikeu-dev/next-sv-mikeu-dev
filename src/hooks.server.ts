@@ -69,39 +69,36 @@ const handleParaglide: Handle = ({ event, resolve }) =>
  * Protects /admin routes and verifies owner email
  */
 const handleAuth: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/admin')) {
-		const session = event.cookies.get('__session');
+	const session = event.cookies.get('__session');
 
-		if (!session) {
-			console.log('🔴 No session cookie found, redirecting to login');
+	if (session) {
+		try {
+			const decodedClaims = await authService.verifySessionCookie(session);
+			event.locals.user = decodedClaims;
+		} catch (error) {
+			// Session invalid/expired, locals.user remains undefined
+			console.log('Session verification failed or expired');
+		}
+	}
+
+	// Admin rote protection
+	if (event.url.pathname.startsWith('/admin')) {
+		if (!event.locals.user) {
+			console.log('🔴 No valid session found for admin route, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 
-		try {
-			const decodedClaims = await authService.verifySessionCookie(session);
-
-			console.log('🟢 Session verified for:', decodedClaims.email);
-			console.log('🧐 Expected owner:', env.OWNER_EMAIL);
-
-			// Verify owner email
-			if (decodedClaims.email !== env.OWNER_EMAIL) {
-				logWarning('Auth:OwnerCheck', 'Non-owner attempted to access admin', {
-					email: decodedClaims.email,
-					path: event.url.pathname
-				});
-				console.log('🔴 Email mismatch, redirecting to login');
-				throw redirect(303, '/auth/login');
-			}
-
-			event.locals.user = decodedClaims;
-		} catch (error) {
-			logError('Auth:SessionVerification', error, {
+		// Verify owner email
+		if (event.locals.user.email !== env.OWNER_EMAIL) {
+			logWarning('Auth:OwnerCheck', 'Non-owner attempted to access admin', {
+				email: event.locals.user.email,
 				path: event.url.pathname
 			});
-			console.log('🔴 Session verification failed, redirecting to login', error);
+			console.log('🔴 Email mismatch, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 	}
+
 	return resolve(event);
 };
 
