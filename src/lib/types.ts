@@ -49,10 +49,38 @@ export interface Tag {
 	url: string;
 }
 
-// Serialized version for Firestore (icon as string name)
 export interface SerializedTag {
 	name: string;
 	iconName: string;
 	color: string;
 	url: string;
+}
+
+export interface SocialLink {
+	label: string;
+	href: string;
+	iconName: string;
+	color: string;
+	svg?: string;
+	[key: string]: unknown;
+}
+
+export interface TechStackItem {
+	name: string;
+	color: string;
+	icon: string | null;
+	url?: string;
+}
+
+export interface TechStackCategory {
+	category: string;
+	description: string;
+	items: TechStackItem[];
+}
+
+export interface JourneyItem {
+	title: string;
+	description: string;
+	year: string;
+	[key: string]: unknown;
 }

@@ -2,6 +2,8 @@ import { ProjectsService } from '$lib/server/services/projects.service';
 import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
 import { blogService } from '$lib/server/services/blog.service';
 import { ContactsService } from '$lib/server/services/contacts.service';
+import type { Contact } from '$lib/types';
+import type { BlogPost } from '$lib/server/services/blog.service';
 import { TechStackService } from '$lib/server/services/techstack.service';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { SkillsService } from '$lib/server/services/skills.service';
@@ -25,17 +27,15 @@ export const load: PageServerLoad = async () => {
 	// Sort recent messages
 	const recentMessages = (contacts || [])
 		.sort(
-			(a: any, b: any) =>
-				new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime()
+			(a: Contact, b: Contact) =>
+				new Date((b.createdAt as Date) || 0).getTime() -
+				new Date((a.createdAt as Date) || 0).getTime()
 		)
 		.slice(0, 5);
 
 	// Sort recent posts
 	const recentPosts = (posts || [])
-		.sort(
-			(a: any, b: any) =>
-				new Date(b.date as string).getTime() - new Date(a.date as string).getTime()
-		)
+		.sort((a: BlogPost, b: BlogPost) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		.slice(0, 5);
 
 	// Count tech stack items (sum of items in all categories)

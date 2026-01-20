@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { TechStackCategory, JourneyItem } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,15 +12,17 @@
 	let { data }: { data: PageData } = $props();
 	let initialLocale = $state(getLocale());
 
-	let techstackRaw = $derived(data.techStack[initialLocale] || data.techStack['en']);
+	let techstackRaw = $derived(
+		(data.techStack[initialLocale] || data.techStack['en']) as TechStackCategory[]
+	);
 	let techstack = $derived(
-		techstackRaw.map((category: any) => ({
+		techstackRaw.map((category) => ({
 			...category,
-			items: category.items.map((item: any) => getLocalizedTag(item))
+			items: category.items.map((item) => getLocalizedTag(item))
 		}))
 	);
 
-	let myJourney = $derived(data.journey[initialLocale] || data.journey['en']);
+	let myJourney = $derived((data.journey[initialLocale] || data.journey['en']) as JourneyItem[]);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
 	let wavingHand: HTMLElement;
@@ -128,8 +131,8 @@
 						<div class="hidden w-1/2 justify-end pr-12 text-right md:flex">
 							{#if i % 2 === 0}
 								<div class="max-w-sm">
-									<h3 class="font-poppins text-xl font-bold">{(item as any).title}</h3>
-									<p class="mt-1 text-muted-foreground">{(item as any).description}</p>
+									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
+									<p class="mt-1 text-muted-foreground">{item.description}</p>
 								</div>
 							{/if}
 						</div>
@@ -142,7 +145,7 @@
 								class="flex size-16 flex-col items-center justify-center rounded-full border-2 border-primary bg-background"
 							>
 								<span class="font-poppins text-lg font-bold text-primary">
-									{(item as any).year}
+									{item.year}
 								</span>
 							</div>
 						</div>
@@ -151,8 +154,8 @@
 						<div class="hidden w-1/2 justify-start pl-12 text-left md:flex">
 							{#if i % 2 !== 0}
 								<div class="max-w-sm">
-									<h3 class="font-poppins text-xl font-bold">{(item as any).title}</h3>
-									<p class="mt-1 text-muted-foreground">{(item as any).description}</p>
+									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
+									<p class="mt-1 text-muted-foreground">{item.description}</p>
 								</div>
 							{/if}
 						</div>
@@ -163,11 +166,11 @@
 							<div
 								class="z-10 mb-4 flex size-12 flex-col items-center justify-center rounded-full border-2 border-primary bg-background text-primary"
 							>
-								<span class="font-poppins text-sm font-bold">{(item as any).year}</span>
+								<span class="font-poppins text-sm font-bold">{item.year}</span>
 							</div>
 							<div class="pl-10">
-								<h3 class="font-poppins text-xl font-bold">{(item as any).title}</h3>
-								<p class="mt-1 text-muted-foreground">{(item as any).description}</p>
+								<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
+								<p class="mt-1 text-muted-foreground">{item.description}</p>
 							</div>
 						</div>
 					</div>
