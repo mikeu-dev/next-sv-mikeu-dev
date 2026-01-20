@@ -3,8 +3,19 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 export default defineConfig({
+	resolve: {
+		alias: [
+			{
+				find: /^svelte-canvas-confetti$/,
+				replacement: require.resolve('svelte-canvas-confetti')
+			}
+		]
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit(),

@@ -4,8 +4,9 @@
 	import { browser } from '$app/environment';
 
 	import Sidebar from '$lib/components/admin/sidebar.svelte';
+	import Footer from '$lib/components/guest/footer/footer.svelte';
 
-	let { children } = $props();
+	let { data, children } = $props();
 
 	$effect(() => {
 		if (browser && authState.initialized && !authState.user) {
@@ -21,7 +22,7 @@
 		<Sidebar />
 
 		<!-- Main Content -->
-		<div class="flex-1 md:ml-64">
+		<div class="flex min-h-screen flex-1 flex-col md:ml-64">
 			<header
 				class="sticky top-0 z-30 flex h-16 items-center border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60"
 			>
@@ -30,9 +31,11 @@
 				</div>
 			</header>
 
-			<main class="container p-6 md:p-8">
+			<main class="container flex-1 p-6 md:p-8">
 				{@render children()}
 			</main>
+
+			<Footer socials={data.socials} visitorStats={data.visitorStats} />
 		</div>
 	</div>
 {:else}

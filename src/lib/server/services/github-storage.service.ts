@@ -53,7 +53,8 @@ export class GitHubStorageService {
 				}
 			} catch (error: unknown) {
 				// Ignored: File likely doesn't exist, so we will create it.
-				if ((error as { status: number }).status !== 404) console.warn('Error checking file existence:', error);
+				if ((error as { status: number }).status !== 404)
+					console.warn('Error checking file existence:', error);
 			}
 
 			await this.octokit.rest.repos.createOrUpdateFileContents({

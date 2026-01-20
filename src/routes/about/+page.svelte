@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { TechStackCategory, JourneyItem } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,15 +12,17 @@
 	let { data }: { data: PageData } = $props();
 	let initialLocale = $state(getLocale());
 
-	let techstackRaw = $derived(data.techStack[initialLocale] || data.techStack['en']);
+	let techstackRaw = $derived(
+		(data.techStack[initialLocale] || data.techStack['en']) as TechStackCategory[]
+	);
 	let techstack = $derived(
-		techstackRaw.map((category: { items: unknown[]; category: string; description: string }) => ({
+		techstackRaw.map((category) => ({
 			...category,
-			items: category.items.map((item: unknown) => getLocalizedTag(item))
+			items: category.items.map((item) => getLocalizedTag(item))
 		}))
 	);
 
-	let myJourney = $derived(data.journey[initialLocale] || data.journey['en']);
+	let myJourney = $derived((data.journey[initialLocale] || data.journey['en']) as JourneyItem[]);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
 	let wavingHand: HTMLElement;

@@ -13,7 +13,13 @@
 	};
 
 	function getIcon(name: string) {
-		return (iconMap[name] as typeof Github) || Mail;
+		// Normalize input: remove 'Si' prefix if present and lowercase
+		const normalized = name.replace(/^Si/, '').toLowerCase();
+
+		// Find matching key case-insensitively
+		const match = Object.keys(iconMap).find((key) => key.toLowerCase() === normalized);
+
+		return (match ? iconMap[match] : Mail) as typeof Github;
 	}
 </script>
 
@@ -33,7 +39,6 @@
 
 		<div class="flex flex-wrap items-center justify-center gap-4">
 			{#each socials as link (link.href)}
-				{@const Icon = getIcon(link.iconName)}
 				<Tooltip.Provider>
 					<Tooltip.Root>
 						<Tooltip.Trigger>
@@ -46,7 +51,13 @@
 								class="flex cursor-pointer items-center justify-center rounded-full transition-all hover:scale-110"
 								style={`background-color: ${link.color}1A; color: ${link.color}; width: 2rem; height: 2rem;`}
 							>
-								<Icon class="size-4" />
+								{#if link.svg}
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+									<div class="size-4">{@html link.svg}</div>
+								{:else}
+									{@const Icon = getIcon(link.iconName)}
+									<Icon class="size-4" />
+								{/if}
 							</a>
 						</Tooltip.Trigger>
 
