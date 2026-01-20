@@ -9,8 +9,8 @@
 
 	let { title, description, image }: Props = $props();
 
-	const defaultTitle = 'Mikeu | Web & GIS Developer';
-	const defaultDescription = 'A passionate Web & GIS Developer from Indonesia.';
+	const defaultTitle = 'Mikeu | Fullstack Web Developer';
+	const defaultDescription = 'A passionate Fullstack Web Developer from Indonesia.';
 	const siteUrl = page.url.origin;
 	const defaultImage = `${siteUrl}/favicon.png`;
 
