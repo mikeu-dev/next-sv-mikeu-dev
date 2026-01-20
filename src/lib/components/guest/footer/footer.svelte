@@ -13,7 +13,13 @@
 	};
 
 	function getIcon(name: string) {
-		return (iconMap[name] as typeof Github) || Mail;
+		// Normalize input: remove 'Si' prefix if present and lowercase
+		const normalized = name.replace(/^Si/, '').toLowerCase();
+
+		// Find matching key case-insensitively
+		const match = Object.keys(iconMap).find((key) => key.toLowerCase() === normalized);
+
+		return (match ? iconMap[match] : Mail) as typeof Github;
 	}
 </script>
 
