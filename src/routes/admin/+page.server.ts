@@ -25,7 +25,7 @@ export const load: PageServerLoad = async () => {
 	// Sort recent messages
 	const recentMessages = (contacts || [])
 		.sort(
-			(a: Record<string, unknown>, b: Record<string, unknown>) =>
+			(a: any, b: any) =>
 				new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime()
 		)
 		.slice(0, 5);
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async () => {
 	// Sort recent posts
 	const recentPosts = (posts || [])
 		.sort(
-			(a: Record<string, unknown>, b: Record<string, unknown>) =>
+			(a: any, b: any) =>
 				new Date(b.date as string).getTime() - new Date(a.date as string).getTime()
 		)
 		.slice(0, 5);

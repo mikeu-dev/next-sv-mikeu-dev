@@ -13,9 +13,9 @@
 
 	let techstackRaw = $derived(data.techStack[initialLocale] || data.techStack['en']);
 	let techstack = $derived(
-		techstackRaw.map((category: { items: unknown[]; category: string; description: string }) => ({
+		techstackRaw.map((category: any) => ({
 			...category,
-			items: category.items.map((item: unknown) => getLocalizedTag(item))
+			items: category.items.map((item: any) => getLocalizedTag(item))
 		}))
 	);
 
@@ -128,8 +128,8 @@
 						<div class="hidden w-1/2 justify-end pr-12 text-right md:flex">
 							{#if i % 2 === 0}
 								<div class="max-w-sm">
-									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
-									<p class="mt-1 text-muted-foreground">{item.description}</p>
+									<h3 class="font-poppins text-xl font-bold">{(item as any).title}</h3>
+									<p class="mt-1 text-muted-foreground">{(item as any).description}</p>
 								</div>
 							{/if}
 						</div>
@@ -142,7 +142,7 @@
 								class="flex size-16 flex-col items-center justify-center rounded-full border-2 border-primary bg-background"
 							>
 								<span class="font-poppins text-lg font-bold text-primary">
-									{item.year}
+									{(item as any).year}
 								</span>
 							</div>
 						</div>
@@ -151,8 +151,8 @@
 						<div class="hidden w-1/2 justify-start pl-12 text-left md:flex">
 							{#if i % 2 !== 0}
 								<div class="max-w-sm">
-									<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
-									<p class="mt-1 text-muted-foreground">{item.description}</p>
+									<h3 class="font-poppins text-xl font-bold">{(item as any).title}</h3>
+									<p class="mt-1 text-muted-foreground">{(item as any).description}</p>
 								</div>
 							{/if}
 						</div>
@@ -163,11 +163,11 @@
 							<div
 								class="z-10 mb-4 flex size-12 flex-col items-center justify-center rounded-full border-2 border-primary bg-background text-primary"
 							>
-								<span class="font-poppins text-sm font-bold">{item.year}</span>
+								<span class="font-poppins text-sm font-bold">{(item as any).year}</span>
 							</div>
 							<div class="pl-10">
-								<h3 class="font-poppins text-xl font-bold">{item.title}</h3>
-								<p class="mt-1 text-muted-foreground">{item.description}</p>
+								<h3 class="font-poppins text-xl font-bold">{(item as any).title}</h3>
+								<p class="mt-1 text-muted-foreground">{(item as any).description}</p>
 							</div>
 						</div>
 					</div>
