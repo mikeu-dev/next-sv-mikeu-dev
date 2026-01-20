@@ -12,7 +12,7 @@ export class SocialsService {
 			}
 
 			const data = doc.data();
-			const links = (data?.links || []) as Array<{ iconName: string;[key: string]: any }>;
+			const links = (data?.links || []) as Array<{ iconName: string; [key: string]: any }>;
 
 			const processedLinks = links.map((link) => {
 				if (link.iconName && link.iconName.startsWith('Si')) {

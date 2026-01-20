@@ -24,7 +24,8 @@ export interface LocalizedProject
 
 export function getLocalizedTag(tag: Tag | SerializedTag | unknown): Tag {
 	const tagRecord = tag as Record<string, unknown>;
-	const iconName = (tagRecord.iconName as string) || (typeof tagRecord.icon === 'string' ? tagRecord.icon : null);
+	const iconName =
+		(tagRecord.iconName as string) || (typeof tagRecord.icon === 'string' ? tagRecord.icon : null);
 
 	if (iconName) {
 		// It's a SerializedTag or a tag with string icon

@@ -7,7 +7,6 @@ import { VisitorService } from '$lib/server/services/visitor.service';
 import { SkillsService } from '$lib/server/services/skills.service';
 import type { PageServerLoad } from './$types';
 
-
 export const load: PageServerLoad = async () => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
 	const contactsService = new ContactsService();
