@@ -1,27 +1,26 @@
 import type { PageServerLoad } from './$types';
 import { SkillsService } from '$lib/server/services/skills.service';
+import { ProjectsService } from '$lib/server/services/projects.service';
+import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
 
-export const prerender = false;
+export const prerender = true;
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async () => {
 	const skillsService = new SkillsService();
+	const projectsService = new ProjectsService(new ProjectsRepository());
 	let projectsResult: Record<string, unknown[]> = { en: [], id: [] };
 
 	try {
-		const response = await fetch('/api/projects');
-
-		if (response.ok) {
-			const data = await response.json();
-			if (data && Array.isArray(data) && data.length > 0) {
-				// Projects are bilingual, so we use the same array for both locales
-				projectsResult = {
-					en: data,
-					id: data
-				};
-			}
+		const data = await projectsService.findAll();
+		if (data && Array.isArray(data) && data.length > 0) {
+			// Projects are bilingual, so we use the same array for both locales
+			projectsResult = {
+				en: data,
+				id: data
+			};
 		}
 	} catch (error) {
-		console.error('Failed to fetch projects from API. Error:', error);
+		console.error('Failed to fetch projects directly. Error:', error);
 	}
 
 	// Fetch skills for hero section

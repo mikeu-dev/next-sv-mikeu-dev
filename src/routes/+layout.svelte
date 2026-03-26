@@ -20,10 +20,10 @@
 	import { authState } from '$lib/stores/auth.svelte';
 
 	let { data, children } = $props();
-	const { socials } = data;
 
 	let fallingConfetti = $state(false);
 	let scrollBtn: HTMLButtonElement;
+	let liveStats = $state({ total: 0, today: 0 });
 
 	function scrollToTop() {
 		gsap.to(window, { duration: 1, scrollTo: 0 });
@@ -46,6 +46,19 @@
 	onMount(() => {
 		scrollBtn = document.getElementById('scrollToTopBtn') as HTMLButtonElement;
 		window.addEventListener('scroll', handleScroll);
+
+		// Ambil statistik real-time untuk memperbarui data yang mungkin stale dari prerender
+		(async () => {
+			try {
+				const res = await fetch('/api/stats');
+				if (res.ok) {
+					liveStats = await res.json();
+				}
+			} catch {
+				// Fail silently, use data from props
+			}
+		})();
+
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
 
@@ -94,7 +107,13 @@
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}
-		<Footer {socials} visitorStats={data.visitorStats} />
+		{#await Promise.all([data.socials, data.visitorStats])}
+			<Footer socials={[]} visitorStats={{ total: 0, today: 0 }} />
+		{:then [socials, stats]}
+			<Footer {socials} visitorStats={liveStats.total > 0 ? liveStats : stats} />
+		{:catch}
+			<Footer socials={[]} visitorStats={{ total: 0, today: 0 }} />
+		{/await}
 	{/if}
 </div>
 
