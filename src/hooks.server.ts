@@ -7,6 +7,7 @@ import { env } from '$lib/server/config/env';
 import { logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { UAParser } from 'ua-parser-js';
+import { building } from '$app/environment';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
@@ -75,8 +76,8 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 	const VISITOR_COOKIE = 'visitor_log';
 	const hasVisited = event.cookies.get(VISITOR_COOKIE);
 
-	if (!hasVisited && !event.url.pathname.startsWith('/admin')) {
-		// Only track public pages
+	if (!hasVisited && !event.url.pathname.startsWith('/admin') && !building) {
+		// Only track public pages and skip during build
 		try {
 			const uaString = event.request.headers.get('user-agent') || '';
 			const parser = new UAParser(uaString);

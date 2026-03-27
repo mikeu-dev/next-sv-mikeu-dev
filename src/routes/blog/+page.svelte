@@ -2,8 +2,8 @@
 	import * as m from '@/lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { base } from '$app/paths';
-	import type { Post } from './+page.server';
-	let { data }: { data: { posts: Post[] } } = $props();
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->

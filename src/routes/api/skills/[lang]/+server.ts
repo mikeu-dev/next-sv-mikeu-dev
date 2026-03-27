@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/server/firebase/firebase.server';
-import { COLLECTIONS } from '$lib/server/firebase/collections';
+import { SkillsService } from '$lib/server/services/skills.service';
+
+const skillsService = new SkillsService();
 
 export const PUT: RequestHandler = async ({ params, request }) => {
 	const { lang } = params;
@@ -25,11 +26,8 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			}
 		}
 
-		// Update Firestore
-		await db.collection(COLLECTIONS.SKILLS).doc(lang).set({
-			items,
-			updatedAt: new Date()
-		});
+		// Update via Service
+		await skillsService.updateSkills(lang as 'en' | 'id', items);
 
 		return json({ success: true, message: 'Skills updated successfully' });
 	} catch (error: unknown) {

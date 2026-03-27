@@ -8,13 +8,13 @@
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 
 	let { projects }: { projects: Record<string, Project[]> } = $props();
-	let initialLocale = $state(getLocale());
-	let projectsData = $derived(projects[initialLocale] || projects['en']);
+	let currentLocale = $derived(getLocale());
+	let projectsData = $derived(projects[currentLocale] || projects['en']);
 	let projectByPinned = $derived(projectsData.filter((project) => project.pinned));
 
 	// Transform for display
 	let localizedProjects = $derived(
-		projectByPinned.map((p) => getLocalizedProject(p, initialLocale))
+		projectByPinned.map((p) => getLocalizedProject(p, currentLocale))
 	);
 
 	const { workSection, projectCardElements, tooltipOpen, virtualAnchor, tooltipText } =

@@ -1,5 +1,6 @@
 import { db } from '$lib/server/firebase/firebase.server';
 import { FieldValue } from 'firebase-admin/firestore';
+import { VisitorRepository } from '../repositories/visitor.repository';
 
 export interface VisitorStats {
 	total: number;
@@ -15,21 +16,17 @@ export interface VisitorLogData {
 	referer: string | null;
 	language: string | null;
 	path: string;
-	timestamp?: object | null;
+	timestamp?: Date | null;
 }
 
 export class VisitorService {
 	private readonly collection = 'counters';
 	private readonly logCollection = 'visitor_logs';
 	private readonly docId = 'visitors';
+	private repository = new VisitorRepository();
 
 	/**
 	 * Increment visitor count and log details.
-	 * Logic:
-	 * - Always increment 'total'
-	 * - Check 'lastUpdated'
-	 * - If date changed: set 'today' = 1, update 'lastUpdated'
-	 * - If same date: increment 'today'
 	 */
 	async increment(logData?: VisitorLogData): Promise<void> {
 		const ref = db.collection(this.collection).doc(this.docId);
@@ -40,7 +37,6 @@ export class VisitorService {
 				const doc = await t.get(ref);
 
 				if (!doc.exists) {
-					// Initialize if not exists
 					t.set(ref, {
 						total: 1,
 						today: 1,
@@ -82,12 +78,6 @@ export class VisitorService {
 			}
 
 			const data = doc.data() as VisitorStats;
-
-			// Optional: If reading on a new day but no write happened yet, 'today' might be stale in DB.
-			// However, for display purposes, we might want to return 0 if date mismatch,
-			// OR just return what is in DB.
-			// For a accurate "today" view without write, we should check date.
-
 			const todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
 			if (data.lastUpdated !== todayDate) {
 				return { ...data, today: 0 };
@@ -102,19 +92,7 @@ export class VisitorService {
 
 	async getRecentLogs(limit: number = 20): Promise<VisitorLogData[]> {
 		try {
-			const snapshot = await db
-				.collection(this.logCollection)
-				.orderBy('timestamp', 'desc')
-				.limit(limit)
-				.get();
-
-			return snapshot.docs.map((doc) => {
-				const data = doc.data();
-				return {
-					...data,
-					timestamp: data.timestamp?.toDate().toISOString() || new Date().toISOString()
-				} as VisitorLogData;
-			});
+			return await this.repository.getRecent(limit);
 		} catch (error) {
 			console.error('VisitorService: Failed to get recent logs', error);
 			return [];
