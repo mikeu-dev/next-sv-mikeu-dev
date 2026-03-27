@@ -1,19 +1,7 @@
 import type { Project, Tag, SerializedTag } from '$lib/types';
-import * as Icons from 'svelte-icons-pack/fi';
-import * as SiIcons from 'svelte-icons-pack/si';
-import type { IconType } from 'svelte-icons-pack';
+import { getIconByName } from '$lib/icons/registry';
 
-// Create a lookup map for icons - expanding this as needed based on what's used in the app
-// Ideally we should import all icons or have a better way to map names to icons
-const iconMap: Record<string, IconType> = {};
-for (const key in Icons) {
-	// @ts-expect-error - Dynamic access to icon pack
-	iconMap[key] = Icons[key];
-}
-for (const key in SiIcons) {
-	// @ts-expect-error - Dynamic access to icon pack
-	iconMap[key] = SiIcons[key];
-}
+// We no longer build a manual map here to allow tree-shaking
 
 export interface LocalizedProject
 	extends Omit<Project, 'title_en' | 'title_id' | 'description_en' | 'description_id' | 'tags'> {
@@ -28,11 +16,7 @@ export function getLocalizedTag(tag: Tag | SerializedTag | unknown): Tag {
 		(tagRecord.iconName as string) || (typeof tagRecord.icon === 'string' ? tagRecord.icon : null);
 
 	if (iconName) {
-		// It's a SerializedTag or a tag with string icon
-		// Check if icon exists in map, if not, try to find it in SiIcons directly if needed (though map should have it)
-		// Adjust for cases where name might be 'SiSvelte' but key is 'siSvelte' or similar if case mismatch?
-		// Typically svelte-icons-pack keys are e.g. 'SiSvelte'.
-		const icon = iconMap[iconName] || Icons.FiHash;
+		const icon = getIconByName(iconName);
 		return {
 			name: tagRecord.name as string,
 			color: tagRecord.color as string,
