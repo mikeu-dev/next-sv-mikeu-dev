@@ -51,7 +51,7 @@ export interface Tag {
 
 export interface SerializedTag {
 	name: string;
-	iconName: string;
+	iconName?: string;
 	color: string;
 	url: string;
 }
@@ -59,7 +59,7 @@ export interface SerializedTag {
 export interface SocialLink {
 	label: string;
 	href: string;
-	iconName: string;
+	iconName?: string;
 	color: string;
 	svg?: string;
 	[key: string]: unknown;

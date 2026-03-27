@@ -12,7 +12,9 @@
 		Mail: Mail
 	};
 
-	function getIcon(name: string) {
+	function getIcon(name: string | undefined | null) {
+		if (!name) return Mail;
+
 		// Normalize input: remove 'Si' prefix if present and lowercase
 		const normalized = name.replace(/^Si/, '').toLowerCase();
 
@@ -25,7 +27,7 @@
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 <footer
-	class="border-t bg-gradient-to-b from-slate-100 to-background px-4 py-6 dark:from-slate-900"
+	class="border-t bg-linear-to-b from-slate-100 to-background px-4 py-6 dark:from-slate-900"
 >
 	<div
 		class="mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-2 md:flex-row md:justify-between md:gap-4"
