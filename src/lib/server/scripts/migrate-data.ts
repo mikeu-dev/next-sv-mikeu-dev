@@ -11,8 +11,28 @@
  * node --loader ts-node/esm src/lib/server/scripts/migrate-data.ts
  */
 
-import { db } from '../firebase/firebase.server';
+import 'dotenv/config';
+import admin from 'firebase-admin';
 import { COLLECTIONS } from '../firebase/collections';
+
+// Initialize Firebase Admin locally for script execution
+const {
+	FIREBASE_PROJECT_ID,
+	FIREBASE_CLIENT_EMAIL,
+	FIREBASE_PRIVATE_KEY
+} = process.env;
+
+if (!admin.apps.length) {
+	admin.initializeApp({
+		credential: admin.credential.cert({
+			projectId: FIREBASE_PROJECT_ID,
+			clientEmail: FIREBASE_CLIENT_EMAIL,
+			privateKey: FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+		})
+	});
+}
+
+const db = admin.firestore();
 
 // Import data lokal
 import { techStack } from '../../data/techstack';
