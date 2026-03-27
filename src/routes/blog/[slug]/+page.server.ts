@@ -3,6 +3,12 @@ import { getLocale } from '@/lib/paraglide/runtime';
 import type { PageServerLoad } from './$types';
 import { blogService } from '$lib/server/services/blog.service';
 
+export const config = {
+	isr: {
+		expiration: 300 // Revalidate every 5 minutes
+	}
+};
+
 export const load: PageServerLoad = async (event) => {
 	const { params, locals } = event;
 	const locale = locals.paraglide.locale ?? getLocale();
