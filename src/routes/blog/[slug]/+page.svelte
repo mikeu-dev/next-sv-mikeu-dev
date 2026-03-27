@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { BlogPageData } from './+page.server';
+	import type { PageData } from './$types';
 	import * as m from '@/lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { ArrowLeft } from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
 	import { base } from '$app/paths';
 
-	let { data }: { data: BlogPageData } = $props();
+	let { data }: { data: PageData } = $props();
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
