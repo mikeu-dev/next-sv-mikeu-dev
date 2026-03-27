@@ -16,13 +16,15 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 		const snapshot = await this.getCollection()
 			.where('locale', '==', locale)
 			.where('published', '==', true)
-			.orderBy('date', 'desc')
 			.get();
 
-		return snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
+		const posts = snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
 			...this.toPOJO(doc.data()),
 			id: doc.id
 		})) as BlogPost[];
+
+		// Sort in memory to avoid needing a composite index
+		return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 	}
 
 	async getBySlugIndoEn(slug: string, locale?: string): Promise<BlogPost | null> {
