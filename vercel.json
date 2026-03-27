@@ -9,13 +9,6 @@
 		"minimumCacheTTL": 60,
 		"formats": ["image/avif", "image/webp"]
 	},
-	"functions": {
-		"src/routes/**/*": {
-			"memory": 1024,
-			"runtime": "nodejs22.x",
-			"regions": ["sin1"]
-		}
-	},
 	"headers": [
 		{
 			"source": "/_app/immutable/(.*)",
