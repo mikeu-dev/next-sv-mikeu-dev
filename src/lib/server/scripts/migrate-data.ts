@@ -34,6 +34,43 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+/**
+ * membersihkan data dari objek non-serializable (seperti komponen Svelte)
+ * sebelum dikirim ke Firestore.
+ */
+function sanitize(data: unknown): unknown {
+	if (!data) return data;
+
+	if (Array.isArray(data)) {
+		return data.map((item) => sanitize(item));
+	}
+
+	if (typeof data === 'object' && !(data instanceof Date)) {
+		const result: Record<string, unknown> = {};
+		const obj = data as Record<string, unknown>;
+
+		for (const key in obj) {
+			if (Object.prototype.hasOwnProperty.call(obj, key)) {
+				const value = obj[key];
+
+				// Lewati komponen Svelte (fungsi) atau objek yang tidak didukung Firestore
+				if (typeof value === 'function') {
+					continue;
+				}
+
+				if (value && typeof value === 'object' && !(value instanceof Date)) {
+					result[key] = sanitize(value);
+				} else {
+					result[key] = value;
+				}
+			}
+		}
+		return result;
+	}
+
+	return data;
+}
+
 // Import data lokal
 import { techStack } from '../../data/techstack';
 import { journey } from '../../data/journey';
@@ -46,13 +83,13 @@ async function migrateTechStack() {
 	try {
 		// Simpan data EN
 		await db.collection(COLLECTIONS.TECHSTACK).doc('en').set({
-			categories: techStack.en,
+			categories: sanitize(techStack.en),
 			updatedAt: new Date()
 		});
 
 		// Simpan data ID
 		await db.collection(COLLECTIONS.TECHSTACK).doc('id').set({
-			categories: techStack.id,
+			categories: sanitize(techStack.id),
 			updatedAt: new Date()
 		});
 
@@ -69,13 +106,13 @@ async function migrateJourney() {
 	try {
 		// Simpan data EN
 		await db.collection(COLLECTIONS.JOURNEY).doc('en').set({
-			items: journey.en,
+			items: sanitize(journey.en),
 			updatedAt: new Date()
 		});
 
 		// Simpan data ID
 		await db.collection(COLLECTIONS.JOURNEY).doc('id').set({
-			items: journey.id,
+			items: sanitize(journey.id),
 			updatedAt: new Date()
 		});
 
@@ -92,13 +129,13 @@ async function migrateSkills() {
 	try {
 		// Simpan data EN
 		await db.collection(COLLECTIONS.SKILLS).doc('en').set({
-			items: skills.en,
+			items: sanitize(skills.en),
 			updatedAt: new Date()
 		});
 
 		// Simpan data ID
 		await db.collection(COLLECTIONS.SKILLS).doc('id').set({
-			items: skills.id,
+			items: sanitize(skills.id),
 			updatedAt: new Date()
 		});
 
@@ -115,7 +152,7 @@ async function migrateSocials() {
 	try {
 		// Social links tidak perlu multi-language
 		await db.collection(COLLECTIONS.SOCIALS).doc('default').set({
-			links: socialLinks,
+			links: sanitize(socialLinks),
 			updatedAt: new Date()
 		});
 
