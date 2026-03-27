@@ -27,6 +27,10 @@ export class BlogService {
 		return this.repository.findById(id);
 	}
 
+	async getPublishedPostsByLocale(locale: string) {
+		return this.repository.getPublishedByLocale(locale);
+	}
+
 	async createPost(data: BlogPost) {
 		const id = `${data.slug}-${data.locale}`;
 		// We use set() in repository for specific ID if needed, 

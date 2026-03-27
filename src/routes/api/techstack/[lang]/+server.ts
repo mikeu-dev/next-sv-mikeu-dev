@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/server/firebase/firebase.server';
-import { COLLECTIONS } from '$lib/server/firebase/collections';
+import { TechStackService } from '$lib/server/services/techstack.service';
+
+const techStackService = new TechStackService();
 
 export const PUT: RequestHandler = async ({ params, request }) => {
 	const { lang } = params;
@@ -32,11 +33,8 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			}
 		}
 
-		// Update Firestore
-		await db.collection(COLLECTIONS.TECHSTACK).doc(lang).set({
-			categories,
-			updatedAt: new Date()
-		});
+		// Update via Service
+		await techStackService.updateTechStack(lang as 'en' | 'id', { categories });
 
 		return json({ success: true, message: 'Techstack updated successfully' });
 	} catch (error: unknown) {
@@ -46,5 +44,4 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	}
 };
 
-// Disable prerendering for this endpoint
 export const prerender = false;

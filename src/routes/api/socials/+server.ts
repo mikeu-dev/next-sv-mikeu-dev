@@ -1,8 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { SocialsService } from '$lib/server/services/socials.service';
-import { db } from '$lib/server/firebase/firebase.server';
-import { COLLECTIONS } from '$lib/server/firebase/collections';
 import { logError } from '$lib/server/utils/logger';
 import { env } from '$lib/server/config/env';
 
@@ -44,11 +42,8 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		// Update Firestore
-		await db.collection(COLLECTIONS.SOCIALS).doc('default').set({
-			links,
-			updatedAt: new Date()
-		});
+		// Update via Service
+		await socialsService.updateSocials({ links });
 
 		return json({ success: true, message: 'Socials updated successfully' });
 	} catch (error: unknown) {

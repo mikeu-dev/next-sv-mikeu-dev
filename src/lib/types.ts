@@ -65,6 +65,11 @@ export interface SocialLink {
 	[key: string]: unknown;
 }
 
+export interface Socials {
+	links: SocialLink[];
+	updatedAt?: Date;
+}
+
 export interface TechStackItem {
 	name: string;
 	color: string;

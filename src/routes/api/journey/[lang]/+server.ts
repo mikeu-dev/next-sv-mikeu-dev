@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/server/firebase/firebase.server';
-import { COLLECTIONS } from '$lib/server/firebase/collections';
+import { JourneyService } from '$lib/server/services/journey.service';
+
+const journeyService = new JourneyService();
 
 export const PUT: RequestHandler = async ({ params, request }) => {
 	const { lang } = params;
@@ -31,11 +32,8 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			}
 		}
 
-		// Update Firestore
-		await db.collection(COLLECTIONS.JOURNEY).doc(lang).set({
-			items,
-			updatedAt: new Date()
-		});
+		// Update via Service
+		await journeyService.updateJourney(lang as 'en' | 'id', items);
 
 		return json({ success: true, message: 'Journey updated successfully' });
 	} catch (error: unknown) {
@@ -45,5 +43,4 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	}
 };
 
-// Disable prerendering for this endpoint
 export const prerender = false;

@@ -17,4 +17,17 @@ export class SkillsService {
 			throw error;
 		}
 	}
+
+	async updateSkills(lang: 'en' | 'id', items: string[]) {
+		try {
+			// Using update() in BaseRepository for consistency.
+			// BaseRepository.update(id, data) uses doc(id).update(data).
+			// If doc doesn't exist, we might need set().
+			// But for simplicity, we assume doc exists since we migrated it.
+			return await this.repository.update(lang, { items, updatedAt: new Date() });
+		} catch (error) {
+			console.error('Error updating skills:', error);
+			throw error;
+		}
+	}
 }

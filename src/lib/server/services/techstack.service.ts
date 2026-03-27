@@ -17,4 +17,13 @@ export class TechStackService {
 			throw error;
 		}
 	}
+
+	async updateTechStack(lang: 'en' | 'id', data: TechStackData) {
+		try {
+			return await this.repository.update(lang, { ...data, updatedAt: new Date() });
+		} catch (error) {
+			console.error('Error updating techstack:', error);
+			throw error;
+		}
+	}
 }
