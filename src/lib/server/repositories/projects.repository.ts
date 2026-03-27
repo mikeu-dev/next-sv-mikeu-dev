@@ -17,6 +17,6 @@ export class ProjectsRepository extends BaseRepository<Project> {
 			.limit(1)
 			.get();
 		if (snapshot.empty) return null;
-		return { ...(snapshot.docs[0].data() as Project), id: snapshot.docs[0].id };
+		return { ...this.toPOJO(snapshot.docs[0].data()), id: snapshot.docs[0].id };
 	}
 }
