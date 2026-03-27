@@ -16,11 +16,7 @@ import admin from 'firebase-admin';
 import { COLLECTIONS } from '../firebase/collections';
 
 // Initialize Firebase Admin locally for script execution
-const {
-	FIREBASE_PROJECT_ID,
-	FIREBASE_CLIENT_EMAIL,
-	FIREBASE_PRIVATE_KEY
-} = process.env;
+const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env;
 
 if (!admin.apps.length) {
 	admin.initializeApp({
@@ -82,16 +78,22 @@ async function migrateTechStack() {
 
 	try {
 		// Simpan data EN
-		await db.collection(COLLECTIONS.TECHSTACK).doc('en').set({
-			categories: sanitize(techStack.en),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.TECHSTACK)
+			.doc('en')
+			.set({
+				categories: sanitize(techStack.en),
+				updatedAt: new Date()
+			});
 
 		// Simpan data ID
-		await db.collection(COLLECTIONS.TECHSTACK).doc('id').set({
-			categories: sanitize(techStack.id),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.TECHSTACK)
+			.doc('id')
+			.set({
+				categories: sanitize(techStack.id),
+				updatedAt: new Date()
+			});
 
 		console.log('✅ TechStack migrated successfully');
 	} catch (error) {
@@ -105,16 +107,22 @@ async function migrateJourney() {
 
 	try {
 		// Simpan data EN
-		await db.collection(COLLECTIONS.JOURNEY).doc('en').set({
-			items: sanitize(journey.en),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.JOURNEY)
+			.doc('en')
+			.set({
+				items: sanitize(journey.en),
+				updatedAt: new Date()
+			});
 
 		// Simpan data ID
-		await db.collection(COLLECTIONS.JOURNEY).doc('id').set({
-			items: sanitize(journey.id),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.JOURNEY)
+			.doc('id')
+			.set({
+				items: sanitize(journey.id),
+				updatedAt: new Date()
+			});
 
 		console.log('✅ Journey migrated successfully');
 	} catch (error) {
@@ -128,16 +136,22 @@ async function migrateSkills() {
 
 	try {
 		// Simpan data EN
-		await db.collection(COLLECTIONS.SKILLS).doc('en').set({
-			items: sanitize(skills.en),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.SKILLS)
+			.doc('en')
+			.set({
+				items: sanitize(skills.en),
+				updatedAt: new Date()
+			});
 
 		// Simpan data ID
-		await db.collection(COLLECTIONS.SKILLS).doc('id').set({
-			items: sanitize(skills.id),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.SKILLS)
+			.doc('id')
+			.set({
+				items: sanitize(skills.id),
+				updatedAt: new Date()
+			});
 
 		console.log('✅ Skills migrated successfully');
 	} catch (error) {
@@ -151,10 +165,13 @@ async function migrateSocials() {
 
 	try {
 		// Social links tidak perlu multi-language
-		await db.collection(COLLECTIONS.SOCIALS).doc('default').set({
-			links: sanitize(socialLinks),
-			updatedAt: new Date()
-		});
+		await db
+			.collection(COLLECTIONS.SOCIALS)
+			.doc('default')
+			.set({
+				links: sanitize(socialLinks),
+				updatedAt: new Date()
+			});
 
 		console.log('✅ Socials migrated successfully');
 	} catch (error) {

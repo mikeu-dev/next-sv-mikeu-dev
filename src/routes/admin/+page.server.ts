@@ -54,9 +54,12 @@ export const load: PageServerLoad = async () => {
 
 	// Calculate techstack count manually since service doesn't provide it
 	const techStackItemsCount =
-		(techstack as TechStackData).categories?.reduce((acc: number, category: { items: unknown[] }) => {
-			return acc + (category.items?.length || 0);
-		}, 0) || 0;
+		(techstack as TechStackData).categories?.reduce(
+			(acc: number, category: { items: unknown[] }) => {
+				return acc + (category.items?.length || 0);
+			},
+			0
+		) || 0;
 
 	const visitorStats = await visitorService.getStats();
 	const visitorLogs = await visitorService.getRecentLogs(10); // Fetch last 10 visitors

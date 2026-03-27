@@ -11,10 +11,7 @@ export class VisitorRepository extends BaseRepository<VisitorLogData> {
 	}
 
 	async getRecent(limit: number = 20): Promise<VisitorLogData[]> {
-		const snapshot = await this.getCollection()
-			.orderBy('timestamp', 'desc')
-			.limit(limit)
-			.get();
+		const snapshot = await this.getCollection().orderBy('timestamp', 'desc').limit(limit).get();
 
 		return snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
 			...this.toPOJO(doc.data()),

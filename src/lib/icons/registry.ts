@@ -63,9 +63,9 @@ export const iconRegistry: Record<string, IconType> = {
 	FiGithub,
 	FiExternalLink,
 	FiGlobe,
-    
-    // Fallback/Default
-    default: FiHash
+
+	// Fallback/Default
+	default: FiHash
 };
 
 export function getIconByName(name: string): IconType {
