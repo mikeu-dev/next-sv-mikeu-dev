@@ -8,6 +8,7 @@ import { TechStackService } from '$lib/server/services/techstack.service';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { SkillsService } from '$lib/server/services/skills.service';
 import type { PageServerLoad } from './$types';
+import type { TechStackData } from '$lib/server/repositories/techstack.repository';
 
 export const load: PageServerLoad = async () => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
@@ -53,17 +54,12 @@ export const load: PageServerLoad = async () => {
 
 	// Calculate techstack count manually since service doesn't provide it
 	const techStackItemsCount =
-		techstack?.categories?.reduce((acc: number, category: { items: unknown[] }) => {
+		(techstack as TechStackData).categories?.reduce((acc: number, category: { items: unknown[] }) => {
 			return acc + (category.items?.length || 0);
 		}, 0) || 0;
 
 	const visitorStats = await visitorService.getStats();
 	const visitorLogs = await visitorService.getRecentLogs(10); // Fetch last 10 visitors
-
-	// Serialize to plain objects to avoid "non-POJO" errors with Dates/Timestamps
-	const serializedMessages = JSON.parse(JSON.stringify(recentMessages));
-	const serializedPosts = JSON.parse(JSON.stringify(recentPosts));
-	const serializedVisitorLogs = JSON.parse(JSON.stringify(visitorLogs));
 
 	return {
 		stats: {
@@ -75,9 +71,9 @@ export const load: PageServerLoad = async () => {
 			skills: skillsCount
 		},
 		recent: {
-			messages: serializedMessages,
-			posts: serializedPosts, // Use serialized to avoid date issues
-			visitors: serializedVisitorLogs
+			messages: recentMessages,
+			posts: recentPosts,
+			visitors: visitorLogs
 		}
 	};
 };

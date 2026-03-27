@@ -1,16 +1,17 @@
-import { db } from '../firebase/firebase.server';
-import { COLLECTIONS } from '../firebase/collections';
+import { SkillsRepository } from '../repositories/skills.repository';
 
 export class SkillsService {
+	private repository = new SkillsRepository();
+
 	async getSkills(lang: 'en' | 'id' = 'en') {
 		try {
-			const doc = await db.collection(COLLECTIONS.SKILLS).doc(lang).get();
+			const data = await this.repository.getByLang(lang);
 
-			if (!doc.exists) {
+			if (!data) {
 				return { items: [] };
 			}
 
-			return doc.data();
+			return data;
 		} catch (error) {
 			console.error('Error fetching skills:', error);
 			throw error;

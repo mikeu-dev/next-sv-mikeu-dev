@@ -3,6 +3,10 @@ import { db } from '../firebase/firebase.server';
 export abstract class BaseRepository<T> {
 	protected constructor(private readonly collectionName: string) {}
 
+	protected getCollection() {
+		return db.collection(this.collectionName);
+	}
+
 	protected toPOJO(data: unknown): T {
 		if (!data || typeof data !== 'object') return data as T;
 

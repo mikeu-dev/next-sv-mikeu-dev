@@ -1,5 +1,4 @@
-import { db } from '$lib/server/firebase/firebase.server';
-import { COLLECTIONS } from '$lib/server/firebase/collections';
+import { BlogRepository } from '../repositories/blog.repository';
 
 export interface BlogPost {
 	id?: string;
@@ -10,74 +9,42 @@ export interface BlogPost {
 	date: string;
 	published: boolean;
 	content: string;
-	updatedAt?: unknown;
+	updatedAt?: Date;
 }
 
-export const blogService = {
+export class BlogService {
+	private repository = new BlogRepository();
+
 	async getAllPosts() {
-		const snapshot = await db.collection(COLLECTIONS.BLOG_POSTS).get();
-		return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as BlogPost);
-	},
+		return this.repository.findAll();
+	}
 
 	async getPostBySlug(slug: string, locale?: string) {
-		let query = db.collection(COLLECTIONS.BLOG_POSTS).where('slug', '==', slug);
-		if (locale) {
-			query = query.where('locale', '==', locale);
-		}
-
-		const snapshot = await query.get();
-		if (snapshot.empty) return null;
-
-		return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost;
-	},
+		return this.repository.getBySlugIndoEn(slug, locale);
+	}
 
 	async getPostById(id: string) {
-		const doc = await db.collection(COLLECTIONS.BLOG_POSTS).doc(id).get();
-		if (!doc.exists) return null;
-		return { id: doc.id, ...doc.data() } as BlogPost;
-	},
+		return this.repository.findById(id);
+	}
 
 	async createPost(data: BlogPost) {
-		// Use slug-locale as ID to allow same slug for different languages
 		const id = `${data.slug}-${data.locale}`;
-
-		// Check if ID exists to avoid overwrite?
-		// set() with merge:false overwrites.
-		// For now, let's assume overwrite is intended or user checks existence.
-
-		await db
-			.collection(COLLECTIONS.BLOG_POSTS)
-			.doc(id)
-			.set({
-				...data,
-				updatedAt: new Date()
-			});
+		// We use set() in repository for specific ID if needed, 
+		// but BaseRepository.create uses add(). 
+		// We can add a saveWithId to BaseRepository or just use db here.
+		// For consistency with existing logic:
+		await this.repository.update(id, { ...data, updatedAt: new Date() } as Partial<BlogPost>);
 		return { id, ...data };
-	},
+	}
 
 	async updatePost(id: string, data: Partial<BlogPost>) {
-		// If slug or locale connects to ID, changing them might require ID change (migration).
-		// But for simpler update, we assume ID is constant.
-		// If user changes locale/slug in edit, it would technically be a "Move".
-		// But for now, let's just update the doc.
-		// WARNING: If ID is slug-locale, and we change slug, ID should change.
-		// This is complex. Let's assume for now we just update the fields.
-		// The ID remains the same, which might de-sync from slug-locale.
-		// Ideally, we should delete old and create new if slug/locale changes.
-		// But let's stick to update for now to avoid data loss risk on refactor.
-
-		await db
-			.collection(COLLECTIONS.BLOG_POSTS)
-			.doc(id)
-			.update({
-				...data,
-				updatedAt: new Date()
-			});
-		return { id, ...data };
-	},
+		return this.repository.update(id, { ...data, updatedAt: new Date() });
+	}
 
 	async deletePost(id: string) {
-		await db.collection(COLLECTIONS.BLOG_POSTS).doc(id).delete();
+		await this.repository.delete(id);
 		return true;
 	}
-};
+}
+
+export const blogService = new BlogService();

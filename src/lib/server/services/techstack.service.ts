@@ -1,16 +1,17 @@
-import { db } from '../firebase/firebase.server';
-import { COLLECTIONS } from '../firebase/collections';
+import { TechStackRepository, type TechStackData } from '../repositories/techstack.repository';
 
 export class TechStackService {
-	async getTechStack(lang: 'en' | 'id' = 'en') {
-		try {
-			const doc = await db.collection(COLLECTIONS.TECHSTACK).doc(lang).get();
+	private repository = new TechStackRepository();
 
-			if (!doc.exists) {
+	async getTechStack(lang: 'en' | 'id' = 'en'): Promise<TechStackData> {
+		try {
+			const data = await this.repository.getByLang(lang);
+
+			if (!data) {
 				return { categories: [] };
 			}
 
-			return doc.data();
+			return data;
 		} catch (error) {
 			console.error('Error fetching techstack:', error);
 			throw error;
