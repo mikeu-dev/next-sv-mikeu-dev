@@ -3,7 +3,7 @@ import { SkillsService } from '$lib/server/services/skills.service';
 import { ProjectsService } from '$lib/server/services/projects.service';
 import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
 
-export const prerender = true;
+export const prerender = false;
 
 export const load: PageServerLoad = async () => {
 	const skillsService = new SkillsService();
