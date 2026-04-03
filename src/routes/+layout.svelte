@@ -87,6 +87,7 @@
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 		rel="stylesheet"
 	/>
+	<meta name="google-adsense-account" content="ca-pub-6698556269439251">
 </svelte:head>
 
 <!-- 🎉 Confetti layer di luar layout utama -->
