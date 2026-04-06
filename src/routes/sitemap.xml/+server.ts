@@ -1,12 +1,13 @@
 import type { RequestHandler } from './$types';
 import { ProjectsService } from '$lib/server/services/projects.service';
 import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
+import { locales, baseLocale } from '$lib/paraglide/runtime';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async () => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
 	const projects = await projectsService.findAll();
 
-	const siteUrl = url.origin;
+	const siteUrl = 'https://www.mikeudev.my.id';
 
 	// Static pages to include
 	const staticPages = ['', '/about', '/projects', '/contact', '/blog'];
@@ -25,47 +26,55 @@ export const GET: RequestHandler = async ({ url }) => {
 		}
 	}
 
-	const urls: string[] = [];
+	// Collect all relative paths
+	const paths = [
+		...staticPages,
+		...projects.filter((p) => p.published).map((p) => `/project/${p.slug}`),
+		...blogPosts.map((slug) => `/blog/${slug}`)
+	];
 
-	// Add static pages
-	for (const page of staticPages) {
-		urls.push(`${siteUrl}${page}`);
-	}
+	let sitemapEntries = '';
+	for (const path of paths) {
+		for (const locale of locales) {
+			const isBase = locale === baseLocale;
+			const loc = isBase
+				? `${siteUrl}${path || '/'}`
+				: `${siteUrl}/${locale}${path}`;
 
-	// Add project pages
-	for (const project of projects) {
-		if (project.published) {
-			urls.push(`${siteUrl}/project/${project.slug}`);
+			const alternates = locales
+				.map((altLocale) => {
+					const altIsBase = altLocale === baseLocale;
+					const altHref = altIsBase
+						? `${siteUrl}${path || '/'}`
+						: `${siteUrl}/${altLocale}${path}`;
+					return `<xhtml:link rel="alternate" hreflang="${altLocale}" href="${altHref.replace(/\/$/, '') || '/'}" />`;
+				})
+				.join('');
+
+			const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${path || '/'}" />`;
+
+			sitemapEntries += `
+	<url>
+		<loc>${loc.replace(/\/$/, '') || '/'}</loc>
+		${alternates}
+		${xDefault}
+		<changefreq>weekly</changefreq>
+		<priority>${path === '' ? '1.0' : '0.7'}</priority>
+	</url>`;
 		}
 	}
 
-	// Add blog posts
-	for (const slug of blogPosts) {
-		urls.push(`${siteUrl}/blog/${slug}`);
-	}
-
-	const sitemapEntries = urls
-		.map(
-			(loc) => `
-			<url>
-				<loc>${loc}</loc>
-				<changefreq>weekly</changefreq>
-				<priority>0.7</priority>
-			</url>`
-		)
-		.join('');
-
 	const sitemap = `<?xml version="1.0" encoding="UTF-8" ?>
-		<urlset
-			xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-			xmlns:xhtml="http://www.w3.org/1999/xhtml"
-			xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
-			xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-			xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-			xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
-		>
-			${sitemapEntries}
-		</urlset>`.trim();
+<urlset
+	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+	xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+	xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+	xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+>
+	${sitemapEntries}
+</urlset>`.trim();
 
 	return new Response(sitemap, {
 		headers: {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { locales, baseLocale } from '$lib/paraglide/runtime';
 
 	type Props = {
 		title?: string;
@@ -9,20 +10,48 @@
 
 	let { title, description, image }: Props = $props();
 
+	const canonicalBase = 'https://www.mikeudev.my.id';
 	const defaultTitle = 'Mikeu | Fullstack Web Developer';
 	const defaultDescription = 'A passionate Fullstack Web Developer from Indonesia.';
-	const siteUrl = page.url.origin;
+	const siteUrl = canonicalBase;
 	const defaultImage = `${siteUrl}/favicon.png`;
 
 	const finalTitle = title ? `${title} | Mikeu` : defaultTitle;
 	const finalDescription = description || defaultDescription;
 	const finalImage = image || defaultImage;
-	const canonicalUrl = page.url.href;
+
+	// Construct canonical URL using hardcoded domain to avoid non-www issues
+	// Remove trailing slash except for root
+	const path = page.url.pathname.replace(/\/$/, '') || '/';
+	const canonicalUrl = `${canonicalBase}${path}`;
+
+	// Generate alternate language links
+	// 1. Get the "clean" path without locale prefix
+	const pathSegments = page.url.pathname.split('/').filter(Boolean);
+	if (pathSegments.length > 0 && locales.includes(pathSegments[0] as (typeof locales)[number])) {
+		pathSegments.shift();
+	}
+	const cleanPath = '/' + pathSegments.join('/');
+
+	const alternates = locales.map((locale) => {
+		const isBase = locale === baseLocale;
+		const localizedPath = isBase ? cleanPath : `/${locale}${cleanPath.replace(/\/$/, '')}`;
+		return {
+			locale,
+			href: `${canonicalBase}${localizedPath.replace(/\/$/, '') || '/'}`
+		};
+	});
 </script>
 
 <svelte:head>
 	<title>{finalTitle}</title>
 	<meta name="description" content={finalDescription} />
+	<link rel="canonical" href={canonicalUrl} />
+
+	{#each alternates as alt (alt.locale)}
+		<link rel="alternate" hreflang={alt.locale} href={alt.href} />
+	{/each}
+	<link rel="alternate" hreflang="x-default" href={`${canonicalBase}${cleanPath.replace(/\/$/, '') || '/'}`} />
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />
