@@ -16,6 +16,10 @@
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 	import { Icon } from 'svelte-icons-pack';
 	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+
+	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	import { authState } from '$lib/stores/auth.svelte';
 
@@ -87,7 +91,7 @@
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 		rel="stylesheet"
 	/>
-	<meta name="google-adsense-account" content="ca-pub-6698556269439251">
+	<meta name="google-adsense-account" content="ca-pub-6698556269439251" />
 </svelte:head>
 
 <!-- 🎉 Confetti layer di luar layout utama -->

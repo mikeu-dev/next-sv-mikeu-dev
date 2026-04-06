@@ -77,6 +77,7 @@
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/adapter-vercel": "^6.0.0",
 		"@types/ua-parser-js": "^0.7.39",
+		"@vercel/analytics": "^2.0.1",
 		"busboy": "^1.6.0",
 		"firebase": "^12.4.0",
 		"firebase-admin": "^13.6.0",
