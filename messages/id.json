@@ -49,5 +49,6 @@
 	"contact_field_optional": "Opsional",
 	"contact_field_budget": "Anggaran",
 	"contact_field_budget_placeholder": "misal Rp 1.000.000 - Rp 5.000.000",
-	"contact_field_budget_description": "Perkiraan anggaran untuk proyek ini"
+	"contact_field_budget_description": "Perkiraan anggaran untuk proyek ini",
+	"pwa_install_button": "Instal Aplikasi"
 }
