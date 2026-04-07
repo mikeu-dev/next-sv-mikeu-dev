@@ -1,5 +1,6 @@
 # allow crawling everything by default
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /auth
 
 Sitemap: https://www.mikeudev.my.id/sitemap.xml

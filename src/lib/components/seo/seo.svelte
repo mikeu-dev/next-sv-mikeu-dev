@@ -6,9 +6,10 @@
 		title?: string;
 		description?: string;
 		image?: string;
+		noindex?: boolean;
 	};
 
-	let { title, description, image }: Props = $props();
+	let { title, description, image, noindex = false }: Props = $props();
 
 	const canonicalBase = 'https://www.mikeudev.my.id';
 	const defaultTitle = 'Mikeu | Fullstack Web Developer';
@@ -47,6 +48,9 @@
 	<title>{finalTitle}</title>
 	<meta name="description" content={finalDescription} />
 	<link rel="canonical" href={canonicalUrl} />
+	{#if noindex}
+		<meta name="robots" content="noindex, nofollow" />
+	{/if}
 
 	{#each alternates as alt (alt.locale)}
 		<link rel="alternate" hreflang={alt.locale} href={alt.href} />

@@ -6,6 +6,7 @@
 	import { toast } from 'svelte-sonner';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { signInWithEmailAndPassword } from 'firebase/auth';
+	import SEO from '$lib/components/seo/seo.svelte';
 
 	let email = $state('');
 	let password = $state('');
@@ -62,6 +63,8 @@
 		}
 	}
 </script>
+
+<SEO noindex={true} />
 
 <div class="flex min-h-screen items-center justify-center px-4">
 	<Card.Root class="w-full max-w-sm">
