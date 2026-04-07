@@ -10,7 +10,16 @@ export const GET: RequestHandler = async () => {
 	const siteUrl = 'https://www.mikeudev.my.id';
 
 	// Static pages to include
-	const staticPages = ['', '/about', '/projects', '/contact', '/blog'];
+	const staticPages = [
+		'',
+		'/about',
+		'/projects',
+		'/contact',
+		'/blog',
+		'/privacy-policy',
+		'/terms-of-service',
+		'/disclaimer'
+	];
 
 	// Get blog posts
 	const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', { eager: true });
