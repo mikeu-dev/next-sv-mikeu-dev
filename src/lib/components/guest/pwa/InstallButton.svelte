@@ -27,7 +27,7 @@
 {#if pwaState.isInstallable}
 	<div class={cn('relative inline-flex', className)} transition:fade>
 		{#if confettiCannon}
-			<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+			<div class="pointer-events-none absolute inset-0 flex items-center justify-center">
 				<ConfettiCannon
 					origin={[window.innerWidth / 2, window.innerHeight]}
 					angle={-90}

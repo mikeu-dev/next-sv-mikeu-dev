@@ -60,8 +60,8 @@
 			All logos and trademarks of third parties referenced on <a href="https://www.mikeudev.my.id"
 				>https://www.mikeudev.my.id</a
 			>
-			are the trademarks and logos of their respective owners. Any inclusion of such trademarks or
-			logos does not imply or constitute any approval, endorsement or sponsorship of
+			are the trademarks and logos of their respective owners. Any inclusion of such trademarks or logos
+			does not imply or constitute any approval, endorsement or sponsorship of
 			<strong>Mikeu Dev</strong> by such owners.
 		</p>
 	</section>

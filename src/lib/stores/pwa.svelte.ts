@@ -1,5 +1,5 @@
 /**
- * Interface for the BeforeInstallPromptEvent which is not yet 
+ * Interface for the BeforeInstallPromptEvent which is not yet
  * part of the standard TypeScript DOM library.
  */
 export interface BeforeInstallPromptEvent extends Event {
@@ -18,7 +18,7 @@ export interface BeforeInstallPromptEvent extends Event {
 class PWAState {
 	// The captured event for triggering the installation prompt
 	installPromptEvent: BeforeInstallPromptEvent | null = $state(null);
-	
+
 	// Whether the app is installable
 	isInstallable = $derived(this.installPromptEvent !== null);
 
@@ -41,7 +41,7 @@ class PWAState {
 
 		// Wait for the user to respond to the prompt
 		const { outcome } = await this.installPromptEvent.userChoice;
-		
+
 		if (outcome === 'accepted') {
 			// console.log('User accepted the install prompt');
 			this.installPromptEvent = null;

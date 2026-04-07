@@ -29,6 +29,7 @@ uploads/
 src/lib/data/
 # Paraglide
 src/lib/paraglide
+src/paraglide
 
 *storybook.log
 storybook-static
