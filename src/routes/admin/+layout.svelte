@@ -5,6 +5,7 @@
 
 	import Sidebar from '$lib/components/admin/sidebar.svelte';
 	import Footer from '$lib/components/guest/footer/footer.svelte';
+	import SEO from '$lib/components/seo/seo.svelte';
 
 	let { data, children } = $props();
 
@@ -16,6 +17,8 @@
 	});
 </script>
 
+<SEO noindex={true} />
+
 {#if authState.user}
 	<div class="flex min-h-screen bg-background">
 		<!-- Sidebar -->
@@ -24,7 +27,7 @@
 		<!-- Main Content -->
 		<div class="flex min-h-screen flex-1 flex-col md:ml-64">
 			<header
-				class="sticky top-0 z-30 flex h-16 items-center border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+				class="sticky top-0 z-30 flex h-16 items-center border-b bg-background/95 px-6 backdrop-blur supports-backdrop-filter:bg-background/60"
 			>
 				<div class="ml-auto flex items-center gap-4">
 					<span class="text-sm text-muted-foreground">{authState.user.email}</span>
