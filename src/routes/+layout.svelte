@@ -51,6 +51,13 @@
 		scrollBtn = document.getElementById('scrollToTopBtn') as HTMLButtonElement;
 		window.addEventListener('scroll', handleScroll);
 
+		// Manual Service Worker registration for PWA testing
+		if ('serviceWorker' in navigator && !dev) {
+			navigator.serviceWorker.register('/service-worker.js', {
+				type: dev ? 'module' : 'classic'
+			});
+		}
+
 		// Ambil statistik real-time untuk memperbarui data yang mungkin stale dari prerender
 		(async () => {
 			try {
