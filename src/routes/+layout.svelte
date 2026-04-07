@@ -22,6 +22,7 @@
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	import { authState } from '$lib/stores/auth.svelte';
+	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
 
 	let { data, children } = $props();
 
@@ -50,6 +51,26 @@
 	onMount(() => {
 		scrollBtn = document.getElementById('scrollToTopBtn') as HTMLButtonElement;
 		window.addEventListener('scroll', handleScroll);
+
+		// Manual Service Worker registration for PWA testing
+		if ('serviceWorker' in navigator && !dev) {
+			navigator.serviceWorker.register('/service-worker.js', {
+				type: dev ? 'module' : 'classic'
+			});
+		}
+
+		// PWA Installation prompt capturing
+		window.addEventListener('beforeinstallprompt', (e) => {
+			// Prevent the mini-infobar from appearing on mobile
+			e.preventDefault();
+			// Stash the event so it can be triggered later.
+			pwaState.setInstallPrompt(e as BeforeInstallPromptEvent);
+		});
+
+		window.addEventListener('appinstalled', () => {
+			// Hubungkan logika jika perlu saat aplikasi berhasil diinstal
+			pwaState.setInstallPrompt(null);
+		});
 
 		// Ambil statistik real-time untuk memperbarui data yang mungkin stale dari prerender
 		(async () => {

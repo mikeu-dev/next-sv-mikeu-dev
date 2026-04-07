@@ -16,6 +16,7 @@
 	import { signOut } from 'firebase/auth';
 	import { authState } from '$lib/stores/auth.svelte';
 	import AuthDialog from './auth-dialog.svelte';
+	import InstallButton from '../pwa/InstallButton.svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
@@ -206,6 +207,7 @@
 				</Avatar.Root>
 				<Button onclick={handleSignOut}>Sign Out</Button>
 			{:else}
+				<InstallButton />
 				<Button href={resumeUrl} onclick={makeConfettiCannon} download>{m.nav_cv_button()}</Button>
 			{/if}
 		</div>
@@ -332,6 +334,7 @@
 
 		<!-- CTA Button -->
 		<div class="mt-auto flex flex-col items-center gap-4 px-6 pt-4 pb-6">
+			<InstallButton class="w-full" />
 			<Button href={resumeUrl} onclick={makeConfettiCannon} download class="w-full font-semibold">
 				{m.nav_cv_button()}
 			</Button>
