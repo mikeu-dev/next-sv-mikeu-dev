@@ -46,16 +46,12 @@ export const GET: RequestHandler = async () => {
 	for (const path of paths) {
 		for (const locale of locales) {
 			const isBase = locale === baseLocale;
-			const loc = isBase
-				? `${siteUrl}${path || '/'}`
-				: `${siteUrl}/${locale}${path}`;
+			const loc = isBase ? `${siteUrl}${path || '/'}` : `${siteUrl}/${locale}${path}`;
 
 			const alternates = locales
 				.map((altLocale) => {
 					const altIsBase = altLocale === baseLocale;
-					const altHref = altIsBase
-						? `${siteUrl}${path || '/'}`
-						: `${siteUrl}/${altLocale}${path}`;
+					const altHref = altIsBase ? `${siteUrl}${path || '/'}` : `${siteUrl}/${altLocale}${path}`;
 					return `<xhtml:link rel="alternate" hreflang="${altLocale}" href="${altHref.replace(/\/$/, '') || '/'}" />`;
 				})
 				.join('');

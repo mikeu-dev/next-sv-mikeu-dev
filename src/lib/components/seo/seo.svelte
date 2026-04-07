@@ -55,7 +55,11 @@
 	{#each alternates as alt (alt.locale)}
 		<link rel="alternate" hreflang={alt.locale} href={alt.href} />
 	{/each}
-	<link rel="alternate" hreflang="x-default" href={`${canonicalBase}${cleanPath.replace(/\/$/, '') || '/'}`} />
+	<link
+		rel="alternate"
+		hreflang="x-default"
+		href={`${canonicalBase}${cleanPath.replace(/\/$/, '') || '/'}`}
+	/>
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />
