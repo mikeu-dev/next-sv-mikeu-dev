@@ -3,16 +3,8 @@ import { z } from 'zod';
 const envSchema = z.object({
 	// Firebase Admin SDK
 	FIREBASE_PROJECT_ID: z.string().optional(),
-	FIREBASE_TYPE: z.string().optional(),
-	FIREBASE_PRIVATE_KEY_ID: z.string().optional(),
 	FIREBASE_PRIVATE_KEY: z.string().optional(),
 	FIREBASE_CLIENT_EMAIL: z.string().optional(),
-	FIREBASE_CLIENT_ID: z.string().optional(),
-	FIREBASE_AUTH_URI: z.string().optional(),
-	FIREBASE_TOKEN_URI: z.string().optional(),
-	FIREBASE_AUTH_PROVIDER_CERT_URL: z.string().optional(),
-	FIREBASE_CLIENT_CERT_URL: z.string().optional(),
-	FIREBASE_UNIVERSE_FDOMAIN: z.string().optional(),
 
 	// Session Configuration
 	SESSION_EXPIRES_DAYS: z.string().default('7'),
