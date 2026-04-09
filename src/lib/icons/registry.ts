@@ -27,6 +27,7 @@ import {
 	SiVite
 } from 'svelte-icons-pack/si';
 import { FiHash, FiGithub, FiExternalLink, FiGlobe } from 'svelte-icons-pack/fi';
+import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
 import type { IconType } from 'svelte-icons-pack';
 
 export const iconRegistry: Record<string, IconType> = {
@@ -63,6 +64,9 @@ export const iconRegistry: Record<string, IconType> = {
 	FiGithub,
 	FiExternalLink,
 	FiGlobe,
+
+	// Bootstrap Icons (bs)
+	BsArrowUpCircleFill,
 
 	// Fallback/Default
 	default: FiHash
