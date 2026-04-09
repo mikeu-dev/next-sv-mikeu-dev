@@ -155,7 +155,10 @@ export class GitHubStorageService {
 			return publicUrl;
 		} catch (error: unknown) {
 			console.error('GitHub Resume Upload Error:', error);
-			throw new HttpException(500, `Failed to upload resume to GitHub: ${(error as Error).message}`);
+			throw new HttpException(
+				500,
+				`Failed to upload resume to GitHub: ${(error as Error).message}`
+			);
 		}
 	}
 

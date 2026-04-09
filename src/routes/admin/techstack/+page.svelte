@@ -57,7 +57,6 @@
 		lang = newLang;
 		loadData();
 	}
-
 </script>
 
 <div class="container mx-auto p-6">

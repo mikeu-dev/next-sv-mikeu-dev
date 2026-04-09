@@ -60,9 +60,9 @@
 		...Object.keys(SimpleIcons)
 			.filter((key) => key.startsWith('si'))
 			.map((key) => {
-				const iconData = (SimpleIcons as unknown as Record<string, { hex: string; title: string; slug: string }>)[
-					key
-				];
+				const iconData = (
+					SimpleIcons as unknown as Record<string, { hex: string; title: string; slug: string }>
+				)[key];
 				const slug = iconData.slug || key.slice(2).toLowerCase();
 				return {
 					key,

@@ -165,13 +165,15 @@
 				tabindex="0"
 				class="relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-all duration-200
 					{dragOverEn
-					? 'border-primary bg-primary/5 scale-[1.02]'
+					? 'scale-[1.02] border-primary bg-primary/5'
 					: 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50'}"
 				ondrop={(e) => handleDrop(e, 'en')}
 				ondragover={(e) => handleDragOver(e, 'en')}
 				ondragleave={() => handleDragLeave('en')}
 				onclick={() => fileInputEn.click()}
-				onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputEn.click(); }}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') fileInputEn.click();
+				}}
 			>
 				{#if uploadingEn}
 					<div class="flex flex-col items-center gap-2">
@@ -235,13 +237,15 @@
 				tabindex="0"
 				class="relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-all duration-200
 					{dragOverId
-					? 'border-primary bg-primary/5 scale-[1.02]'
+					? 'scale-[1.02] border-primary bg-primary/5'
 					: 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50'}"
 				ondrop={(e) => handleDrop(e, 'id')}
 				ondragover={(e) => handleDragOver(e, 'id')}
 				ondragleave={() => handleDragLeave('id')}
 				onclick={() => fileInputId.click()}
-				onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputId.click(); }}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') fileInputId.click();
+				}}
 			>
 				{#if uploadingId}
 					<div class="flex flex-col items-center gap-2">

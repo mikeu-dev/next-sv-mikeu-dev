@@ -42,11 +42,13 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 		// Validate and Sanitize each link
 		const sanitizedLinks = links.map((link, index) => {
 			const sanitized = { ...link };
-			
+
 			// Auto-fix missing fields with defaults instead of failing
 			if (!sanitized.iconName) {
 				console.warn(`API:Socials:PUT - Auto-fixing missing iconName at index ${index}`);
-				sanitized.iconName = sanitized.label?.toLowerCase().includes('email') ? 'SiMaildotru' : 'SiGoogle';
+				sanitized.iconName = sanitized.label?.toLowerCase().includes('email')
+					? 'SiMaildotru'
+					: 'SiGoogle';
 			}
 			if (!sanitized.color) {
 				console.warn(`API:Socials:PUT - Auto-fixing missing color at index ${index}`);

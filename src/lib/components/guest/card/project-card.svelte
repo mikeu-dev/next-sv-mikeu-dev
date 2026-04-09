@@ -101,7 +101,7 @@
 						aria-label="Visit project website for {project.title}"
 						onclick={(e) => e.stopPropagation()}
 					>
-								<Icon iconName="ExternalLink" size={20} />
+						<Icon iconName="ExternalLink" size={20} />
 					</a>
 				{/if}
 				{#if project.repoUrl}
@@ -114,7 +114,7 @@
 						aria-label="View source code on GitHub for {project.title}"
 						onclick={(e) => e.stopPropagation()}
 					>
-								<Icon iconName="Github" size={20} />
+						<Icon iconName="Github" size={20} />
 					</a>
 				{/if}
 			</div>

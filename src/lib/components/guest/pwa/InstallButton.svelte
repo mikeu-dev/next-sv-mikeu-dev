@@ -42,7 +42,7 @@
 		<Button
 			variant="outline"
 			onclick={handleInstall}
-			class="group flex items-center gap-2 border-teal-600/50 hover:bg-teal-600/10 hover:text-teal-600 dark:border-teal-400/50 dark:hover:bg-teal-400/10 dark:hover:text-teal-400 cursor-pointer"
+			class="group flex cursor-pointer items-center gap-2 border-teal-600/50 hover:bg-teal-600/10 hover:text-teal-600 dark:border-teal-400/50 dark:hover:bg-teal-400/10 dark:hover:text-teal-400"
 		>
 			<SmartphoneIcon class="h-4 w-4 transition-transform group-hover:scale-110" />
 			<span>{m.pwa_install_button()}</span>

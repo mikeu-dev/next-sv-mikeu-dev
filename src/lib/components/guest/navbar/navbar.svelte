@@ -81,7 +81,7 @@
 	const triggerSmallConfetti = async () => {
 		confettiCannon = false;
 		await tick();
-		// Use a smaller/different cannon trigger if logic needs to be specialized, 
+		// Use a smaller/different cannon trigger if logic needs to be specialized,
 		// but since we use the same component, we'll just trigger it.
 		confettiCannon = true;
 		playConfettiSound();

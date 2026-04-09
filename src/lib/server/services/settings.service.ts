@@ -78,10 +78,10 @@ export class SettingsService {
 
 	async updateResumeSettings(data: Partial<ResumeSettings>): Promise<void> {
 		try {
-			await db.collection(this.collection).doc(this.DOC_RESUME).set(
-				{ ...data, updatedAt: new Date().toISOString() },
-				{ merge: true }
-			);
+			await db
+				.collection(this.collection)
+				.doc(this.DOC_RESUME)
+				.set({ ...data, updatedAt: new Date().toISOString() }, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update resume settings', error);
 			throw error;

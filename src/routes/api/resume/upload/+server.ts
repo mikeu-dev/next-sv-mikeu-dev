@@ -59,9 +59,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (error) {
 		console.error('Resume upload error:', error);
-		return json(
-			{ error: `Failed to upload resume: ${(error as Error).message}` },
-			{ status: 500 }
-		);
+		return json({ error: `Failed to upload resume: ${(error as Error).message}` }, { status: 500 });
 	}
 };
