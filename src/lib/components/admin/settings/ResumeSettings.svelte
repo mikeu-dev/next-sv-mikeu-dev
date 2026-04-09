@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toast } from 'svelte-sonner';
-	import { Upload, FileText, ExternalLink, Trash2, CheckCircle, Loader2 } from '@lucide/svelte';
+	import { Upload, FileText, ExternalLink, CheckCircle, Loader2 } from '@lucide/svelte';
 	import type { ResumeSettings } from '$lib/server/schemas/settings.schema';
 	import { invalidateAll } from '$app/navigation';
 
@@ -86,14 +84,6 @@
 		else dragOverId = false;
 	}
 
-	function formatFileSize(bytes: number): string {
-		if (bytes === 0) return '0 Bytes';
-		const k = 1024;
-		const sizes = ['Bytes', 'KB', 'MB'];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-	}
-
 	function formatDate(dateStr: string): string {
 		if (!dateStr) return 'Never';
 		return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -145,6 +135,7 @@
 						<FileText class="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
 						<div class="min-w-0 flex-1">
 							<p class="truncate text-sm font-medium">{data.resumeFileNameEn || 'resume-en.pdf'}</p>
+							<!-- eslint-disable svelte/no-navigation-without-resolve -->
 							<a
 								href={data.resumeUrlEn}
 								target="_blank"
@@ -154,6 +145,7 @@
 								<ExternalLink class="h-3 w-3" />
 								Preview
 							</a>
+							<!-- eslint-enable svelte/no-navigation-without-resolve -->
 						</div>
 					</div>
 				</div>
@@ -217,6 +209,7 @@
 						<FileText class="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
 						<div class="min-w-0 flex-1">
 							<p class="truncate text-sm font-medium">{data.resumeFileNameId || 'resume-id.pdf'}</p>
+							<!-- eslint-disable svelte/no-navigation-without-resolve -->
 							<a
 								href={data.resumeUrlId}
 								target="_blank"
@@ -226,6 +219,7 @@
 								<ExternalLink class="h-3 w-3" />
 								Preview
 							</a>
+							<!-- eslint-enable svelte/no-navigation-without-resolve -->
 						</div>
 					</div>
 				</div>
