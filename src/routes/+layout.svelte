@@ -11,6 +11,7 @@
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
+	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import gsap from 'gsap';
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
@@ -100,6 +101,7 @@
 	afterNavigate(() => {
 		if (page.url.pathname === '/') {
 			fallingConfetti = true;
+			playConfettiSound();
 			setTimeout(() => (fallingConfetti = false), 5000);
 		}
 	});

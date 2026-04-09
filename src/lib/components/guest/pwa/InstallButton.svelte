@@ -4,6 +4,7 @@
 	import * as m from '@/lib/paraglide/messages';
 	import SmartphoneIcon from '@lucide/svelte/icons/smartphone';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
+	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { tick } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -18,6 +19,7 @@
 		confettiCannon = false;
 		await tick();
 		confettiCannon = true;
+		playConfettiSound();
 
 		// Trigger PWA install
 		await pwaState.install();

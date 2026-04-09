@@ -22,6 +22,7 @@
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
 	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
+	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
 	import * as m from '@/lib/paraglide/messages';
@@ -74,6 +75,7 @@
 		confettiCannon = false;
 		await tick();
 		confettiCannon = true;
+		playConfettiSound();
 	};
 
 	// --- Reactive Locale Sync ---
