@@ -17,8 +17,10 @@ const envSchema = z.object({
 	// Session Configuration
 	SESSION_EXPIRES_DAYS: z.string().default('7'),
 
-	// Owner Configuration
+	// Owner & Admin Configuration
 	OWNER_EMAIL: z.string().optional(),
+	ADMIN_USERNAME: z.string().optional(),
+	ADMIN_PASSWORD: z.string().optional(),
 
 	// GitHub Storage
 	GITHUB_ACCESS_TOKEN: z.string().optional(),
@@ -67,6 +69,8 @@ export function checkRequiredEnvVars(): boolean {
 		'FIREBASE_PRIVATE_KEY',
 		'FIREBASE_CLIENT_EMAIL',
 		'OWNER_EMAIL',
+		'ADMIN_USERNAME',
+		'ADMIN_PASSWORD',
 		'GITHUB_ACCESS_TOKEN',
 		'GITHUB_USERNAME'
 	];
