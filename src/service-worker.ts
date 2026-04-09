@@ -71,7 +71,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 			if (response) return response;
 
 			// if there's no cache-hit, we're offline and have no cached version, return a generic error or a custom offline page
-			return new Response('Offline - cache miss', { status: 408 });
+			return new Response('Offline - cache miss', { status: 503 });
 		}
 	}
 

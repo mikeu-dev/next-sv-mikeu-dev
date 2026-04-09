@@ -1,7 +1,8 @@
 <script lang="ts">
 	import * as SimpleIcons from 'simple-icons';
 
-	let { value = $bindable(''), color = '#000000', id = '' } = $props();
+	let { value = $bindable(), color = '#000000', id = '' } = $props();
+	let safeValue = $derived(value ?? '');
 
 	let searchQuery = $state('');
 	let isOpen = $state(false);
@@ -37,8 +38,8 @@
 
 	// Get selected icon display name
 	let selectedIconName = $derived(() => {
-		if (!value) return 'Select Icon';
-		const iconKey = value.charAt(0).toLowerCase() + value.slice(1);
+		if (!safeValue) return 'Select Icon';
+		const iconKey = safeValue.charAt(0).toLowerCase() + safeValue.slice(1);
 		const icon = allIcons.find((i) => i.key === iconKey);
 		return icon?.displayName || value;
 	});
@@ -76,17 +77,17 @@
 		}}
 		class="flex w-full items-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-sm transition-colors hover:bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
 	>
-		{#if value && value !== 'SiDefault'}
+		{#if safeValue && safeValue !== 'SiDefault'}
 			<div
-				class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded"
+				class="flex h-6 w-6 shrink-0 items-center justify-center rounded"
 				style="background-color: {color}15; color: {color}"
 			>
 				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html getIconSvg(value.charAt(0).toLowerCase() + value.slice(1))}
+				{@html getIconSvg(safeValue.charAt(0).toLowerCase() + safeValue.slice(1))}
 			</div>
 		{:else}
 			<div
-				class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-700"
+				class="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-700"
 			>
 				<svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
@@ -100,7 +101,7 @@
 		{/if}
 		<span class="flex-1 text-sm">{selectedIconName()}</span>
 		<svg
-			class="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform {isOpen ? 'rotate-180' : ''}"
+			class="h-4 w-4 shrink-0 text-gray-400 transition-transform {isOpen ? 'rotate-180' : ''}"
 			fill="none"
 			stroke="currentColor"
 			viewBox="0 0 24 24"
@@ -158,7 +159,7 @@
 								title={icon.displayName}
 							>
 								<div
-									class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
+									class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
 									style="color: #{icon.hex}"
 								>
 									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
