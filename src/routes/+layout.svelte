@@ -173,5 +173,5 @@
 	aria-label="Scroll to top"
 	onclick={() => scrollToTop()}
 >
-	<Icon iconName="BsArrowUpCircleFill" size={24} />
+	<Icon iconName="LuX" size={24} />
 </Button>
