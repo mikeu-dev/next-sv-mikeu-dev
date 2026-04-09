@@ -38,8 +38,12 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 	// ignore POST requests etc
 	if (event.request.method !== 'GET') return;
 
+	const url = new URL(event.request.url);
+
+	// Only handle http(s) requests — skip chrome-extension://, etc.
+	if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
 	async function respond() {
-		const url = new URL(event.request.url);
 		const cache = await caches.open(CACHE);
 
 		// `build`/`files` can always be served from the cache
