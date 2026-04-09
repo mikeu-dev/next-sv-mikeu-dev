@@ -2,6 +2,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import GeneralSettings from '$lib/components/admin/settings/GeneralSettings.svelte';
 	import ProfileSettings from '$lib/components/admin/settings/ProfileSettings.svelte';
+	import ResumeSettings from '$lib/components/admin/settings/ResumeSettings.svelte';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
@@ -16,12 +17,16 @@
 		<Tabs.List>
 			<Tabs.Trigger value="general">General</Tabs.Trigger>
 			<Tabs.Trigger value="profile">Profile</Tabs.Trigger>
+			<Tabs.Trigger value="resume">Resume</Tabs.Trigger>
 		</Tabs.List>
 		<Tabs.Content value="general" class="space-y-4">
 			<GeneralSettings data={data.general} {form} />
 		</Tabs.Content>
 		<Tabs.Content value="profile" class="space-y-4">
 			<ProfileSettings data={data.profile} {form} />
+		</Tabs.Content>
+		<Tabs.Content value="resume" class="space-y-4">
+			<ResumeSettings data={data.resume} />
 		</Tabs.Content>
 	</Tabs.Root>
 </div>

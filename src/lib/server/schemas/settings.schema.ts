@@ -16,6 +16,16 @@ export const profileSettingsSchema = z.object({
 
 export type ProfileSettings = z.infer<typeof profileSettingsSchema>;
 
+export const resumeSettingsSchema = z.object({
+	resumeUrlEn: z.string().url().optional().or(z.literal('')),
+	resumeUrlId: z.string().url().optional().or(z.literal('')),
+	resumeFileNameEn: z.string().optional().or(z.literal('')),
+	resumeFileNameId: z.string().optional().or(z.literal('')),
+	updatedAt: z.string().optional().or(z.literal(''))
+});
+
+export type ResumeSettings = z.infer<typeof resumeSettingsSchema>;
+
 export const defaultSettings = {
 	general: {
 		siteName: 'Next SV Portfolio',
@@ -26,5 +36,12 @@ export const defaultSettings = {
 		username: 'admin',
 		bio: '',
 		avatarUrl: ''
+	},
+	resume: {
+		resumeUrlEn: '',
+		resumeUrlId: '',
+		resumeFileNameEn: '',
+		resumeFileNameId: '',
+		updatedAt: ''
 	}
 };

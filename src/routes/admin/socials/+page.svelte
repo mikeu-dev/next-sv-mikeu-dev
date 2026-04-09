@@ -3,7 +3,7 @@
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import * as SimpleIcons from 'simple-icons';
+	import Icon from '$lib/components/ui/icon.svelte';
 
 	interface SocialLink {
 		label: string;
@@ -30,17 +30,6 @@
 			toast.error(message);
 		} finally {
 			loading = false;
-		}
-	}
-
-	// Get SVG for an icon
-	function getIconSvg(iconName: string): string {
-		try {
-			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
-			const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[key];
-			return icon?.svg || '';
-		} catch {
-			return '';
 		}
 	}
 </script>
@@ -76,10 +65,9 @@
 						<div class="flex items-center gap-4">
 							<div
 								class="flex h-12 w-12 items-center justify-center rounded-lg"
-								style="background-color: {link.color}20; color: {link.color}"
+								style="background-color: {link.color}20;"
 							>
-								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-								{@html getIconSvg(link.iconName)}
+								<Icon iconName={link.iconName} color={link.color} size={24} strokeWidth={2.5} />
 							</div>
 							<div>
 								<h3 class="font-semibold">{link.label}</h3>

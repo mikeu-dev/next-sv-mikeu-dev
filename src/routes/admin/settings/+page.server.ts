@@ -6,7 +6,8 @@ import { generalSettingsSchema, profileSettingsSchema } from '$lib/server/schema
 export const load: PageServerLoad = async () => {
 	return {
 		general: await settingsService.getGeneralSettings(),
-		profile: await settingsService.getProfileSettings()
+		profile: await settingsService.getProfileSettings(),
+		resume: await settingsService.getResumeSettings()
 	};
 };
 

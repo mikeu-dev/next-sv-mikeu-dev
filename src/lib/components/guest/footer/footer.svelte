@@ -1,28 +1,9 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import * as m from '@/lib/paraglide/messages';
-	import { Github, Instagram, Linkedin, Mail } from '@lucide/svelte';
+	import Icon from '$lib/components/ui/icon.svelte';
 
 	let { socials, visitorStats = { total: 0, today: 0 } } = $props();
-
-	const iconMap: Record<string, unknown> = {
-		Github: Github,
-		Instagram: Instagram,
-		LinkedIn: Linkedin,
-		Mail: Mail
-	};
-
-	function getIcon(name: string | undefined | null) {
-		if (!name) return Mail;
-
-		// Normalize input: remove 'Si' prefix if present and lowercase
-		const normalized = name.replace(/^Si/, '').toLowerCase();
-
-		// Find matching key case-insensitively
-		const match = Object.keys(iconMap).find((key) => key.toLowerCase() === normalized);
-
-		return (match ? iconMap[match] : Mail) as typeof Github;
-	}
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
@@ -62,13 +43,7 @@
 								class="flex cursor-pointer items-center justify-center rounded-full transition-all hover:scale-110"
 								style={`background-color: ${link.color}1A; color: ${link.color}; width: 2rem; height: 2rem;`}
 							>
-								{#if link.svg}
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-									<div class="size-4">{@html link.svg}</div>
-								{:else}
-									{@const Icon = getIcon(link.iconName)}
-									<Icon class="size-4" />
-								{/if}
+								<Icon iconName={link.iconName} color={link.color} size={16} strokeWidth={2.5} />
 							</a>
 						</Tooltip.Trigger>
 

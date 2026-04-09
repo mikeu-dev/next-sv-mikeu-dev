@@ -1,51 +1,126 @@
 <script lang="ts">
 	import * as SimpleIcons from 'simple-icons';
+	import { Linkedin } from '@lucide/svelte';
+	import Icon from '$lib/components/ui/icon.svelte';
+	import type { Component } from 'svelte';
 
-	let { value = $bindable(''), color = '#000000', id = '' } = $props();
+	let { value = $bindable(), color = '#000000', id = '' } = $props();
+	let safeValue = $derived(value ?? '');
 
 	let searchQuery = $state('');
 	let isOpen = $state(false);
 
+	// Popular brand slugs to prioritize at the top
+	const POPULAR_SLUGS = [
+		'linkedin',
+		'github',
+		'instagram',
+		'facebook',
+		'twitter',
+		'x',
+		'youtube',
+		'tiktok',
+		'whatsapp',
+		'telegram',
+		'discord',
+		'twitch',
+		'dribbble',
+		'behance',
+		'medium'
+	];
+
+	interface IconInfo {
+		key: string;
+		name: string;
+		displayName: string;
+		slug: string;
+		hex: string;
+		source: 'simple' | 'lucide';
+		isPopular: boolean;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		component?: Component<any>;
+	}
+
+	// Custom icons from other libraries (e.g. Lucide)
+	const CUSTOM_ICONS = [
+		{
+			key: 'luLinkedin',
+			name: 'Linkedin',
+			displayName: 'LinkedIn',
+			slug: 'linkedin',
+			hex: '0A66C2',
+			source: 'lucide' as const,
+			component: Linkedin
+		}
+	];
+
 	// Get all available icons
-	const allIcons = Object.keys(SimpleIcons)
-		.filter((key) => key.startsWith('si'))
-		.map((key) => {
-			const iconData = (SimpleIcons as unknown as Record<string, { hex: string }>)[key];
-			return {
-				key,
-				name: key.slice(2), // Remove 'si' prefix
-				displayName: key.charAt(2).toUpperCase() + key.slice(3), // Capitalize
-				hex: iconData.hex
-			};
-		});
+	const allIcons: IconInfo[] = [
+		...CUSTOM_ICONS.map((icon) => ({ ...icon, isPopular: POPULAR_SLUGS.includes(icon.slug) })),
+		...Object.keys(SimpleIcons)
+			.filter((key) => key.startsWith('si'))
+			.map((key) => {
+				const iconData = (
+					SimpleIcons as unknown as Record<string, { hex: string; title: string; slug: string }>
+				)[key];
+				const slug = iconData.slug || key.slice(2).toLowerCase();
+				return {
+					key,
+					slug,
+					name: key.slice(2), // Remove 'si' prefix
+					displayName: iconData.title || key.charAt(2).toUpperCase() + key.slice(3),
+					hex: iconData.hex,
+					source: 'simple' as const,
+					isPopular: POPULAR_SLUGS.includes(slug)
+				};
+			})
+	].sort((a, b) => {
+		// Sort popular icons first
+		if (a.isPopular && !b.isPopular) return -1;
+		if (!a.isPopular && b.isPopular) return 1;
+		// Then alphabetically
+		return a.displayName.localeCompare(b.displayName);
+	});
 
 	// Filter icons based on search
 	let filteredIcons = $derived(
 		searchQuery.trim()
 			? allIcons
-					.filter((icon) => icon.displayName.toLowerCase().includes(searchQuery.toLowerCase()))
-					.slice(0, 100) // Limit to 100 results
-			: allIcons.slice(0, 100) // Show first 100 by default
+					.filter(
+						(icon) =>
+							icon.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+							icon.slug.toLowerCase().includes(searchQuery.toLowerCase())
+					)
+					.slice(0, 1000) // Increase limit for search results
+			: allIcons.slice(0, 1000) // Show first 1000 by default (including all popular ones)
 	);
 
-	function getIconSvg(iconKey: string): string {
-		const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[iconKey];
-		if (!icon?.svg) return '';
-		// Inject class for styling
-		return icon.svg.replace('<svg', '<svg class="w-full h-full fill-current"');
+	function getIcon(key: string) {
+		return allIcons.find((i) => i.key === key);
 	}
 
 	// Get selected icon display name
 	let selectedIconName = $derived(() => {
-		if (!value) return 'Select Icon';
-		const iconKey = value.charAt(0).toLowerCase() + value.slice(1);
-		const icon = allIcons.find((i) => i.key === iconKey);
-		return icon?.displayName || value;
+		if (!safeValue) return 'Select Icon';
+
+		// Handle prefixes from Firestore
+		let iconKey = '';
+		if (safeValue.startsWith('Si') && safeValue.length > 2) {
+			iconKey = 'si' + safeValue.slice(2);
+		} else if (safeValue.startsWith('Lu') && safeValue.length > 2) {
+			iconKey = 'lu' + safeValue.slice(2);
+		} else {
+			iconKey = safeValue.charAt(0).toLowerCase() + safeValue.slice(1);
+		}
+
+		const icon = getIcon(iconKey);
+		return icon?.displayName || safeValue;
 	});
 
 	function selectIcon(icon: (typeof allIcons)[0]) {
-		// Convert back to "Si" prefix format
-		value = 'Si' + icon.name;
+		// Convert back to prefix format (Si or Lu)
+		const prefix = icon.source === 'lucide' ? 'Lu' : 'Si';
+		value = prefix + icon.name;
 		isOpen = false;
 		searchQuery = '';
 	}
@@ -76,17 +151,16 @@
 		}}
 		class="flex w-full items-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-sm transition-colors hover:bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
 	>
-		{#if value && value !== 'SiDefault'}
+		{#if safeValue && safeValue !== 'SiDefault'}
 			<div
-				class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded"
-				style="background-color: {color}15; color: {color}"
+				class="flex h-6 w-6 shrink-0 items-center justify-center rounded"
+				style="background-color: {color}15;"
 			>
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html getIconSvg(value.charAt(0).toLowerCase() + value.slice(1))}
+				<Icon iconName={safeValue} {color} size={16} strokeWidth={2.5} />
 			</div>
 		{:else}
 			<div
-				class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-700"
+				class="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-700"
 			>
 				<svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
@@ -100,7 +174,7 @@
 		{/if}
 		<span class="flex-1 text-sm">{selectedIconName()}</span>
 		<svg
-			class="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform {isOpen ? 'rotate-180' : ''}"
+			class="h-4 w-4 shrink-0 text-gray-400 transition-transform {isOpen ? 'rotate-180' : ''}"
 			fill="none"
 			stroke="currentColor"
 			viewBox="0 0 24 24"
@@ -158,11 +232,9 @@
 								title={icon.displayName}
 							>
 								<div
-									class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
-									style="color: #{icon.hex}"
+									class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
 								>
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-									{@html getIconSvg(icon.key)}
+									<Icon iconName={icon.key} color="#{icon.hex}" size={18} strokeWidth={2.5} />
 								</div>
 								<span class="truncate text-sm font-medium">{icon.displayName}</span>
 							</button>

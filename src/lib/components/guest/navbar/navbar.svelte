@@ -22,16 +22,23 @@
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
 	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
+	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
 	import * as m from '@/lib/paraglide/messages';
+	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{
+		resolvedResumeUrls?: { en: string; id: string };
+	}>();
 	let initialLocale = $state(getLocale());
 	let navLinksData = $derived(navLinks[initialLocale] || navLinks['en']);
 	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
 	let showAuthModal = $state(false);
 	let isMobileMenuOpen = $state(false);
-	const resumeUrl = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
+	const fallbackResumeUrl = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
+	let resumeUrl = $derived(
+		(initialLocale === 'id' ? resolvedResumeUrls.id : resolvedResumeUrls.en) || fallbackResumeUrl
+	);
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
@@ -68,6 +75,16 @@
 		confettiCannon = false;
 		await tick();
 		confettiCannon = true;
+		playConfettiSound();
+	};
+
+	const triggerSmallConfetti = async () => {
+		confettiCannon = false;
+		await tick();
+		// Use a smaller/different cannon trigger if logic needs to be specialized,
+		// but since we use the same component, we'll just trigger it.
+		confettiCannon = true;
+		playConfettiSound();
 	};
 
 	// --- Reactive Locale Sync ---
@@ -175,9 +192,24 @@
 					<span class="sr-only">Toggle theme</span>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
-					<DropdownMenu.Item onclick={() => setMode('light')}>Light</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => setMode('dark')}>Dark</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => resetMode()}>System</DropdownMenu.Item>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('light');
+							triggerSmallConfetti();
+						}}>Light</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('dark');
+							triggerSmallConfetti();
+						}}>Dark</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							resetMode();
+							triggerSmallConfetti();
+						}}>System</DropdownMenu.Item
+					>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
@@ -193,8 +225,8 @@
 					{/if}
 				</Select.Trigger>
 				<Select.Content class="font-mono text-xs">
-					<Select.Item value="id"><Id />ID</Select.Item>
-					<Select.Item value="en"><GbNir />EN</Select.Item>
+					<Select.Item value="id" onclick={triggerSmallConfetti}><Id />ID</Select.Item>
+					<Select.Item value="en" onclick={triggerSmallConfetti}><GbNir />EN</Select.Item>
 				</Select.Content>
 			</Select.Root>
 
@@ -308,9 +340,24 @@
 					<span class="sr-only">Toggle theme</span>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
-					<DropdownMenu.Item onclick={() => setMode('light')}>Light</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => setMode('dark')}>Dark</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => resetMode()}>System</DropdownMenu.Item>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('light');
+							triggerSmallConfetti();
+						}}>Light</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('dark');
+							triggerSmallConfetti();
+						}}>Dark</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							resetMode();
+							triggerSmallConfetti();
+						}}>System</DropdownMenu.Item
+					>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
@@ -326,8 +373,8 @@
 					{/if}
 				</Select.Trigger>
 				<Select.Content class="font-mono text-xs">
-					<Select.Item value="id"><Id />ID</Select.Item>
-					<Select.Item value="en"><GbNir />EN</Select.Item>
+					<Select.Item value="id" onclick={triggerSmallConfetti}><Id />ID</Select.Item>
+					<Select.Item value="en" onclick={triggerSmallConfetti}><GbNir />EN</Select.Item>
 				</Select.Content>
 			</Select.Root>
 		</div>

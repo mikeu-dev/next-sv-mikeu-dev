@@ -17,8 +17,8 @@ export default defineConfig({
 		]
 	},
 	plugins: [
-		tailwindcss(),
 		sveltekit(),
+		tailwindcss(),
 		devtoolsJson(),
 		paraglideVitePlugin({
 			project: './project.inlang',

@@ -3,7 +3,7 @@
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import * as SimpleIcons from 'simple-icons';
+	import Icon from '$lib/components/ui/icon.svelte';
 
 	interface TechItem {
 		name: string;
@@ -41,13 +41,7 @@
 					const cat = category as Record<string, unknown>;
 					return {
 						...cat,
-						items: ((cat.items as unknown[]) || []).map((item: unknown) => {
-							const it = item as Record<string, unknown>;
-							return {
-								...it,
-								iconSvg: getIconSvg(it.iconName as string)
-							};
-						})
+						items: (cat.items as unknown[]) || []
 					};
 				})
 			};
@@ -62,24 +56,6 @@
 	function switchLang(newLang: 'en' | 'id') {
 		lang = newLang;
 		loadData();
-	}
-
-	// Get Simple Icon SVG from icon name
-	function getIconSvg(iconName: string): string {
-		try {
-			// Convert "SiReact" to "siReact" format used by simple-icons
-			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
-			const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[key];
-
-			if (icon && icon.svg) {
-				return icon.svg;
-			}
-		} catch {
-			console.warn(`Icon not found: ${iconName}`);
-		}
-
-		// Fallback: return a simple square icon
-		return '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" x="2" y="2" rx="3"/></svg>';
 	}
 </script>
 
@@ -142,10 +118,9 @@
 							>
 								<div
 									class="flex h-10 w-10 items-center justify-center rounded-lg"
-									style="background-color: {item.color}20; color: {item.color}"
+									style="background-color: {item.color}20;"
 								>
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-									{@html item.iconSvg}
+									<Icon iconName={item.iconName} color={item.color} size={24} />
 								</div>
 								<div class="flex-1">
 									<div class="font-medium">{item.name}</div>

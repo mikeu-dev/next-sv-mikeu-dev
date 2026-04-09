@@ -6,12 +6,33 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import * as m from '@/lib/paraglide/messages';
+	import { ConfettiCannon } from 'svelte-canvas-confetti';
+	import { playConfettiSound } from '$lib/utils/confetti-sound';
+	import { tick } from 'svelte';
 
 	type ActionData = {
 		success: boolean;
 		message: string;
 	};
+
+	let confettiCannon = $state(false);
+
+	const triggerConfetti = async () => {
+		confettiCannon = false;
+		await tick();
+		confettiCannon = true;
+		playConfettiSound();
+	};
 </script>
+
+{#if confettiCannon}
+	<ConfettiCannon
+		origin={[window.innerWidth / 2, window.innerHeight]}
+		angle={-90}
+		spread={35}
+		force={35}
+	/>
+{/if}
 
 <div class="mt-20 space-y-12">
 	<section class="text-center">
@@ -32,6 +53,7 @@
 						const data = result.data as ActionData;
 						toast.success(data.message ?? m.contact_form_success());
 						formElement.reset();
+						await triggerConfetti();
 					} else if (result.type === 'failure') {
 						const data = result.data as ActionData;
 						toast.error(data.message ?? m.contact_form_failure());

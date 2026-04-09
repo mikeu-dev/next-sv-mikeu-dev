@@ -1,21 +1,21 @@
+import { env } from '$lib/server/config/env';
 import { db, auth } from '@/lib/server/firebase/firebase.server';
-import { env } from '$env/dynamic/private';
 
-if (!env.EMAIL) {
-	throw new Error('EMAIL is not defined');
+if (!env.OWNER_EMAIL) {
+	throw new Error('OWNER_EMAIL is not defined');
 }
-if (!env.USERNAME) {
-	throw new Error('USERNAME is not defined');
+if (!env.ADMIN_USERNAME) {
+	throw new Error('ADMIN_USERNAME is not defined');
 }
-if (!env.PASSWORD) {
-	throw new Error('PASSWORD is not defined');
+if (!env.ADMIN_PASSWORD) {
+	throw new Error('ADMIN_PASSWORD is not defined');
 }
 // Daftar pengguna yang akan dibuat
 const usersToSeed = [
 	{
-		email: env.EMAIL,
-		password: env.PASSWORD,
-		username: env.USERNAME
+		email: env.OWNER_EMAIL,
+		password: env.ADMIN_PASSWORD,
+		username: env.ADMIN_USERNAME
 	}
 ];
 

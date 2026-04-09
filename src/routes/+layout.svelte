@@ -11,11 +11,11 @@
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
+	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import gsap from 'gsap';
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-	import { Icon } from 'svelte-icons-pack';
-	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
+	import Icon from '@/lib/components/ui/icon.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
@@ -29,6 +29,16 @@
 	let fallingConfetti = $state(false);
 	let scrollBtn: HTMLButtonElement;
 	let liveStats = $state({ total: 0, today: 0 });
+	let resolvedResumeUrls = $state<{ en: string; id: string }>({ en: '', id: '' });
+
+	// Resolve the streamed resume URLs promise
+	$effect(() => {
+		if (data.resumeUrls) {
+			Promise.resolve(data.resumeUrls).then((urls) => {
+				resolvedResumeUrls = urls;
+			});
+		}
+	});
 
 	function scrollToTop() {
 		gsap.to(window, { duration: 1, scrollTo: 0 });
@@ -90,6 +100,7 @@
 	afterNavigate(() => {
 		if (page.url.pathname === '/') {
 			fallingConfetti = true;
+			playConfettiSound();
 			setTimeout(() => (fallingConfetti = false), 5000);
 		}
 	});
@@ -132,7 +143,7 @@
 <!-- 🧩 Layout utama -->
 <div class="flex min-h-dvh flex-col">
 	{#if !isAdmin}
-		<Navbar />
+		<Navbar {resolvedResumeUrls} />
 	{/if}
 	<main class="container mx-auto flex-1 px-4 py-8">
 		{@render children?.()}
@@ -162,5 +173,5 @@
 	aria-label="Scroll to top"
 	onclick={() => scrollToTop()}
 >
-	<Icon src={BsArrowUpCircleFill} size={24} />
+	<Icon iconName="BsArrowUpCircleFill" size={24} />
 </Button>
