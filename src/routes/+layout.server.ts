@@ -1,6 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 import { SocialsService } from '$lib/server/services/socials.service';
 import { VisitorService } from '$lib/server/services/visitor.service';
+import { settingsService } from '$lib/server/services/settings.service';
 import type { Config } from '@sveltejs/adapter-vercel';
 
 export const config: Config = {
@@ -21,6 +22,11 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			total: stats?.total || 0,
 			today: stats?.today || 0
 		})),
+		resumeUrls: settingsService.getResumeSettings().then((resume) => ({
+			en: resume.resumeUrlEn || '',
+			id: resume.resumeUrlId || ''
+		})),
 		user: locals.user
 	};
 };
+

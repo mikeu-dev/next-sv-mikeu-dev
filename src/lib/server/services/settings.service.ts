@@ -1,5 +1,5 @@
 import { db } from '$lib/server/firebase/firebase.server';
-import type { GeneralSettings, ProfileSettings } from '../schemas/settings.schema';
+import type { GeneralSettings, ProfileSettings, ResumeSettings } from '../schemas/settings.schema';
 import { defaultSettings } from '../schemas/settings.schema';
 
 export class SettingsService {
@@ -8,6 +8,7 @@ export class SettingsService {
 	// Document IDs for organizing settings
 	private readonly DOC_GENERAL = 'general';
 	private readonly DOC_PROFILE = 'profile';
+	private readonly DOC_RESUME = 'resume';
 
 	async getGeneralSettings(): Promise<GeneralSettings> {
 		try {
@@ -55,6 +56,34 @@ export class SettingsService {
 			await db.collection(this.collection).doc(this.DOC_PROFILE).set(data, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update profile settings', error);
+			throw error;
+		}
+	}
+
+	async getResumeSettings(): Promise<ResumeSettings> {
+		try {
+			const doc = await db.collection(this.collection).doc(this.DOC_RESUME).get();
+			if (!doc.exists) {
+				return defaultSettings.resume as ResumeSettings;
+			}
+			return {
+				...defaultSettings.resume,
+				...doc.data()
+			} as ResumeSettings;
+		} catch (error) {
+			console.error('SettingsService: Failed to get resume settings', error);
+			return defaultSettings.resume as ResumeSettings;
+		}
+	}
+
+	async updateResumeSettings(data: Partial<ResumeSettings>): Promise<void> {
+		try {
+			await db.collection(this.collection).doc(this.DOC_RESUME).set(
+				{ ...data, updatedAt: new Date().toISOString() },
+				{ merge: true }
+			);
+		} catch (error) {
+			console.error('SettingsService: Failed to update resume settings', error);
 			throw error;
 		}
 	}

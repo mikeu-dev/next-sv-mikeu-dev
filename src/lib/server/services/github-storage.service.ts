@@ -111,4 +111,82 @@ export class GitHubStorageService {
 			// Suppress 404
 		}
 	}
+
+	/**
+	 * Uploads a resume PDF file to GitHub repository.
+	 * @param fileBuffer The file content as Buffer.
+	 * @param filename The desired filename.
+	 * @param locale The locale for organizing files (e.g., 'en', 'id').
+	 * @returns The public download URL.
+	 */
+	async uploadResumeFile(fileBuffer: Buffer, filename: string, locale: string): Promise<string> {
+		try {
+			const content = fileBuffer.toString('base64');
+			const path = `docs/cv/${filename}`;
+
+			// Check if file exists to get SHA (for update)
+			let sha: string | undefined;
+			try {
+				const { data } = await this.octokit.rest.repos.getContent({
+					owner: this.owner,
+					repo: this.repo,
+					path,
+					ref: this.branch
+				});
+				if (data && !Array.isArray(data) && data.sha) {
+					sha = data.sha;
+				}
+			} catch (error: unknown) {
+				if ((error as { status: number }).status !== 404)
+					console.warn('Error checking resume file existence:', error);
+			}
+
+			await this.octokit.rest.repos.createOrUpdateFileContents({
+				owner: this.owner,
+				repo: this.repo,
+				path,
+				message: `Upload resume (${locale}): ${filename}`,
+				content,
+				branch: this.branch,
+				sha
+			});
+
+			const publicUrl = `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${path}`;
+			return publicUrl;
+		} catch (error: unknown) {
+			console.error('GitHub Resume Upload Error:', error);
+			throw new HttpException(500, `Failed to upload resume to GitHub: ${(error as Error).message}`);
+		}
+	}
+
+	/**
+	 * Deletes a resume file from GitHub repository.
+	 * @param filename The filename to delete.
+	 */
+	async deleteResumeFile(filename: string): Promise<void> {
+		try {
+			const path = `docs/cv/${filename}`;
+
+			const { data } = await this.octokit.rest.repos.getContent({
+				owner: this.owner,
+				repo: this.repo,
+				path,
+				ref: this.branch
+			});
+
+			if (data && !Array.isArray(data) && data.sha) {
+				await this.octokit.rest.repos.deleteFile({
+					owner: this.owner,
+					repo: this.repo,
+					path,
+					message: `Delete resume: ${filename}`,
+					sha: data.sha,
+					branch: this.branch
+				});
+			}
+		} catch (error) {
+			console.error('GitHub Resume Delete Error:', error);
+			// Suppress 404
+		}
+	}
 }

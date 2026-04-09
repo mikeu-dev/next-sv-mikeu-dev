@@ -29,6 +29,16 @@
 	let fallingConfetti = $state(false);
 	let scrollBtn: HTMLButtonElement;
 	let liveStats = $state({ total: 0, today: 0 });
+	let resolvedResumeUrls = $state<{ en: string; id: string }>({ en: '', id: '' });
+
+	// Resolve the streamed resume URLs promise
+	$effect(() => {
+		if (data.resumeUrls) {
+			Promise.resolve(data.resumeUrls).then((urls) => {
+				resolvedResumeUrls = urls;
+			});
+		}
+	});
 
 	function scrollToTop() {
 		gsap.to(window, { duration: 1, scrollTo: 0 });
@@ -132,7 +142,7 @@
 <!-- 🧩 Layout utama -->
 <div class="flex min-h-dvh flex-col">
 	{#if !isAdmin}
-		<Navbar />
+		<Navbar {resolvedResumeUrls} />
 	{/if}
 	<main class="container mx-auto flex-1 px-4 py-8">
 		{@render children?.()}

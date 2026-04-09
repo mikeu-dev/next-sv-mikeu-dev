@@ -25,13 +25,19 @@
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
 	import * as m from '@/lib/paraglide/messages';
+	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{
+		resolvedResumeUrls?: { en: string; id: string };
+	}>();
 	let initialLocale = $state(getLocale());
 	let navLinksData = $derived(navLinks[initialLocale] || navLinks['en']);
 	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
 	let showAuthModal = $state(false);
 	let isMobileMenuOpen = $state(false);
-	const resumeUrl = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
+	const fallbackResumeUrl = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${initialLocale}).pdf`;
+	let resumeUrl = $derived(
+		(initialLocale === 'id' ? resolvedResumeUrls.id : resolvedResumeUrls.en) || fallbackResumeUrl
+	);
 
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
