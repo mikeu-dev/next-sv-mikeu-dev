@@ -28,22 +28,38 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		const { links } = await request.json();
+		const body = await request.json();
+		const { links } = body;
+
+		// console.log('DEBUG: Received links payload:', JSON.stringify(links, null, 2));
 
 		// Validate data structure
 		if (!Array.isArray(links)) {
+			console.error('API:Socials:PUT - Invalid structure, not an array');
 			return json({ error: 'Invalid data structure' }, { status: 400 });
 		}
 
-		// Validate each link
-		for (const link of links) {
-			if (!link.label || !link.href || !link.iconName || !link.color) {
-				return json({ error: 'Invalid link structure' }, { status: 400 });
+		// Validate and Sanitize each link
+		const sanitizedLinks = links.map((link, index) => {
+			const sanitized = { ...link };
+			
+			// Auto-fix missing fields with defaults instead of failing
+			if (!sanitized.iconName) {
+				console.warn(`API:Socials:PUT - Auto-fixing missing iconName at index ${index}`);
+				sanitized.iconName = sanitized.label?.toLowerCase().includes('email') ? 'SiMaildotru' : 'SiGoogle';
 			}
-		}
+			if (!sanitized.color) {
+				console.warn(`API:Socials:PUT - Auto-fixing missing color at index ${index}`);
+				sanitized.color = '#000000';
+			}
+			if (!sanitized.label) sanitized.label = 'Untitled';
+			if (!sanitized.href) sanitized.href = '#';
 
-		// Update via Service
-		await socialsService.updateSocials({ links });
+			return sanitized;
+		});
+
+		// Update via Service with sanitized data
+		await socialsService.updateSocials({ links: sanitizedLinks });
 
 		return json({ success: true, message: 'Socials updated successfully' });
 	} catch (error: unknown) {

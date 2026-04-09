@@ -2,26 +2,34 @@
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import * as m from '@/lib/paraglide/messages';
 	import { Github, Instagram, Linkedin, Mail } from '@lucide/svelte';
+	import type { Component } from 'svelte';
 
 	let { socials, visitorStats = { total: 0, today: 0 } } = $props();
 
-	const iconMap: Record<string, unknown> = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const iconMap: Record<string, Component<any>> = {
 		Github: Github,
 		Instagram: Instagram,
 		LinkedIn: Linkedin,
-		Mail: Mail
+		Mail: Mail,
+		LuLinkedin: Linkedin
 	};
 
 	function getIcon(name: string | undefined | null) {
 		if (!name) return Mail;
 
-		// Normalize input: remove 'Si' prefix if present and lowercase
+		// Handle Lucide prefix
+		if (name.startsWith('Lu') && iconMap[name]) {
+			return iconMap[name];
+		}
+
+		// Normalize input for SimpleIcons: remove 'Si' prefix if present and lowercase
 		const normalized = name.replace(/^Si/, '').toLowerCase();
 
 		// Find matching key case-insensitively
 		const match = Object.keys(iconMap).find((key) => key.toLowerCase() === normalized);
 
-		return (match ? iconMap[match] : Mail) as typeof Github;
+		return (match ? iconMap[match] : Mail);
 	}
 </script>
 

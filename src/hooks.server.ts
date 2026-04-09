@@ -24,11 +24,12 @@ const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
 		'Content-Security-Policy',
 		[
 			"default-src 'self'",
-			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com",
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com https://*.googlesyndication.com https://adservice.google.com https://*.doubleclick.net https://*.adtrafficquality.google https://www.google.com",
 			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 			"img-src 'self' data: https: blob:",
 			"font-src 'self' https://fonts.gstatic.com",
-			"connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com https://cdn.jsdelivr.net https://unpkg.com https://lottie.host",
+			"connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com https://va.vercel-scripts.com https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://cdn.jsdelivr.net https://unpkg.com https://lottie.host",
+			"frame-src 'self' https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com https://www.youtube.com",
 			"frame-ancestors 'none'",
 			"base-uri 'self'",
 			"form-action 'self'"

@@ -4,6 +4,8 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import * as SimpleIcons from 'simple-icons';
+	import { Linkedin } from '@lucide/svelte';
+	import type { Component } from 'svelte';
 
 	interface SocialLink {
 		label: string;
@@ -33,8 +35,15 @@
 		}
 	}
 
-	// Get SVG for an icon
+	// Map of Lucide icons
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const lucideIcons: Record<string, Component<any>> = {
+		LuLinkedin: Linkedin
+	};
+
+	// Get SVG for an icon (only for SimpleIcons)
 	function getIconSvg(iconName: string): string {
+		if (iconName.startsWith('Lu')) return '';
 		try {
 			const key = iconName.charAt(0).toLowerCase() + iconName.slice(1);
 			const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[key];
@@ -78,8 +87,15 @@
 								class="flex h-12 w-12 items-center justify-center rounded-lg"
 								style="background-color: {link.color}20; color: {link.color}"
 							>
-								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-								{@html getIconSvg(link.iconName)}
+								{#if link.iconName.startsWith('Lu')}
+									{@const IconComp = lucideIcons[link.iconName]}
+									{#if IconComp}
+										<IconComp size={24} strokeWidth={2.5} />
+									{/if}
+								{:else}
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+									{@html getIconSvg(link.iconName)}
+								{/if}
 							</div>
 							<div>
 								<h3 class="font-semibold">{link.label}</h3>
