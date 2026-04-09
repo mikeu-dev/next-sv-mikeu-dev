@@ -78,6 +78,15 @@
 		playConfettiSound();
 	};
 
+	const triggerSmallConfetti = async () => {
+		confettiCannon = false;
+		await tick();
+		// Use a smaller/different cannon trigger if logic needs to be specialized, 
+		// but since we use the same component, we'll just trigger it.
+		confettiCannon = true;
+		playConfettiSound();
+	};
+
 	// --- Reactive Locale Sync ---
 	$effect(() => {
 		if (locale) setLocale(locale);
@@ -183,9 +192,24 @@
 					<span class="sr-only">Toggle theme</span>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
-					<DropdownMenu.Item onclick={() => setMode('light')}>Light</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => setMode('dark')}>Dark</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => resetMode()}>System</DropdownMenu.Item>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('light');
+							triggerSmallConfetti();
+						}}>Light</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('dark');
+							triggerSmallConfetti();
+						}}>Dark</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							resetMode();
+							triggerSmallConfetti();
+						}}>System</DropdownMenu.Item
+					>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
@@ -201,8 +225,8 @@
 					{/if}
 				</Select.Trigger>
 				<Select.Content class="font-mono text-xs">
-					<Select.Item value="id"><Id />ID</Select.Item>
-					<Select.Item value="en"><GbNir />EN</Select.Item>
+					<Select.Item value="id" onclick={triggerSmallConfetti}><Id />ID</Select.Item>
+					<Select.Item value="en" onclick={triggerSmallConfetti}><GbNir />EN</Select.Item>
 				</Select.Content>
 			</Select.Root>
 
@@ -316,9 +340,24 @@
 					<span class="sr-only">Toggle theme</span>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
-					<DropdownMenu.Item onclick={() => setMode('light')}>Light</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => setMode('dark')}>Dark</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => resetMode()}>System</DropdownMenu.Item>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('light');
+							triggerSmallConfetti();
+						}}>Light</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							setMode('dark');
+							triggerSmallConfetti();
+						}}>Dark</DropdownMenu.Item
+					>
+					<DropdownMenu.Item
+						onclick={() => {
+							resetMode();
+							triggerSmallConfetti();
+						}}>System</DropdownMenu.Item
+					>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
@@ -334,8 +373,8 @@
 					{/if}
 				</Select.Trigger>
 				<Select.Content class="font-mono text-xs">
-					<Select.Item value="id"><Id />ID</Select.Item>
-					<Select.Item value="en"><GbNir />EN</Select.Item>
+					<Select.Item value="id" onclick={triggerSmallConfetti}><Id />ID</Select.Item>
+					<Select.Item value="en" onclick={triggerSmallConfetti}><GbNir />EN</Select.Item>
 				</Select.Content>
 			</Select.Root>
 		</div>
