@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { ArrowLeft, ExternalLink, Github } from '@lucide/svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { Splide, SplideSlide } from '@splidejs/svelte-splide';
 	import { Button } from '@/lib/components/ui/button';
-	import { Icon } from 'svelte-icons-pack';
+	import Icon from '@/lib/components/ui/icon.svelte';
 	import * as m from '@/lib/paraglide/messages.js';
 	import SEO from '@/lib/components/seo/seo.svelte';
 
@@ -80,13 +80,13 @@
 		<footer class="mt-12 flex items-center gap-4 border-t pt-8">
 			{#if project.repoUrl}
 				<Button href={project.repoUrl} target="_blank" variant="outline">
-					<Github class="mr-2 size-4" />
+					<Icon iconName="Github" size={16} class="mr-2" />
 					{m.project_button_view_code()}
 				</Button>
 			{/if}
 			{#if project.demoUrl}
 				<Button href={project.demoUrl} target="_blank">
-					<ExternalLink class="mr-2 size-4" />
+					<Icon iconName="ExternalLink" size={16} class="mr-2" />
 					{m.project_button_demo()}
 				</Button>
 			{/if}

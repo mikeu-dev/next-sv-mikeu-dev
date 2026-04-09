@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-	import { ArrowRight, ExternalLink, Github } from '@lucide/svelte';
+	import { ArrowRight } from '@lucide/svelte';
 	import type { LocalizedProject } from '$lib/utils/project-mapper'; // Use the localized interface
-	import { Icon } from 'svelte-icons-pack';
+	import Icon from '$lib/components/ui/icon.svelte';
 	import * as m from '@/lib/paraglide/messages';
 	import { base } from '$app/paths';
 	// import { getLocale } from '@/lib/paraglide/runtime';
@@ -62,7 +62,7 @@
 			{project.description}
 			<!-- gradient overlay untuk efek fade -->
 			<span
-				class="absolute bottom-0 left-0 h-6 w-full bg-gradient-to-t from-card to-transparent group-hover:hidden"
+				class="absolute bottom-0 left-0 h-6 w-full bg-linear-to-t from-card to-transparent group-hover:hidden"
 			></span>
 		</p>
 
@@ -76,7 +76,8 @@
 						style="background-color: {tag.color}1A; color: {tag.color};"
 					>
 						{#if tag.icon}
-							<Icon src={tag.icon} size={16} />
+							<!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
+							<Icon src={tag.icon as any} size={16} />
 						{/if}
 						{tag.name}
 					</span>
@@ -100,7 +101,7 @@
 						aria-label="Visit project website for {project.title}"
 						onclick={(e) => e.stopPropagation()}
 					>
-						<ExternalLink class="size-5" />
+								<Icon iconName="ExternalLink" size={20} />
 					</a>
 				{/if}
 				{#if project.repoUrl}
@@ -113,7 +114,7 @@
 						aria-label="View source code on GitHub for {project.title}"
 						onclick={(e) => e.stopPropagation()}
 					>
-						<Github class="size-5" />
+								<Icon iconName="Github" size={20} />
 					</a>
 				{/if}
 			</div>

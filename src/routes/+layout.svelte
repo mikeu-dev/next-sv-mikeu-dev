@@ -15,8 +15,7 @@
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import gsap from 'gsap';
 	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-	import { Icon } from 'svelte-icons-pack';
-	import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
+	import Icon from '@/lib/components/ui/icon.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
@@ -174,5 +173,5 @@
 	aria-label="Scroll to top"
 	onclick={() => scrollToTop()}
 >
-	<Icon src={BsArrowUpCircleFill} size={24} />
+	<Icon iconName="BsArrowUpCircleFill" size={24} />
 </Button>

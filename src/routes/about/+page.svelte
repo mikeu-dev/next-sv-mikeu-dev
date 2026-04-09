@@ -5,7 +5,7 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { getLocale } from '@/lib/paraglide/runtime';
-	import { Icon } from 'svelte-icons-pack';
+	import Icon from '@/lib/components/ui/icon.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocalizedTag } from '$lib/utils/project-mapper';
 

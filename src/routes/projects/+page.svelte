@@ -3,7 +3,7 @@
 	import type { PageData } from './$types';
 	import type { Project } from '$lib/types';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { Icon } from 'svelte-icons-pack';
+	import Icon from '@/lib/components/ui/icon.svelte';
 	import { buttonVariants } from '@/lib/components/ui/button';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';

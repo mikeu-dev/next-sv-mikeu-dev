@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { SerializedTag } from '$lib/types';
 	import IconPicker from './icon-picker.svelte';
+	import Icon from '$lib/components/ui/icon.svelte';
 	import { toast } from 'svelte-sonner';
 
 	let { tags = $bindable([]) } = $props<{ tags: SerializedTag[] }>();
@@ -63,26 +64,7 @@
 		}
 	}
 
-	// Helper to get Simple Icons SVG (this logic duplicates IconPicker execution but needed for list display.
-	// Ideally we export the helper from IconPicker or utils, but for now copying the SVG logic or just assuming IconPicker can be used for display too?
-	// IconPicker is an input. Let's just use a small helper here or import SimpleIcons here too.
-	// Actually, let's use a small display component or just import simple icons.
-	import * as SimpleIcons from 'simple-icons';
-
-	function getIconSvg(iconKey: string): string {
-		if (!iconKey) return '';
-		const iconKeyClean = iconKey.startsWith('Si') ? iconKey.slice(2) : iconKey;
-		// Simple Icons keys in the library are usually like 'siSvelte' (camelCase starting with si)
-		// BUT IconPicker logic says: keys are like 'siGithub'.
-		// So we need to construct it.
-		const normalized = 'si' + iconKeyClean; // e.g. siGithub
-		const anySimpleIcons = SimpleIcons as Record<string, { svg: string }>;
-		const icon =
-			anySimpleIcons[normalized] ||
-			anySimpleIcons[iconKeyClean.toLowerCase()] ||
-			anySimpleIcons['si' + iconKeyClean.charAt(0).toUpperCase() + iconKeyClean.slice(1)];
-		return icon?.svg || '';
-	}
+	// Redundant helper removed, using centralized Icon component now
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
@@ -169,11 +151,10 @@
 				class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-2 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 			>
 				<div
-					class="flex h-8 w-8 items-center justify-center rounded p-1.5"
+					class="flex h-8 w-8 items-center justify-center rounded p-1"
 					style="background-color: {tag.color}20; color: {tag.color}"
 				>
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html getIconSvg(tag.iconName)}
+					<Icon iconName={tag.iconName} size={18} />
 				</div>
 				<div class="min-w-0 flex-1">
 					<div class="truncate text-sm font-medium">{tag.name}</div>

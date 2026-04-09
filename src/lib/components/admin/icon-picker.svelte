@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as SimpleIcons from 'simple-icons';
 	import { Linkedin } from '@lucide/svelte';
+	import Icon from '$lib/components/ui/icon.svelte';
 	import type { Component } from 'svelte';
 
 	let { value = $bindable(), color = '#000000', id = '' } = $props();
@@ -94,13 +95,6 @@
 			: allIcons.slice(0, 1000) // Show first 1000 by default (including all popular ones)
 	);
 
-	function getIconSvg(iconKey: string): string {
-		const icon = (SimpleIcons as unknown as Record<string, { svg: string }>)[iconKey];
-		if (!icon?.svg) return '';
-		// Inject class for styling
-		return icon.svg.replace('<svg', '<svg class="w-full h-full fill-current"');
-	}
-
 	function getIcon(key: string) {
 		return allIcons.find((i) => i.key === key);
 	}
@@ -158,21 +152,11 @@
 		class="flex w-full items-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-sm transition-colors hover:bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
 	>
 		{#if safeValue && safeValue !== 'SiDefault'}
-			{@const iconKey = safeValue.startsWith('Si') || safeValue.startsWith('Lu')
-				? safeValue.charAt(0).toLowerCase() + safeValue.slice(1)
-				: safeValue.charAt(0).toLowerCase() + safeValue.slice(1)}
-			{@const icon = getIcon(iconKey)}
 			<div
 				class="flex h-6 w-6 shrink-0 items-center justify-center rounded"
-				style="background-color: {color}15; color: {color}"
+				style="background-color: {color}15;"
 			>
-				{#if icon?.source === 'lucide'}
-					{@const IconComp = icon.component}
-					<IconComp size={16} strokeWidth={2.5} />
-				{:else}
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					{@html getIconSvg(iconKey)}
-				{/if}
+				<Icon iconName={safeValue} {color} size={16} strokeWidth={2.5} />
 			</div>
 		{:else}
 			<div
@@ -249,15 +233,8 @@
 							>
 								<div
 									class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800"
-									style="color: #{icon.hex}"
 								>
-									{#if icon.source === 'lucide'}
-										{@const IconComp = icon.component}
-										<IconComp size={18} strokeWidth={2.5} />
-									{:else}
-										<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-										{@html getIconSvg(icon.key)}
-									{/if}
+									<Icon iconName={icon.key} color="#{icon.hex}" size={18} strokeWidth={2.5} />
 								</div>
 								<span class="truncate text-sm font-medium">{icon.displayName}</span>
 							</button>
