@@ -23,8 +23,8 @@
 
 	// Construct canonical URL using hardcoded domain to avoid non-www issues
 	// Remove trailing slash except for root
-	const path = page.url.pathname.replace(/\/$/, '') || '/';
-	const canonicalUrl = `${canonicalBase}${path}`;
+	const path = page.url.pathname.replace(/\/$/, '');
+	const canonicalUrl = path === '' ? `${canonicalBase}/` : `${canonicalBase}${path}`;
 
 	// Generate alternate language links
 	// 1. Get the "clean" path without locale prefix
@@ -37,9 +37,10 @@
 	const alternates = locales.map((locale) => {
 		const isBase = locale === baseLocale;
 		const localizedPath = isBase ? cleanPath : `/${locale}${cleanPath.replace(/\/$/, '')}`;
+		const cleanLocPath = localizedPath.replace(/\/$/, '');
 		return {
 			locale,
-			href: `${canonicalBase}${localizedPath.replace(/\/$/, '') || '/'}`
+			href: cleanLocPath === '' ? `${canonicalBase}/` : `${canonicalBase}${cleanLocPath}`
 		};
 	});
 </script>
@@ -58,7 +59,7 @@
 	<link
 		rel="alternate"
 		hreflang="x-default"
-		href={`${canonicalBase}${cleanPath.replace(/\/$/, '') || '/'}`}
+		href={cleanPath.replace(/\/$/, '') === '' ? `${canonicalBase}/` : `${canonicalBase}${cleanPath.replace(/\/$/, '')}`}
 	/>
 
 	<!-- Open Graph / Facebook -->
