@@ -52,15 +52,17 @@ export const GET: RequestHandler = async () => {
 				.map((altLocale) => {
 					const altIsBase = altLocale === baseLocale;
 					const altHref = altIsBase ? `${siteUrl}${path || '/'}` : `${siteUrl}/${altLocale}${path}`;
-					return `<xhtml:link rel="alternate" hreflang="${altLocale}" href="${altHref.replace(/\/$/, '') || '/'}" />`;
+					const cleanedAltHref = altHref === `${siteUrl}/` ? altHref : altHref.replace(/\/$/, '');
+					return `<xhtml:link rel="alternate" hreflang="${altLocale}" href="${cleanedAltHref}" />`;
 				})
 				.join('');
 
-			const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${path || '/'}" />`;
+			const xDefaultHref = path === '' ? `${siteUrl}/` : `${siteUrl}${path}`;
+			const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${xDefaultHref}" />`;
 
 			sitemapEntries += `
 	<url>
-		<loc>${loc.replace(/\/$/, '') || '/'}</loc>
+		<loc>${loc === `${siteUrl}/` ? loc : loc.replace(/\/$/, '')}</loc>
 		${alternates}
 		${xDefault}
 		<changefreq>weekly</changefreq>
