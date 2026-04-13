@@ -182,7 +182,7 @@
 		<div class="hidden items-center gap-4 md:flex">
 			<!-- Theme Dropdown -->
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class={buttonVariants({ variant: 'outline', size: 'icon' })}>
+				<DropdownMenu.Trigger class={`cursor-pointer ${buttonVariants({ variant: 'outline', size: 'icon' })}`}>
 					<SunIcon
 						class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
 					/>
@@ -215,7 +215,7 @@
 
 			<!-- Locale Selector -->
 			<Select.Root type="single" bind:value={locale}>
-				<Select.Trigger class="w-[90px] font-mono text-xs">
+				<Select.Trigger class="w-[90px] font-mono text-xs cursor-pointer">
 					{#if locale === 'id'}
 						<Id class="h-5 w-5" />ID
 					{:else if locale === 'en'}
