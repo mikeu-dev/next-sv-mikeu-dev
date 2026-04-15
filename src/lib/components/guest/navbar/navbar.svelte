@@ -196,19 +196,19 @@
 						onclick={() => {
 							setMode('light');
 							triggerSmallConfetti();
-						}}>Light</DropdownMenu.Item
+						}} class="cursor-pointer">Light</DropdownMenu.Item
 					>
 					<DropdownMenu.Item
 						onclick={() => {
 							setMode('dark');
 							triggerSmallConfetti();
-						}}>Dark</DropdownMenu.Item
+						}} class="cursor-pointer">Dark</DropdownMenu.Item
 					>
 					<DropdownMenu.Item
 						onclick={() => {
 							resetMode();
 							triggerSmallConfetti();
-						}}>System</DropdownMenu.Item
+						}} class="cursor-pointer">System</DropdownMenu.Item
 					>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
@@ -225,8 +225,8 @@
 					{/if}
 				</Select.Trigger>
 				<Select.Content class="font-mono text-xs">
-					<Select.Item value="id" onclick={triggerSmallConfetti}><Id />ID</Select.Item>
-					<Select.Item value="en" onclick={triggerSmallConfetti}><GbNir />EN</Select.Item>
+					<Select.Item value="id" onclick={triggerSmallConfetti} class="cursor-pointer"><Id />ID</Select.Item>
+					<Select.Item value="en" onclick={triggerSmallConfetti} class="cursor-pointer"><GbNir />EN</Select.Item>
 				</Select.Content>
 			</Select.Root>
 
