@@ -29,8 +29,10 @@
 			class="draggable-wrapper relative mb-0! overflow-hidden pt-16 pb-0! md:pt-24"
 		>
 			<div class="mb-16 text-center">
-				<h2 class="font-poppins text-3xl font-bold tracking-tight">{m.work_title()}</h2>
-				<p class="mx-auto mt-2 max-w-2xl text-lg text-muted-foreground">
+				<h2 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
+					{m.work_title()}<span class="text-primary">.</span>
+				</h2>
+				<p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
 					{m.work_subtitle()}
 				</p>
 			</div>

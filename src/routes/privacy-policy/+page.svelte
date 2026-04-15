@@ -1,17 +1,39 @@
 <script lang="ts">
 	import SEO from '$lib/components/seo/seo.svelte';
+	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	const lastUpdated = '7 April 2026';
+
+	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
+		gsap.fromTo(
+			'.legal-stagger',
+			{ opacity: 0, y: 20 },
+			{
+				opacity: 1,
+				y: 0,
+				duration: 0.6,
+				stagger: 0.1,
+				ease: 'power2.out'
+			}
+		);
+	});
 </script>
 
 <SEO title="Privacy Policy" description="Privacy Policy for Mikeu Dev (Riki Ruswandi)" />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<article class="mx-auto prose max-w-4xl py-12 prose-slate dark:prose-invert">
-	<h1 class="mb-8 text-4xl font-bold">Privacy Policy</h1>
-	<p class="text-sm text-muted-foreground">Last Updated: {lastUpdated}</p>
+<article class="mx-auto prose mt-20 max-w-4xl py-12 prose-slate dark:prose-invert">
+	<h1 class="font-poppins legal-stagger mb-8 text-4xl font-black tracking-tight md:text-5xl">
+		Privacy Policy<span class="text-primary">.</span>
+	</h1>
+	<p class="legal-stagger mb-12 text-sm text-muted-foreground italic">
+		Last Updated: {lastUpdated}
+	</p>
 
-	<section class="mt-8">
-		<h2 class="text-2xl font-semibold">1. Introduction</h2>
+	<section class="legal-stagger mt-12">
+		<h2 class="font-poppins text-2xl font-bold tracking-tight">1. Introduction</h2>
 		<p>
 			Welcome to <strong>Mikeu Dev</strong> (available at
 			<a href="https://www.mikeudev.my.id">https://www.mikeudev.my.id</a>). This website is owned
@@ -66,12 +88,20 @@
 			indicate when a cookie is being sent.
 		</p>
 		<p class="mt-4">
-			<strong>Google AdSense:</strong> We use Google AdSense to serve advertisements on our site.
-			Google uses cookies to serve ads based on a user's prior visits to your website or other
-			websites. Google's use of advertising cookies enables it and its partners to serve ads to your
-			users based on their visit to your sites and/or other sites on the Internet. Users may opt out
-			of personalized advertising by visiting
-			<a href="https://www.google.com/settings/ads" target="_blank">Ads Settings</a>.
+			<strong>Google AdSense:</strong> We use Google AdSense to serve advertisements on our site. Google
+			and its third-party partners use cookies to serve ads based on your prior visits to our site or
+			other websites. These advertising cookies enable Google and its partners to serve ads to you based
+			on your visits to our site and/or other sites on the Internet.
+		</p>
+		<p class="mt-4">
+			You may opt out of personalized advertising by visiting
+			<a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer"
+				>Ads Settings</a
+			>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized
+			advertising by visiting
+			<a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer"
+				>www.aboutads.info</a
+			>.
 		</p>
 	</section>
 

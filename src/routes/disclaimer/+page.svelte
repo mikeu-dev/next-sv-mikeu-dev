@@ -1,17 +1,34 @@
 <script lang="ts">
 	import SEO from '$lib/components/seo/seo.svelte';
+	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	const lastUpdated = '7 April 2026';
+
+	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
+		const tl = gsap.timeline();
+		tl.fromTo(
+			'.legal-stagger',
+			{ opacity: 0, y: 20 },
+			{ opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
+		);
+	});
 </script>
 
 <SEO title="Disclaimer" description="Disclaimer for Mikeu Dev (Riki Ruswandi)" />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<article class="mx-auto prose max-w-4xl py-12 prose-slate dark:prose-invert">
-	<h1 class="mb-8 text-4xl font-bold">Disclaimer</h1>
-	<p class="text-sm text-muted-foreground">Last Updated: {lastUpdated}</p>
+<article class="mx-auto prose mt-20 max-w-4xl py-12 prose-slate dark:prose-invert">
+	<h1 class="font-poppins legal-stagger mb-8 text-4xl font-black tracking-tight md:text-5xl">
+		Disclaimer<span class="text-primary">.</span>
+	</h1>
+	<p class="legal-stagger mb-12 text-sm text-muted-foreground italic">
+		Last Updated: {lastUpdated}
+	</p>
 
-	<section class="mt-8">
-		<h2 class="text-2xl font-semibold">1. General Information</h2>
+	<section class="legal-stagger mt-12">
+		<h2 class="font-poppins text-2xl font-bold tracking-tight">1. General Information</h2>
 		<p>
 			The information provided on the <strong>Mikeu Dev</strong> website (<a
 				href="https://www.mikeudev.my.id">https://www.mikeudev.my.id</a

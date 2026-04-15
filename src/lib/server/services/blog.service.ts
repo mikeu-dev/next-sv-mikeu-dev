@@ -9,6 +9,9 @@ export interface BlogPost {
 	date: string;
 	published: boolean;
 	content: string;
+	thumbnailUrl?: string;
+	tags?: string[];
+	readingTime?: number;
 	updatedAt?: Date;
 }
 

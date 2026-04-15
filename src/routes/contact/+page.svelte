@@ -8,7 +8,9 @@
 	import * as m from '@/lib/paraglide/messages';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
 	type ActionData = {
 		success: boolean;
@@ -23,6 +25,18 @@
 		confettiCannon = true;
 		playConfettiSound();
 	};
+
+	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
+		const tl = gsap.timeline();
+		tl.from('.contact-stagger', {
+			y: 30,
+			opacity: 0,
+			duration: 0.6,
+			stagger: 0.1,
+			ease: 'power2.out'
+		});
+	});
 </script>
 
 {#if confettiCannon}
@@ -34,12 +48,14 @@
 	/>
 {/if}
 
-<div class="mt-20 space-y-12">
+<div class="mt-28 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">
-			{m.contact_page_title()}
+		<h1 class="font-poppins contact-stagger text-4xl font-black tracking-tight md:text-6xl">
+			{m.contact_page_title()}<span class="text-primary">.</span>
 		</h1>
-		<p class="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">
+		<p
+			class="font-poppins contact-stagger mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground"
+		>
 			{m.contact_page_subtitle()}
 		</p>
 	</section>
@@ -63,7 +79,7 @@
 			}}
 			class="space-y-6"
 		>
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+			<div class="contact-stagger grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
 					<Label for="name">{m.contact_field_name()}</Label>
 					<Input
@@ -99,7 +115,7 @@
 					</p>
 				</div>
 			</div>
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+			<div class="contact-stagger grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<div class="flex w-full max-w-sm flex-col gap-1.5">
 					<Label for="company">{m.contact_field_company()}</Label>
 					<Input
@@ -121,7 +137,7 @@
 					<p class="text-sm text-muted-foreground">{m.contact_field_budget_description()}</p>
 				</div>
 			</div>
-			<div class="flex w-full max-w-2xl flex-col gap-1.5">
+			<div class="contact-stagger flex w-full max-w-2xl flex-col gap-1.5">
 				<Label for="message">{m.contact_field_message()}</Label>
 				<Textarea
 					id="message"
@@ -138,7 +154,7 @@
 					})}
 				</p>
 			</div>
-			<div class="text-right">
+			<div class="contact-stagger text-right">
 				<Button type="submit">{m.contact_page_button()}</Button>
 			</div>
 		</form>

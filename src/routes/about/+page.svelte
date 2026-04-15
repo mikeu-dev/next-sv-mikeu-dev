@@ -70,10 +70,12 @@
 	});
 </script>
 
-<div bind:this={container} class="mx-auto mt-20 max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20">
+<div bind:this={container} class="mx-auto mt-10 max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.about_title()}</h1>
-		<p class="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">
+		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
+			{m.about_title()}<span class="text-primary">.</span>
+		</h1>
+		<p class="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">
 			{m.about_subtitle()}
 		</p>
 	</section>
@@ -113,8 +115,8 @@
 	</section>
 
 	<section bind:this={journeySection} class="py-16">
-		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight">
-			{m.about_jurney_title()}
+		<h2 class="font-poppins mb-16 text-center text-3xl font-bold tracking-tight md:text-5xl">
+			{m.about_jurney_title()}<span class="text-primary">.</span>
 		</h2>
 
 		<div class="relative mx-auto max-w-5xl px-4">
@@ -180,8 +182,8 @@
 	</section>
 
 	<section>
-		<h2 class="font-poppins mb-8 text-center text-3xl font-bold tracking-tight">
-			{m.about_teckstack_title()}
+		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight md:text-5xl">
+			{m.about_teckstack_title()}<span class="text-primary">.</span>
 		</h2>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 			{#each techstack as skillCategory, i (skillCategory.category || i)}

@@ -5,20 +5,29 @@
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import * as m from '@/lib/paraglide/messages.js';
 	import SEO from '@/lib/components/seo/seo.svelte';
+	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
 
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { base } from '$app/paths';
+	import { page } from '$app/state';
 
 	let { data } = $props();
 	// Transform the raw project data into the localized version immediately
 	let project = $derived(getLocalizedProject(data.project, getLocale()));
+
+	let breadcrumbItems = $derived([
+		{ label: 'Projects', href: '/projects' },
+		{ label: project.title, href: page.url.pathname }
+	]);
 </script>
 
 <SEO title={project.title} description={project.description} image={project.thumbnailUrl} />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 <div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
+	<Breadcrumb items={breadcrumbItems} />
+
 	<div class="mb-8">
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a
@@ -32,8 +41,10 @@
 
 	<article>
 		<header class="mb-8">
-			<h1 class="mb-2 text-4xl font-bold tracking-tight md:text-5xl">{project.title}</h1>
-			<p class="mt-2 text-lg text-muted-foreground">{project.description}</p>
+			<h1 class="font-poppins mb-2 text-4xl font-black tracking-tight md:text-5xl">
+				{project.title}<span class="text-primary">.</span>
+			</h1>
+			<p class="mt-4 text-lg leading-relaxed text-muted-foreground">{project.description}</p>
 
 			<div class="mt-4 flex flex-wrap gap-2">
 				{#if project.tags && project.tags.length > 0}
