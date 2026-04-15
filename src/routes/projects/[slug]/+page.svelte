@@ -5,20 +5,29 @@
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import * as m from '@/lib/paraglide/messages.js';
 	import SEO from '@/lib/components/seo/seo.svelte';
+	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
 
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { base } from '$app/paths';
+	import { page } from '$app/state';
 
 	let { data } = $props();
 	// Transform the raw project data into the localized version immediately
 	let project = $derived(getLocalizedProject(data.project, getLocale()));
+
+	let breadcrumbItems = $derived([
+		{ label: 'Projects', href: '/projects' },
+		{ label: project.title, href: page.url.pathname }
+	]);
 </script>
 
 <SEO title={project.title} description={project.description} image={project.thumbnailUrl} />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 <div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
+	<Breadcrumb items={breadcrumbItems} />
+	
 	<div class="mb-8">
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a

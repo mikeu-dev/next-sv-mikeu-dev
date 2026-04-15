@@ -67,11 +67,19 @@
 		</p>
 		<p class="mt-4">
 			<strong>Google AdSense:</strong> We use Google AdSense to serve advertisements on our site.
-			Google uses cookies to serve ads based on a user's prior visits to your website or other
-			websites. Google's use of advertising cookies enables it and its partners to serve ads to your
-			users based on their visit to your sites and/or other sites on the Internet. Users may opt out
-			of personalized advertising by visiting
-			<a href="https://www.google.com/settings/ads" target="_blank">Ads Settings</a>.
+			Google and its third-party partners use cookies to serve ads based on your prior visits to our
+			site or other websites. These advertising cookies enable Google and its partners to serve ads
+			to you based on your visits to our site and/or other sites on the Internet.
+		</p>
+		<p class="mt-4">
+			You may opt out of personalized advertising by visiting
+			<a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer"
+				>Ads Settings</a
+			>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized
+			advertising by visiting
+			<a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer"
+				>www.aboutads.info</a
+			>.
 		</p>
 	</section>
 

@@ -7,9 +7,16 @@
 		description?: string;
 		image?: string;
 		noindex?: boolean;
+		type?: 'website' | 'article';
+		article?: {
+			publishedTime?: string;
+			modifiedTime?: string;
+			author?: string;
+			tags?: string[];
+		};
 	};
 
-	let { title, description, image, noindex = false }: Props = $props();
+	let { title, description, image, noindex = false, type = 'website', article }: Props = $props();
 
 	const canonicalBase = 'https://www.mikeudev.my.id';
 	const defaultTitle = 'Mikeu | Fullstack Web Developer';
@@ -27,7 +34,6 @@
 	const canonicalUrl = path === '' ? `${canonicalBase}/` : `${canonicalBase}${path}`;
 
 	// Generate alternate language links
-	// 1. Get the "clean" path without locale prefix
 	const pathSegments = page.url.pathname.split('/').filter(Boolean);
 	if (pathSegments.length > 0 && locales.includes(pathSegments[0] as (typeof locales)[number])) {
 		pathSegments.shift();
@@ -41,6 +47,18 @@
 		return {
 			locale,
 			href: cleanLocPath === '' ? `${canonicalBase}/` : `${canonicalBase}${cleanLocPath}`
+		};
+	});
+
+	// --- JSON-LD GENERATION ---
+	// BreadcrumbList Schema
+	const breadcrumbItems = pathSegments.map((segment, index) => {
+		const partPath = '/' + pathSegments.slice(0, index + 1).join('/');
+		return {
+			'@type': 'ListItem',
+			position: index + 1,
+			name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+			item: `${canonicalBase}${partPath}`
 		};
 	});
 </script>
@@ -63,11 +81,14 @@
 	/>
 
 	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website" />
+	<meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:title" content={finalTitle} />
 	<meta property="og:description" content={finalDescription} />
 	<meta property="og:image" content={finalImage} />
+	{#if type === 'article' && article?.publishedTime}
+		<meta property="article:published_time" content={article.publishedTime} />
+	{/if}
 
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image" />
@@ -77,17 +98,40 @@
 	<meta property="twitter:image" content={finalImage} />
 
 	<script type="application/ld+json">
-		{
-			"@context": "https://schema.org",
-			"@type": "WebSite",
-			"name": "{finalTitle}",
-			"url": "{canonicalUrl}",
-			"description": "{finalDescription}",
-			"image": "{finalImage}",
-			"author": {
-				"@type": "Person",
-				"name": "Mikeu"
-			}
-		}
+		{JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'WebSite',
+			name: 'Mikeu Dev',
+			url: canonicalBase,
+			description: defaultDescription
+		})}
 	</script>
+
+	{#if breadcrumbItems.length > 0}
+		<script type="application/ld+json">
+			{JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'BreadcrumbList',
+				itemListElement: breadcrumbItems
+			})}
+		</script>
+	{/if}
+
+	{#if type === 'article'}
+		<script type="application/ld+json">
+			{JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'BlogPosting',
+				headline: finalTitle,
+				description: finalDescription,
+				image: finalImage,
+				datePublished: article?.publishedTime,
+				dateModified: article?.modifiedTime || article?.publishedTime,
+				author: {
+					'@type': 'Person',
+					name: article?.author || 'Mikeu'
+				}
+			})}
+		</script>
+	{/if}
 </svelte:head>
