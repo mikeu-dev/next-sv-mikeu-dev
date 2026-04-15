@@ -34,7 +34,7 @@
 	/>
 {/if}
 
-<div class="mt-20 space-y-12">
+<div class="mt-28 space-y-12">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
 			{m.contact_page_title()}<span class="text-primary">.</span>

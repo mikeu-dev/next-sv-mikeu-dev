@@ -70,7 +70,7 @@
 	});
 </script>
 
-<div bind:this={container} class="mx-auto mt-20 max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20">
+<div bind:this={container} class="mx-auto mt-10 max-w-5xl space-y-20 py-12 md:space-y-28 md:py-20">
 	<section class="text-center">
 		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
 			{m.about_title()}<span class="text-primary">.</span>
