@@ -8,6 +8,9 @@
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import * as m from '@/lib/paraglide/messages';
+	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
 	let { data }: { data: PageData } = $props();
 	const { projects }: { projects: Record<string, Project[]> } = data;
@@ -36,14 +39,28 @@
 	function filterProjects(tagName: string) {
 		selectedTag = tagName;
 	}
+
+	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
+		const tl = gsap.timeline();
+		tl.from('.project-stagger', {
+			y: 30,
+			opacity: 0,
+			duration: 0.6,
+			stagger: 0.1,
+			ease: 'power2.out'
+		});
+	});
 </script>
 
 <div class="mt-28 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
+		<h1 class="font-poppins project-stagger text-4xl font-black tracking-tight md:text-6xl">
 			{m.projects_title()}<span class="text-primary">.</span>
 		</h1>
-		<p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+		<p
+			class="font-poppins project-stagger mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground"
+		>
 			{m.projects_subtitle()}
 		</p>
 	</section>
@@ -78,7 +95,9 @@
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
 			{#each filteredProjects as project (project.id)}
-				<ProjectCard {project} />
+				<div class="project-stagger">
+					<ProjectCard {project} />
+				</div>
 			{/each}
 		</div>
 	</section>
