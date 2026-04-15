@@ -12,9 +12,12 @@ export const GET: RequestHandler = async () => {
 		return json(result);
 	} catch (error: unknown) {
 		console.error('Seeding error:', error);
-		return json({
-			success: false,
-			error: (error as Error).message
-		}, { status: 500 });
+		return json(
+			{
+				success: false,
+				error: (error as Error).message
+			},
+			{ status: 500 }
+		);
 	}
 };

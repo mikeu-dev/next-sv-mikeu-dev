@@ -35,7 +35,15 @@ import {
 	BsHouseFill,
 	BsChevronRight
 } from 'svelte-icons-pack/bs';
-import { LuGithub, LuExternalLink, LuClock, LuCalendar, LuArrowRight, LuHome, LuChevronRight } from 'svelte-icons-pack/lu';
+import {
+	LuGithub,
+	LuExternalLink,
+	LuClock,
+	LuCalendar,
+	LuArrowRight,
+	LuHome,
+	LuChevronRight
+} from 'svelte-icons-pack/lu';
 import type { IconType } from 'svelte-icons-pack';
 
 export const iconRegistry: Record<string, IconType> = {

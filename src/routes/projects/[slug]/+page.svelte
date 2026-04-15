@@ -27,7 +27,7 @@
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 <div class="mx-auto mt-20 max-w-4xl py-12 md:py-16">
 	<Breadcrumb items={breadcrumbItems} />
-	
+
 	<div class="mb-8">
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a

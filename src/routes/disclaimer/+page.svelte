@@ -19,11 +19,13 @@
 <SEO title="Disclaimer" description="Disclaimer for Mikeu Dev (Riki Ruswandi)" />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<article class="prose prose-slate mx-auto mt-20 max-w-4xl py-12 dark:prose-invert">
+<article class="mx-auto prose mt-20 max-w-4xl py-12 prose-slate dark:prose-invert">
 	<h1 class="font-poppins legal-stagger mb-8 text-4xl font-black tracking-tight md:text-5xl">
 		Disclaimer<span class="text-primary">.</span>
 	</h1>
-	<p class="legal-stagger mb-12 text-sm italic text-muted-foreground">Last Updated: {lastUpdated}</p>
+	<p class="legal-stagger mb-12 text-sm text-muted-foreground italic">
+		Last Updated: {lastUpdated}
+	</p>
 
 	<section class="legal-stagger mt-12">
 		<h2 class="font-poppins text-2xl font-bold tracking-tight">1. General Information</h2>

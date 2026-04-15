@@ -182,7 +182,9 @@
 		<div class="hidden items-center gap-4 md:flex">
 			<!-- Theme Dropdown -->
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class={`cursor-pointer ${buttonVariants({ variant: 'outline', size: 'icon' })}`}>
+				<DropdownMenu.Trigger
+					class={`cursor-pointer ${buttonVariants({ variant: 'outline', size: 'icon' })}`}
+				>
 					<SunIcon
 						class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
 					/>
@@ -196,26 +198,29 @@
 						onclick={() => {
 							setMode('light');
 							triggerSmallConfetti();
-						}} class="cursor-pointer">Light</DropdownMenu.Item
+						}}
+						class="cursor-pointer">Light</DropdownMenu.Item
 					>
 					<DropdownMenu.Item
 						onclick={() => {
 							setMode('dark');
 							triggerSmallConfetti();
-						}} class="cursor-pointer">Dark</DropdownMenu.Item
+						}}
+						class="cursor-pointer">Dark</DropdownMenu.Item
 					>
 					<DropdownMenu.Item
 						onclick={() => {
 							resetMode();
 							triggerSmallConfetti();
-						}} class="cursor-pointer">System</DropdownMenu.Item
+						}}
+						class="cursor-pointer">System</DropdownMenu.Item
 					>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 
 			<!-- Locale Selector -->
 			<Select.Root type="single" bind:value={locale}>
-				<Select.Trigger class="w-[90px] font-mono text-xs cursor-pointer">
+				<Select.Trigger class="w-[90px] cursor-pointer font-mono text-xs">
 					{#if locale === 'id'}
 						<Id class="h-5 w-5" />ID
 					{:else if locale === 'en'}
@@ -225,8 +230,12 @@
 					{/if}
 				</Select.Trigger>
 				<Select.Content class="font-mono text-xs">
-					<Select.Item value="id" onclick={triggerSmallConfetti} class="cursor-pointer"><Id />ID</Select.Item>
-					<Select.Item value="en" onclick={triggerSmallConfetti} class="cursor-pointer"><GbNir />EN</Select.Item>
+					<Select.Item value="id" onclick={triggerSmallConfetti} class="cursor-pointer"
+						><Id />ID</Select.Item
+					>
+					<Select.Item value="en" onclick={triggerSmallConfetti} class="cursor-pointer"
+						><GbNir />EN</Select.Item
+					>
 				</Select.Content>
 			</Select.Root>
 

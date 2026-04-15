@@ -17,7 +17,9 @@
 </script>
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<article class="group relative overflow-hidden rounded-3xl border bg-card shadow-xl transition-all duration-500 hover:border-primary/30">
+<article
+	class="group relative overflow-hidden rounded-3xl border bg-card shadow-xl transition-all duration-500 hover:border-primary/30"
+>
 	<a href={`${base}/blog/${post.slug}`} class="flex flex-col md:flex-row">
 		<div class="h-64 overflow-hidden md:h-auto md:w-1/2">
 			<img
@@ -29,20 +31,26 @@
 
 		<div class="flex flex-col justify-center p-8 md:w-1/2 md:p-12">
 			<div class="mb-4 flex flex-wrap gap-2">
-				<span class="rounded-full bg-primary/20 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary">
+				<span
+					class="rounded-full bg-primary/20 px-4 py-1.5 text-[10px] font-black tracking-widest text-primary uppercase"
+				>
 					Featured Post
 				</span>
 				{#each post.tags || [] as tag (tag)}
-					<span class="rounded-full bg-muted px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+					<span
+						class="rounded-full bg-muted px-4 py-1.5 text-[10px] font-bold tracking-widest text-muted-foreground uppercase"
+					>
 						{tag}
 					</span>
 				{/each}
 			</div>
 
-			<h2 class="font-poppins text-3xl font-black leading-tight tracking-tighter md:text-5xl group-hover:text-primary transition-colors">
+			<h2
+				class="font-poppins text-3xl leading-tight font-black tracking-tighter transition-colors group-hover:text-primary md:text-5xl"
+			>
 				{post.title}
 			</h2>
-			
+
 			<p class="mt-6 line-clamp-3 text-lg leading-relaxed text-muted-foreground">
 				{post.description}
 			</p>
@@ -61,7 +69,9 @@
 			</div>
 
 			<div class="mt-8">
-				<span class="inline-flex items-center gap-2 font-bold text-primary group-hover:gap-4 transition-all uppercase tracking-widest text-xs">
+				<span
+					class="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-primary uppercase transition-all group-hover:gap-4"
+				>
 					{m.blog_card_button()}
 					<Icon iconName="BsArrowRight" size={16} />
 				</span>

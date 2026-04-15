@@ -43,7 +43,7 @@
 	</div>
 	<header class="mb-12 text-center">
 		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-5xl">
-			{data.meta.title}<span class="text-primary space-x-0">.</span>
+			{data.meta.title}<span class="space-x-0 text-primary">.</span>
 		</h1>
 		{#if data.meta.date}
 			<p class="mt-4 text-muted-foreground">

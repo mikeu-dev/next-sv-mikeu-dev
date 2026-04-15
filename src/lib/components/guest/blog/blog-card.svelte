@@ -35,7 +35,7 @@
 			<div class="mb-3 flex flex-wrap gap-2">
 				{#each post.tags || [] as tag (tag)}
 					<span
-						class="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary"
+						class="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold tracking-wider text-primary uppercase"
 					>
 						{tag}
 					</span>
@@ -43,7 +43,7 @@
 			</div>
 
 			<Card.Title
-				class="line-clamp-2 font-poppins text-xl font-bold leading-tight transition-colors group-hover:text-primary"
+				class="font-poppins line-clamp-2 text-xl leading-tight font-bold transition-colors group-hover:text-primary"
 			>
 				{post.title}
 			</Card.Title>
@@ -52,7 +52,9 @@
 			</Card.Description>
 		</Card.Header>
 
-		<Card.Footer class="mt-auto flex items-center justify-between border-t p-6 text-xs text-muted-foreground">
+		<Card.Footer
+			class="mt-auto flex items-center justify-between border-t p-6 text-xs text-muted-foreground"
+		>
 			<div class="flex items-center gap-2">
 				<Icon iconName="BsCalendar3" size={12} />
 				<span>{formattedDate}</span>

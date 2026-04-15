@@ -8,10 +8,12 @@ const NEW_POSTS: Omit<BlogPost, 'id'>[] = [
 		slug: 'mastering-sveltekit-performance',
 		locale: 'en',
 		title: 'Mastering SvelteKit Performance: A Professional Guide',
-		description: 'Learn how to optimize your SvelteKit applications for lightning-fast load times and perfect Core Web Vitals.',
+		description:
+			'Learn how to optimize your SvelteKit applications for lightning-fast load times and perfect Core Web Vitals.',
 		date: '2026-04-15',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
 		tags: ['SvelteKit', 'Performance', 'WebDev'],
 		readingTime: 5,
 		content: `
@@ -37,10 +39,12 @@ Performance optimization is an ongoing process. Regularly audit your site using 
 		slug: 'mastering-sveltekit-performance',
 		locale: 'id',
 		title: 'Optimasi Performa SvelteKit: Panduan Profesional',
-		description: 'Pelajari cara mengoptimalkan aplikasi SvelteKit Anda untuk waktu pemuatan yang kilat dan Core Web Vitals yang sempurna.',
+		description:
+			'Pelajari cara mengoptimalkan aplikasi SvelteKit Anda untuk waktu pemuatan yang kilat dan Core Web Vitals yang sempurna.',
 		date: '2026-04-15',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
 		tags: ['SvelteKit', 'Performa', 'WebDev'],
 		readingTime: 5,
 		content: `
@@ -68,10 +72,12 @@ Optimasi performa adalah proses yang berkelanjutan. Lakukan audit situs Anda sec
 		slug: 'portfolio-seo-guide',
 		locale: 'en',
 		title: "The Developer's Guide to Portfolio SEO",
-		description: 'How to make your developer portfolio stand out in search engines and attract recruiters.',
+		description:
+			'How to make your developer portfolio stand out in search engines and attract recruiters.',
 		date: '2026-04-14',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop',
 		tags: ['SEO', 'Career', 'Portfolio'],
 		readingTime: 4,
 		content: `
@@ -97,10 +103,12 @@ SEO for portfolios isn't about gaming the system; it's about making your value c
 		slug: 'portfolio-seo-guide',
 		locale: 'id',
 		title: 'Panduan SEO Portfolio untuk Developer',
-		description: 'Cara membuat portfolio developer Anda menonjol di mesin pencari dan menarik perhatian rekruter.',
+		description:
+			'Cara membuat portfolio developer Anda menonjol di mesin pencari dan menarik perhatian rekruter.',
 		date: '2026-04-14',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop',
 		tags: ['SEO', 'Karier', 'Portfolio'],
 		readingTime: 4,
 		content: `
@@ -128,10 +136,12 @@ SEO untuk portfolio bukan tentang mengakali sistem; ini tentang memperjelas nila
 		slug: 'web-accessibility-importance',
 		locale: 'en',
 		title: 'Why Web Accessibility Matters More Than You Think',
-		description: 'Building inclusive websites is a moral and professional obligation. Here is how to start with A11y.',
+		description:
+			'Building inclusive websites is a moral and professional obligation. Here is how to start with A11y.',
 		date: '2026-04-13',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop',
 		tags: ['A11y', 'Accessibility', 'Inclusion'],
 		readingTime: 6,
 		content: `
@@ -157,10 +167,12 @@ An accessible web is a better web for everyone. Start small, but start today.
 		slug: 'web-accessibility-importance',
 		locale: 'id',
 		title: 'Mengapa Aksesibilitas Web Lebih Penting dari yang Anda Kira',
-		description: 'Membangun situs web inklusif adalah kewajiban moral dan profesional. Berikut cara memulai A11y.',
+		description:
+			'Membangun situs web inklusif adalah kewajiban moral dan profesional. Berikut cara memulai A11y.',
 		date: '2026-04-13',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop',
 		tags: ['A11y', 'Aksesibilitas', 'Inklusi'],
 		readingTime: 6,
 		content: `
@@ -188,10 +200,12 @@ Web yang aksesibel adalah web yang lebih baik untuk semua orang. Mulai dari hal 
 		slug: 'svelte-5-runes-overview',
 		locale: 'en',
 		title: 'Understanding Svelte 5 Runes: The Future of Reactivity',
-		description: "A deep dive into Svelte 5's new runes system and how it simplifies state management.",
+		description:
+			"A deep dive into Svelte 5's new runes system and how it simplifies state management.",
 		date: '2026-04-12',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
 		tags: ['Svelte', 'Runes', 'Frontend'],
 		readingTime: 7,
 		content: `
@@ -217,10 +231,12 @@ Runes represent a significant step forward for the Svelte ecosystem, bringing mo
 		slug: 'svelte-5-runes-overview',
 		locale: 'id',
 		title: 'Mengenal Rune di Svelte 5: Masa Depan Reaktivitas',
-		description: 'Analisis mendalam tentang sistem rune baru di Svelte 5 dan bagaimana cara menyederhanakan pengelolaan state.',
+		description:
+			'Analisis mendalam tentang sistem rune baru di Svelte 5 dan bagaimana cara menyederhanakan pengelolaan state.',
 		date: '2026-04-12',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
 		tags: ['Svelte', 'Runes', 'Frontend'],
 		readingTime: 7,
 		content: `
@@ -248,10 +264,12 @@ Runes mewakili langkah maju yang signifikan bagi ekosistem Svelte, memberikan le
 		slug: 'building-bilingual-paraglide',
 		locale: 'en',
 		title: 'Bilingual Made Easy: Building with Paraglide-js',
-		description: 'How to use Paraglide-js to build type-safe, performant multi-language sites in SvelteKit.',
+		description:
+			'How to use Paraglide-js to build type-safe, performant multi-language sites in SvelteKit.',
 		date: '2026-04-11',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
 		tags: ['I18n', 'Paraglide', 'Global'],
 		readingTime: 5,
 		content: `
@@ -277,10 +295,12 @@ It's easy to integrate Paraglide into your SvelteKit projects. Start by defining
 		slug: 'building-bilingual-paraglide',
 		locale: 'id',
 		title: 'Memperkenalkan Paraglide-js: Membangun Situs Bilingual dengan Mudah',
-		description: 'Cara menggunakan Paraglide-js untuk membangun situs multi-bahasa yang type-safe dan berperforma tinggi di SvelteKit.',
+		description:
+			'Cara menggunakan Paraglide-js untuk membangun situs multi-bahasa yang type-safe dan berperforma tinggi di SvelteKit.',
 		date: '2026-04-11',
 		published: true,
-		thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
+		thumbnailUrl:
+			'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
 		tags: ['I18n', 'Paraglide', 'Global'],
 		readingTime: 5,
 		content: `
@@ -310,14 +330,14 @@ export async function seedBlogPosts() {
 
 	for (const post of NEW_POSTS) {
 		const id = `${post.slug}-${post.locale}`;
-		
+
 		try {
 			// Overwrite existing to update fields (set() is fine)
 			await collection.doc(id).set({
 				...post,
 				updatedAt: new Date()
 			});
-			
+
 			results.push({ id, status: 'success' });
 		} catch (error: unknown) {
 			results.push({ id, status: 'error', message: (error as Error).message });

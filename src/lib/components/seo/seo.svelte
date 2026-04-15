@@ -77,7 +77,9 @@
 	<link
 		rel="alternate"
 		hreflang="x-default"
-		href={cleanPath.replace(/\/$/, '') === '' ? `${canonicalBase}/` : `${canonicalBase}${cleanPath.replace(/\/$/, '')}`}
+		href={cleanPath.replace(/\/$/, '') === ''
+			? `${canonicalBase}/`
+			: `${canonicalBase}${cleanPath.replace(/\/$/, '')}`}
 	/>
 
 	<!-- Open Graph / Facebook -->

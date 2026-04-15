@@ -13,10 +13,7 @@
 	let selectedCategory = $state('All');
 
 	// Get unique categories from all posts
-	const categories = $derived([
-		'All',
-		...new Set(data.posts.flatMap((post) => post.tags || []))
-	]);
+	const categories = $derived(['All', ...new Set(data.posts.flatMap((post) => post.tags || []))]);
 
 	// Filtered posts
 	const filteredPosts = $derived(
@@ -27,9 +24,7 @@
 
 	// Featured post (latest one from the filtered list, or just latest overall)
 	const featuredPost = $derived(data.posts[0]);
-	const remainingPosts = $derived(
-		filteredPosts.filter((p) => p.slug !== featuredPost.slug)
-	);
+	const remainingPosts = $derived(filteredPosts.filter((p) => p.slug !== featuredPost.slug));
 
 	// Animations
 	let container: HTMLElement;
@@ -90,7 +85,7 @@
 				onclick={() => (selectedCategory = category)}
 				class={`rounded-full px-6 py-2 text-sm font-bold transition-all duration-300 ${
 					selectedCategory === category
-						? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+						? 'scale-105 bg-primary text-primary-foreground shadow-lg shadow-primary/20'
 						: 'bg-muted text-muted-foreground hover:bg-muted/80'
 				}`}
 			>

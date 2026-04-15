@@ -24,11 +24,13 @@
 <SEO title="Privacy Policy" description="Privacy Policy for Mikeu Dev (Riki Ruswandi)" />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<article class="prose prose-slate mx-auto mt-20 max-w-4xl py-12 dark:prose-invert">
+<article class="mx-auto prose mt-20 max-w-4xl py-12 prose-slate dark:prose-invert">
 	<h1 class="font-poppins legal-stagger mb-8 text-4xl font-black tracking-tight md:text-5xl">
 		Privacy Policy<span class="text-primary">.</span>
 	</h1>
-	<p class="legal-stagger mb-12 text-sm italic text-muted-foreground">Last Updated: {lastUpdated}</p>
+	<p class="legal-stagger mb-12 text-sm text-muted-foreground italic">
+		Last Updated: {lastUpdated}
+	</p>
 
 	<section class="legal-stagger mt-12">
 		<h2 class="font-poppins text-2xl font-bold tracking-tight">1. Introduction</h2>
@@ -86,10 +88,10 @@
 			indicate when a cookie is being sent.
 		</p>
 		<p class="mt-4">
-			<strong>Google AdSense:</strong> We use Google AdSense to serve advertisements on our site.
-			Google and its third-party partners use cookies to serve ads based on your prior visits to our
-			site or other websites. These advertising cookies enable Google and its partners to serve ads
-			to you based on your visits to our site and/or other sites on the Internet.
+			<strong>Google AdSense:</strong> We use Google AdSense to serve advertisements on our site. Google
+			and its third-party partners use cookies to serve ads based on your prior visits to our site or
+			other websites. These advertising cookies enable Google and its partners to serve ads to you based
+			on your visits to our site and/or other sites on the Internet.
 		</p>
 		<p class="mt-4">
 			You may opt out of personalized advertising by visiting

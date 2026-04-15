@@ -33,19 +33,16 @@
 	});
 </script>
 
-<section
-	id="latest-blog"
-	bind:this={section}
-	class="relative overflow-hidden py-24 md:py-32"
->
-	<div class="container relative mx-auto px-4 sm:px-6 lg:px-8">
+<section id="latest-blog" bind:this={section} class="relative overflow-hidden py-24 md:py-32">
+	<div class="relative container mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Header -->
 		<div class="blog-stagger mb-16 text-center">
 			<h2 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
 				Latest From <span class="text-primary italic">Blog</span>.
 			</h2>
 			<p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-				Sharing my thoughts and insights on software development, technology trends, and professional growth.
+				Sharing my thoughts and insights on software development, technology trends, and
+				professional growth.
 			</p>
 		</div>
 
@@ -62,8 +59,9 @@
 			<!-- CTA -->
 			<div class="blog-stagger mt-20 text-center">
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-				<a href={localizeHref('/blog')}
-					class="group inline-flex items-center gap-3 rounded-full bg-primary/10 px-8 py-4 text-sm font-bold tracking-widest text-primary transition-all hover:bg-primary hover:text-primary-foreground uppercase shadow-lg shadow-primary/10"
+				<a
+					href={localizeHref('/blog')}
+					class="group inline-flex items-center gap-3 rounded-full bg-primary/10 px-8 py-4 text-sm font-bold tracking-widest text-primary uppercase shadow-lg shadow-primary/10 transition-all hover:bg-primary hover:text-primary-foreground"
 				>
 					{m.blog_card_button()}
 					<Icon

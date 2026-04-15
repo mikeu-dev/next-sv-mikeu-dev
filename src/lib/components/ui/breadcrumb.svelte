@@ -13,7 +13,7 @@
 
 		const path = page.url.pathname.replace(/\/$/, '');
 		const segments = path.split('/').filter(Boolean);
-		
+
 		// Remove locale prefix if present
 		if (segments.length > 0 && ['en', 'id'].includes(segments[0])) {
 			segments.shift();
@@ -35,7 +35,7 @@
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<a
 				href={localizeHref('/')}
-				class="flex items-center hover:text-foreground transition-colors"
+				class="flex items-center transition-colors hover:text-foreground"
 				aria-label="Home"
 			>
 				<Icon iconName="BsHouseFill" size={14} />
@@ -46,14 +46,17 @@
 			<li class="flex items-center space-x-2">
 				<Icon iconName="BsChevronRight" size={12} class="text-muted-foreground/50" />
 				{#if i === crumbs.length - 1}
-					<span class="font-medium text-foreground truncate max-w-[150px] md:max-w-none" aria-current="page">
+					<span
+						class="max-w-[150px] truncate font-medium text-foreground md:max-w-none"
+						aria-current="page"
+					>
 						{crumb.label}
 					</span>
 				{:else}
 					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 					<a
 						href={crumb.href}
-						class="hover:text-foreground transition-colors truncate max-w-[150px] md:max-w-none"
+						class="max-w-[150px] truncate transition-colors hover:text-foreground md:max-w-none"
 					>
 						{crumb.label}
 					</a>
