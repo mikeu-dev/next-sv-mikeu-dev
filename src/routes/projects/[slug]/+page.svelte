@@ -41,8 +41,10 @@
 
 	<article>
 		<header class="mb-8">
-			<h1 class="mb-2 text-4xl font-bold tracking-tight md:text-5xl">{project.title}</h1>
-			<p class="mt-2 text-lg text-muted-foreground">{project.description}</p>
+			<h1 class="font-poppins mb-2 text-4xl font-black tracking-tight md:text-5xl">
+				{project.title}<span class="text-primary">.</span>
+			</h1>
+			<p class="mt-4 text-lg leading-relaxed text-muted-foreground">{project.description}</p>
 
 			<div class="mt-4 flex flex-wrap gap-2">
 				{#if project.tags && project.tags.length > 0}

@@ -42,7 +42,9 @@
 		</a>
 	</div>
 	<header class="mb-12 text-center">
-		<h1 class="text-4xl font-bold tracking-tight">{data.meta.title}</h1>
+		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-5xl">
+			{data.meta.title}<span class="text-primary space-x-0">.</span>
+		</h1>
 		{#if data.meta.date}
 			<p class="mt-4 text-muted-foreground">
 				{new Date(data.meta.date).toLocaleDateString(getLocale(), {

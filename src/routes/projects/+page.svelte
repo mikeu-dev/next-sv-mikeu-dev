@@ -40,8 +40,10 @@
 
 <div class="mt-20 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins text-4xl font-bold tracking-tight md:text-5xl">{m.projects_title()}</h1>
-		<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+		<h1 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
+			{m.projects_title()}<span class="text-primary">.</span>
+		</h1>
+		<p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
 			{m.projects_subtitle()}
 		</p>
 	</section>
