@@ -61,8 +61,8 @@
 
 			<!-- CTA -->
 			<div class="blog-stagger mt-20 text-center">
-				<a
-					href={localizeHref('/blog')}
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href={localizeHref('/blog')}
 					class="group inline-flex items-center gap-3 rounded-full bg-primary/10 px-8 py-4 text-sm font-bold tracking-widest text-primary transition-all hover:bg-primary hover:text-primary-foreground uppercase shadow-lg shadow-primary/10"
 				>
 					{m.blog_card_button()}
