@@ -11,6 +11,9 @@ const NEW_POSTS: Omit<BlogPost, 'id'>[] = [
 		description: 'Learn how to optimize your SvelteKit applications for lightning-fast load times and perfect Core Web Vitals.',
 		date: '2026-04-15',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+		tags: ['SvelteKit', 'Performance', 'WebDev'],
+		readingTime: 5,
 		content: `
 ## Why Performance Matters
 In today's fast-paced digital world, users expect websites to load instantly. Performance is not just about speed; it's about user experience, SEO ranking, and conversion rates.
@@ -37,6 +40,9 @@ Performance optimization is an ongoing process. Regularly audit your site using 
 		description: 'Pelajari cara mengoptimalkan aplikasi SvelteKit Anda untuk waktu pemuatan yang kilat dan Core Web Vitals yang sempurna.',
 		date: '2026-04-15',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+		tags: ['SvelteKit', 'Performa', 'WebDev'],
+		readingTime: 5,
 		content: `
 ## Mengapa Performa Itu Penting
 Di dunia digital yang serba cepat saat ini, pengguna mengharapkan situs web dimuat secara instan. Performa bukan hanya soal kecepatan; ini tentang pengalaman pengguna, peringkat SEO, dan tingkat konversi.
@@ -65,6 +71,9 @@ Optimasi performa adalah proses yang berkelanjutan. Lakukan audit situs Anda sec
 		description: 'How to make your developer portfolio stand out in search engines and attract recruiters.',
 		date: '2026-04-14',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop',
+		tags: ['SEO', 'Career', 'Portfolio'],
+		readingTime: 4,
 		content: `
 ## Introduction
 Your portfolio is your digital resume. But it's only effective if people can find it. SEO (Search Engine Optimization) is key to increasing your visibility.
@@ -91,6 +100,9 @@ SEO for portfolios isn't about gaming the system; it's about making your value c
 		description: 'Cara membuat portfolio developer Anda menonjol di mesin pencari dan menarik perhatian rekruter.',
 		date: '2026-04-14',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop',
+		tags: ['SEO', 'Karier', 'Portfolio'],
+		readingTime: 4,
 		content: `
 ## Pendahuluan
 Portfolio Anda adalah resume digital Anda. Namun, ini hanya efektif jika orang bisa menemukannya. SEO (Search Engine Optimization) adalah kunci untuk meningkatkan visibilitas Anda.
@@ -119,6 +131,9 @@ SEO untuk portfolio bukan tentang mengakali sistem; ini tentang memperjelas nila
 		description: 'Building inclusive websites is a moral and professional obligation. Here is how to start with A11y.',
 		date: '2026-04-13',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop',
+		tags: ['A11y', 'Accessibility', 'Inclusion'],
+		readingTime: 6,
 		content: `
 ## Accessibility is for Everyone
 Web Accessibility (A11y) is the practice of making your websites usable by as many people as possible, including those with visual, auditory, cognitive, or motor disabilities.
@@ -145,6 +160,9 @@ An accessible web is a better web for everyone. Start small, but start today.
 		description: 'Membangun situs web inklusif adalah kewajiban moral dan profesional. Berikut cara memulai A11y.',
 		date: '2026-04-13',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop',
+		tags: ['A11y', 'Aksesibilitas', 'Inklusi'],
+		readingTime: 6,
 		content: `
 ## Aksesibilitas untuk Semua Orang
 Aksesibilitas Web (A11y) adalah praktik membuat situs web Anda dapat digunakan oleh sebanyak mungkin orang, termasuk mereka yang memiliki gangguan penglihatan, pendengaran, kognitif, atau motorik.
@@ -173,6 +191,9 @@ Web yang aksesibel adalah web yang lebih baik untuk semua orang. Mulai dari hal 
 		description: "A deep dive into Svelte 5's new runes system and how it simplifies state management.",
 		date: '2026-04-12',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
+		tags: ['Svelte', 'Runes', 'Frontend'],
+		readingTime: 7,
 		content: `
 ## The Evolution of Svelte
 Svelte 5 introduces "Runes," a set of primitives for building reactive applications. This change makes reactivity more explicit and easier to reason about in complex components.
@@ -199,6 +220,9 @@ Runes represent a significant step forward for the Svelte ecosystem, bringing mo
 		description: 'Analisis mendalam tentang sistem rune baru di Svelte 5 dan bagaimana cara menyederhanakan pengelolaan state.',
 		date: '2026-04-12',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=800&auto=format&fit=crop',
+		tags: ['Svelte', 'Runes', 'Frontend'],
+		readingTime: 7,
 		content: `
 ## Evolusi Svelte
 Svelte 5 memperkenalkan "Runes," sekumpulan primitif untuk membangun aplikasi reaktif. Perubahan ini membuat reaktivitas lebih eksplisit dan lebih mudah dipahami dalam komponen yang kompleks.
@@ -227,6 +251,9 @@ Runes mewakili langkah maju yang signifikan bagi ekosistem Svelte, memberikan le
 		description: 'How to use Paraglide-js to build type-safe, performant multi-language sites in SvelteKit.',
 		date: '2026-04-11',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
+		tags: ['I18n', 'Paraglide', 'Global'],
+		readingTime: 5,
 		content: `
 ## Internationalization in SvelteKit
 Building a site that supports multiple languages can be complex. Paraglide-js simplifies this process while maintaining excellent performance and type safety.
@@ -253,6 +280,9 @@ It's easy to integrate Paraglide into your SvelteKit projects. Start by defining
 		description: 'Cara menggunakan Paraglide-js untuk membangun situs multi-bahasa yang type-safe dan berperforma tinggi di SvelteKit.',
 		date: '2026-04-11',
 		published: true,
+		thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
+		tags: ['I18n', 'Paraglide', 'Global'],
+		readingTime: 5,
 		content: `
 ## Internasionalisasi di SvelteKit
 Membangun situs yang mendukung banyak bahasa bisa menjadi rumit. Paraglide-js menyederhanakan proses ini sambil mempertahankan performa yang sangat baik dan keamanan tipe (type safety).
@@ -282,15 +312,7 @@ export async function seedBlogPosts() {
 		const id = `${post.slug}-${post.locale}`;
 		
 		try {
-			// Check if already exists to avoid unnecessary writes, 
-			// though set() is idempotent, this fits "anti-redundant" better
-			const existing = await collection.doc(id).get();
-			
-			if (existing.exists) {
-				results.push({ id, status: 'skipped (already exists)' });
-				continue;
-			}
-
+			// Overwrite existing to update fields (set() is fine)
 			await collection.doc(id).set({
 				...post,
 				updatedAt: new Date()
