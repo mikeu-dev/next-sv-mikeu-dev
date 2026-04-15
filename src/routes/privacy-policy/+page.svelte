@@ -24,7 +24,7 @@
 <SEO title="Privacy Policy" description="Privacy Policy for Mikeu Dev (Riki Ruswandi)" />
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<article class="prose prose-slate mx-auto max-w-4xl py-12 dark:prose-invert">
+<article class="prose prose-slate mx-auto mt-20 max-w-4xl py-12 dark:prose-invert">
 	<h1 class="font-poppins legal-stagger mb-8 text-4xl font-black tracking-tight md:text-5xl">
 		Privacy Policy<span class="text-primary">.</span>
 	</h1>
