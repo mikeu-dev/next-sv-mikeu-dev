@@ -1,7 +1,4 @@
 <script lang="ts">
-	import * as SimpleIcons from 'simple-icons';
-	import { type SimpleIcon } from 'simple-icons';
-	import * as LucideIcons from '@lucide/svelte';
 	import { Icon as SvelteIconPack } from 'svelte-icons-pack';
 	import { iconRegistry } from '$lib/icons/registry';
 	import type { IconType } from 'svelte-icons-pack';
@@ -20,7 +17,7 @@
 
 	interface Props {
 		iconName?: string;
-		src?: IconType | GenericIconComponent | null; // For direct component passing
+		src?: IconType | GenericIconComponent | null;
 		color?: string;
 		size?: number | string;
 		strokeWidth?: number;
@@ -38,34 +35,6 @@
 		style = ''
 	}: Props = $props();
 
-	// Utility to get Simple Icons SVG
-	function getSimpleIconSvg(name: string): string | null {
-		try {
-			// Normalize: Remove 'Si' prefix and lowercase first char for simple-icons key
-			const key =
-				name.startsWith('Si') && name.length > 2
-					? 'si' + name.slice(2)
-					: name.charAt(0).toLowerCase() + name.slice(1);
-
-			const icon = (SimpleIcons as unknown as Record<string, SimpleIcon>)[key];
-			if (icon && icon.svg) {
-				return icon.svg.replace('<svg', `<svg class="w-full h-full" fill="${color}"`);
-			}
-		} catch {
-			return null;
-		}
-		return null;
-	}
-
-	// Utility to get Lucide Icon Component
-	function getLucideIcon(name: string): GenericIconComponent | null {
-		// Normalize: Remove 'Lu' prefix
-		const bareName = name.startsWith('Lu') && name.length > 2 ? name.slice(2) : name;
-
-		const icon = (LucideIcons as unknown as Record<string, GenericIconComponent>)[bareName];
-		return icon || null;
-	}
-
 	// Utility to get Icon from Registry
 	function getRegistryIcon(name: string): IconType | null {
 		return iconRegistry[name] || null;
@@ -76,18 +45,12 @@
 		if (src) return 'src';
 		if (!iconName) return 'fallback';
 
-		if (iconName.startsWith('Si')) return 'simple';
-		if (iconName.startsWith('Lu')) return 'lucide';
+		// Prioritize Registry (includes BS, FI, SI, LU mappings)
 		if (getRegistryIcon(iconName)) return 'registry';
 
-		// Fallback detection
-		if (getLucideIcon(iconName)) return 'lucide';
-		if (getSimpleIconSvg(iconName)) return 'simple';
 		return 'fallback';
 	});
 
-	let simpleSvg = $derived(iconType() === 'simple' ? getSimpleIconSvg(iconName) : null);
-	let LucideComp = $derived(iconType() === 'lucide' ? getLucideIcon(iconName) : null);
 	let RegistryComp = $derived(iconType() === 'registry' ? getRegistryIcon(iconName) : null);
 	let DirectComp = $derived(iconType() === 'src' ? src : null);
 </script>
@@ -107,11 +70,6 @@
 		{/if}
 	{:else if iconType() === 'registry' && RegistryComp}
 		<SvelteIconPack src={RegistryComp} {color} {size} />
-	{:else if iconType() === 'lucide' && LucideComp}
-		<LucideComp {color} {size} {strokeWidth} />
-	{:else if simpleSvg}
-		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		{@html simpleSvg}
 	{:else}
 		<!-- Default Fallback Icon -->
 		<svg

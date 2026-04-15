@@ -27,7 +27,15 @@ import {
 	SiVite
 } from 'svelte-icons-pack/si';
 import { FiHash, FiGithub, FiExternalLink, FiGlobe } from 'svelte-icons-pack/fi';
-import { BsArrowUpCircleFill } from 'svelte-icons-pack/bs';
+import {
+	BsArrowUpCircleFill,
+	BsCalendar3,
+	BsClock,
+	BsArrowRight,
+	BsHouseFill,
+	BsChevronRight
+} from 'svelte-icons-pack/bs';
+import { LuGithub, LuExternalLink, LuClock, LuCalendar, LuArrowRight, LuHome, LuChevronRight } from 'svelte-icons-pack/lu';
 import type { IconType } from 'svelte-icons-pack';
 
 export const iconRegistry: Record<string, IconType> = {
@@ -67,6 +75,27 @@ export const iconRegistry: Record<string, IconType> = {
 
 	// Bootstrap Icons (bs)
 	BsArrowUpCircleFill,
+	BsCalendar3,
+	BsClock,
+	BsArrowRight,
+	BsHouseFill,
+	BsChevronRight,
+
+	// Lucide Icons (lu) - Mapping common names for consistency
+	LuGithub,
+	LuExternalLink,
+	LuClock,
+	LuCalendar,
+	LuArrowRight,
+	LuHome,
+	LuChevronRight,
+	Github: LuGithub,
+	ExternalLink: LuExternalLink,
+	Clock: LuClock,
+	Calendar: LuCalendar,
+	ArrowRight: LuArrowRight,
+	Home: LuHome,
+	ChevronRight: LuChevronRight,
 
 	// Fallback/Default
 	default: FiHash
