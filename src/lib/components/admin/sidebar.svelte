@@ -13,7 +13,8 @@
 		Database,
 		Menu,
 		X,
-		Settings
+		Settings,
+		Activity
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
@@ -31,6 +32,7 @@
 		{ href: '/admin/socials', label: 'Socials', icon: Share2 },
 		{ href: '/admin/contacts', label: 'Contacts', icon: Users },
 		{ href: '/admin/migrate', label: 'Migrate', icon: Database },
+		{ href: '/admin/monitoring', label: 'Monitoring', icon: Activity },
 		{ href: '/admin/settings', label: 'Settings', icon: Settings }
 	];
 

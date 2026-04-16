@@ -207,8 +207,11 @@ Requirements:
    - For technical topics, include high-quality, formatted **Code Blocks** using modern syntax.
 3. **Meme Instruction**: Include 2-3 technical "memes" or jokes. These can be funny observations, sarcastic remarks about "legacy code", or relatable developer struggles.
 4. **Image Instruction**: Include 2-3 relevant images using Markdown syntax: ![Descriptive Alt Text](https://loremflickr.com/800/600/tech,coding,humor).
-5. **Tone**: Professional yet VERY engaging, informal, and humorous.
-6. **Goal**: The content should feel like it was written by a current industry expert today, not 2 years ago.
+5. **SEO Auditing & Visibility**:
+   - Ensure the main keyword from the user prompt has a natural but effective density throughout the content.
+   - The generated titles and descriptions must be optimized for click-through rate (CTR) and search visibility.
+   - Images must have highly descriptive Alt Text for accessibility and SEO.
+6. **Goal**: The content should feel like it was written by a current industry expert today, not 2 years ago, and be fully optimized for search engines.
 
 Return ONLY a valid JSON object with this structure:
 {
