@@ -50,6 +50,9 @@ import {
 	LuHome,
 	LuChevronRight
 } from 'svelte-icons-pack/lu';
+import { FaSolidRocket, FaSolidStar, FaSolidCircleInfo, FaSolidCircleCheck, FaSolidTriangleExclamation } from 'svelte-icons-pack/fa';
+import { IoLogoIonic, IoLogoJavascript, IoLogoPython, IoLogoGithub } from 'svelte-icons-pack/io';
+import { AiFillHome, AiFillSetting, AiFillMessage } from 'svelte-icons-pack/ai';
 import type { IconType } from 'svelte-icons-pack';
 
 export const iconRegistry: Record<string, IconType> = {
@@ -125,6 +128,24 @@ export const iconRegistry: Record<string, IconType> = {
 	ArrowRight: LuArrowRight,
 	Home: LuHome,
 	ChevronRight: LuChevronRight,
+
+	// FontAwesome (fa)
+	FaSolidRocket,
+	FaSolidStar,
+	FaSolidCircleInfo,
+	FaSolidCircleCheck,
+	FaSolidTriangleExclamation,
+
+	// Ionicons (io)
+	IoLogoIonic,
+	IoLogoJavascript,
+	IoLogoPython,
+	IoLogoGithub,
+
+	// Ant Design (ai)
+	AiFillHome,
+	AiFillSetting,
+	AiFillMessage,
 
 	// Fallback/Default
 	default: FiHash

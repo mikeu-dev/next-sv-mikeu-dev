@@ -65,8 +65,8 @@
 		// Prioritize Static Registry (includes BS, FI, SI, LU mappings)
 		if (getRegistryIcon(iconName)) return 'registry';
 
-		// Secondary: Dynamic Registry (Firestore)
-		if (customIconStore.registry[iconName]) return 'dynamic';
+		// Secondary: Dynamic Registry (Firestore) - Only if it has SVG content
+		if (customIconStore.registry[iconName]?.svg) return 'dynamic';
 
 		return 'fallback';
 	});
