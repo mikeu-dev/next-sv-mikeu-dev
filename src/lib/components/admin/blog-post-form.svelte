@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
+	import AIAssist from '$lib/components/admin/ai-assist.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
@@ -52,6 +53,8 @@
 
 	let activeTab = $state<'en' | 'id'>((initialData?.locale as 'en' | 'id') || 'en');
 	let loading = $state(false);
+	let drafting = $state(false);
+	let aiPrompt = $state('');
 
 	// If editing, we might need to fetch the OTHER language data if it wasn't passed in initialData
 	// ideally the parent loads BOTH. But parent currently loads ONE.
@@ -92,6 +95,58 @@
 			.toLowerCase()
 			.replace(/[^a-z0-9]+/g, '-')
 			.replace(/^-+|-+$/g, '');
+	}
+
+	async function handleAIDraft() {
+		if (!aiPrompt) {
+			toast.error('Please enter a topic or prompt first');
+			return;
+		}
+
+		drafting = true;
+		try {
+			const response = await fetch('/api/admin/ai/generate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					action: 'generateBlogFromPrompt',
+					payload: { prompt: aiPrompt }
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.error || 'Failed to generate draft');
+			}
+
+			const data = await response.json();
+			const result = data.result;
+
+			// Populate common data
+			commonData.slug = result.slug;
+
+			// Populate localized content
+			contentData.en = {
+				...contentData.en,
+				title: result.title_en,
+				description: result.description_en,
+				content: result.content_en
+			};
+
+			contentData.id = {
+				...contentData.id,
+				title: result.title_id,
+				description: result.description_id,
+				content: result.content_id
+			};
+
+			toast.success('Blog draft generated successfully!');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Drafting failed';
+			toast.error(message);
+		} finally {
+			drafting = false;
+		}
 	}
 
 	async function handleSubmit() {
@@ -157,8 +212,9 @@
 			toast.success('Changes saved successfully');
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto(`${base}/admin/blog`);
-		} catch (e: unknown) {
-			console.error(e);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'AI request failed';
+			toast.error(message);
 			toast.error('Failed to save');
 		} finally {
 			loading = false;
@@ -167,6 +223,73 @@
 </script>
 
 <div class="space-y-6">
+	<!-- AI Blog Drafter -->
+	<div
+		class="rounded-xl border border-purple-200 bg-purple-50/50 p-6 dark:border-purple-900/30 dark:bg-purple-900/10"
+	>
+		<div class="mb-4 flex items-center gap-2 text-purple-700 dark:text-purple-300">
+			<svg
+				class="h-5 w-5"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path
+					d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+				></path>
+				<path d="M5 3v4"></path>
+				<path d="M19 17v4"></path>
+				<path d="M3 5h4"></path>
+				<path d="M17 19h4"></path>
+			</svg>
+			<h2 class="text-sm font-semibold tracking-wider uppercase">AI Blog Drafter</h2>
+		</div>
+		<div class="flex flex-col gap-4 sm:flex-row">
+			<div class="flex-1">
+				<input
+					type="text"
+					bind:value={aiPrompt}
+					placeholder="Tulis topik atau instruksi blog (misal: Tips belajar Svelte 5)..."
+					class="w-full rounded-lg border border-purple-200 bg-white px-4 py-2.5 text-sm focus:border-purple-500 focus:outline-none dark:border-purple-900/50 dark:bg-gray-950"
+				/>
+			</div>
+			<button
+				type="button"
+				onclick={handleAIDraft}
+				disabled={drafting || !aiPrompt}
+				class="flex items-center justify-center gap-2 rounded-lg bg-purple-600 px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-purple-700 disabled:opacity-50"
+			>
+				{#if drafting}
+					<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+						<circle
+							class="opacity-25"
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="4"
+							fill="none"
+						></circle>
+						<path
+							class="opacity-75"
+							fill="currentColor"
+							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+						></path>
+					</svg>
+					Drafting...
+				{:else}
+					Generate Draft
+				{/if}
+			</button>
+		</div>
+		<p class="mt-3 text-xs text-purple-600/70 dark:text-purple-400/50">
+			* AI akan membuat Judul, Deskripsi, Slug, dan Konten lengkap (ID & EN) beserta gambar & meme.
+		</p>
+	</div>
+
 	<!-- Shared Fields -->
 	<div class="grid gap-6 md:grid-cols-2">
 		<!-- Main Info -->
@@ -233,32 +356,45 @@
 
 	<!-- Localized Fields -->
 	<div class="space-y-6">
-		<div>
+		<div class="flex items-center justify-between gap-2">
 			<label for="title" class="mb-1 block text-sm font-medium"
 				>Title ({activeTab.toUpperCase()})</label
 			>
-			<input
-				type="text"
-				id="title"
-				bind:value={contentData[activeTab].title}
-				oninput={generateSlug}
-				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
-				placeholder="Enter post title"
+			<AIAssist
+				locale={activeTab}
+				type="title"
+				bind:targetValue={contentData[activeTab].title}
+				onApply={(val) => (contentData[activeTab].title = val)}
 			/>
 		</div>
+		<input
+			type="text"
+			id="title"
+			bind:value={contentData[activeTab].title}
+			oninput={generateSlug}
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			placeholder="Enter post title"
+		/>
 
-		<div>
+		<div class="flex items-center justify-between gap-2">
 			<label for="description" class="mb-1 block text-sm font-medium"
 				>Description ({activeTab.toUpperCase()})</label
 			>
-			<textarea
-				id="description"
-				bind:value={contentData[activeTab].description}
-				rows="3"
-				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
-				placeholder="Short description for SEO and lists"
-			></textarea>
+			<AIAssist
+				context={contentData[activeTab].title}
+				locale={activeTab}
+				type="description"
+				bind:targetValue={contentData[activeTab].description}
+				onApply={(val) => (contentData[activeTab].description = val)}
+			/>
 		</div>
+		<textarea
+			id="description"
+			bind:value={contentData[activeTab].description}
+			rows="3"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			placeholder="Short description for SEO and lists"
+		></textarea>
 
 		<div class="flex items-center gap-2">
 			<input
@@ -275,9 +411,18 @@
 
 	<!-- Content Editor -->
 	<div>
-		<label for="content" class="mb-1 block text-sm font-medium"
-			>Content ({activeTab.toUpperCase()})</label
-		>
+		<div class="flex items-center justify-between gap-2">
+			<label for="content" class="mb-1 block text-sm font-medium"
+				>Content ({activeTab.toUpperCase()})</label
+			>
+			<AIAssist
+				context={contentData[activeTab].title}
+				locale={activeTab}
+				type="content"
+				bind:targetValue={contentData[activeTab].content}
+				onApply={(val) => (contentData[activeTab].content = val)}
+			/>
+		</div>
 		{#key activeTab}
 			<MarkdownEditor
 				bind:value={contentData[activeTab].content}

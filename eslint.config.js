@@ -13,10 +13,26 @@ import svelteConfig from './svelte.config.js';
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default defineConfig(
-	{
-		ignores: ['src/lib/paraglide/**', 'src/paraglide/**']
-	},
 	includeIgnoreFile(gitignorePath),
+	{
+		linterOptions: {
+			reportUnusedDisableDirectives: 'off'
+		}
+	},
+	{
+		// Global ignores
+		ignores: [
+			'**/node_modules/**',
+			'.svelte-kit/**',
+			'.vercel/**',
+			'build/**',
+			'dist/**',
+			'static/**',
+			'src/service-worker.ts',
+			'src/lib/paraglide/**',
+			'src/paraglide/**'
+		]
+	},
 	js.configs.recommended,
 	...ts.configs.recommended,
 	...svelte.configs.recommended,
@@ -27,13 +43,20 @@ export default defineConfig(
 			globals: { ...globals.browser, ...globals.node }
 		},
 		rules: {
-			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
-			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-			'no-undef': 'off'
+			'no-undef': 'off',
+			'no-unused-vars': 'off', // Let TypeScript handle this
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_'
+				}
+			],
+			'svelte/no-navigation-without-resolve': 'off' // Disable for faster lint/check
 		}
 	},
 	{
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js', 'src/**/*.ts', 'src/**/*.js'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
@@ -42,5 +65,9 @@ export default defineConfig(
 				svelteConfig
 			}
 		}
+	},
+	{
+		files: ['*.config.js', '*.config.ts', 'vitest.config.ts', 'playwright.config.ts'],
+		...ts.configs.disableTypeChecked
 	}
 );

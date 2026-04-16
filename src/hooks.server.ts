@@ -130,8 +130,8 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Admin rote protection
-	if (event.url.pathname.startsWith('/admin')) {
+	// Admin route protection
+	if (event.url.pathname.startsWith('/admin') || event.url.pathname.startsWith('/api/admin')) {
 		if (!event.locals.user) {
 			console.log('🔴 No valid session found for admin route, redirecting to login');
 			throw redirect(303, '/auth/login');
@@ -151,9 +151,45 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+import { monitoringService } from '$lib/server/services/monitoring.service';
+
 export const handle: Handle = sequence(
 	handleSecurityHeaders,
 	handleParaglide,
 	handleVisitor,
 	handleAuth
 );
+
+export const handleError: import('@sveltejs/kit').HandleServerError = async ({
+	error,
+	event,
+	status,
+	message
+}) => {
+	const errorId = crypto.randomUUID();
+
+	// Log the error to Firestore
+	await monitoringService.logError({
+		type: 'server',
+		message: error instanceof Error ? error.message : message,
+		stack: error instanceof Error ? error.stack : undefined,
+		url: event.url.toString(),
+		userAgent: event.request.headers.get('user-agent') || undefined,
+		locale: event.locals.paraglide?.locale,
+		userId: (event.locals.user?.uid as string) || (event.locals.user?.id as string),
+		status,
+		context: {
+			errorId,
+			route: event.route.id || undefined
+		}
+	});
+
+	// In production, don't show the real error message to the user
+	return {
+		message:
+			process.env.NODE_ENV === 'production'
+				? 'An unexpected error occurred. Our team has been notified.'
+				: message,
+		errorId
+	};
+};

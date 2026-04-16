@@ -8,5 +8,7 @@ export const COLLECTIONS = {
 	TECHSTACK: 'techstack',
 	JOURNEY: 'journey',
 	SKILLS: 'skills',
-	SOCIALS: 'socials'
+	SOCIALS: 'socials',
+	ERROR_LOGS: 'error_logs',
+	CUSTOM_ICONS: 'custom_icons'
 };

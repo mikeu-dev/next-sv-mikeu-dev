@@ -55,11 +55,11 @@
 
 <div class="mt-28 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins project-stagger text-4xl font-black tracking-tight md:text-6xl">
+		<h1 class="project-stagger font-poppins text-4xl font-black tracking-tight md:text-6xl">
 			{m.projects_title()}<span class="text-primary">.</span>
 		</h1>
 		<p
-			class="font-poppins project-stagger mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground"
+			class="project-stagger mx-auto mt-6 max-w-2xl font-poppins text-lg leading-relaxed text-muted-foreground"
 		>
 			{m.projects_subtitle()}
 		</p>

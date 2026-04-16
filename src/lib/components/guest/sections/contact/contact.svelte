@@ -29,7 +29,7 @@
 	id="contact"
 	class="relative z-10 rounded-t bg-linear-to-b from-slate-100 to-background py-16 pt-24 text-center md:py-24 md:pt-32 dark:from-slate-900"
 >
-	<h2 class="font-poppins mb-8 text-4xl font-black tracking-tight md:text-6xl">
+	<h2 class="mb-8 font-poppins text-4xl font-black tracking-tight md:text-6xl">
 		{m.contact_title()}<span class="text-primary">.</span>
 	</h2>
 	<p class="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-muted-foreground">

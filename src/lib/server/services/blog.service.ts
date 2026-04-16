@@ -36,11 +36,8 @@ export class BlogService {
 
 	async createPost(data: BlogPost) {
 		const id = `${data.slug}-${data.locale}`;
-		// We use set() in repository for specific ID if needed,
-		// but BaseRepository.create uses add().
-		// We can add a saveWithId to BaseRepository or just use db here.
-		// For consistency with existing logic:
-		await this.repository.update(id, { ...data, updatedAt: new Date() } as Partial<BlogPost>);
+		// We use upsert to ensure document is created if it doesn't exist
+		await this.repository.upsert(id, { ...data, updatedAt: new Date() } as Partial<BlogPost>);
 		return { id, ...data };
 	}
 

@@ -9,7 +9,7 @@
 	import SEO from '@/lib/components/seo/seo.svelte';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
-	import { afterNavigate } from '$app/navigation';
+	import { onNavigate, afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import Button from '@/lib/components/ui/button/button.svelte';
@@ -25,6 +25,17 @@
 	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
 
 	let { data, children } = $props();
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 
 	let fallingConfetti = $state(false);
 	let scrollBtn: HTMLButtonElement;

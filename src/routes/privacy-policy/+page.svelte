@@ -25,7 +25,7 @@
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 <article class="mx-auto prose mt-20 max-w-4xl py-12 prose-slate dark:prose-invert">
-	<h1 class="font-poppins legal-stagger mb-8 text-4xl font-black tracking-tight md:text-5xl">
+	<h1 class="legal-stagger mb-8 font-poppins text-4xl font-black tracking-tight md:text-5xl">
 		Privacy Policy<span class="text-primary">.</span>
 	</h1>
 	<p class="legal-stagger mb-12 text-sm text-muted-foreground italic">

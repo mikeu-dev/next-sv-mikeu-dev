@@ -3,6 +3,7 @@
 	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
+	import AIAssist from '$lib/components/admin/ai-assist.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -115,9 +116,17 @@
 
 			<!-- Title Indonesian -->
 			<div class="mb-4">
-				<label for="title_id" class="mb-2 block text-sm font-medium">
-					Title (Indonesian) <span class="text-red-500">*</span>
-				</label>
+				<div class="flex items-center justify-between gap-2">
+					<label for="title_id" class="mb-2 block text-sm font-medium">
+						Title (Indonesian) <span class="text-red-500">*</span>
+					</label>
+					<AIAssist
+						locale="id"
+						type="title"
+						bind:targetValue={title_id}
+						onApply={(val) => (title_id = val)}
+					/>
+				</div>
 				<input
 					id="title_id"
 					type="text"
@@ -130,9 +139,17 @@
 
 			<!-- Title English -->
 			<div class="mb-4">
-				<label for="title_en" class="mb-2 block text-sm font-medium">
-					Title (English) <span class="text-red-500">*</span>
-				</label>
+				<div class="flex items-center justify-between gap-2">
+					<label for="title_en" class="mb-2 block text-sm font-medium">
+						Title (English) <span class="text-red-500">*</span>
+					</label>
+					<AIAssist
+						locale="en"
+						type="title"
+						bind:targetValue={title_en}
+						onApply={(val) => (title_en = val)}
+					/>
+				</div>
 				<input
 					id="title_en"
 					type="text"
@@ -145,9 +162,18 @@
 
 			<!-- Description Indonesian -->
 			<div class="mb-4">
-				<label for="description_id" class="mb-2 block text-sm font-medium">
-					Description (Indonesian) <span class="text-red-500">*</span>
-				</label>
+				<div class="flex items-center justify-between gap-2">
+					<label for="description_id" class="mb-2 block text-sm font-medium">
+						Description (Indonesian) <span class="text-red-500">*</span>
+					</label>
+					<AIAssist
+						context={title_id}
+						locale="id"
+						type="description"
+						bind:targetValue={description_id}
+						onApply={(val) => (description_id = val)}
+					/>
+				</div>
 				<textarea
 					id="description_id"
 					bind:value={description_id}
@@ -160,9 +186,18 @@
 
 			<!-- Description English -->
 			<div class="mb-4">
-				<label for="description_en" class="mb-2 block text-sm font-medium">
-					Description (English) <span class="text-red-500">*</span>
-				</label>
+				<div class="flex items-center justify-between gap-2">
+					<label for="description_en" class="mb-2 block text-sm font-medium">
+						Description (English) <span class="text-red-500">*</span>
+					</label>
+					<AIAssist
+						context={title_en}
+						locale="en"
+						type="description"
+						bind:targetValue={description_en}
+						onApply={(val) => (description_en = val)}
+					/>
+				</div>
 				<textarea
 					id="description_en"
 					bind:value={description_en}

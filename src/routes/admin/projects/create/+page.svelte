@@ -4,6 +4,7 @@
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import TagEditor from '$lib/components/admin/tag-editor.svelte';
+	import AIAssist from '$lib/components/admin/ai-assist.svelte';
 	import type { SerializedTag } from '$lib/types';
 
 	let title_id = $state('');
@@ -22,6 +23,7 @@
 	let imagePreviews: string[] = $state([]);
 	let uploading = $state(false);
 	let saving = $state(false);
+	let analyzingRepo = $state(false);
 	let activeTab = $state<'id' | 'en'>('id');
 
 	function handleThumbnailChange(e: Event) {
@@ -49,6 +51,57 @@
 				};
 				reader.readAsDataURL(file);
 			});
+		}
+	}
+
+	async function handleAnalyzeRepo() {
+		if (!repoUrl) {
+			toast.error('Please enter a repository URL first');
+			return;
+		}
+
+		analyzingRepo = true;
+		try {
+			const response = await fetch('/api/admin/ai/generate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					action: 'analyzeRepo',
+					payload: { repoUrl }
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.error || 'Failed to analyze repository');
+			}
+
+			const data = await response.json();
+			const result = data.result;
+
+			// Populate form fields
+			title_id = result.title_id;
+			title_en = result.title_en;
+			description_id = result.description_id;
+			description_en = result.description_en;
+			content = result.content;
+
+			if (result.tags && Array.isArray(result.tags)) {
+				const newTags = result.tags.map((tag: string) => ({
+					name: tag,
+					color: 'blue',
+					url: '#'
+				}));
+				// Merge or replace? Let's replace for a clean start from repo
+				tags = newTags;
+			}
+
+			toast.success('Project data populated from repository!');
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'Analysis failed';
+			toast.error(message);
+		} finally {
+			analyzingRepo = false;
 		}
 	}
 
@@ -177,9 +230,17 @@
 			<div class="space-y-4">
 				<!-- Title ID -->
 				<div>
-					<label for="title_id" class="mb-2 block text-sm font-medium">
-						Judul (Indonesia) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="title_id" class="mb-2 block text-sm font-medium">
+							Judul (Indonesia) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							locale="id"
+							type="title"
+							bind:targetValue={title_id}
+							onApply={(val) => (title_id = val)}
+						/>
+					</div>
 					<input
 						id="title_id"
 						type="text"
@@ -192,9 +253,18 @@
 
 				<!-- Description ID -->
 				<div>
-					<label for="description_id" class="mb-2 block text-sm font-medium">
-						Deskripsi (Indonesia) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="description_id" class="mb-2 block text-sm font-medium">
+							Deskripsi (Indonesia) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							context={title_id}
+							locale="id"
+							type="description"
+							bind:targetValue={description_id}
+							onApply={(val) => (description_id = val)}
+						/>
+					</div>
 					<textarea
 						id="description_id"
 						bind:value={description_id}
@@ -212,9 +282,17 @@
 			<div class="space-y-4">
 				<!-- Title EN -->
 				<div>
-					<label for="title_en" class="mb-2 block text-sm font-medium">
-						Title (English) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="title_en" class="mb-2 block text-sm font-medium">
+							Title (English) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							locale="en"
+							type="title"
+							bind:targetValue={title_en}
+							onApply={(val) => (title_en = val)}
+						/>
+					</div>
 					<input
 						id="title_en"
 						type="text"
@@ -227,9 +305,18 @@
 
 				<!-- Description EN -->
 				<div>
-					<label for="description_en" class="mb-2 block text-sm font-medium">
-						Description (English) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="description_en" class="mb-2 block text-sm font-medium">
+							Description (English) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							context={title_en}
+							locale="en"
+							type="description"
+							bind:targetValue={description_en}
+							onApply={(val) => (description_en = val)}
+						/>
+					</div>
 					<textarea
 						id="description_en"
 						bind:value={description_en}
@@ -244,9 +331,18 @@
 
 		<!-- Content (Optional) -->
 		<div>
-			<label for="content" class="mb-2 block text-sm font-medium">
-				Content (Optional Markdown)
-			</label>
+			<div class="flex items-center justify-between gap-2">
+				<label for="content" class="mb-2 block text-sm font-medium">
+					Content (Optional Markdown)
+				</label>
+				<AIAssist
+					context={activeTab === 'en' ? title_en : title_id}
+					locale={activeTab}
+					type="content"
+					bind:targetValue={content}
+					onApply={(val) => (content = val)}
+				/>
+			</div>
 			<MarkdownEditor
 				id="content"
 				bind:value={content}
@@ -258,7 +354,18 @@ Write detailed content in Markdown format..."
 
 		<!-- Tags -->
 		<div>
-			<label for="tags" class="mb-2 block text-sm font-medium"> Tags / Tech Stack </label>
+			<div class="flex items-center justify-between gap-2">
+				<label for="tags" class="mb-2 block text-sm font-medium"> Tags / Tech Stack </label>
+				<AIAssist
+					context={title_en || title_id}
+					targetValue={description_en || description_id}
+					type="tags"
+					onApplyTags={(newTags) => {
+						const formattedTags = newTags.map((tag) => ({ name: tag, color: 'blue', url: '#' }));
+						tags = [...tags, ...formattedTags];
+					}}
+				/>
+			</div>
 			<TagEditor bind:tags />
 		</div>
 
@@ -332,7 +439,54 @@ Write detailed content in Markdown format..."
 
 		<!-- Repository URL -->
 		<div>
-			<label for="repoUrl" class="mb-2 block text-sm font-medium">Repository URL</label>
+			<div class="flex items-center justify-between gap-2">
+				<label for="repoUrl" class="mb-2 block text-sm font-medium">Repository URL</label>
+				<button
+					type="button"
+					onclick={handleAnalyzeRepo}
+					disabled={analyzingRepo || !repoUrl}
+					class="flex items-center gap-1.5 rounded-md bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 transition-all hover:bg-purple-200 disabled:opacity-50 dark:bg-purple-900/30 dark:text-purple-300 dark:hover:bg-purple-900/50"
+				>
+					{#if analyzingRepo}
+						<svg class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24">
+							<circle
+								class="opacity-25"
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								stroke-width="4"
+								fill="none"
+							></circle>
+							<path
+								class="opacity-75"
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							></path>
+						</svg>
+						Analyzing...
+					{:else}
+						<svg
+							class="h-3.5 w-3.5"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<path
+								d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+							></path>
+							<path d="M5 3v4"></path>
+							<path d="M19 17v4"></path>
+							<path d="M3 5h4"></path>
+							<path d="M17 19h4"></path>
+						</svg>
+						AI Reference
+					{/if}
+				</button>
+			</div>
 			<input
 				id="repoUrl"
 				type="url"

@@ -94,7 +94,7 @@
 			/>
 		</div>
 		<div class="md:col-span-3">
-			<h2 class="font-poppins mb-4 text-3xl font-bold tracking-tight">
+			<h2 class="mb-4 font-poppins text-3xl font-bold tracking-tight">
 				{m.about_begin_first_part()} <span bind:this={wavingHand} class="inline-block">👋</span>, {m.about_begin_second_part(
 					{
 						name: 'Riki Ruswandi (Mikeu)'
@@ -115,7 +115,7 @@
 	</section>
 
 	<section bind:this={journeySection} class="py-16">
-		<h2 class="font-poppins mb-16 text-center text-3xl font-bold tracking-tight md:text-5xl">
+		<h2 class="mb-16 text-center font-poppins text-3xl font-bold tracking-tight md:text-5xl">
 			{m.about_jurney_title()}<span class="text-primary">.</span>
 		</h2>
 
@@ -182,13 +182,13 @@
 	</section>
 
 	<section>
-		<h2 class="font-poppins mb-12 text-center text-3xl font-bold tracking-tight md:text-5xl">
+		<h2 class="mb-12 text-center font-poppins text-3xl font-bold tracking-tight md:text-5xl">
 			{m.about_teckstack_title()}<span class="text-primary">.</span>
 		</h2>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 			{#each techstack as skillCategory, i (skillCategory.category || i)}
 				<div class="rounded-lg border bg-card p-6 text-card-foreground">
-					<h3 class="font-poppins mb-2 text-xl font-bold">{skillCategory.category}</h3>
+					<h3 class="mb-2 font-poppins text-xl font-bold">{skillCategory.category}</h3>
 					<p class="mb-4 text-sm text-muted-foreground">{skillCategory.description}</p>
 					<div class="flex flex-wrap gap-2">
 						{#each skillCategory.items as tech (tech.name)}

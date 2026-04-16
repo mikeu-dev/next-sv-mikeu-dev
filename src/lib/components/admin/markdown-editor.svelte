@@ -1,18 +1,10 @@
 <script lang="ts">
-	import { marked } from 'marked';
+	import MarkdownRenderer from '../ui/markdown-renderer.svelte';
 
 	let { value = $bindable(''), placeholder = 'Write your content...', id = '' } = $props();
 
 	let textarea = $state<HTMLTextAreaElement>();
 	let showPreview = $state(false);
-
-	// Configure marked
-	marked.setOptions({
-		breaks: true,
-		gfm: true
-	});
-
-	let htmlPreview = $derived(marked.parse(value || ''));
 
 	function insertMarkdown(before: string, after: string = '') {
 		if (!textarea) return;
@@ -210,16 +202,11 @@
 				rows="12"
 				class="w-full resize-y border-0 bg-white p-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-900"
 			></textarea>
+		{:else if value.trim()}
+			<MarkdownRenderer content={value} />
 		{:else}
-			<div class="max-w-none p-4 text-sm">
-				{#if value.trim()}
-					<div class="prose-content">
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						{@html htmlPreview}
-					</div>
-				{:else}
-					<p class="text-muted-foreground">No content to preview</p>
-				{/if}
+			<div class="p-4">
+				<p class="text-muted-foreground">No content to preview</p>
 			</div>
 		{/if}
 	</div>

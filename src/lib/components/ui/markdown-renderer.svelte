@@ -12,7 +12,9 @@
 	let htmlContent = $derived(marked.parse(content || ''));
 </script>
 
-<div class="prose-content">
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html htmlContent}
+<div class="max-w-none p-4 text-sm">
+	<div class="prose max-w-none dark:prose-invert">
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+		{@html htmlContent}
+	</div>
 </div>

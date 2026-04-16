@@ -89,3 +89,9 @@ export interface JourneyItem {
 	year: string;
 	[key: string]: unknown;
 }
+
+export interface DynamicIcon {
+	id: string; // The identifier / iconName
+	svg: string; // Raw path data or SVG string
+	viewBox?: string; // Default "0 0 24 24"
+}

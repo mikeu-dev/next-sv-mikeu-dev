@@ -10,10 +10,11 @@
 		Cpu,
 		Share2,
 		Users,
-		Database,
 		Menu,
 		X,
-		Settings
+		Settings,
+		Activity,
+		BarChart3
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
@@ -30,7 +31,8 @@
 		{ href: '/admin/techstack', label: 'Tech Stack', icon: Cpu },
 		{ href: '/admin/socials', label: 'Socials', icon: Share2 },
 		{ href: '/admin/contacts', label: 'Contacts', icon: Users },
-		{ href: '/admin/migrate', label: 'Migrate', icon: Database },
+		{ href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+		{ href: '/admin/monitoring', label: 'Monitoring', icon: Activity },
 		{ href: '/admin/settings', label: 'Settings', icon: Settings }
 	];
 

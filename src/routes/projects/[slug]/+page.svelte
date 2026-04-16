@@ -41,7 +41,7 @@
 
 	<article>
 		<header class="mb-8">
-			<h1 class="font-poppins mb-2 text-4xl font-black tracking-tight md:text-5xl">
+			<h1 class="mb-2 font-poppins text-4xl font-black tracking-tight md:text-5xl">
 				{project.title}<span class="text-primary">.</span>
 			</h1>
 			<p class="mt-4 text-lg leading-relaxed text-muted-foreground">{project.description}</p>

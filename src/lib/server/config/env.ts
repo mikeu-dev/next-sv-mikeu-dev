@@ -20,7 +20,10 @@ const envSchema = z.object({
 	GITHUB_BRANCH: z.string().default('main'),
 
 	// Uploads
-	UPLOADS_DIR: z.string().default('./uploads')
+	UPLOADS_DIR: z.string().default('./uploads'),
+
+	// AI Gemini
+	GOOGLE_GEMINI_API_KEY: z.string().optional()
 });
 
 import { env as dynamicPrivateEnv } from '$env/dynamic/private';

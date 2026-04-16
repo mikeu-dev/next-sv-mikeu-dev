@@ -24,7 +24,16 @@ import {
 	SiTailwindcss,
 	SiTypescript,
 	SiUnity,
-	SiVite
+	SiVite,
+	SiInstagram,
+	SiLinkedin,
+	SiTwitter,
+	SiFacebook,
+	SiWhatsapp,
+	SiTelegram,
+	SiGithub,
+	SiGmail,
+	SiMaildotru
 } from 'svelte-icons-pack/si';
 import { FiHash, FiGithub, FiExternalLink, FiGlobe } from 'svelte-icons-pack/fi';
 import {
@@ -42,8 +51,19 @@ import {
 	LuCalendar,
 	LuArrowRight,
 	LuHome,
-	LuChevronRight
+	LuChevronRight,
+	LuLinkedin,
+	LuMail
 } from 'svelte-icons-pack/lu';
+import {
+	FaSolidRocket,
+	FaSolidStar,
+	FaSolidCircleInfo,
+	FaSolidCircleCheck,
+	FaSolidTriangleExclamation
+} from 'svelte-icons-pack/fa';
+import { IoLogoIonic, IoLogoJavascript, IoLogoPython, IoLogoGithub } from 'svelte-icons-pack/io';
+import { AiFillHome, AiFillSetting, AiFillMessage } from 'svelte-icons-pack/ai';
 import type { IconType } from 'svelte-icons-pack';
 
 export const iconRegistry: Record<string, IconType> = {
@@ -74,6 +94,21 @@ export const iconRegistry: Record<string, IconType> = {
 	SiTypescript,
 	SiUnity,
 	SiVite,
+	SiWhatsapp,
+	SiGithub,
+	SiGmail,
+	SiMaildotru,
+	SiLinkedin,
+	SiInstagram,
+
+	// Common Names / Aliases
+	Instagram: SiInstagram,
+	Linkedin: SiLinkedin,
+	Twitter: SiTwitter,
+	Facebook: SiFacebook,
+	Whatsapp: SiWhatsapp,
+	Telegram: SiTelegram,
+	SiDefault: FiHash,
 
 	// Feather Icons (fi)
 	FiHash,
@@ -104,6 +139,50 @@ export const iconRegistry: Record<string, IconType> = {
 	ArrowRight: LuArrowRight,
 	Home: LuHome,
 	ChevronRight: LuChevronRight,
+	LuLinkedin,
+	LuMail,
+	LinkedIn: LuLinkedin,
+	Mail: LuMail,
+	Email: SiMaildotru,
+	Gmail: SiGmail,
+	Git: SiGithub,
+	GitHub: SiGithub,
+
+	// FontAwesome (fa)
+	FaSolidRocket,
+	FaSolidStar,
+	FaSolidCircleInfo,
+	FaSolidCircleCheck,
+	FaSolidTriangleExclamation,
+
+	// Ionicons (io)
+	IoLogoIonic,
+	IoLogoJavascript,
+	IoLogoPython,
+	IoLogoGithub,
+
+	// Ant Design (ai)
+	AiFillHome,
+	AiFillSetting,
+	AiFillMessage,
+
+	// Semantic Aliases / Common Names
+	Python: IoLogoPython,
+	Javascript: IoLogoJavascript,
+	JS: IoLogoJavascript,
+	TypeScript: SiTypescript,
+	TS: SiTypescript,
+	Svelte: SiSvelte,
+	React: SiReact,
+	Nextjs: SiNextdotjs,
+	Tailwind: SiTailwindcss,
+	Node: SiNodedotjs,
+	Firebase: SiFirebase,
+	Docker: SiDocker,
+	MySQL: SiMysql,
+	PHP: SiPhp,
+	Laravel: SiLaravel,
+	Bootstrap: SiBootstrap,
 
 	// Fallback/Default
 	default: FiHash
