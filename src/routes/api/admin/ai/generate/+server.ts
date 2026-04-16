@@ -40,6 +40,13 @@ export const POST: RequestHandler = async ({ request }) => {
 				result = await geminiService.suggestTags(payload.title, payload.description || '');
 				break;
 
+			case 'analyzeRepo':
+				if (!payload.repoUrl) {
+					return json({ error: 'Missing repoUrl for repository analysis' }, { status: 400 });
+				}
+				result = await geminiService.analyzeRepo(payload.repoUrl);
+				break;
+
 			default:
 				return json({ error: `Unknown action: ${action}` }, { status: 400 });
 		}

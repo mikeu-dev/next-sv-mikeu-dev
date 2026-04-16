@@ -1,5 +1,15 @@
 import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai';
+import { Octokit } from 'octokit';
 import { env } from '../config/env';
+
+export interface ProjectMetadata {
+	title_id: string;
+	title_en: string;
+	description_id: string;
+	description_en: string;
+	content: string;
+	tags: string[];
+}
 
 /**
  * Service for interacting with Google Gemini AI.
@@ -7,6 +17,7 @@ import { env } from '../config/env';
 export class GeminiService {
 	private genAI: GoogleGenerativeAI;
 	private model: GenerativeModel;
+	private octokit: Octokit;
 
 	constructor() {
 		const apiKey = env.GOOGLE_GEMINI_API_KEY;
@@ -16,6 +27,10 @@ export class GeminiService {
 		this.genAI = new GoogleGenerativeAI(apiKey || '');
 		this.model = this.genAI.getGenerativeModel({
 			model: 'gemini-1.5-flash'
+		});
+
+		this.octokit = new Octokit({
+			auth: env.GITHUB_ACCESS_TOKEN
 		});
 	}
 
@@ -91,6 +106,72 @@ Description: ${description}`;
 		} catch (error) {
 			console.error('Gemini tag suggestion error:', error);
 			throw new Error('Failed to suggest tags using Gemini AI.');
+		}
+	}
+
+	/**
+	 * Analyzes a GitHub repository and returns project metadata.
+	 */
+	async analyzeRepo(repoUrl: string): Promise<ProjectMetadata> {
+		try {
+			// Parse owner and repo from URL
+			const url = new URL(repoUrl);
+			const pathParts = url.pathname.split('/').filter(Boolean);
+			if (pathParts.length < 2) throw new Error('Invalid GitHub URL');
+
+			const owner = pathParts[0];
+			const repo = pathParts[1].replace('.git', '');
+
+			// Fetch README
+			let readmeContent = '';
+			try {
+				const { data } = await this.octokit.rest.repos.getReadme({
+					owner,
+					repo
+				});
+				readmeContent = Buffer.from(data.content, 'base64').toString('utf-8');
+			} catch {
+				console.warn('README not found, using repo info instead');
+			}
+
+			// Fetch repo data for fallback
+			const { data: repoInfo } = await this.octokit.rest.repos.get({
+				owner,
+				repo
+			});
+
+			const prompt = `Analyze the following GitHub repository information and README content. Generate professional portfolio project metadata including titles, descriptions, and detailed content in both Indonesian and English.
+
+Repository: ${owner}/${repo}
+Description: ${repoInfo.description || 'No description'}
+Topics: ${repoInfo.topics?.join(', ') || 'No topics'}
+
+README Content:
+${readmeContent.substring(0, 5000)}
+
+Return only a valid JSON object with the following structure:
+{
+  "title_id": "Judul Proyek",
+  "title_en": "Project Title",
+  "description_id": "Deskripsi singkat proyek...",
+  "description_en": "Short project description...",
+  "content": "Detailed markdown content based on README (Professional, refined)...",
+  "tags": ["Tag1", "Tag2"]
+}`;
+
+			const result = await this.model.generateContent(prompt);
+			const response = await result.response;
+			const text = response.text().trim();
+			
+			// Extract JSON if AI surrounds it with markdown blocks
+			const jsonMatch = text.match(/\{[\s\S]*\}/);
+			if (jsonMatch) {
+				return JSON.parse(jsonMatch[0]);
+			}
+			return JSON.parse(text);
+		} catch (error) {
+			console.error('Gemini repo analysis error:', error);
+			throw new Error('Failed to analyze repository using Gemini AI.');
 		}
 	}
 }
