@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { 
-		BarChart3, 
-		PieChart, 
-		Globe, 
-		Monitor, 
-		Smartphone, 
-		Link2, 
-		Eye, 
+	import {
+		BarChart3,
+		PieChart,
+		Globe,
+		Monitor,
+		Smartphone,
+		Link2,
+		Eye,
 		TrendingUp,
 		Clock,
 		RefreshCw
@@ -62,7 +62,9 @@
 				<BarChart3 class="h-8 w-8 text-primary" />
 				Visitor Analytics
 			</h1>
-			<p class="text-muted-foreground">Deep dive into your portfolio's audience and traffic patterns.</p>
+			<p class="text-muted-foreground">
+				Deep dive into your portfolio's audience and traffic patterns.
+			</p>
 		</div>
 
 		<div class="flex items-center gap-2">
@@ -71,7 +73,9 @@
 					<button
 						class={cn(
 							'rounded-md px-3 py-1.5 text-xs font-medium transition-all',
-							days === d ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+							days === d
+								? 'bg-background text-foreground shadow-sm'
+								: 'text-muted-foreground hover:text-foreground'
 						)}
 						onclick={() => (days = d)}
 					>
@@ -88,7 +92,11 @@
 	{#if loading && !analytics}
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
 			{#each Array(4) as item, i (i)}
-				<div class="h-32 animate-pulse rounded-xl border bg-muted/20" data-item={JSON.stringify(item)} data-idx={i}></div>
+				<div
+					class="h-32 animate-pulse rounded-xl border bg-muted/20"
+					data-item={JSON.stringify(item)}
+					data-idx={i}
+				></div>
 			{/each}
 		</div>
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -100,9 +108,15 @@
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4" in:fade>
 			{#each Array(4) as item, i (i)}
 				{#if i === 0}
-					<div class="rounded-xl border bg-card p-6 shadow-sm" data-item={JSON.stringify(item)} data-stat={i}>
+					<div
+						class="rounded-xl border bg-card p-6 shadow-sm"
+						data-item={JSON.stringify(item)}
+						data-stat={i}
+					>
 						<div class="mb-4 flex items-center justify-between">
-							<span class="rounded-full bg-blue-100 p-2 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
+							<span
+								class="rounded-full bg-blue-100 p-2 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
+							>
 								<Eye class="h-5 w-5" />
 							</span>
 							<span class="text-xs font-medium text-muted-foreground">Log Capacity</span>
@@ -113,7 +127,9 @@
 				{:else if i === 1}
 					<div class="rounded-xl border bg-card p-6 shadow-sm">
 						<div class="mb-4 flex items-center justify-between">
-							<span class="rounded-full bg-green-100 p-2 text-green-600 dark:bg-green-900/40 dark:text-green-400">
+							<span
+								class="rounded-full bg-green-100 p-2 text-green-600 dark:bg-green-900/40 dark:text-green-400"
+							>
 								<TrendingUp class="h-5 w-5" />
 							</span>
 							<span class="text-xs font-medium text-muted-foreground">Page Views</span>
@@ -124,18 +140,22 @@
 				{:else if i === 2}
 					<div class="rounded-xl border bg-card p-6 shadow-sm">
 						<div class="mb-4 flex items-center justify-between">
-							<span class="rounded-full bg-purple-100 p-2 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400">
+							<span
+								class="rounded-full bg-purple-100 p-2 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400"
+							>
 								<Globe class="h-5 w-5" />
 							</span>
 							<span class="text-xs font-medium text-muted-foreground">Main Source</span>
 						</div>
 						<p class="text-sm font-medium text-muted-foreground">Dominant Referrer</p>
-						<p class="text-3xl font-bold truncate">{analytics.referrers[0]?.[0] || 'Direct'}</p>
+						<p class="truncate text-3xl font-bold">{analytics.referrers[0]?.[0] || 'Direct'}</p>
 					</div>
 				{:else if i === 3}
 					<div class="rounded-xl border bg-card p-6 shadow-sm">
 						<div class="mb-4 flex items-center justify-between">
-							<span class="rounded-full bg-orange-100 p-2 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400">
+							<span
+								class="rounded-full bg-orange-100 p-2 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400"
+							>
 								<Clock class="h-5 w-5" />
 							</span>
 							<span class="text-xs font-medium text-muted-foreground">Retention</span>
@@ -158,18 +178,20 @@
 				</div>
 				<div class="space-y-1 p-4">
 					{#each analytics.topPages as [path, count], i (path)}
-						<div class="group flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-muted/50">
+						<div
+							class="group flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-muted/50"
+						>
 							<div class="flex min-w-0 items-center gap-3">
-								<span class="text-xs font-bold text-muted-foreground/50 w-4">{i + 1}</span>
+								<span class="w-4 text-xs font-bold text-muted-foreground/50">{i + 1}</span>
 								<div class="flex flex-col truncate">
 									<span class="truncate font-medium">{path === '/' ? 'Home Page' : path}</span>
-									<span class="text-[10px] text-muted-foreground truncate">{path}</span>
+									<span class="truncate text-[10px] text-muted-foreground">{path}</span>
 								</div>
 							</div>
 							<div class="flex items-center gap-4">
 								<div class="hidden w-24 overflow-hidden rounded-full bg-muted md:block">
-									<div 
-										class="h-1.5 bg-primary transition-all duration-1000" 
+									<div
+										class="h-1.5 bg-primary transition-all duration-1000"
 										style="width: {getPercentage(count, analytics.topPages[0][1])}%"
 									></div>
 								</div>
@@ -203,10 +225,10 @@
 									<span class="text-muted-foreground">{getPercentage(count, totalVisits)}%</span>
 								</div>
 								<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
-									<div 
+									<div
 										class={cn(
-											"h-full transition-all duration-1000",
-											device.toLowerCase().includes('mobile') ? "bg-blue-500" : "bg-green-500"
+											'h-full transition-all duration-1000',
+											device.toLowerCase().includes('mobile') ? 'bg-blue-500' : 'bg-green-500'
 										)}
 										style="width: {getPercentage(count, totalVisits)}%"
 									></div>

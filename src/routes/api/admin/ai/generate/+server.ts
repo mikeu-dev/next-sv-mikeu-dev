@@ -21,7 +21,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			case 'generateDescription':
 				if (!payload.title || !payload.locale) {
-					return json({ error: 'Missing title or locale for description generation' }, { status: 400 });
+					return json(
+						{ error: 'Missing title or locale for description generation' },
+						{ status: 400 }
+					);
 				}
 				result = await geminiService.generateDescription(payload.title, payload.locale);
 				break;
@@ -60,7 +63,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ result });
 	} catch (error: unknown) {
 		console.error('AI Generation API Error:', error);
-		const message = error instanceof Error ? error.message : 'Unknown error occurred during AI generation';
+		const message =
+			error instanceof Error ? error.message : 'Unknown error occurred during AI generation';
 		return json({ error: message }, { status: 500 });
 	}
-}
+};

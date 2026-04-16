@@ -43,7 +43,7 @@
 			</div>
 
 			<Card.Title
-				class="font-poppins line-clamp-2 text-xl leading-tight font-bold transition-colors group-hover:text-primary"
+				class="line-clamp-2 font-poppins text-xl leading-tight font-bold transition-colors group-hover:text-primary"
 			>
 				{post.title}
 			</Card.Title>

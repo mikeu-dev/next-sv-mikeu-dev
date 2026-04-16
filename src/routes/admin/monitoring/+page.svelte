@@ -88,24 +88,26 @@
 				Refresh
 			</Button>
 
-			<div class="relative group">
+			<div class="group relative">
 				<Button variant="destructive" size="sm">
 					<Trash2 class="mr-2 h-4 w-4" />
 					Clear Logs
 				</Button>
-				<div class="absolute right-0 top-full z-10 mt-2 hidden w-48 rounded-md border bg-popover p-1 shadow-md group-hover:block transition-all">
-					<button 
+				<div
+					class="absolute top-full right-0 z-10 mt-2 hidden w-48 rounded-md border bg-popover p-1 shadow-md transition-all group-hover:block"
+				>
+					<button
 						class="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
-						onclick={() => clearLogs(1)}
-					>Older than 1 day</button>
-					<button 
+						onclick={() => clearLogs(1)}>Older than 1 day</button
+					>
+					<button
 						class="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
-						onclick={() => clearLogs(7)}
-					>Older than 7 days</button>
-					<button 
+						onclick={() => clearLogs(7)}>Older than 7 days</button
+					>
+					<button
 						class="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
-						onclick={() => clearLogs(0)}
-					>Clear All</button>
+						onclick={() => clearLogs(0)}>Clear All</button
+					>
 				</div>
 			</div>
 		</div>
@@ -153,7 +155,7 @@
 	<div class="rounded-xl border bg-card text-card-foreground shadow">
 		<div class="overflow-x-auto">
 			<table class="w-full text-left text-sm">
-				<thead class="bg-muted/50 text-xs font-semibold uppercase text-muted-foreground">
+				<thead class="bg-muted/50 text-xs font-semibold text-muted-foreground uppercase">
 					<tr>
 						<th class="px-4 py-3">Type</th>
 						<th class="px-4 py-3">Message</th>
@@ -168,7 +170,7 @@
 								<td class="px-4 py-4"><div class="h-4 w-12 rounded bg-muted"></div></td>
 								<td class="px-4 py-4"><div class="h-4 w-full rounded bg-muted"></div></td>
 								<td class="px-4 py-4"><div class="h-4 w-24 rounded bg-muted"></div></td>
-								<td class="px-4 py-4"><div class="h-4 w-20 rounded bg-muted ml-auto"></div></td>
+								<td class="px-4 py-4"><div class="ml-auto h-4 w-20 rounded bg-muted"></div></td>
 							</tr>
 						{/each}
 					{:else if filteredLogs.length === 0}
@@ -179,7 +181,7 @@
 						</tr>
 					{:else}
 						{#each filteredLogs as log (log.id)}
-							<tr class="group hover:bg-muted/30 transition-colors">
+							<tr class="group transition-colors hover:bg-muted/30">
 								<td class="px-4 py-4 align-top">
 									<span
 										class={cn(
@@ -198,11 +200,13 @@
 									</span>
 								</td>
 								<td class="px-4 py-4 align-top">
-									<button 
+									<button
 										class="block w-full text-left focus:outline-none"
 										onclick={() => toggleExpand(log.id!)}
 									>
-										<div class="mb-1 font-semibold text-foreground line-clamp-1 group-hover:text-primary">
+										<div
+											class="mb-1 line-clamp-1 font-semibold text-foreground group-hover:text-primary"
+										>
 											{log.message}
 										</div>
 										<div class="flex items-center gap-3 text-xs text-muted-foreground">
@@ -217,14 +221,21 @@
 											{#if log.status}
 												<span class="font-mono text-red-500">Status: {log.status}</span>
 											{/if}
-											<span class="flex items-center gap-0.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-												Details {#if expandedLogId === log.id}<ChevronUp class="h-3 w-3"/>{:else}<ChevronDown class="h-3 w-3"/>{/if}
+											<span
+												class="flex items-center gap-0.5 text-primary opacity-0 transition-opacity group-hover:opacity-100"
+											>
+												Details {#if expandedLogId === log.id}<ChevronUp
+														class="h-3 w-3"
+													/>{:else}<ChevronDown class="h-3 w-3" />{/if}
 											</span>
 										</div>
 									</button>
 
 									{#if expandedLogId === log.id}
-										<div transition:slide class="mt-4 space-y-3 rounded-lg bg-muted/50 p-4 font-mono text-xs">
+										<div
+											transition:slide
+											class="mt-4 space-y-3 rounded-lg bg-muted/50 p-4 font-mono text-xs"
+										>
 											<div class="grid grid-cols-1 gap-2 md:grid-cols-2">
 												<div>
 													<span class="font-bold text-muted-foreground">User Agent:</span>
@@ -237,25 +248,39 @@
 											</div>
 											{#if log.stack}
 												<div class="mt-2">
-													<div class="mb-1 font-bold text-muted-foreground uppercase tracking-tighter">Stack Trace:</div>
-													<pre class="max-h-60 overflow-auto whitespace-pre-wrap rounded border bg-black/10 p-2 text-[10px] dark:bg-white/5">{log.stack}</pre>
+													<div
+														class="mb-1 font-bold tracking-tighter text-muted-foreground uppercase"
+													>
+														Stack Trace:
+													</div>
+													<pre
+														class="max-h-60 overflow-auto rounded border bg-black/10 p-2 text-[10px] whitespace-pre-wrap dark:bg-white/5">{log.stack}</pre>
 												</div>
 											{/if}
 											{#if log.context}
 												<div class="mt-2">
 													<div class="mb-1 font-bold text-muted-foreground">Extra Context:</div>
-													<pre class="overflow-auto rounded border bg-black/10 p-2 dark:bg-white/5">{JSON.stringify(log.context, null, 2)}</pre>
+													<pre
+														class="overflow-auto rounded border bg-black/10 p-2 dark:bg-white/5">{JSON.stringify(
+															log.context,
+															null,
+															2
+														)}</pre>
 												</div>
 											{/if}
 										</div>
 									{/if}
 								</td>
-								<td class="px-4 py-4 text-xs text-muted-foreground align-top">
+								<td class="px-4 py-4 align-top text-xs text-muted-foreground">
 									<div class="w-24 truncate md:w-48" title={log.url}>{log.url}</div>
 								</td>
-								<td class="px-4 py-4 text-right text-xs text-muted-foreground align-top whitespace-nowrap">
+								<td
+									class="px-4 py-4 text-right align-top text-xs whitespace-nowrap text-muted-foreground"
+								>
 									<div class="flex flex-col items-end">
-										<span class="flex items-center gap-1"><Clock class="h-3 w-3"/> {formatDate(log.timestamp)}</span>
+										<span class="flex items-center gap-1"
+											><Clock class="h-3 w-3" /> {formatDate(log.timestamp)}</span
+										>
 										<span class="text-[10px] opacity-70">WIB</span>
 									</div>
 								</td>

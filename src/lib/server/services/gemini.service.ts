@@ -173,7 +173,7 @@ Return only a valid JSON object with the following structure:
 			const result = await this.model.generateContent(prompt);
 			const response = await result.response;
 			const text = response.text().trim();
-			
+
 			// Extract JSON if AI surrounds it with markdown blocks
 			const jsonMatch = text.match(/\{[\s\S]*\}/);
 			if (jsonMatch) {
@@ -229,7 +229,7 @@ Return ONLY a valid JSON object with this structure:
 			const result = await this.model.generateContent(prompt);
 			const response = await result.response;
 			const text = response.text().trim();
-			
+
 			const jsonMatch = text.match(/\{[\s\S]*\}/);
 			if (jsonMatch) {
 				return JSON.parse(jsonMatch[0]);

@@ -13,7 +13,7 @@
 </script>
 
 <div class="max-w-none p-4 text-sm">
-	<div class="prose dark:prose-invert max-w-none">
+	<div class="prose max-w-none dark:prose-invert">
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html htmlContent}
 	</div>

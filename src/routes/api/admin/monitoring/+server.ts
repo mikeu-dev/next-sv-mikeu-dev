@@ -14,7 +14,7 @@ export const GET: RequestHandler = async () => {
 
 export const DELETE: RequestHandler = async ({ url }: { url: URL }) => {
 	try {
-        const days = Number(url.searchParams.get('days')) || 7;
+		const days = Number(url.searchParams.get('days')) || 7;
 		const cleared = await monitoringService.clearOldLogs(days);
 		return json({ success: true, cleared });
 	} catch (error) {

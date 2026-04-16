@@ -160,30 +160,36 @@ export const handle: Handle = sequence(
 	handleAuth
 );
 
-export const handleError: import('@sveltejs/kit').HandleServerError = async ({ error, event, status, message }) => {
+export const handleError: import('@sveltejs/kit').HandleServerError = async ({
+	error,
+	event,
+	status,
+	message
+}) => {
 	const errorId = crypto.randomUUID();
 
-    // Log the error to Firestore
-    await monitoringService.logError({
-        type: 'server',
-        message: error instanceof Error ? error.message : message,
-        stack: error instanceof Error ? error.stack : undefined,
-        url: event.url.toString(),
-        userAgent: event.request.headers.get('user-agent') || undefined,
-        locale: event.locals.paraglide?.locale,
-        userId: (event.locals.user?.uid as string) || (event.locals.user?.id as string),
-        status,
-        context: {
-            errorId,
-            route: event.route.id || undefined
-        }
-    });
+	// Log the error to Firestore
+	await monitoringService.logError({
+		type: 'server',
+		message: error instanceof Error ? error.message : message,
+		stack: error instanceof Error ? error.stack : undefined,
+		url: event.url.toString(),
+		userAgent: event.request.headers.get('user-agent') || undefined,
+		locale: event.locals.paraglide?.locale,
+		userId: (event.locals.user?.uid as string) || (event.locals.user?.id as string),
+		status,
+		context: {
+			errorId,
+			route: event.route.id || undefined
+		}
+	});
 
 	// In production, don't show the real error message to the user
 	return {
-		message: process.env.NODE_ENV === 'production' 
-            ? 'An unexpected error occurred. Our team has been notified.' 
-            : message,
+		message:
+			process.env.NODE_ENV === 'production'
+				? 'An unexpected error occurred. Our team has been notified.'
+				: message,
 		errorId
 	};
 };

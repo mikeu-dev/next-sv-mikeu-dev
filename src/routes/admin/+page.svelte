@@ -204,7 +204,7 @@
 							<tbody class="divide-y border-t border-border/50">
 								{#if data.recent?.visitors && data.recent.visitors.length > 0}
 									{#each data.recent.visitors as visitor (visitor.timestamp)}
-										<tr class="hover:bg-muted/50 transition-colors">
+										<tr class="transition-colors hover:bg-muted/50">
 											<!-- IP & Browser -->
 											<td class="px-6 py-4">
 												<div class="flex items-center gap-3">
@@ -214,7 +214,9 @@
 														<Globe class="h-4 w-4" />
 													</div>
 													<div class="flex flex-col">
-														<span class="font-medium text-foreground">{visitor.ip || 'Unknown'}</span>
+														<span class="font-medium text-foreground"
+															>{visitor.ip || 'Unknown'}</span
+														>
 														<span class="text-xs text-muted-foreground"
 															>{visitor.browser} • {visitor.os}</span
 														>

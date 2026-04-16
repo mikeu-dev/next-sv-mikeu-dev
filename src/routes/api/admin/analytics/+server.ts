@@ -4,7 +4,7 @@ import { VisitorService } from '$lib/server/services/visitor.service';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
-        const days = Number(url.searchParams.get('days')) || 30;
+		const days = Number(url.searchParams.get('days')) || 30;
 		const visitorService = new VisitorService();
 		const analytics = await visitorService.getAnalytics(days);
 		return json(analytics);

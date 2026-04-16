@@ -50,11 +50,11 @@
 
 <div class="mt-28 space-y-12">
 	<section class="text-center">
-		<h1 class="font-poppins contact-stagger text-4xl font-black tracking-tight md:text-6xl">
+		<h1 class="contact-stagger font-poppins text-4xl font-black tracking-tight md:text-6xl">
 			{m.contact_page_title()}<span class="text-primary">.</span>
 		</h1>
 		<p
-			class="font-poppins contact-stagger mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground"
+			class="contact-stagger mx-auto mt-6 max-w-2xl font-poppins text-lg leading-relaxed text-muted-foreground"
 		>
 			{m.contact_page_subtitle()}
 		</p>

@@ -47,7 +47,7 @@
 	{/if}
 
 	<div class="flex grow flex-col p-6">
-		<h3 class="font-poppins mb-2 text-xl font-bold">
+		<h3 class="mb-2 font-poppins text-xl font-bold">
 			<a href={`${base}/projects/${project.slug}`} class="text-foreground group-hover:text-primary">
 				<span class="absolute inset-0 z-10" aria-hidden="true"></span>
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->

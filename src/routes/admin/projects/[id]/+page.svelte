@@ -91,7 +91,7 @@
 			description_id = result.description_id;
 			description_en = result.description_en;
 			content = result.content;
-			
+
 			if (result.tags && Array.isArray(result.tags)) {
 				const newTags = result.tags.map((tag: string) => ({
 					name: tag,
@@ -408,7 +408,7 @@ Write detailed content in Markdown format..."
 					targetValue={description_en || description_id}
 					type="tags"
 					onApplyTags={(newTags) => {
-						const formattedTags = newTags.map(tag => ({ name: tag, color: 'blue', url: '#' }));
+						const formattedTags = newTags.map((tag) => ({ name: tag, color: 'blue', url: '#' }));
 						tags = [...tags, ...formattedTags];
 					}}
 				/>
@@ -496,13 +496,35 @@ Write detailed content in Markdown format..."
 				>
 					{#if analyzingRepo}
 						<svg class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24">
-							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							<circle
+								class="opacity-25"
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								stroke-width="4"
+								fill="none"
+							></circle>
+							<path
+								class="opacity-75"
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							></path>
 						</svg>
 						Analyzing...
 					{:else}
-						<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+						<svg
+							class="h-3.5 w-3.5"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<path
+								d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+							></path>
 							<path d="M5 3v4"></path>
 							<path d="M19 17v4"></path>
 							<path d="M3 5h4"></path>

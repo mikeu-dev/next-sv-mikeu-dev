@@ -97,8 +97,6 @@
 			.replace(/^-+|-+$/g, '');
 	}
 
-
-
 	async function handleAIDraft() {
 		if (!aiPrompt) {
 			toast.error('Please enter a topic or prompt first');
@@ -247,7 +245,7 @@
 				<path d="M3 5h4"></path>
 				<path d="M17 19h4"></path>
 			</svg>
-			<h2 class="text-sm font-semibold uppercase tracking-wider">AI Blog Drafter</h2>
+			<h2 class="text-sm font-semibold tracking-wider uppercase">AI Blog Drafter</h2>
 		</div>
 		<div class="flex flex-col gap-4 sm:flex-row">
 			<div class="flex-1">
@@ -358,45 +356,45 @@
 
 	<!-- Localized Fields -->
 	<div class="space-y-6">
-			<div class="flex items-center justify-between gap-2">
-				<label for="title" class="mb-1 block text-sm font-medium"
-					>Title ({activeTab.toUpperCase()})</label
-				>
-				<AIAssist
-					locale={activeTab}
-					type="title"
-					bind:targetValue={contentData[activeTab].title}
-					onApply={(val) => (contentData[activeTab].title = val)}
-				/>
-			</div>
-			<input
-				type="text"
-				id="title"
-				bind:value={contentData[activeTab].title}
-				oninput={generateSlug}
-				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
-				placeholder="Enter post title"
+		<div class="flex items-center justify-between gap-2">
+			<label for="title" class="mb-1 block text-sm font-medium"
+				>Title ({activeTab.toUpperCase()})</label
+			>
+			<AIAssist
+				locale={activeTab}
+				type="title"
+				bind:targetValue={contentData[activeTab].title}
+				onApply={(val) => (contentData[activeTab].title = val)}
 			/>
+		</div>
+		<input
+			type="text"
+			id="title"
+			bind:value={contentData[activeTab].title}
+			oninput={generateSlug}
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			placeholder="Enter post title"
+		/>
 
-			<div class="flex items-center justify-between gap-2">
-				<label for="description" class="mb-1 block text-sm font-medium"
-					>Description ({activeTab.toUpperCase()})</label
-				>
-				<AIAssist
-					context={contentData[activeTab].title}
-					locale={activeTab}
-					type="description"
-					bind:targetValue={contentData[activeTab].description}
-					onApply={(val) => (contentData[activeTab].description = val)}
-				/>
-			</div>
-			<textarea
-				id="description"
-				bind:value={contentData[activeTab].description}
-				rows="3"
-				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
-				placeholder="Short description for SEO and lists"
-			></textarea>
+		<div class="flex items-center justify-between gap-2">
+			<label for="description" class="mb-1 block text-sm font-medium"
+				>Description ({activeTab.toUpperCase()})</label
+			>
+			<AIAssist
+				context={contentData[activeTab].title}
+				locale={activeTab}
+				type="description"
+				bind:targetValue={contentData[activeTab].description}
+				onApply={(val) => (contentData[activeTab].description = val)}
+			/>
+		</div>
+		<textarea
+			id="description"
+			bind:value={contentData[activeTab].description}
+			rows="3"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			placeholder="Short description for SEO and lists"
+		></textarea>
 
 		<div class="flex items-center gap-2">
 			<input

@@ -24,7 +24,7 @@ export class MonitoringService {
 				...log,
 				timestamp: new Date()
 			};
-			
+
 			// Auto-clean: Limit to reasonable stack size
 			if (fullLog.stack && fullLog.stack.length > 5000) {
 				fullLog.stack = fullLog.stack.substring(0, 5000) + '... [truncated]';
@@ -40,12 +40,9 @@ export class MonitoringService {
 	}
 
 	async getLogs(limit = 50) {
-		const snapshot = await this.collection
-			.orderBy('timestamp', 'desc')
-			.limit(limit)
-			.get();
-		
-		return snapshot.docs.map(doc => ({
+		const snapshot = await this.collection.orderBy('timestamp', 'desc').limit(limit).get();
+
+		return snapshot.docs.map((doc) => ({
 			id: doc.id,
 			...doc.data(),
 			timestamp: doc.data().timestamp?.toDate?.() || doc.data().timestamp
@@ -55,15 +52,13 @@ export class MonitoringService {
 	async clearOldLogs(daysToKeep = 7) {
 		const cutoff = new Date();
 		cutoff.setDate(cutoff.getDate() - daysToKeep);
-		
-		const snapshot = await this.collection
-			.where('timestamp', '<', cutoff)
-			.get();
-		
+
+		const snapshot = await this.collection.where('timestamp', '<', cutoff).get();
+
 		const batch = db.batch();
-		snapshot.docs.forEach(doc => batch.delete(doc.ref));
+		snapshot.docs.forEach((doc) => batch.delete(doc.ref));
 		await batch.commit();
-		
+
 		return snapshot.size;
 	}
 }

@@ -202,14 +202,12 @@
 				rows="12"
 				class="w-full resize-y border-0 bg-white p-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-900"
 			></textarea>
+		{:else if value.trim()}
+			<MarkdownRenderer content={value} />
 		{:else}
-			{#if value.trim()}
-				<MarkdownRenderer content={value} />
-			{:else}
-				<div class="p-4">
-					<p class="text-muted-foreground">No content to preview</p>
-				</div>
-			{/if}
+			<div class="p-4">
+				<p class="text-muted-foreground">No content to preview</p>
+			</div>
 		{/if}
 	</div>
 

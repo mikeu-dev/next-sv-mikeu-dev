@@ -134,7 +134,7 @@
 	<div class="relative mx-auto inline-block" style="height: 150px;">
 		<h1
 			bind:this={heroTitle}
-			class="font-poppins mb-4 flex flex-wrap justify-center
+			class="mb-4 flex flex-wrap justify-center font-poppins
         text-[3rem] leading-[1.1] font-extrabold text-gray-900
         drop-shadow-sm md:text-[5rem] dark:text-gray-100"
 		>

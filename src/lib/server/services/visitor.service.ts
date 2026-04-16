@@ -114,34 +114,34 @@ export class VisitorService {
 			// Calculate cutoff date
 			const cutoff = new Date();
 			cutoff.setDate(cutoff.getDate() - days);
-			
+
 			// Fetch more logs for aggregation (up to 1000)
-			const logs = await this.repository.getRecent(1000); 
-			
+			const logs = await this.repository.getRecent(1000);
+
 			// Filter logs by date
-			const filteredLogs = logs.filter(log => {
+			const filteredLogs = logs.filter((log) => {
 				if (!log.timestamp) return false;
 				const logDate = log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp);
 				return logDate >= cutoff;
 			});
-			
+
 			const topPages: Record<string, number> = {};
 			const deviceMix: Record<string, number> = {};
 			const browserMix: Record<string, number> = {};
 			const referrers: Record<string, number> = {};
-			
-			filteredLogs.forEach(log => {
+
+			filteredLogs.forEach((log) => {
 				// Count pages
 				topPages[log.path] = (topPages[log.path] || 0) + 1;
-				
+
 				// Count devices
 				const device = log.device || 'Desktop';
 				deviceMix[device] = (deviceMix[device] || 0) + 1;
-				
+
 				// Count browsers
 				const browser = log.browser || 'Unknown';
 				browserMix[browser] = (browserMix[browser] || 0) + 1;
-				
+
 				// Count referrers
 				let ref = 'Direct';
 				try {
@@ -162,10 +162,16 @@ export class VisitorService {
 			});
 
 			return {
-				topPages: Object.entries(topPages).sort((a,b) => b[1] - a[1]).slice(0, 10),
-				deviceMix: Object.entries(deviceMix).sort((a,b) => b[1] - a[1]),
-				browserMix: Object.entries(browserMix).sort((a,b) => b[1] - a[1]).slice(0, 5),
-				referrers: Object.entries(referrers).sort((a,b) => b[1] - a[1]).slice(0, 5)
+				topPages: Object.entries(topPages)
+					.sort((a, b) => b[1] - a[1])
+					.slice(0, 10),
+				deviceMix: Object.entries(deviceMix).sort((a, b) => b[1] - a[1]),
+				browserMix: Object.entries(browserMix)
+					.sort((a, b) => b[1] - a[1])
+					.slice(0, 5),
+				referrers: Object.entries(referrers)
+					.sort((a, b) => b[1] - a[1])
+					.slice(0, 5)
 			};
 		} catch (error) {
 			console.error('VisitorService: Failed to get analytics', error);
