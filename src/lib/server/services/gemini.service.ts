@@ -11,6 +11,17 @@ export interface ProjectMetadata {
 	tags: string[];
 }
 
+export interface BlogMetadata {
+	title_id: string;
+	title_en: string;
+	description_id: string;
+	description_en: string;
+	content_id: string;
+	content_en: string;
+	slug: string;
+	tags: string[];
+}
+
 /**
  * Service for interacting with Google Gemini AI.
  */
@@ -172,6 +183,48 @@ Return only a valid JSON object with the following structure:
 		} catch (error) {
 			console.error('Gemini repo analysis error:', error);
 			throw new Error('Failed to analyze repository using Gemini AI.');
+		}
+	}
+
+	/**
+	 * Generates a full blog post draft based on a user prompt.
+	 * Includes technical memes and open-source images.
+	 */
+	async generateBlogFromPrompt(userPrompt: string): Promise<BlogMetadata> {
+		const prompt = `Act as a professional tech blogger with a great sense of humor. Generate a full blog post draft based on this instruction: "${userPrompt}".
+
+Requirements:
+1. Generate content in both Indonesian and English.
+2. The tone should be professional yet engaging and humorous (tech niche).
+3. **MUST include at least one technical meme or joke** related to the topic in the content.
+4. **MUST include relevant open-source image URLs** from Unsplash or LoremFlickr using Markdown syntax: ![Alt Text](https://loremflickr.com/800/600/tech,coding,meme).
+5. The content should be in detailed Markdown format.
+
+Return ONLY a valid JSON object with this structure:
+{
+  "title_id": "Judul Menarik (ID)",
+  "title_en": "Catchy Title (EN)",
+  "description_id": "Deskripsi singkat untuk SEO (ID)...",
+  "description_en": "Short SEO description (EN)...",
+  "content_id": "Full blog post content in Markdown (ID) - including images and memes...",
+  "content_en": "Full blog post content in Markdown (EN) - including images and memes...",
+  "slug": "url-friendly-slug-based-on-en-title",
+  "tags": ["Tag1", "Tag2"]
+}`;
+
+		try {
+			const result = await this.model.generateContent(prompt);
+			const response = await result.response;
+			const text = response.text().trim();
+			
+			const jsonMatch = text.match(/\{[\s\S]*\}/);
+			if (jsonMatch) {
+				return JSON.parse(jsonMatch[0]);
+			}
+			return JSON.parse(text);
+		} catch (error) {
+			console.error('Gemini blog generation error:', error);
+			throw new Error('Failed to generate blog post draft using Gemini AI.');
 		}
 	}
 }

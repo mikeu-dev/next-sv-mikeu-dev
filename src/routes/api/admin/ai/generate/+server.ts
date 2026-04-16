@@ -46,6 +46,12 @@ export const POST: RequestHandler = async ({ request }) => {
 				}
 				result = await geminiService.analyzeRepo(payload.repoUrl);
 				break;
+			case 'generateBlogFromPrompt':
+				if (!payload.prompt) {
+					return json({ error: 'Missing prompt for blog generation' }, { status: 400 });
+				}
+				result = await geminiService.generateBlogFromPrompt(payload.prompt);
+				break;
 
 			default:
 				return json({ error: `Unknown action: ${action}` }, { status: 400 });
