@@ -122,12 +122,7 @@
 									class="flex h-10 w-10 items-center justify-center rounded-lg"
 									style="background-color: {item.color}20;"
 								>
-									<Icon
-										iconName={item.iconName}
-										src={item.icon}
-										color={item.color}
-										size={24}
-									/>
+									<Icon iconName={item.iconName} src={item.icon} color={item.color} size={24} />
 								</div>
 								<div class="flex-1">
 									<div class="font-medium">{item.name}</div>

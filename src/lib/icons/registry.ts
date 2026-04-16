@@ -55,7 +55,13 @@ import {
 	LuLinkedin,
 	LuMail
 } from 'svelte-icons-pack/lu';
-import { FaSolidRocket, FaSolidStar, FaSolidCircleInfo, FaSolidCircleCheck, FaSolidTriangleExclamation } from 'svelte-icons-pack/fa';
+import {
+	FaSolidRocket,
+	FaSolidStar,
+	FaSolidCircleInfo,
+	FaSolidCircleCheck,
+	FaSolidTriangleExclamation
+} from 'svelte-icons-pack/fa';
 import { IoLogoIonic, IoLogoJavascript, IoLogoPython, IoLogoGithub } from 'svelte-icons-pack/io';
 import { AiFillHome, AiFillSetting, AiFillMessage } from 'svelte-icons-pack/ai';
 import type { IconType } from 'svelte-icons-pack';
