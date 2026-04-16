@@ -40,6 +40,12 @@
 		customIconStore.init();
 	});
 
+	$effect(() => {
+		if (iconName && iconType === 'fallback' && !customIconStore.loading) {
+			customIconStore.reportMissing(iconName);
+		}
+	});
+
 	// Utility to get Icon from Registry (Case-Insensitive)
 	function getRegistryIcon(name: string): IconType | null {
 		// Try direct match first

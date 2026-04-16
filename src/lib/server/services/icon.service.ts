@@ -42,4 +42,26 @@ export class IconService {
 		IconService.lastFetch = 0;
 		return result;
 	}
+
+	async reportMissingIcon(name: string) {
+		if (!name) return;
+
+		try {
+			// Check if already in collection
+			const existing = await this.repository.findById(name);
+			if (existing) return;
+
+			// Add as placeholder using name as ID
+			await this.repository.upsert(name, {
+				svg: '', // Empty SVG placeholder
+				viewBox: '0 0 24 24'
+			});
+
+			// Reset cache
+			IconService.cache = null;
+			IconService.lastFetch = 0;
+		} catch (error) {
+			console.error(`Error reporting missing icon ${name}:`, error);
+		}
+	}
 }
