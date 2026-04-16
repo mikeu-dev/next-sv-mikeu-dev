@@ -57,7 +57,7 @@
 			icon: Users,
 			color: 'text-pink-600',
 			bg: 'bg-pink-100 dark:bg-pink-900/20',
-			href: '#' // No specific page for now, or could link to detailed analytics later
+			href: `${base}/admin/analytics`
 		}
 	];
 </script>
@@ -160,7 +160,7 @@
 										</div>
 									</div>
 									<span
-										class={`ml-2 inline-flex flex-shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
+										class={`ml-2 inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
 									${msg.status === 'new' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : ''}
 									${msg.status === 'in-review' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : ''}
 									${msg.status === 'replied' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : ''}

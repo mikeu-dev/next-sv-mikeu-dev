@@ -22,11 +22,16 @@
 	const defaultTitle = 'Mikeu | Fullstack Web Developer';
 	const defaultDescription = 'A passionate Fullstack Web Developer from Indonesia.';
 	const siteUrl = canonicalBase;
-	const defaultImage = `${siteUrl}/favicon.png`;
-
 	const finalTitle = title ? `${title} | Mikeu` : defaultTitle;
 	const finalDescription = description || defaultDescription;
-	const finalImage = image || defaultImage;
+
+	// Use dynamic OG image if no specific image is provided
+	const finalImage = $derived.by(() => {
+		if (image) return image;
+		const t = encodeURIComponent(title || 'Mikeu Dev');
+		const s = encodeURIComponent(description || 'Fullstack Web Developer');
+		return `${siteUrl}/api/og?title=${t}&subtitle=${s}`;
+	});
 
 	// Construct canonical URL using hardcoded domain to avoid non-www issues
 	// Remove trailing slash except for root

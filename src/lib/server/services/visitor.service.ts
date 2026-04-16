@@ -19,6 +19,13 @@ export interface VisitorLogData {
 	timestamp?: Date | null;
 }
 
+export interface VisitorAnalytics {
+	topPages: [string, number][];
+	deviceMix: [string, number][];
+	browserMix: [string, number][];
+	referrers: [string, number][];
+}
+
 export class VisitorService {
 	private readonly collection = 'counters';
 	private readonly logCollection = 'visitor_logs';
@@ -96,6 +103,73 @@ export class VisitorService {
 		} catch (error) {
 			console.error('VisitorService: Failed to get recent logs', error);
 			return [];
+		}
+	}
+
+	/**
+	 * Get aggregated analytics for the dashboard
+	 */
+	async getAnalytics(days: number = 30): Promise<VisitorAnalytics> {
+		try {
+			// Calculate cutoff date
+			const cutoff = new Date();
+			cutoff.setDate(cutoff.getDate() - days);
+			
+			// Fetch more logs for aggregation (up to 1000)
+			const logs = await this.repository.getRecent(1000); 
+			
+			// Filter logs by date
+			const filteredLogs = logs.filter(log => {
+				if (!log.timestamp) return false;
+				const logDate = log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp);
+				return logDate >= cutoff;
+			});
+			
+			const topPages: Record<string, number> = {};
+			const deviceMix: Record<string, number> = {};
+			const browserMix: Record<string, number> = {};
+			const referrers: Record<string, number> = {};
+			
+			filteredLogs.forEach(log => {
+				// Count pages
+				topPages[log.path] = (topPages[log.path] || 0) + 1;
+				
+				// Count devices
+				const device = log.device || 'Desktop';
+				deviceMix[device] = (deviceMix[device] || 0) + 1;
+				
+				// Count browsers
+				const browser = log.browser || 'Unknown';
+				browserMix[browser] = (browserMix[browser] || 0) + 1;
+				
+				// Count referrers
+				let ref = 'Direct';
+				try {
+					if (log.referer) {
+						const url = new URL(log.referer);
+						ref = url.hostname;
+						// Clean up common ones
+						if (ref.includes('google')) ref = 'Google';
+						if (ref.includes('linkedin')) ref = 'LinkedIn';
+						if (ref.includes('facebook')) ref = 'Facebook';
+						if (ref.includes('twitter') || ref.includes('x.com')) ref = 'Twitter/X';
+						if (ref === 'localhost') ref = 'Development';
+					}
+				} catch {
+					ref = 'Other';
+				}
+				referrers[ref] = (referrers[ref] || 0) + 1;
+			});
+
+			return {
+				topPages: Object.entries(topPages).sort((a,b) => b[1] - a[1]).slice(0, 10),
+				deviceMix: Object.entries(deviceMix).sort((a,b) => b[1] - a[1]),
+				browserMix: Object.entries(browserMix).sort((a,b) => b[1] - a[1]).slice(0, 5),
+				referrers: Object.entries(referrers).sort((a,b) => b[1] - a[1]).slice(0, 5)
+			};
+		} catch (error) {
+			console.error('VisitorService: Failed to get analytics', error);
+			return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
 		}
 	}
 }
