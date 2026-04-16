@@ -173,7 +173,6 @@
 
 	.prose :where(p, li) {
 		line-height: 1.8;
-		font-size: 1.05rem;
 	}
 
 	.prose blockquote {
@@ -183,5 +182,9 @@
 		background-color: oklch(from var(--primary) l c h / 5%);
 		padding: 1.5rem;
 		border-radius: 0.5rem;
+	}
+
+	.prose img {
+		@apply mx-auto rounded-xl shadow-md;
 	}
 }
