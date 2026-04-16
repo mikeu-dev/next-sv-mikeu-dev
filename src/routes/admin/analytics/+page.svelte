@@ -87,8 +87,8 @@
 
 	{#if loading && !analytics}
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-			{#each Array(4) as i (i)}
-				<div class="h-32 animate-pulse rounded-xl border bg-muted/20"></div>
+			{#each Array(4) as item, i (i)}
+				<div class="h-32 animate-pulse rounded-xl border bg-muted/20" data-item={JSON.stringify(item)} data-idx={i}></div>
 			{/each}
 		</div>
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -98,9 +98,9 @@
 	{:else if analytics}
 		<!-- Quick Stats -->
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4" in:fade>
-			{#each Array(4) as i (i)}
+			{#each Array(4) as item, i (i)}
 				{#if i === 0}
-					<div class="rounded-xl border bg-card p-6 shadow-sm">
+					<div class="rounded-xl border bg-card p-6 shadow-sm" data-item={JSON.stringify(item)} data-stat={i}>
 						<div class="mb-4 flex items-center justify-between">
 							<span class="rounded-full bg-blue-100 p-2 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
 								<Eye class="h-5 w-5" />

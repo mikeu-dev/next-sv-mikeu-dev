@@ -163,8 +163,8 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#if loading && logs.length === 0}
-						{#each Array(5) as i (i)}
-							<tr class="animate-pulse">
+						{#each Array(5) as item, i (i)}
+							<tr class="animate-pulse" data-item={JSON.stringify(item)}>
 								<td class="px-4 py-4"><div class="h-4 w-12 rounded bg-muted"></div></td>
 								<td class="px-4 py-4"><div class="h-4 w-full rounded bg-muted"></div></td>
 								<td class="px-4 py-4"><div class="h-4 w-24 rounded bg-muted"></div></td>

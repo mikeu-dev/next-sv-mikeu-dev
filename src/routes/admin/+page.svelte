@@ -64,7 +64,7 @@
 
 <div class="space-y-8">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
+	<div class="flex items-center justify-between text-foreground">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
 			<p class="text-muted-foreground">Overview of your portfolio activity.</p>
@@ -116,7 +116,6 @@
 
 	<div class="grid gap-8 lg:grid-cols-3">
 		<!-- Recent Activity (Messages) -->
-		<!-- Recent Activity (Messages) -->
 		<div class="space-y-8 lg:col-span-2">
 			<div class="rounded-xl border bg-card shadow-sm">
 				<div class="flex items-center justify-between border-b p-6">
@@ -135,7 +134,7 @@
 					</button>
 				</div>
 				<div class="p-6">
-					{#if data.recent.messages.length > 0}
+					{#if data.recent?.messages && data.recent.messages.length > 0}
 						<div class="space-y-6">
 							{#each data.recent.messages as msg (msg.id || msg.email)}
 								<div class="flex items-start justify-between">
@@ -192,7 +191,7 @@
 					</div>
 				</div>
 				<div class="p-0">
-					<div class="relative overflow-x-auto">
+					<div class="relative overflow-x-auto text-foreground">
 						<table class="w-full text-left text-sm">
 							<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
 								<tr>
@@ -203,72 +202,74 @@
 								</tr>
 							</thead>
 							<tbody class="divide-y border-t border-border/50">
-								{#each data.recent.visitors as visitor (visitor.timestamp)}
-									<tr class="hover:bg-muted/50">
-										<!-- IP & Browser -->
-										<td class="px-6 py-4">
-											<div class="flex items-center gap-3">
-												<div
-													class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-												>
-													<Globe class="h-4 w-4" />
+								{#if data.recent?.visitors && data.recent.visitors.length > 0}
+									{#each data.recent.visitors as visitor (visitor.timestamp)}
+										<tr class="hover:bg-muted/50 transition-colors">
+											<!-- IP & Browser -->
+											<td class="px-6 py-4">
+												<div class="flex items-center gap-3">
+													<div
+														class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+													>
+														<Globe class="h-4 w-4" />
+													</div>
+													<div class="flex flex-col">
+														<span class="font-medium text-foreground">{visitor.ip || 'Unknown'}</span>
+														<span class="text-xs text-muted-foreground"
+															>{visitor.browser} • {visitor.os}</span
+														>
+													</div>
 												</div>
-												<div class="flex flex-col">
-													<span class="font-medium text-foreground">{visitor.ip || 'Unknown'}</span>
-													<span class="text-xs text-muted-foreground"
-														>{visitor.browser} • {visitor.os}</span
+											</td>
+
+											<!-- Device -->
+											<td class="px-6 py-4">
+												<div class="flex items-center gap-2 text-muted-foreground">
+													{#if (visitor.device || '').toLowerCase().includes('mobile')}
+														<Smartphone class="h-4 w-4" />
+													{:else}
+														<Monitor class="h-4 w-4" />
+													{/if}
+													<span class="capitalize">{visitor.device || 'Desktop'}</span>
+												</div>
+											</td>
+
+											<!-- Page Path -->
+											<td class="px-6 py-4">
+												<div
+													class="max-w-[150px] truncate rounded bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
+												>
+													{visitor.path}
+												</div>
+											</td>
+
+											<!-- Time -->
+											<td class="px-6 py-4 text-right text-muted-foreground">
+												<div class="flex flex-col items-end">
+													<span class="text-sm"
+														>{visitor.timestamp
+															? new Date(visitor.timestamp).toLocaleTimeString([], {
+																	hour: '2-digit',
+																	minute: '2-digit'
+																})
+															: 'N/A'}</span
+													>
+													<span class="text-xs text-muted-foreground/60"
+														>{visitor.timestamp
+															? new Date(visitor.timestamp).toLocaleDateString()
+															: ''}</span
 													>
 												</div>
-											</div>
-										</td>
-
-										<!-- Device -->
-										<td class="px-6 py-4">
-											<div class="flex items-center gap-2 text-muted-foreground">
-												{#if (visitor.device || '').toLowerCase().includes('mobile')}
-													<Smartphone class="h-4 w-4" />
-												{:else}
-													<Monitor class="h-4 w-4" />
-												{/if}
-												<span class="capitalize">{visitor.device || 'Desktop'}</span>
-											</div>
-										</td>
-
-										<!-- Page Path -->
-										<td class="px-6 py-4">
-											<div
-												class="max-w-[200px] truncate rounded bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
-											>
-												{visitor.path}
-											</div>
-										</td>
-
-										<!-- Time -->
-										<td class="px-6 py-4 text-right text-muted-foreground">
-											<div class="flex flex-col items-end">
-												<span class="text-sm"
-													>{visitor.timestamp
-														? new Date(visitor.timestamp).toLocaleTimeString([], {
-																hour: '2-digit',
-																minute: '2-digit'
-															})
-														: 'N/A'}</span
-												>
-												<span class="text-xs text-muted-foreground/60"
-													>{visitor.timestamp
-														? new Date(visitor.timestamp).toLocaleDateString()
-														: ''}</span
-												>
-											</div>
-										</td>
-									</tr>
+											</td>
+										</tr>
+									{/each}
 								{:else}
 									<tr>
 										<td colspan="4" class="py-8 text-center text-muted-foreground">
 											No visitor logs found.
 										</td>
 									</tr>
-								{/each}
+								{/if}
 							</tbody>
 						</table>
 					</div>
@@ -293,7 +294,7 @@
 					</button>
 				</div>
 				<div class="p-6">
-					{#if data.recent.posts.length > 0}
+					{#if data.recent?.posts && data.recent.posts.length > 0}
 						<div class="space-y-6">
 							{#each data.recent.posts as post (post.id)}
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
@@ -323,7 +324,7 @@
 
 			<!-- Skills Shortcut -->
 			<div class="rounded-xl border bg-card shadow-sm">
-				<div class="p-6">
+				<div class="p-6 text-foreground">
 					<h3 class="mb-2 flex items-center gap-2 font-semibold">
 						<Hammer class="h-4 w-4" /> Skills
 					</h3>
