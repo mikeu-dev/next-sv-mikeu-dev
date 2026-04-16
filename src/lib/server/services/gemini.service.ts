@@ -191,20 +191,24 @@ Return only a valid JSON object with the following structure:
 	 * Includes technical memes and open-source images.
 	 */
 	async generateBlogFromPrompt(userPrompt: string): Promise<BlogMetadata> {
-		const prompt = `Act as a professional tech blogger with a great sense of humor and a deep understanding of premium typography and content structure. Generate a full blog post draft based on this instruction: "${userPrompt}".
+		const prompt = `Act as a professional tech blogger with a great sense of humor and a deep understanding of premium typography and modern content structure. Generate a full blog post draft based on this instruction: "${userPrompt}".
 
 Requirements:
-1. Generate content in both Indonesian and English.
-2. The tone should be professional yet VERY engaging, informal, and humorous (tech niche).
-3. **Typography & Structure Instruction**:
-   - Use a clear visual hierarchy with **H2 for major sections** and **H3 for nested points**.
-   - Use **Blockquotes (>)** for key takeaways, "pro tips", or humorous observations.
-   - Use **Bold text** for emphasis, but don't overdo it.
-   - Use **Lists (ul/ol)** where appropriate to break up text.
-   - If there is code, use proper triple backtick blocks with language hints.
-4. **Meme Instruction**: MUST include at least 2-3 technical "memes" or jokes related to the topic. These can be funny observations, sarcastic remarks, or "inside jokes" for developers.
-5. **Image Instruction**: MUST include 2-3 relevant images spread naturally throughout the article. Use Markdown syntax with descriptive alt text: ![Illustration of technical concept](https://loremflickr.com/800/600/tech,coding,humor) or ![Programmer life meme](https://images.unsplash.com/photo-1518770660439-4636190af475?w=800).
-6. **Goal**: The content should feel "premium", well-structured, and easy to scan.
+1. **Dynamic Technical Freshness**:
+   - Always apply the **LATEST STABLE INDUSTRY STANDARDS** (as of 2024-2025) for any framework, tool, or technology mentioned in the prompt.
+   - If the topic relates to **Svelte/SvelteKit**, you MUST use **Svelte 5 Runes** ($state, $derived, $props) and **SvelteKit 2+** patterns. Avoid older Svelte 4 syntax or deprecated SvelteKit APIs.
+   - For other technologies (e.g., React, Next.js, AI, DevOps), default to the most modern and non-deprecated best practices.
+   - If the topic is non-technical, maintain a smart, contemporary perspective.
+2. **Typography & Structure**:
+   - Use a clear visual hierarchy: **H2 for major sections**, **H3 for nested points**.
+   - Use **Blockquotes (>)** for "Pro Tips", key takeaways, or humorous dev observations.
+   - Use **Bold text** strategically for emphasis.
+   - Use **Lists (ul/ol)** to break up long sections.
+   - For technical topics, include high-quality, formatted **Code Blocks** using modern syntax.
+3. **Meme Instruction**: Include 2-3 technical "memes" or jokes. These can be funny observations, sarcastic remarks about "legacy code", or relatable developer struggles.
+4. **Image Instruction**: Include 2-3 relevant images using Markdown syntax: ![Descriptive Alt Text](https://loremflickr.com/800/600/tech,coding,humor).
+5. **Tone**: Professional yet VERY engaging, informal, and humorous.
+6. **Goal**: The content should feel like it was written by a current industry expert today, not 2 years ago.
 
 Return ONLY a valid JSON object with this structure:
 {
@@ -212,8 +216,8 @@ Return ONLY a valid JSON object with this structure:
   "title_en": "Catchy Title (EN)",
   "description_id": "Deskripsi singkat untuk SEO (ID)...",
   "description_en": "Short SEO description (EN)...",
-  "content_id": "Detailed Markdown content (ID), integrated with premium structure, memes and images...",
-  "content_en": "Detailed Markdown content (EN), integrated with premium structure, memes and images...",
+  "content_id": "Modern Markdown content (ID), integrated with premium structure, memes and images...",
+  "content_en": "Modern Markdown content (EN), integrated with premium structure, memes and images...",
   "slug": "url-friendly-slug-based-on-en-title",
   "tags": ["Tag1", "Tag2"]
 }`;
