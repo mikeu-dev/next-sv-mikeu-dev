@@ -69,6 +69,15 @@ export abstract class BaseRepository<T> {
 		return this.findById(id);
 	}
 
+	/**
+	 * Upsert a document by ID.
+	 * Creates the document if it doesn't exist, otherwise merges with existing data.
+	 */
+	async upsert(id: string, data: Partial<T>): Promise<T | null> {
+		await db.collection(this.collectionName).doc(id).set(data, { merge: true });
+		return this.findById(id);
+	}
+
 	async delete(id: string): Promise<void> {
 		await db.collection(this.collectionName).doc(id).delete();
 	}

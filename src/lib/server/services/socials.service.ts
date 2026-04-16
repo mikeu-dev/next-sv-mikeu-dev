@@ -33,7 +33,7 @@ export class SocialsService {
 
 	async updateSocials(data: Socials): Promise<Socials | null> {
 		try {
-			const result = await this.repository.update('default', data);
+			const result = await this.repository.upsert('default', { ...data, updatedAt: new Date() } as Partial<Socials>);
 
 			// Reset cache setelah update
 			SocialsService.cache = null;
