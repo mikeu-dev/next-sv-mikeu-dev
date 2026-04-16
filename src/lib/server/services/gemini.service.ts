@@ -191,14 +191,20 @@ Return only a valid JSON object with the following structure:
 	 * Includes technical memes and open-source images.
 	 */
 	async generateBlogFromPrompt(userPrompt: string): Promise<BlogMetadata> {
-		const prompt = `Act as a professional tech blogger with a great sense of humor. Generate a full blog post draft based on this instruction: "${userPrompt}".
+		const prompt = `Act as a professional tech blogger with a great sense of humor and a deep understanding of premium typography and content structure. Generate a full blog post draft based on this instruction: "${userPrompt}".
 
 Requirements:
 1. Generate content in both Indonesian and English.
-2. The tone should be professional yet engaging and humorous (tech niche).
-3. **MUST include at least one technical meme or joke** related to the topic in the content.
-4. **MUST include relevant open-source image URLs** from Unsplash or LoremFlickr using Markdown syntax: ![Alt Text](https://loremflickr.com/800/600/tech,coding,meme).
-5. The content should be in detailed Markdown format.
+2. The tone should be professional yet VERY engaging, informal, and humorous (tech niche).
+3. **Typography & Structure Instruction**:
+   - Use a clear visual hierarchy with **H2 for major sections** and **H3 for nested points**.
+   - Use **Blockquotes (>)** for key takeaways, "pro tips", or humorous observations.
+   - Use **Bold text** for emphasis, but don't overdo it.
+   - Use **Lists (ul/ol)** where appropriate to break up text.
+   - If there is code, use proper triple backtick blocks with language hints.
+4. **Meme Instruction**: MUST include at least 2-3 technical "memes" or jokes related to the topic. These can be funny observations, sarcastic remarks, or "inside jokes" for developers.
+5. **Image Instruction**: MUST include 2-3 relevant images spread naturally throughout the article. Use Markdown syntax with descriptive alt text: ![Illustration of technical concept](https://loremflickr.com/800/600/tech,coding,humor) or ![Programmer life meme](https://images.unsplash.com/photo-1518770660439-4636190af475?w=800).
+6. **Goal**: The content should feel "premium", well-structured, and easy to scan.
 
 Return ONLY a valid JSON object with this structure:
 {
@@ -206,8 +212,8 @@ Return ONLY a valid JSON object with this structure:
   "title_en": "Catchy Title (EN)",
   "description_id": "Deskripsi singkat untuk SEO (ID)...",
   "description_en": "Short SEO description (EN)...",
-  "content_id": "Full blog post content in Markdown (ID) - including images and memes...",
-  "content_en": "Full blog post content in Markdown (EN) - including images and memes...",
+  "content_id": "Detailed Markdown content (ID), integrated with premium structure, memes and images...",
+  "content_en": "Detailed Markdown content (EN), integrated with premium structure, memes and images...",
   "slug": "url-friendly-slug-based-on-en-title",
   "tags": ["Tag1", "Tag2"]
 }`;

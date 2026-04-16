@@ -213,7 +213,7 @@
 		{:else}
 			<div class="max-w-none p-4 text-sm">
 				{#if value.trim()}
-					<div class="prose-content">
+					<div class="prose prose-lg max-w-none dark:prose-invert">
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						{@html htmlPreview}
 					</div>
