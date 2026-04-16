@@ -130,8 +130,8 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Admin rote protection
-	if (event.url.pathname.startsWith('/admin')) {
+	// Admin route protection
+	if (event.url.pathname.startsWith('/admin') || event.url.pathname.startsWith('/api/admin')) {
 		if (!event.locals.user) {
 			console.log('🔴 No valid session found for admin route, redirecting to login');
 			throw redirect(303, '/auth/login');

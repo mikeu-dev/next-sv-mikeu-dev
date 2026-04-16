@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
+	import AIAssist from '$lib/components/admin/ai-assist.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
@@ -94,6 +95,8 @@
 			.replace(/^-+|-+$/g, '');
 	}
 
+
+
 	async function handleSubmit() {
 		// Validation: title required for at least ONE language?
 		// Or specific language?
@@ -157,8 +160,9 @@
 			toast.success('Changes saved successfully');
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto(`${base}/admin/blog`);
-		} catch (e: unknown) {
-			console.error(e);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : 'AI request failed';
+			toast.error(message);
 			toast.error('Failed to save');
 		} finally {
 			loading = false;
@@ -233,10 +237,17 @@
 
 	<!-- Localized Fields -->
 	<div class="space-y-6">
-		<div>
-			<label for="title" class="mb-1 block text-sm font-medium"
-				>Title ({activeTab.toUpperCase()})</label
-			>
+			<div class="flex items-center justify-between gap-2">
+				<label for="title" class="mb-1 block text-sm font-medium"
+					>Title ({activeTab.toUpperCase()})</label
+				>
+				<AIAssist
+					locale={activeTab}
+					type="title"
+					bind:targetValue={contentData[activeTab].title}
+					onApply={(val) => (contentData[activeTab].title = val)}
+				/>
+			</div>
 			<input
 				type="text"
 				id="title"
@@ -245,12 +256,19 @@
 				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
 				placeholder="Enter post title"
 			/>
-		</div>
 
-		<div>
-			<label for="description" class="mb-1 block text-sm font-medium"
-				>Description ({activeTab.toUpperCase()})</label
-			>
+			<div class="flex items-center justify-between gap-2">
+				<label for="description" class="mb-1 block text-sm font-medium"
+					>Description ({activeTab.toUpperCase()})</label
+				>
+				<AIAssist
+					context={contentData[activeTab].title}
+					locale={activeTab}
+					type="description"
+					bind:targetValue={contentData[activeTab].description}
+					onApply={(val) => (contentData[activeTab].description = val)}
+				/>
+			</div>
 			<textarea
 				id="description"
 				bind:value={contentData[activeTab].description}
@@ -258,7 +276,6 @@
 				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
 				placeholder="Short description for SEO and lists"
 			></textarea>
-		</div>
 
 		<div class="flex items-center gap-2">
 			<input
@@ -275,9 +292,18 @@
 
 	<!-- Content Editor -->
 	<div>
-		<label for="content" class="mb-1 block text-sm font-medium"
-			>Content ({activeTab.toUpperCase()})</label
-		>
+		<div class="flex items-center justify-between gap-2">
+			<label for="content" class="mb-1 block text-sm font-medium"
+				>Content ({activeTab.toUpperCase()})</label
+			>
+			<AIAssist
+				context={contentData[activeTab].title}
+				locale={activeTab}
+				type="content"
+				bind:targetValue={contentData[activeTab].content}
+				onApply={(val) => (contentData[activeTab].content = val)}
+			/>
+		</div>
 		{#key activeTab}
 			<MarkdownEditor
 				bind:value={contentData[activeTab].content}

@@ -72,6 +72,7 @@
 		"vitest-browser-svelte": "^1.1.0"
 	},
 	"dependencies": {
+		"@google/generative-ai": "^0.24.1",
 		"@lottiefiles/dotlottie-svelte": "^0.8.6",
 		"@splidejs/svelte-splide": "^0.2.9",
 		"@sveltejs/adapter-static": "^3.0.10",

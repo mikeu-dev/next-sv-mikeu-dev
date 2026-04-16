@@ -4,6 +4,7 @@
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import TagEditor from '$lib/components/admin/tag-editor.svelte';
+	import AIAssist from '$lib/components/admin/ai-assist.svelte';
 	import type { SerializedTag } from '$lib/types';
 
 	let title_id = $state('');
@@ -177,9 +178,17 @@
 			<div class="space-y-4">
 				<!-- Title ID -->
 				<div>
-					<label for="title_id" class="mb-2 block text-sm font-medium">
-						Judul (Indonesia) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="title_id" class="mb-2 block text-sm font-medium">
+							Judul (Indonesia) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							locale="id"
+							type="title"
+							bind:targetValue={title_id}
+							onApply={(val) => (title_id = val)}
+						/>
+					</div>
 					<input
 						id="title_id"
 						type="text"
@@ -192,9 +201,18 @@
 
 				<!-- Description ID -->
 				<div>
-					<label for="description_id" class="mb-2 block text-sm font-medium">
-						Deskripsi (Indonesia) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="description_id" class="mb-2 block text-sm font-medium">
+							Deskripsi (Indonesia) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							context={title_id}
+							locale="id"
+							type="description"
+							bind:targetValue={description_id}
+							onApply={(val) => (description_id = val)}
+						/>
+					</div>
 					<textarea
 						id="description_id"
 						bind:value={description_id}
@@ -212,9 +230,17 @@
 			<div class="space-y-4">
 				<!-- Title EN -->
 				<div>
-					<label for="title_en" class="mb-2 block text-sm font-medium">
-						Title (English) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="title_en" class="mb-2 block text-sm font-medium">
+							Title (English) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							locale="en"
+							type="title"
+							bind:targetValue={title_en}
+							onApply={(val) => (title_en = val)}
+						/>
+					</div>
 					<input
 						id="title_en"
 						type="text"
@@ -227,9 +253,18 @@
 
 				<!-- Description EN -->
 				<div>
-					<label for="description_en" class="mb-2 block text-sm font-medium">
-						Description (English) <span class="text-red-500">*</span>
-					</label>
+					<div class="flex items-center justify-between gap-2">
+						<label for="description_en" class="mb-2 block text-sm font-medium">
+							Description (English) <span class="text-red-500">*</span>
+						</label>
+						<AIAssist
+							context={title_en}
+							locale="en"
+							type="description"
+							bind:targetValue={description_en}
+							onApply={(val) => (description_en = val)}
+						/>
+					</div>
 					<textarea
 						id="description_en"
 						bind:value={description_en}
@@ -244,9 +279,18 @@
 
 		<!-- Content (Optional) -->
 		<div>
-			<label for="content" class="mb-2 block text-sm font-medium">
-				Content (Optional Markdown)
-			</label>
+			<div class="flex items-center justify-between gap-2">
+				<label for="content" class="mb-2 block text-sm font-medium">
+					Content (Optional Markdown)
+				</label>
+				<AIAssist
+					context={activeTab === 'en' ? title_en : title_id}
+					locale={activeTab}
+					type="content"
+					bind:targetValue={content}
+					onApply={(val) => (content = val)}
+				/>
+			</div>
 			<MarkdownEditor
 				id="content"
 				bind:value={content}
@@ -258,7 +302,18 @@ Write detailed content in Markdown format..."
 
 		<!-- Tags -->
 		<div>
-			<label for="tags" class="mb-2 block text-sm font-medium"> Tags / Tech Stack </label>
+			<div class="flex items-center justify-between gap-2">
+				<label for="tags" class="mb-2 block text-sm font-medium"> Tags / Tech Stack </label>
+				<AIAssist
+					context={title_en || title_id}
+					targetValue={description_en || description_id}
+					type="tags"
+					onApplyTags={(newTags) => {
+						const formattedTags = newTags.map(tag => ({ name: tag, color: 'blue', url: '#' }));
+						tags = [...tags, ...formattedTags];
+					}}
+				/>
+			</div>
 			<TagEditor bind:tags />
 		</div>
 
