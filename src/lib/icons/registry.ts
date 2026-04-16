@@ -24,7 +24,13 @@ import {
 	SiTailwindcss,
 	SiTypescript,
 	SiUnity,
-	SiVite
+	SiVite,
+	SiInstagram,
+	SiLinkedin,
+	SiTwitter,
+	SiFacebook,
+	SiWhatsapp,
+	SiTelegram
 } from 'svelte-icons-pack/si';
 import { FiHash, FiGithub, FiExternalLink, FiGlobe } from 'svelte-icons-pack/fi';
 import {
@@ -74,6 +80,21 @@ export const iconRegistry: Record<string, IconType> = {
 	SiTypescript,
 	SiUnity,
 	SiVite,
+	SiInstagram,
+	SiLinkedin,
+	SiTwitter,
+	SiFacebook,
+	SiWhatsapp,
+	SiTelegram,
+
+	// Common Names / Aliases
+	Instagram: SiInstagram,
+	Linkedin: SiLinkedin,
+	Twitter: SiTwitter,
+	Facebook: SiFacebook,
+	Whatsapp: SiWhatsapp,
+	Telegram: SiTelegram,
+	SiDefault: FiHash,
 
 	// Feather Icons (fi)
 	FiHash,

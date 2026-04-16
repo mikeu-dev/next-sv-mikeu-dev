@@ -93,10 +93,3 @@
 	{/if}
 </div>
 
-<style>
-	:global(.h-12.w-12 svg) {
-		width: 24px;
-		height: 24px;
-		fill: currentColor;
-	}
-</style>

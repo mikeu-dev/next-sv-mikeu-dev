@@ -2,7 +2,8 @@
 	import { Icon as SvelteIconPack } from 'svelte-icons-pack';
 	import { iconRegistry } from '$lib/icons/registry';
 	import type { IconType } from 'svelte-icons-pack';
-	import type { Component } from 'svelte';
+	import { onMount, type Component } from 'svelte';
+	import { customIconStore } from '$lib/stores/icons.svelte';
 
 	interface GenericIconProps {
 		color?: string;
@@ -35,24 +36,38 @@
 		style = ''
 	}: Props = $props();
 
-	// Utility to get Icon from Registry
+	onMount(() => {
+		customIconStore.init();
+	});
+
+	// Utility to get Icon from Registry (Case-Insensitive)
 	function getRegistryIcon(name: string): IconType | null {
-		return iconRegistry[name] || null;
+		// Try direct match first
+		if (iconRegistry[name]) return iconRegistry[name];
+
+		// Try case-insensitive match
+		const lowerName = name.toLowerCase();
+		const match = Object.keys(iconRegistry).find((k) => k.toLowerCase() === lowerName);
+		return match ? iconRegistry[match] : null;
 	}
 
 	// Dynamic derived state for the icon
-	let iconType = $derived(() => {
+	let iconType = $derived.by(() => {
 		if (src) return 'src';
 		if (!iconName) return 'fallback';
 
-		// Prioritize Registry (includes BS, FI, SI, LU mappings)
+		// Prioritize Static Registry (includes BS, FI, SI, LU mappings)
 		if (getRegistryIcon(iconName)) return 'registry';
+
+		// Secondary: Dynamic Registry (Firestore)
+		if (customIconStore.registry[iconName]) return 'dynamic';
 
 		return 'fallback';
 	});
 
-	let RegistryComp = $derived(iconType() === 'registry' ? getRegistryIcon(iconName) : null);
-	let DirectComp = $derived(iconType() === 'src' ? src : null);
+	let RegistryComp = $derived(iconType === 'registry' ? getRegistryIcon(iconName) : null);
+	let DirectComp = $derived(iconType === 'src' ? src : null);
+	let dynamicIcon = $derived(iconType === 'dynamic' ? customIconStore.registry[iconName] : null);
 </script>
 
 <div
@@ -61,15 +76,24 @@
 		? size + 'px'
 		: size}; {style}"
 >
-	{#if iconType() === 'src' && DirectComp}
+	{#if iconType === 'src' && DirectComp}
 		{#if typeof DirectComp === 'object' && DirectComp !== null && 'a' in DirectComp}
 			<SvelteIconPack src={DirectComp as IconType} {color} {size} />
 		{:else}
 			{@const Comp = DirectComp as GenericIconComponent}
 			<Comp {color} {size} />
 		{/if}
-	{:else if iconType() === 'registry' && RegistryComp}
+	{:else if iconType === 'registry' && RegistryComp}
 		<SvelteIconPack src={RegistryComp} {color} {size} />
+	{:else if iconType === 'dynamic' && dynamicIcon}
+		<svg
+			viewBox={dynamicIcon.viewBox || '0 0 24 24'}
+			class="h-full w-full"
+			style="fill: {color}; stroke: {color};"
+		>
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+			{@html dynamicIcon.svg}
+		</svg>
 	{:else}
 		<!-- Default Fallback Icon -->
 		<svg

@@ -9,5 +9,6 @@ export const COLLECTIONS = {
 	JOURNEY: 'journey',
 	SKILLS: 'skills',
 	SOCIALS: 'socials',
-	ERROR_LOGS: 'error_logs'
+	ERROR_LOGS: 'error_logs',
+	CUSTOM_ICONS: 'custom_icons'
 };
