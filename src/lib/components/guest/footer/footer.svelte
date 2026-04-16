@@ -43,7 +43,13 @@
 								class="flex cursor-pointer items-center justify-center rounded-full transition-all hover:scale-110"
 								style={`background-color: ${link.color}1A; color: ${link.color}; width: 2rem; height: 2rem;`}
 							>
-								<Icon iconName={link.iconName} color={link.color} size={16} strokeWidth={2.5} />
+								<Icon
+									iconName={link.iconName}
+									src={link.icon}
+									color={link.color}
+									size={16}
+									strokeWidth={2.5}
+								/>
 							</a>
 						</Tooltip.Trigger>
 

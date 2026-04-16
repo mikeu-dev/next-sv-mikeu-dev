@@ -4,11 +4,13 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import Icon from '$lib/components/ui/icon.svelte';
+	import type { IconType } from 'svelte-icons-pack';
 
 	interface SocialLink {
 		label: string;
 		href: string;
 		iconName: string;
+		icon?: IconType;
 		color: string;
 	}
 
@@ -67,7 +69,13 @@
 								class="flex h-12 w-12 items-center justify-center rounded-lg"
 								style="background-color: {link.color}20;"
 							>
-								<Icon iconName={link.iconName} color={link.color} size={24} strokeWidth={2.5} />
+								<Icon
+									iconName={link.iconName}
+									src={link.icon}
+									color={link.color}
+									size={24}
+									strokeWidth={2.5}
+								/>
 							</div>
 							<div>
 								<h3 class="font-semibold">{link.label}</h3>

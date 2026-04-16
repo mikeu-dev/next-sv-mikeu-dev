@@ -4,10 +4,12 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import Icon from '$lib/components/ui/icon.svelte';
+	import type { IconType } from 'svelte-icons-pack';
 
 	interface TechItem {
 		name: string;
 		iconName: string;
+		icon?: IconType;
 		url: string;
 		color: string;
 		iconSvg?: string;
@@ -120,7 +122,12 @@
 									class="flex h-10 w-10 items-center justify-center rounded-lg"
 									style="background-color: {item.color}20;"
 								>
-									<Icon iconName={item.iconName} color={item.color} size={24} />
+									<Icon
+										iconName={item.iconName}
+										src={item.icon}
+										color={item.color}
+										size={24}
+									/>
 								</div>
 								<div class="flex-1">
 									<div class="font-medium">{item.name}</div>

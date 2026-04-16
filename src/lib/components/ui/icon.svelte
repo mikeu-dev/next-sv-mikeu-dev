@@ -46,15 +46,57 @@
 		}
 	});
 
-	// Utility to get Icon from Registry (Case-Insensitive)
+	// Utility to get Icon from Registry (Fuzzy Matching)
 	function getRegistryIcon(name: string): IconType | null {
-		// Try direct match first
-		if (iconRegistry[name]) return iconRegistry[name];
+		if (!name) return null;
 
-		// Try case-insensitive match
-		const lowerName = name.toLowerCase();
-		const match = Object.keys(iconRegistry).find((k) => k.toLowerCase() === lowerName);
-		return match ? iconRegistry[match] : null;
+		// 1. Normalize name (kebab-case to PascalCase if needed)
+		const normalized = name
+			.split(/[-_]/)
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join('');
+
+		// 2. Try direct match
+		if (iconRegistry[normalized]) return iconRegistry[normalized];
+
+		// 3. Try case-insensitive exact match
+		const lowerName = normalized.toLowerCase();
+		const registryKeys = Object.keys(iconRegistry);
+
+		let match = registryKeys.find((k) => k.toLowerCase() === lowerName);
+		if (match) return iconRegistry[match];
+
+		// 4. Try library-specific prefixes
+		const prefixes: Record<string, string[]> = {
+			Fa: ['FaSolid', 'FaRegular', 'FaBrands'],
+			Io: ['IoLogo', 'IoIos', 'IoMd'],
+			Ai: ['AiFill', 'AiOutline'],
+			Si: ['Si'],
+			Fi: ['Fi'],
+			Lu: ['Lu'],
+			Bs: ['Bs']
+		};
+
+		for (const [lib, variants] of Object.entries(prefixes)) {
+			if (normalized.startsWith(lib)) {
+				const base = normalized.slice(lib.length);
+				for (const variant of variants) {
+					const prefixedMatch = registryKeys.find(
+						(k) => k.toLowerCase() === (variant + base).toLowerCase()
+					);
+					if (prefixedMatch) return iconRegistry[prefixedMatch];
+				}
+			}
+		}
+
+		// 5. Try suffix match (e.g., "Rocket" matching "FaSolidRocket")
+		// Only for non-trivial names to avoid false positives
+		if (normalized.length > 2) {
+			const suffixMatch = registryKeys.find((k) => k.toLowerCase().endsWith(lowerName));
+			if (suffixMatch) return iconRegistry[suffixMatch];
+		}
+
+		return null;
 	}
 
 	// Dynamic derived state for the icon
