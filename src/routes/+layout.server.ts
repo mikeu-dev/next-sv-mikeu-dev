@@ -26,6 +26,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			en: resume.resumeUrlEn || '',
 			id: resume.resumeUrlId || ''
 		})),
-		user: locals.user
+		user: locals.user,
+		locale: locals.paraglide.locale
 	};
 };

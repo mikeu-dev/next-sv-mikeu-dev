@@ -1,14 +1,14 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import type { BlogPost } from '$lib/server/services/blog.service';
-	import { base } from '$app/paths';
 	import Icon from '$lib/components/ui/icon.svelte';
-	import { getLocale } from '$lib/paraglide/runtime';
+	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+	import { page } from '$app/state';
 
 	let { post } = $props<{ post: BlogPost }>();
 
 	const formattedDate = $derived(
-		new Date(post.date).toLocaleDateString(getLocale(), {
+		new Date(post.date).toLocaleDateString(page.data.locale || getLocale(), {
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric'
@@ -19,7 +19,7 @@
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 <article class="group relative h-full">
 	<a
-		href={`${base}/blog/${post.slug}`}
+		href={localizeHref(`/blog/${post.slug}`)}
 		class="block h-full overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10"
 	>
 		<div class="aspect-video overflow-hidden">

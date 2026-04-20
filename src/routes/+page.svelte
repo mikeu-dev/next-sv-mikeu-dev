@@ -3,15 +3,14 @@
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import WorkSection from '../lib/components/guest/sections/work/work.svelte';
 	import LatestBlogsSection from '../lib/components/guest/sections/blog/latest-blogs.svelte';
-	import { getLocale } from '$lib/paraglide/runtime';
 
 	import type { BlogPost } from '$lib/server/services/blog.service';
 	import type { Project } from '$lib/types';
 
 	let { data } = $props();
-	const { projects, skills, latestPosts } = data;
+	const { projects, skills, latestPosts, locale } = data;
 
-	const currentLocale = $derived(getLocale());
+	const currentLocale = $derived(locale as 'en' | 'id');
 	const localizedPosts = $derived(latestPosts[currentLocale] as BlogPost[]);
 </script>
 

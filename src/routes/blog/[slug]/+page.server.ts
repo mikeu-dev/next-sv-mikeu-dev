@@ -1,5 +1,4 @@
 import { error } from '@sveltejs/kit';
-import { getLocale } from '@/lib/paraglide/runtime';
 import type { PageServerLoad } from './$types';
 import { blogService } from '$lib/server/services/blog.service';
 
@@ -11,7 +10,7 @@ export const config = {
 
 export const load: PageServerLoad = async (event) => {
 	const { params, locals } = event;
-	const locale = locals.paraglide.locale ?? getLocale();
+	const locale = locals.paraglide.locale;
 	const slug = params.slug;
 
 	try {
