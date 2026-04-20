@@ -38,11 +38,10 @@
 		<!-- Header -->
 		<div class="blog-stagger mb-16 text-center">
 			<h2 class="font-poppins text-4xl font-black tracking-tight md:text-6xl">
-				Latest From <span class="text-primary italic">Blog</span>.
+				{m.blog_latest_header()} <span class="text-primary italic">{m.blog_title()}</span>.
 			</h2>
 			<p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-				Sharing my thoughts and insights on software development, technology trends, and
-				professional growth.
+				{m.blog_subtitle()}
 			</p>
 		</div>
 
@@ -73,7 +72,7 @@
 			</div>
 		{:else}
 			<div class="blog-stagger py-12 text-center">
-				<p class="text-muted-foreground italic">New articles coming soon...</p>
+				<p class="text-muted-foreground italic">{m.blog_empty()}</p>
 			</div>
 		{/if}
 	</div>

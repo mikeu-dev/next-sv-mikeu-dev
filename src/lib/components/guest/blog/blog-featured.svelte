@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { BlogPost } from '$lib/server/services/blog.service';
-	import { base } from '$app/paths';
 	import Icon from '$lib/components/ui/icon.svelte';
-	import { getLocale } from '$lib/paraglide/runtime';
+	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
+	import { page } from '$app/state';
 
 	let { post } = $props<{ post: BlogPost }>();
 
 	const formattedDate = $derived(
-		new Date(post.date).toLocaleDateString(getLocale(), {
+		new Date(post.date).toLocaleDateString(page.data.locale || getLocale(), {
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric'
@@ -20,7 +20,7 @@
 <article
 	class="group relative overflow-hidden rounded-3xl border bg-card shadow-xl transition-all duration-500 hover:border-primary/30"
 >
-	<a href={`${base}/blog/${post.slug}`} class="flex flex-col md:flex-row">
+	<a href={localizeHref(`/blog/${post.slug}`)} class="flex flex-col md:flex-row">
 		<div class="h-64 overflow-hidden md:h-auto md:w-1/2">
 			<img
 				src={post.thumbnailUrl || '/images/placeholder-blog.jpg'}
@@ -34,7 +34,7 @@
 				<span
 					class="rounded-full bg-primary/20 px-4 py-1.5 text-[10px] font-black tracking-widest text-primary uppercase"
 				>
-					Featured Post
+					{m.blog_featured_label()}
 				</span>
 				{#each post.tags || [] as tag (tag)}
 					<span

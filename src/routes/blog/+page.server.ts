@@ -1,12 +1,8 @@
-import { getLocale } from '@/lib/paraglide/runtime';
-import type { PageServerLoad, RouteParams } from './$types';
-import type { ServerLoadEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 import { blogService } from '$lib/server/services/blog.service';
 
-export const load: PageServerLoad = async (event) => {
-	const localsLocale = (event as ServerLoadEvent<RouteParams>).locals?.paraglide?.locale;
-
-	const locale = localsLocale ?? getLocale();
+export const load: PageServerLoad = async ({ locals }) => {
+	const locale = locals.paraglide.locale;
 	const posts = await blogService.getPublishedPostsByLocale(locale);
 
 	return { posts };

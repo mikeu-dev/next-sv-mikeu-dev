@@ -50,5 +50,9 @@
 	"contact_field_budget": "Budget",
 	"contact_field_budget_placeholder": "e.g. $1,000 - $5,000",
 	"contact_field_budget_description": "Estimate budget for the project",
-	"pwa_install_button": "Install App"
+	"pwa_install_button": "Install App",
+	"blog_empty": "New articles coming soon...",
+	"blog_stay_tuned": "Stay tuned for upcoming content!",
+	"blog_featured_label": "Featured Post",
+	"blog_latest_header": "Latest From"
 }

@@ -105,7 +105,8 @@
 
 	{#if filteredPosts.length === 0}
 		<div class="py-20 text-center">
-			<p class="text-xl text-muted-foreground">No articles found in this category.</p>
+			<h3 class="text-2xl font-bold">No articles found</h3>
+			<p class="mt-4 text-muted-foreground">{m.blog_stay_tuned()}</p>
 		</div>
 	{/if}
 </div>
