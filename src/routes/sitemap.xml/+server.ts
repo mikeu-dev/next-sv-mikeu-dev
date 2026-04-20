@@ -38,7 +38,7 @@ export const GET: RequestHandler = async () => {
 	// Collect all relative paths
 	const paths = [
 		...staticPages,
-		...projects.filter((p) => p.published).map((p) => `/project/${p.slug}`),
+		...projects.filter((p) => p.published).map((p) => `/projects/${p.slug}`),
 		...blogPosts.map((slug) => `/blog/${slug}`)
 	];
 
