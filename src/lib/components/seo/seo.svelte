@@ -56,7 +56,6 @@
 	});
 
 	// --- JSON-LD GENERATION ---
-	// BreadcrumbList Schema
 	const breadcrumbItems = pathSegments.map((segment, index) => {
 		const partPath = '/' + pathSegments.slice(0, index + 1).join('/');
 		return {
@@ -64,6 +63,44 @@
 			position: index + 1,
 			name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
 			item: `${canonicalBase}${partPath}`
+		};
+	});
+
+	const jsonLd = $derived.by(() => {
+		const graph: object[] = [
+			{
+				'@type': 'WebSite',
+				name: 'Mikeu Dev',
+				url: canonicalBase,
+				description: defaultDescription
+			}
+		];
+
+		if (breadcrumbItems.length > 0) {
+			graph.push({
+				'@type': 'BreadcrumbList',
+				itemListElement: breadcrumbItems
+			});
+		}
+
+		if (type === 'article') {
+			graph.push({
+				'@type': 'BlogPosting',
+				headline: finalTitle,
+				description: finalDescription,
+				image: finalImage,
+				datePublished: article?.publishedTime,
+				dateModified: article?.modifiedTime || article?.publishedTime,
+				author: {
+					'@type': 'Person',
+					name: article?.author || 'Mikeu'
+				}
+			});
+		}
+
+		return {
+			'@context': 'https://schema.org',
+			'@graph': graph
 		};
 	});
 </script>
@@ -105,40 +142,6 @@
 	<meta property="twitter:image" content={finalImage} />
 
 	<script type="application/ld+json">
-		{@html JSON.stringify({
-			'@context': 'https://schema.org',
-			'@type': 'WebSite',
-			name: 'Mikeu Dev',
-			url: canonicalBase,
-			description: defaultDescription
-		})}
+		{@html JSON.stringify(jsonLd)}
 	</script>
-
-	{#if breadcrumbItems.length > 0}
-		<script type="application/ld+json">
-			{@html JSON.stringify({
-				'@context': 'https://schema.org',
-				'@type': 'BreadcrumbList',
-				itemListElement: breadcrumbItems
-			})}
-		</script>
-	{/if}
-
-	{#if type === 'article'}
-		<script type="application/ld+json">
-			{@html JSON.stringify({
-				'@context': 'https://schema.org',
-				'@type': 'BlogPosting',
-				headline: finalTitle,
-				description: finalDescription,
-				image: finalImage,
-				datePublished: article?.publishedTime,
-				dateModified: article?.modifiedTime || article?.publishedTime,
-				author: {
-					'@type': 'Person',
-					name: article?.author || 'Mikeu'
-				}
-			})}
-		</script>
-	{/if}
 </svelte:head>
