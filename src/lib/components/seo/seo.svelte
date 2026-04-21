@@ -105,7 +105,7 @@
 	<meta property="twitter:image" content={finalImage} />
 
 	<script type="application/ld+json">
-		{JSON.stringify({
+		{@html JSON.stringify({
 			'@context': 'https://schema.org',
 			'@type': 'WebSite',
 			name: 'Mikeu Dev',
@@ -116,7 +116,7 @@
 
 	{#if breadcrumbItems.length > 0}
 		<script type="application/ld+json">
-			{JSON.stringify({
+			{@html JSON.stringify({
 				'@context': 'https://schema.org',
 				'@type': 'BreadcrumbList',
 				itemListElement: breadcrumbItems
@@ -126,7 +126,7 @@
 
 	{#if type === 'article'}
 		<script type="application/ld+json">
-			{JSON.stringify({
+			{@html JSON.stringify({
 				'@context': 'https://schema.org',
 				'@type': 'BlogPosting',
 				headline: finalTitle,
