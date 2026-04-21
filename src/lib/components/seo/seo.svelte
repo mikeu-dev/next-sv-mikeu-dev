@@ -86,14 +86,14 @@
 		if (type === 'article') {
 			graph.push({
 				'@type': 'BlogPosting',
-				headline: finalTitle,
-				description: finalDescription,
+				headline: finalTitle.trim(),
+				description: finalDescription.trim(),
 				image: finalImage,
 				datePublished: article?.publishedTime,
 				dateModified: article?.modifiedTime || article?.publishedTime,
 				author: {
 					'@type': 'Person',
-					name: article?.author || 'Mikeu'
+					name: (article?.author || 'Mikeu').trim()
 				}
 			});
 		}
@@ -103,6 +103,8 @@
 			'@graph': graph
 		};
 	});
+
+	const jsonLdScript = $derived('<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>');
 </script>
 
 <svelte:head>
@@ -141,7 +143,6 @@
 	<meta property="twitter:description" content={finalDescription} />
 	<meta property="twitter:image" content={finalImage} />
 
-	<script type="application/ld+json">
-		{@html JSON.stringify(jsonLd)}
-	</script>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html jsonLdScript}
 </svelte:head>
