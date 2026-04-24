@@ -9,8 +9,11 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"moduleResolution": "bundler"
-	}
+		"moduleResolution": "bundler",
+		"incremental": true,
+		"tsBuildInfoFile": ".svelte-kit/tsconfig.tsbuildinfo"
+	},
+	"exclude": ["node_modules", ".svelte-kit", "src/lib/server/scripts/**"]
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
 	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
 	//

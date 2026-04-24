@@ -7,3 +7,14 @@ bun.lockb
 
 # Miscellaneous
 /static/
+/.svelte-kit/
+/.vercel/
+/build/
+/dist/
+/node_modules/
+/messages/
+/src/lib/paraglide/
+/src/paraglide/
+/storybook-static/
+project_structure.md
+.env*
