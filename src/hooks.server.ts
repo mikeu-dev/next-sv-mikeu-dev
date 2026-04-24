@@ -77,7 +77,13 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 	const VISITOR_COOKIE = 'visitor_log';
 	const hasVisited = event.cookies.get(VISITOR_COOKIE);
 
-	if (!hasVisited && !event.url.pathname.startsWith('/admin') && !event.url.pathname.startsWith('/api') && !event.url.pathname.includes('sitemap.xml') && !building) {
+	if (
+		!hasVisited &&
+		!event.url.pathname.startsWith('/admin') &&
+		!event.url.pathname.startsWith('/api') &&
+		!event.url.pathname.includes('sitemap.xml') &&
+		!building
+	) {
 		// Only track public pages and skip during build
 		try {
 			const uaString = event.request.headers.get('user-agent') || '';

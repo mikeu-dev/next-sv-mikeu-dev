@@ -10,7 +10,7 @@
 	let { projects }: { projects: Project[] } = $props();
 	let currentLocale = $derived(getLocale());
 	let localizedProjects = $derived(
-		projects.filter(p => p.pinned).map((p) => getLocalizedProject(p, currentLocale))
+		projects.filter((p) => p.pinned).map((p) => getLocalizedProject(p, currentLocale))
 	);
 
 	const { workSection, projectCardElements, tooltipOpen, virtualAnchor, tooltipText } =

@@ -11,10 +11,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Projects fetch is the same for both, but we fetch it once.
 	// Skills and Blog are locale-specific.
 	// We stream the data to allow the page to start rendering immediately.
-	
+
 	return {
 		projects: projectsService.findAll().then((projects) => projects || []),
-		skills: skillsService.getSkills(locale).then((skills) => (skills as { items: string[] })?.items || []),
-		latestPosts: blogService.getPublishedPostsByLocale(locale).then((posts) => posts?.slice(0, 3) || [])
+		skills: skillsService
+			.getSkills(locale)
+			.then((skills) => (skills as { items: string[] })?.items || []),
+		latestPosts: blogService
+			.getPublishedPostsByLocale(locale)
+			.then((posts) => posts?.slice(0, 3) || [])
 	};
 };

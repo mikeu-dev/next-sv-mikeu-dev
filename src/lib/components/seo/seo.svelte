@@ -104,7 +104,9 @@
 		};
 	});
 
-	const jsonLdScript = $derived('<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>');
+	const jsonLdScript = $derived(
+		'<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>'
+	);
 </script>
 
 <svelte:head>

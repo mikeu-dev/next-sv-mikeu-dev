@@ -3,7 +3,6 @@
 	import Matter, { type IChamferableBodyDefinition } from 'matter-js';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import * as m from '@/lib/paraglide/messages';
 
 	let { skills }: { skills: string[] } = $props();
@@ -35,9 +34,9 @@
 
 		const ctx = gsap.context(() => {
 			if (!subtitle || !button || !bullets) return;
-			gsap.from(subtitle as any, { y: 20, opacity: 0, duration: 0.5, delay: 1.5 });
-			gsap.from(button as any, { y: 20, opacity: 0, duration: 0.5, delay: 1.7 });
-			gsap.from(bullets as any, { y: 20, opacity: 0, duration: 0.5, delay: 1.8, stagger: 0.1 });
+			gsap.from(subtitle, { y: 20, opacity: 0, duration: 0.5, delay: 1.5 });
+			gsap.from(button, { y: 20, opacity: 0, duration: 0.5, delay: 1.7 });
+			gsap.from(bullets, { y: 20, opacity: 0, duration: 0.5, delay: 1.8, stagger: 0.1 });
 
 			const title = heroTitle;
 			const heroSection = title?.closest('section');
@@ -61,8 +60,20 @@
 
 		const floorY = subtitleRect.top - titleRect.top - 40;
 		const floor = Bodies.rectangle(titleRect.width / 2, floorY, titleRect.width, 20, wallOptions);
-		const wallLeft = Bodies.rectangle(-50, titleRect.height / 2, 20, titleRect.height + 100, wallOptions);
-		const wallRight = Bodies.rectangle(titleRect.width + 50, titleRect.height / 2, 20, titleRect.height + 100, wallOptions);
+		const wallLeft = Bodies.rectangle(
+			-50,
+			titleRect.height / 2,
+			20,
+			titleRect.height + 100,
+			wallOptions
+		);
+		const wallRight = Bodies.rectangle(
+			titleRect.width + 50,
+			titleRect.height / 2,
+			20,
+			titleRect.height + 100,
+			wallOptions
+		);
 
 		Composite.add(world, [floor, wallLeft, wallRight]);
 
@@ -72,11 +83,17 @@
 				const rect = el.getBoundingClientRect();
 				const initialX = rect.left - titleRect.left + rect.width / 2;
 				const initialY = rect.top - titleRect.top + rect.height / 2;
-				const body = Bodies.rectangle(initialX, initialY - 150 - Math.random() * 50, rect.width, rect.height, {
-					restitution: 0.5,
-					friction: 0.5,
-					frictionAir: 0.015
-				});
+				const body = Bodies.rectangle(
+					initialX,
+					initialY - 150 - Math.random() * 50,
+					rect.width,
+					rect.height,
+					{
+						restitution: 0.5,
+						friction: 0.5,
+						frictionAir: 0.015
+					}
+				);
 				return { body, element: el, initialX, initialY };
 			})
 			.filter((v): v is LetterData => v !== null);
@@ -168,7 +185,11 @@
 	</ul>
 
 	<div bind:this={heroButton} class="mt-8 flex justify-center gap-4">
-		<Button href="#contact" size="lg" class="dark:bg-teal-500 dark:text-white dark:hover:bg-teal-400">
+		<Button
+			href="#contact"
+			size="lg"
+			class="dark:bg-teal-500 dark:text-white dark:hover:bg-teal-400"
+		>
 			{m.hero_button_text()}
 		</Button>
 		<Button

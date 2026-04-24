@@ -9,10 +9,4 @@
 	let { class: className, animate = true }: Props = $props();
 </script>
 
-<div
-	class={cn(
-		'bg-muted rounded-md',
-		animate && 'animate-pulse',
-		className
-	)}
-></div>
+<div class={cn('rounded-md bg-muted', animate && 'animate-pulse', className)}></div>
