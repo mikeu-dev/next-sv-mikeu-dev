@@ -49,3 +49,4 @@ export class SocialsService {
 		}
 	}
 }
+export const socialsService = new SocialsService();

@@ -25,12 +25,18 @@ export default defineConfig(
 			'**/node_modules/**',
 			'.svelte-kit/**',
 			'.vercel/**',
+			'.output/**',
 			'build/**',
 			'dist/**',
 			'static/**',
+			'messages/**',
 			'src/service-worker.ts',
 			'src/lib/paraglide/**',
-			'src/paraglide/**'
+			'src/paraglide/**',
+			'src/lib/server/scripts/**',
+			'**/*.spec.ts',
+			'**/*.test.ts',
+			'storybook-static/**'
 		]
 	},
 	js.configs.recommended,

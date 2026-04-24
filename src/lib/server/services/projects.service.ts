@@ -1,5 +1,5 @@
 import { BaseService } from '../core/base.service';
-import type { ProjectsRepository } from '../repositories/projects.repository';
+import { ProjectsRepository } from '../repositories/projects.repository';
 import type { Project } from '../../types';
 import { projectSchema } from '../schemas/project.schema';
 import { ValidationError } from '../exceptions/http.exception';
@@ -41,3 +41,5 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
 		return this.repository.findBySlug(slug);
 	}
 }
+
+export const projectsService = new ProjectsService(new ProjectsRepository());

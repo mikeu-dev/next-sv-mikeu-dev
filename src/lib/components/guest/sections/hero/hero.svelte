@@ -3,13 +3,9 @@
 	import Matter, { type IChamferableBodyDefinition } from 'matter-js';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import * as m from '@/lib/paraglide/messages';
-	import { getLocale } from '@/lib/paraglide/runtime';
 
-	let { skills }: { skills: { en: string[]; id: string[] } } = $props();
-	let locale = $state<string>(getLocale());
-	let skillsData = $derived(skills[locale as keyof typeof skills] || skills['en']);
+	let { skills }: { skills: string[] } = $props();
 
 	const { Engine, Runner, Bodies, Composite } = Matter;
 
@@ -32,33 +28,51 @@
 	onMount(() => {
 		if (!heroTitle || !heroSubtitle || !heroButton || !bulletContainer) return;
 
-		ScrollTrigger.refresh();
-		gsap.from(heroSubtitle, { y: 20, opacity: 0, duration: 0.5, delay: 1.5 });
-		gsap.from(heroButton, { y: 20, opacity: 0, duration: 0.5, delay: 1.7 });
-		gsap.from(bulletContainer, { y: 20, opacity: 0, duration: 0.5, delay: 1.8, stagger: 0.1 });
+		const subtitle = heroSubtitle;
+		const button = heroButton;
+		const bullets = bulletContainer;
 
+		const ctx = gsap.context(() => {
+			if (!subtitle || !button || !bullets) return;
+			gsap.from(subtitle, { y: 20, opacity: 0, duration: 0.5, delay: 1.5 });
+			gsap.from(button, { y: 20, opacity: 0, duration: 0.5, delay: 1.7 });
+			gsap.from(bullets, { y: 20, opacity: 0, duration: 0.5, delay: 1.8, stagger: 0.1 });
+
+			const title = heroTitle;
+			const heroSection = title?.closest('section');
+			if (heroSection) {
+				gsap.fromTo(
+					heroSection,
+					{ backgroundColor: '#0d9488' },
+					{ backgroundColor: '', duration: 2, delay: 0.5 }
+				);
+			}
+		});
+
+		// --- Matter.js Logic ---
 		const engine = Engine.create();
 		const world: Matter.World = engine.world;
 		engine.gravity.y = 1.0;
 
 		const titleRect: DOMRect = heroTitle.getBoundingClientRect();
 		const subtitleRect: DOMRect = heroSubtitle.getBoundingClientRect();
-
 		const wallOptions: IChamferableBodyDefinition = { isStatic: true, render: { visible: false } };
 
 		const floorY = subtitleRect.top - titleRect.top - 40;
 		const floor = Bodies.rectangle(titleRect.width / 2, floorY, titleRect.width, 20, wallOptions);
-		const wallLeft = Bodies.rectangle(-50, titleRect.height / 2, 20, titleRect.height + 100, {
-			isStatic: true,
-			render: { visible: false }
-		});
-
+		const wallLeft = Bodies.rectangle(
+			-50,
+			titleRect.height / 2,
+			20,
+			titleRect.height + 100,
+			wallOptions
+		);
 		const wallRight = Bodies.rectangle(
 			titleRect.width + 50,
 			titleRect.height / 2,
 			20,
 			titleRect.height + 100,
-			{ isStatic: true, render: { visible: false } }
+			wallOptions
 		);
 
 		Composite.add(world, [floor, wallLeft, wallRight]);
@@ -66,11 +80,9 @@
 		const letters: LetterData[] = letterElements
 			.map((el, i) => {
 				if (titleChars[i] === ' ') return null;
-
 				const rect = el.getBoundingClientRect();
 				const initialX = rect.left - titleRect.left + rect.width / 2;
 				const initialY = rect.top - titleRect.top + rect.height / 2;
-
 				const body = Bodies.rectangle(
 					initialX,
 					initialY - 150 - Math.random() * 50,
@@ -82,7 +94,6 @@
 						frictionAir: 0.015
 					}
 				);
-
 				return { body, element: el, initialX, initialY };
 			})
 			.filter((v): v is LetterData => v !== null);
@@ -92,33 +103,41 @@
 		});
 
 		const runner = Runner.create();
-		Runner.run(runner, engine);
+		let rafId: number;
+		let isVisible = true;
+
+		const observer = new IntersectionObserver((entries) => {
+			isVisible = entries[0].isIntersecting;
+			if (isVisible) {
+				Runner.run(runner, engine);
+			} else {
+				Runner.stop(runner);
+			}
+		});
+
+		const heroSection = heroTitle.closest('section');
+		if (heroSection) observer.observe(heroSection);
 
 		function update() {
-			requestAnimationFrame(update);
-			for (const { body, element, initialX, initialY } of letters) {
-				const { x, y } = body.position;
-				const angle = body.angle;
-				element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(${angle}rad)`;
+			if (isVisible) {
+				for (const { body, element, initialX, initialY } of letters) {
+					const { x, y } = body.position;
+					element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(${body.angle}rad)`;
+				}
 			}
+			rafId = requestAnimationFrame(update);
 		}
-		update();
+		rafId = requestAnimationFrame(update);
 
 		heroTitle.style.position = 'relative';
 		heroTitle.style.overflow = 'visible';
 
-		const heroSection = heroTitle.closest('section');
-		if (heroSection) {
-			gsap.fromTo(
-				heroSection,
-				{ backgroundColor: '#0d9488' },
-				{ backgroundColor: '', duration: 2, delay: 0.5 }
-			);
-		}
-
 		return () => {
+			ctx.revert();
+			observer.disconnect();
 			Runner.stop(runner);
 			Engine.clear(engine);
+			cancelAnimationFrame(rafId);
 		};
 	});
 </script>
@@ -129,8 +148,6 @@
     overflow-hidden rounded-t-4xl bg-linear-to-b from-gray-50 to-white pt-28 pb-20
     text-center transition-colors duration-300 md:pt-40 dark:from-gray-900 dark:to-background"
 >
-	<canvas id="particles" class="pointer-events-none absolute inset-0 h-full w-full"></canvas>
-
 	<div class="relative mx-auto inline-block" style="height: 150px;">
 		<h1
 			bind:this={heroTitle}
@@ -159,7 +176,7 @@
 		class="mt-6 flex flex-wrap justify-center gap-4 text-sm
         text-gray-600 transition-colors duration-300 md:text-base dark:text-gray-300"
 	>
-		{#each skillsData as skill (skill)}
+		{#each skills as skill (skill)}
 			<li class="inline-flex items-center gap-2">
 				<span class="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400"></span>
 				{skill}
