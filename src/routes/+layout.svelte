@@ -18,6 +18,7 @@
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import Skeleton from '@/lib/components/ui/skeleton.svelte';
 
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
@@ -38,28 +39,17 @@
 	});
 
 	let fallingConfetti = $state(false);
-	let scrollBtn: HTMLButtonElement;
+	let scrollBtn = $state<HTMLElement | null>(null);
 	let liveStats = $state({ total: 0, today: 0 });
-	let resolvedResumeUrls = $state<{ en: string; id: string }>({ en: '', id: '' });
-
-	// Resolve the streamed resume URLs promise
-	$effect(() => {
-		if (data.resumeUrls) {
-			Promise.resolve(data.resumeUrls).then((urls) => {
-				resolvedResumeUrls = urls;
-			});
-		}
-	});
 
 	function scrollToTop() {
+		gsap.registerPlugin(ScrollToPlugin);
 		gsap.to(window, { duration: 1, scrollTo: 0 });
 	}
 
 	function handleScroll() {
+		if (!scrollBtn) return;
 		const show = window.scrollY > 300;
-		gsap.registerPlugin(ScrollToPlugin);
-
-		// Animasi smooth: opacity + scale
 		gsap.to(scrollBtn, {
 			duration: 0.4,
 			opacity: show ? 1 : 0,
@@ -70,7 +60,6 @@
 	}
 
 	onMount(() => {
-		scrollBtn = document.getElementById('scrollToTopBtn') as HTMLButtonElement;
 		window.addEventListener('scroll', handleScroll);
 
 		// Manual Service Worker registration for PWA testing
@@ -154,14 +143,23 @@
 <!-- 🧩 Layout utama -->
 <div class="flex min-h-dvh flex-col">
 	{#if !isAdmin}
-		<Navbar {resolvedResumeUrls} />
+		{#await data.resumeUrls}
+			<Navbar resolvedResumeUrls={{ en: '', id: '' }} />
+		{:then resolvedResumeUrls}
+			<Navbar {resolvedResumeUrls} />
+		{/await}
 	{/if}
 	<main class="container mx-auto flex-1 px-4 py-8">
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}
 		{#await Promise.all([data.socials, data.visitorStats])}
-			<Footer socials={[]} visitorStats={{ total: 0, today: 0 }} />
+			<footer class="container mx-auto px-4 py-8">
+				<div class="flex justify-between">
+					<Skeleton class="h-6 w-32" />
+					<Skeleton class="h-6 w-48" />
+				</div>
+			</footer>
 		{:then [socials, stats]}
 			<Footer {socials} visitorStats={liveStats.total > 0 ? liveStats : stats} />
 		{:catch}
@@ -179,6 +177,7 @@
 </div>
 
 <Button
+	bind:ref={scrollBtn}
 	class="shadow-3xl pointer-events-none fixed right-8 bottom-28 z-9999 scale-50 cursor-pointer rounded-full p-2 text-white opacity-0 transition-all dark:bg-teal-400 dark:hover:bg-teal-300"
 	id="scrollToTopBtn"
 	aria-label="Scroll to top"

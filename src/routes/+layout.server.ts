@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types';
-import { SocialsService } from '$lib/server/services/socials.service';
-import { VisitorService } from '$lib/server/services/visitor.service';
+import { socialsService } from '$lib/server/services/socials.service';
+import { visitorService } from '$lib/server/services/visitor.service';
 import { settingsService } from '$lib/server/services/settings.service';
 import type { Config } from '@sveltejs/adapter-vercel';
 
@@ -11,9 +11,6 @@ export const config: Config = {
 };
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-	const socialsService = new SocialsService();
-	const visitorService = new VisitorService();
-
 	// Melakukan fetch secara paralel untuk efisiensi.
 	// Kita tidak melakukan 'await' langsung pada return untuk mengaktifkan streaming di SvelteKit.
 	return {

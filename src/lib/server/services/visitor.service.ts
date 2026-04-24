@@ -179,3 +179,4 @@ export class VisitorService {
 		}
 	}
 }
+export const visitorService = new VisitorService();

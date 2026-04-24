@@ -7,14 +7,10 @@
 	import * as m from '@/lib/paraglide/messages.js';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 
-	let { projects }: { projects: Record<string, Project[]> } = $props();
+	let { projects }: { projects: Project[] } = $props();
 	let currentLocale = $derived(getLocale());
-	let projectsData = $derived(projects[currentLocale] || projects['en']);
-	let projectByPinned = $derived(projectsData.filter((project) => project.pinned));
-
-	// Transform for display
 	let localizedProjects = $derived(
-		projectByPinned.map((p) => getLocalizedProject(p, currentLocale))
+		projects.filter(p => p.pinned).map((p) => getLocalizedProject(p, currentLocale))
 	);
 
 	const { workSection, projectCardElements, tooltipOpen, virtualAnchor, tooltipText } =

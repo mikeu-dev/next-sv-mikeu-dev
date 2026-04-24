@@ -1,45 +1,20 @@
 import type { PageServerLoad } from './$types';
-import { SkillsService } from '$lib/server/services/skills.service';
-import { ProjectsService } from '$lib/server/services/projects.service';
-import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
+import { skillsService } from '$lib/server/services/skills.service';
+import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
 
 export const prerender = false;
 
-export const load: PageServerLoad = async () => {
-	const skillsService = new SkillsService();
-	const projectsService = new ProjectsService(new ProjectsRepository());
+export const load: PageServerLoad = async ({ locals }) => {
+	const locale = locals.paraglide.locale as 'en' | 'id';
 
-	try {
-		// Mengambil semua data secara paralel untuk kecepatan maksimal
-		const [projects, skillsEn, skillsId, blogEn, blogId] = await Promise.all([
-			projectsService.findAll(),
-			skillsService.getSkills('en'),
-			skillsService.getSkills('id'),
-			blogService.getPublishedPostsByLocale('en'),
-			blogService.getPublishedPostsByLocale('id')
-		]);
-
-		return {
-			projects: {
-				en: projects || [],
-				id: projects || []
-			},
-			skills: {
-				en: (skillsEn as { items: string[] })?.items || [],
-				id: (skillsId as { items: string[] })?.items || []
-			},
-			latestPosts: {
-				en: blogEn?.slice(0, 3) || [],
-				id: blogId?.slice(0, 3) || []
-			}
-		};
-	} catch (error) {
-		console.error('Error loading homepage data:', error);
-		return {
-			projects: { en: [], id: [] },
-			skills: { en: [], id: [] },
-			latestPosts: { en: [], id: [] }
-		};
-	}
+	// Projects fetch is the same for both, but we fetch it once.
+	// Skills and Blog are locale-specific.
+	// We stream the data to allow the page to start rendering immediately.
+	
+	return {
+		projects: projectsService.findAll().then((projects) => projects || []),
+		skills: skillsService.getSkills(locale).then((skills) => (skills as { items: string[] })?.items || []),
+		latestPosts: blogService.getPublishedPostsByLocale(locale).then((posts) => posts?.slice(0, 3) || [])
+	};
 };
