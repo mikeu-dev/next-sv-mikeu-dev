@@ -14,7 +14,7 @@
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import gsap from 'gsap';
-	import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+	import ScrollToPlugin from 'gsap/ScrollToPlugin';
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
