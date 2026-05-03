@@ -37,16 +37,18 @@
 
 	// Featured post (only if not searching)
 	const featuredPost = $derived(!data.search && selectedCategory === 'All' ? allPosts[0] : null);
-	const gridPosts = $derived(featuredPost ? filteredPosts.filter((p) => p.slug !== featuredPost.slug) : filteredPosts);
+	const gridPosts = $derived(
+		featuredPost ? filteredPosts.filter((p) => p.slug !== featuredPost.slug) : filteredPosts
+	);
 
 	async function loadMore() {
 		if (isLoadingMore || !nextCursor) return;
-		
+
 		isLoadingMore = true;
 		try {
 			const res = await fetch(`/api/blog?lastDate=${nextCursor}&q=${data.search || ''}`);
 			const result = await res.json();
-			
+
 			if (result.posts && result.posts.length > 0) {
 				allPosts = [...allPosts, ...result.posts];
 				nextCursor = result.nextCursor;
@@ -107,17 +109,22 @@
 
 	<!-- Search Bar -->
 	<section class="stagger-item mx-auto mb-16 max-w-2xl">
-		<form action="/blog" method="GET" class="relative group">
-			<Search class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
-			<input 
-				type="text" 
-				name="q" 
-				placeholder="Search articles..." 
+		<form action="/blog" method="GET" class="group relative">
+			<Search
+				class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
+			/>
+			<input
+				type="text"
+				name="q"
+				placeholder="Search articles..."
 				value={data.search}
-				class="w-full h-14 pl-12 pr-12 rounded-2xl border border-border bg-card/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg"
+				class="h-14 w-full rounded-2xl border border-border bg-card/50 pr-12 pl-12 text-lg backdrop-blur-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
 			/>
 			{#if data.search}
-				<a href="/blog" class="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors">
+				<a
+					href="/blog"
+					class="absolute top-1/2 right-4 -translate-y-1/2 rounded-full p-1 transition-colors hover:bg-muted"
+				>
 					<X class="size-5 text-muted-foreground" />
 				</a>
 			{/if}
@@ -181,8 +188,12 @@
 		{:else if gridPosts.length === 0}
 			<div class="py-20 text-center">
 				<h3 class="text-2xl font-bold">No articles found</h3>
-				<p class="mt-4 text-muted-foreground">Try searching with different keywords or clearing your search.</p>
-				<a href="/blog" class="mt-8 inline-block text-primary font-bold hover:underline">Clear Search</a>
+				<p class="mt-4 text-muted-foreground">
+					Try searching with different keywords or clearing your search.
+				</p>
+				<a href="/blog" class="mt-8 inline-block font-bold text-primary hover:underline"
+					>Clear Search</a
+				>
 			</div>
 		{/if}
 	</div>

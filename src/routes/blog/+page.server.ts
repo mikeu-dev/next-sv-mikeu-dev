@@ -6,8 +6,8 @@ export const prerender = false;
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const locale = locals.paraglide.locale;
 	const search = url.searchParams.get('q') || '';
-	
-	const { posts, nextCursor } = await blogService.getPublishedPostsByLocale(locale, { 
+
+	const { posts, nextCursor } = await blogService.getPublishedPostsByLocale(locale, {
 		limit: 12,
 		search: search || undefined
 	});

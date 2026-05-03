@@ -80,7 +80,9 @@
 
 			<MarkdownRenderer content={data.content} isRendered={true} />
 
-			<div class="flex flex-col gap-8 border-t pt-10 pb-4 md:flex-row md:items-center md:justify-between">
+			<div
+				class="flex flex-col gap-8 border-t pt-10 pb-4 md:flex-row md:items-center md:justify-between"
+			>
 				<BlogReactions reactions={data.reactions} />
 				<BlogShare title={data.meta.title} />
 			</div>

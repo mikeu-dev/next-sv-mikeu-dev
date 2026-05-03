@@ -81,9 +81,7 @@ export class BlogService {
 		// 2. If not enough related posts, add latest posts as fallback
 		if (related.length < limit) {
 			const latestFallback = allPosts
-				.filter(
-					(post) => post.slug !== currentSlug && !related.some((r) => r.slug === post.slug)
-				)
+				.filter((post) => post.slug !== currentSlug && !related.some((r) => r.slug === post.slug))
 				// allPosts is already sorted by date in repository
 				.slice(0, limit - related.length);
 

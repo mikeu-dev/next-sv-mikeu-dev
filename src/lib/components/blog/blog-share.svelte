@@ -56,8 +56,10 @@
 </script>
 
 <div class="flex items-center gap-3">
-	<span class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{m.blog_share()}</span>
-	
+	<span class="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+		>{m.blog_share()}</span
+	>
+
 	<div class="flex items-center gap-2">
 		{#each shareLinks as link (link.name)}
 			<a

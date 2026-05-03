@@ -34,19 +34,25 @@
 				class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
 				loading="lazy"
 			/>
-			
+
 			<!-- Overlay Gradient -->
-			<div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+			<div
+				class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+			></div>
 
 			<!-- Floating Badges -->
 			<div class="absolute top-4 left-4 flex flex-wrap gap-2">
 				{#if isNew}
-					<div class="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-[10px] font-black text-white shadow-lg animate-pulse">
+					<div
+						class="flex animate-pulse items-center gap-1 rounded-full bg-primary px-3 py-1 text-[10px] font-black text-white shadow-lg"
+					>
 						<Sparkles class="size-3" />
 						NEW
 					</div>
 				{/if}
-				<div class="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold text-white backdrop-blur-md border border-white/20 shadow-xl">
+				<div
+					class="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold text-white shadow-xl backdrop-blur-md"
+				>
 					<Calendar class="size-3" />
 					{formattedDate}
 				</div>
@@ -56,17 +62,23 @@
 		<Card.Header class="flex-1 p-5">
 			<div class="mb-3 flex flex-wrap gap-2">
 				{#each post.tags || [] as tag (tag)}
-					<span class="text-[10px] font-black tracking-widest text-primary uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+					<span
+						class="text-[10px] font-black tracking-widest text-primary uppercase opacity-60 transition-opacity group-hover:opacity-100"
+					>
 						#{tag}
 					</span>
 				{/each}
 			</div>
 
 			<div class="flex items-start justify-between gap-4">
-				<Card.Title class="font-poppins text-lg leading-[1.3] font-black transition-colors group-hover:text-primary md:text-xl">
+				<Card.Title
+					class="font-poppins text-lg leading-[1.3] font-black transition-colors group-hover:text-primary md:text-xl"
+				>
 					{post.title}
 				</Card.Title>
-				<div class="mt-1 shrink-0 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+				<div
+					class="mt-1 shrink-0 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+				>
 					<ArrowUpRight class="size-5 text-primary" />
 				</div>
 			</div>
@@ -76,15 +88,19 @@
 			</Card.Description>
 		</Card.Header>
 
-		<Card.Footer class="flex items-center gap-6 border-t border-border/30 px-6 py-4 text-xs font-medium text-muted-foreground">
+		<Card.Footer
+			class="flex items-center gap-6 border-t border-border/30 px-6 py-4 text-xs font-medium text-muted-foreground"
+		>
 			{#if post.readingTime}
 				<div class="flex items-center gap-2">
 					<Clock class="size-4 text-primary" />
 					<span>{post.readingTime} min read</span>
 				</div>
 			{/if}
-			
-			<div class="ml-auto flex items-center gap-1 text-primary opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+
+			<div
+				class="ml-auto flex -translate-x-2 items-center gap-1 text-primary opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+			>
 				<span class="font-bold">Read More</span>
 			</div>
 		</Card.Footer>
@@ -95,7 +111,7 @@
 	article {
 		perspective: 1000px;
 	}
-	
+
 	:global(.group:hover) {
 		transform: translateY(-4px);
 		transition: transform 0.3s ease;
