@@ -17,6 +17,7 @@ const envSchema = z.object({
 	// GitHub Storage
 	GITHUB_ACCESS_TOKEN: z.string().optional(),
 	GITHUB_USERNAME: z.string().optional(),
+	GITHUB_REPO: z.string().optional(),
 	GITHUB_BRANCH: z.string().default('main'),
 
 	// Uploads
@@ -67,7 +68,8 @@ export function checkRequiredEnvVars(): boolean {
 		'ADMIN_USERNAME',
 		'ADMIN_PASSWORD',
 		'GITHUB_ACCESS_TOKEN',
-		'GITHUB_USERNAME'
+		'GITHUB_USERNAME',
+		'GITHUB_REPO'
 	];
 
 	const missing = required.filter((key) => !dynamicPrivateEnv[key]);
