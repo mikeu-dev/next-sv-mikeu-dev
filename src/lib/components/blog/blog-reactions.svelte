@@ -9,11 +9,17 @@
 		reactions: { likes: number; views: number };
 	}>();
 
-	let likes = $state(reactions.likes);
-	let views = $state(reactions.views);
+	let likes = $state(0);
+	let views = $state(0);
 	let hasLiked = $state(false);
 	let isLoading = $state(false);
 	let showConfetti = $state(false);
+
+	// Sync with props
+	$effect(() => {
+		likes = reactions.likes;
+		views = reactions.views;
+	});
 
 	onMount(() => {
 		// Simple local storage to prevent multiple likes from same browser
@@ -22,6 +28,7 @@
 	});
 
 	async function handleLike() {
+		console.log('HandleLike clicked', { hasLiked, isLoading, slug: page.params.slug });
 		if (hasLiked || isLoading) return;
 
 		isLoading = true;
@@ -35,19 +42,25 @@
 		showConfetti = true;
 
 		try {
+			console.log('Sending like request to:', `/api/blog/${page.params.slug}/like`);
 			const res = await fetch(`/api/blog/${page.params.slug}/like`, {
 				method: 'POST'
 			});
 
 			if (res.ok) {
 				const data = await res.json();
+				console.log('Like response:', data);
 				likes = data.likes;
 
 				// Save to local storage
 				const likedPosts = JSON.parse(localStorage.getItem('liked_posts') || '[]');
-				likedPosts.push(page.params.slug);
-				localStorage.setItem('liked_posts', JSON.stringify(likedPosts));
+				if (!likedPosts.includes(page.params.slug)) {
+					likedPosts.push(page.params.slug);
+					localStorage.setItem('liked_posts', JSON.stringify(likedPosts));
+				}
 			} else {
+				const errData = await res.json();
+				console.error('Like failed:', errData);
 				// Rollback if failed
 				likes -= 1;
 				hasLiked = false;
