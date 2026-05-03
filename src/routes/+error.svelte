@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { env } from '$env/dynamic/public';
-	import * as Card from '$lib/components/ui/card/index.js';
-	import Button from '@/lib/components/ui/button/button.svelte';
+	import * as Card from '$lib/components/ui/card';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import { DotLottieSvelte } from '@lottiefiles/dotlottie-svelte';
 </script>
 
@@ -15,7 +15,9 @@
 			<Card.Description class="text-lg">Terjadi Kesalahan</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<DotLottieSvelte src={env.PUBLIC_LOTTIE_URL} loop autoplay />
+			{#if env.PUBLIC_LOTTIE_URL}
+				<DotLottieSvelte src={env.PUBLIC_LOTTIE_URL} loop autoplay />
+			{/if}
 			<p class="text-muted-foreground">{page.error?.message}</p>
 		</Card.Content>
 		<Card.Footer class="flex justify-center">
