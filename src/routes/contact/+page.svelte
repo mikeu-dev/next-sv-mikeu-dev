@@ -10,7 +10,7 @@
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 	type ActionData = {
 		success: boolean;

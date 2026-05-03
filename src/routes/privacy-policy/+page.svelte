@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	const lastUpdated = '7 April 2026';
 
 	onMount(() => {

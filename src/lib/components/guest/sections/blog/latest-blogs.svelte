@@ -4,7 +4,7 @@
 	import type { BlogPost } from '$lib/server/services/blog.service';
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { localizeHref } from '$lib/paraglide/runtime';
 

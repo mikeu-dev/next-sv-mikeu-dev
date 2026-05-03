@@ -10,7 +10,7 @@
 	import * as m from '@/lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 	let { data }: { data: PageData } = $props();
 	const { projects }: { projects: Record<string, Project[]> } = data;

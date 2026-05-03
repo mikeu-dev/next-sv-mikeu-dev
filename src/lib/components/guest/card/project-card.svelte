@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowRight } from '@lucide/svelte';
 	import type { LocalizedProject } from '$lib/utils/project-mapper'; // Use the localized interface
 	import Icon from '$lib/components/ui/icon.svelte';
