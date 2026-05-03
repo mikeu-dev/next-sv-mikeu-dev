@@ -41,11 +41,11 @@ export async function renderMarkdown(content: string) {
 			.toLowerCase()
 			.replace(/[^\w]+/g, '-')
 			.replace(/^-+|-+$/g, '');
-		
+
 		if (depth > 1 && depth <= 3) {
 			headings.push({ depth, text, id });
 		}
-		
+
 		return `<h${depth} id="${id}">${text}</h${depth}>`;
 	};
 

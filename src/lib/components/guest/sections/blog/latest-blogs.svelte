@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as m from '$lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import BlogCard from '../../blog/blog-card.svelte';
 	import type { BlogPost } from '$lib/server/services/blog.service';
 	import { onMount } from 'svelte';

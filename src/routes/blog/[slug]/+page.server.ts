@@ -30,11 +30,7 @@ export const load: PageServerLoad = async (event) => {
 		const { html, headings } = await renderMarkdown(post.content || '');
 
 		// Get related posts
-		const relatedPosts = await blogService.getRelatedPosts(
-			slug,
-			post.tags || [],
-			locale
-		);
+		const relatedPosts = await blogService.getRelatedPosts(slug, post.tags || [], locale);
 
 		// Track view and get reactions (non-blocking if possible, but for simplicity we'll wait)
 		const reactions = await reactionService.trackView(slug);

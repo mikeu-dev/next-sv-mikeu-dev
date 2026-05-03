@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 	import Icon from '$lib/components/ui/icon.svelte';
 
 	let { socials, visitorStats = { total: 0, today: 0 } } = $props();

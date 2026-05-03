@@ -2,7 +2,7 @@
 	import type { BlogPost } from '$lib/server/services/blog.service';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-	import * as m from '$lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { page } from '$app/state';
 
 	let { post } = $props<{ post: BlogPost }>();

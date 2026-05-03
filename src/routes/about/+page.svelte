@@ -6,7 +6,7 @@
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import * as m from '$lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { getLocalizedTag } from '$lib/utils/project-mapper';
 
 	let { data }: { data: PageData } = $props();

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
 	import type { PageData } from './$types';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { ArrowLeft, Clock } from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
@@ -52,7 +52,7 @@
 			</div>
 
 			<header class="mb-16">
-				<h1 class="font-poppins text-4xl font-black leading-tight tracking-tight md:text-6xl">
+				<h1 class="font-poppins text-4xl leading-tight font-black tracking-tight md:text-6xl">
 					{data.meta.title}<span class="text-primary">.</span>
 				</h1>
 

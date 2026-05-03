@@ -5,7 +5,7 @@
 	import Textarea from '@/lib/components/ui/textarea/textarea.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';

@@ -13,7 +13,7 @@
 </script>
 
 <div class="markdown-container max-w-none py-4">
-	<div class="prose prose-slate max-w-none dark:prose-invert lg:prose-lg">
+	<div class="prose max-w-none prose-slate lg:prose-lg dark:prose-invert">
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html htmlContent}
 	</div>
@@ -27,7 +27,7 @@
 	}
 
 	:global(.prose pre code) {
-		@apply block min-w-full p-4 text-[13px] leading-relaxed whitespace-pre font-mono md:text-[14px];
+		@apply block min-w-full p-4 font-mono text-[13px] leading-relaxed whitespace-pre md:text-[14px];
 		background: transparent !important;
 	}
 
@@ -36,7 +36,7 @@
 	}
 
 	:global(.prose blockquote) {
-		@apply border-l-4 border-primary/40 bg-primary/5 py-1 pr-4 font-normal not-italic text-foreground/80;
+		@apply border-l-4 border-primary/40 bg-primary/5 py-1 pr-4 font-normal text-foreground/80 not-italic;
 	}
 
 	:global(.prose img) {

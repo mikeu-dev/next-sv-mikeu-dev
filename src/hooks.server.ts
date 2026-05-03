@@ -175,7 +175,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		handleVisitor,
 		handleAuth
 	)({ event, resolve });
-	console.log(`[Hooks] Finished handling request: ${event.url.pathname} with status ${response.status}`);
+	console.log(
+		`[Hooks] Finished handling request: ${event.url.pathname} with status ${response.status}`
+	);
 	return response;
 };
 

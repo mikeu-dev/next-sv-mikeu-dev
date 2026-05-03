@@ -7,7 +7,7 @@
 	import { buttonVariants } from '@/lib/components/ui/button';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';

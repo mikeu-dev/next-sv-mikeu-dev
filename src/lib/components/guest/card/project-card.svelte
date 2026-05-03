@@ -5,7 +5,7 @@
 	import { ArrowRight } from '@lucide/svelte';
 	import type { LocalizedProject } from '$lib/utils/project-mapper'; // Use the localized interface
 	import Icon from '$lib/components/ui/icon.svelte';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { base } from '$app/paths';
 	// import { getLocale } from '@/lib/paraglide/runtime';
 

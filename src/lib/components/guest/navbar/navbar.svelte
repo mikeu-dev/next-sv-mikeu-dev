@@ -25,7 +25,7 @@
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{
 		resolvedResumeUrls?: { en: string; id: string };
 	}>();

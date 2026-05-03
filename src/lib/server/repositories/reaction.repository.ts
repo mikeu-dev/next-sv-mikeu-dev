@@ -20,7 +20,7 @@ export class ReactionRepository extends BaseRepository<BlogReaction> {
 		await docRef.set(
 			{
 				slug,
-				likes: (admin.firestore.FieldValue.increment(1) as unknown as number)
+				likes: admin.firestore.FieldValue.increment(1) as unknown as number
 			},
 			{ merge: true }
 		);
@@ -33,7 +33,7 @@ export class ReactionRepository extends BaseRepository<BlogReaction> {
 		await docRef.set(
 			{
 				slug,
-				views: (admin.firestore.FieldValue.increment(1) as unknown as number)
+				views: admin.firestore.FieldValue.increment(1) as unknown as number
 			},
 			{ merge: true }
 		);

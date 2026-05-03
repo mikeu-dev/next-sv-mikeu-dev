@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { pwaState } from '$lib/stores/pwa.svelte';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 	import SmartphoneIcon from '@lucide/svelte/icons/smartphone';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';

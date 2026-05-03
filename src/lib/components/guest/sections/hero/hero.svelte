@@ -3,7 +3,7 @@
 	import Matter, { type IChamferableBodyDefinition } from 'matter-js';
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
-	import * as m from '@/lib/paraglide/messages';
+	import { m } from '@/lib/paraglide/messages';
 
 	let { skills }: { skills: string[] } = $props();
 

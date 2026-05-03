@@ -3,7 +3,7 @@
 	import { Splide, SplideSlide } from '@splidejs/svelte-splide';
 	import { Button } from '@/lib/components/ui/button';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import * as m from '@/lib/paraglide/messages.js';
+	import { m } from '@/lib/paraglide/messages.js';
 	import SEO from '@/lib/components/seo/seo.svelte';
 	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
 

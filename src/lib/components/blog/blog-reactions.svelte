@@ -41,7 +41,7 @@
 			if (res.ok) {
 				const data = await res.json();
 				likes = data.likes;
-				
+
 				// Save to local storage
 				const likedPosts = JSON.parse(localStorage.getItem('liked_posts') || '[]');
 				likedPosts.push(page.params.slug);
@@ -85,7 +85,7 @@
 		>
 			<Heart
 				class={`size-5 transition-transform duration-300 ${
-					hasLiked ? 'fill-primary scale-110' : 'group-hover:scale-125'
+					hasLiked ? 'scale-110 fill-primary' : 'group-hover:scale-125'
 				}`}
 			/>
 			<span class="font-bold">{likes}</span>

@@ -46,9 +46,7 @@
 {#if headings.length > 0}
 	<nav class="hidden xl:block">
 		<div class="sticky top-32 max-h-[calc(100vh-160px)] overflow-y-auto">
-			<h4 class="mb-4 text-sm font-bold tracking-wider text-foreground uppercase">
-				On This Page
-			</h4>
+			<h4 class="mb-4 text-sm font-bold tracking-wider text-foreground uppercase">On This Page</h4>
 			<ul class="space-y-3 border-l text-sm">
 				{#each headings as heading (heading.id)}
 					<li class={`${heading.depth === 3 ? 'pl-6' : 'pl-4'}`}>
@@ -56,7 +54,7 @@
 							onclick={() => scrollTo(heading.id)}
 							class={`text-left transition-colors hover:text-primary ${
 								activeId === heading.id
-									? 'border-l-2 border-primary -ml-[17px] pl-[15px] font-bold text-primary'
+									? '-ml-[17px] border-l-2 border-primary pl-[15px] font-bold text-primary'
 									: 'text-muted-foreground'
 							}`}
 						>
