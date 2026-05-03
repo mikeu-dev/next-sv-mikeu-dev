@@ -3,7 +3,6 @@ import { COLLECTIONS } from '../firebase/collections';
 
 import type { Project } from '../../types';
 
-import { db } from '../firebase/firebase.server';
 
 export class ProjectsRepository extends BaseRepository<Project> {
 	constructor() {
@@ -11,12 +10,13 @@ export class ProjectsRepository extends BaseRepository<Project> {
 	}
 
 	async findBySlug(slug: string): Promise<Project | null> {
-		const snapshot = await db
-			.collection(COLLECTIONS.PROJECTS)
-			.where('slug', '==', slug)
-			.limit(1)
-			.get();
+		const col = this.getCollection();
+		if (!col) return null;
+
+		const snapshot = await col.where('slug', '==', slug).limit(1).get();
 		if (snapshot.empty) return null;
-		return { ...this.toPOJO(snapshot.docs[0].data()), id: snapshot.docs[0].id };
+		const doc = snapshot.docs[0];
+		if (!doc) return null;
+		return { ...this.toPOJO(doc.data()), id: doc.id };
 	}
 }
