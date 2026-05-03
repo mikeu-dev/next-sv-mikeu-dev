@@ -67,9 +67,25 @@ export class BlogService {
 
 	async getRelatedPosts(currentSlug: string, tags: string[], locale: string, limit = 3) {
 		const allPosts = await this.getPublishedPostsByLocale(locale);
-		return allPosts
-			.filter((post) => post.slug !== currentSlug && post.tags?.some((tag) => tags.includes(tag)))
-			.slice(0, limit);
+
+		// 1. Filter by tags first (same tags as current post)
+		let related = allPosts.filter(
+			(post) => post.slug !== currentSlug && post.tags?.some((tag) => tags.includes(tag))
+		);
+
+		// 2. If not enough related posts, add latest posts as fallback
+		if (related.length < limit) {
+			const latestFallback = allPosts
+				.filter(
+					(post) => post.slug !== currentSlug && !related.some((r) => r.slug === post.slug)
+				)
+				// allPosts is already sorted by date in repository
+				.slice(0, limit - related.length);
+
+			related = [...related, ...latestFallback];
+		}
+
+		return related.slice(0, limit);
 	}
 }
 
