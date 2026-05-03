@@ -16,7 +16,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	return {
 		socials: socialsService
 			.getSocials()
-			.then((data) => (data as { links: unknown[] }).links || [])
+			.then((data) => (data as { links?: unknown[] })?.links || [])
 			.catch(() => []),
 		visitorStats: visitorService
 			.getStats()
@@ -28,8 +28,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		resumeUrls: settingsService
 			.getResumeSettings()
 			.then((resume) => ({
-				en: resume.resumeUrlEn || '',
-				id: resume.resumeUrlId || ''
+				en: resume?.resumeUrlEn || '',
+				id: resume?.resumeUrlId || ''
 			}))
 			.catch(() => ({ en: '', id: '' })),
 		user: locals.user,

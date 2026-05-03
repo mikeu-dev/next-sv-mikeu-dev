@@ -5,7 +5,12 @@ import { locales, baseLocale } from '$lib/paraglide/runtime';
 
 export const GET: RequestHandler = async () => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
-	const projects = await projectsService.findAll();
+	let projects: import('$lib/types').Project[] = [];
+	try {
+		projects = await projectsService.findAll();
+	} catch (error) {
+		console.error('Sitemap: Failed to fetch projects:', error);
+	}
 
 	const siteUrl = 'https://www.mikeudev.my.id';
 

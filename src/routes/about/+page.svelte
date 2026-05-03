@@ -13,16 +13,18 @@
 	let initialLocale = $state(getLocale());
 
 	let techstackRaw = $derived(
-		(data.techStack[initialLocale] || data.techStack['en']) as TechStackCategory[]
+		(data?.techStack?.[initialLocale] || data?.techStack?.['en'] || []) as TechStackCategory[]
 	);
 	let techstack = $derived(
 		techstackRaw.map((category) => ({
 			...category,
-			items: category.items.map((item) => getLocalizedTag(item))
+			items: (category.items || []).map((item) => getLocalizedTag(item))
 		}))
 	);
 
-	let myJourney = $derived((data.journey[initialLocale] || data.journey['en']) as JourneyItem[]);
+	let myJourney = $derived(
+		(data?.journey?.[initialLocale] || data?.journey?.['en'] || []) as JourneyItem[]
+	);
 	let container: HTMLElement;
 	let journeySection: HTMLElement;
 	let wavingHand: HTMLElement;

@@ -3,6 +3,8 @@ import type { PageServerLoad } from './$types';
 import { ProjectsService } from '$lib/server/services/projects.service';
 import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
 
+export const prerender = false;
+
 export const load: PageServerLoad = async ({ params }) => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
 	let project = null;
