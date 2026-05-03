@@ -33,6 +33,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			}))
 			.catch(() => ({ en: '', id: '' })),
 		user: locals.user,
-		locale: locals.paraglide.locale
+		locale: locals.paraglide?.locale || 'en'
 	};
 };
