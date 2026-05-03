@@ -30,3 +30,4 @@ export const db = getApps().length
 	: (null as unknown as admin.firestore.Firestore);
 
 export const auth = getApps().length ? admin.auth() : (null as unknown as admin.auth.Auth);
+export { admin };

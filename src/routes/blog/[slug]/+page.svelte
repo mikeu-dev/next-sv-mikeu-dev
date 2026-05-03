@@ -8,6 +8,7 @@
 	import ReadingProgress from '$lib/components/blog/reading-progress.svelte';
 	import TableOfContents from '$lib/components/blog/table-of-contents.svelte';
 	import RelatedPosts from '$lib/components/blog/related-posts.svelte';
+	import BlogReactions from '$lib/components/blog/blog-reactions.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import SEO from '$lib/components/seo/seo.svelte';
@@ -66,10 +67,10 @@
 						</time>
 					{/if}
 
-					{#if (data.meta as any).readingTime}
+					{#if data.meta.readingTime}
 						<div class="flex items-center gap-2">
 							<Clock class="size-4" />
-							<span>{(data.meta as any).readingTime} min read</span>
+							<span>{data.meta.readingTime} min read</span>
 						</div>
 					{/if}
 				</div>
@@ -77,9 +78,11 @@
 
 			<MarkdownRenderer content={data.content} isRendered={true} />
 
+			<BlogReactions reactions={data.reactions} />
+
 			<RelatedPosts posts={data.relatedPosts} />
 		</article>
 
-		<TableOfContents headings={(data as any).headings || []} />
+		<TableOfContents headings={data.headings || []} />
 	</div>
 </div>
