@@ -53,25 +53,25 @@
 			</div>
 		</div>
 
-		<Card.Header class="flex-1 p-6">
-			<div class="mb-4 flex flex-wrap gap-2">
+		<Card.Header class="flex-1 p-5">
+			<div class="mb-3 flex flex-wrap gap-2">
 				{#each post.tags || [] as tag (tag)}
-					<span class="text-[10px] font-black tracking-widest text-primary uppercase opacity-70 group-hover:opacity-100 transition-opacity">
+					<span class="text-[10px] font-black tracking-widest text-primary uppercase opacity-60 group-hover:opacity-100 transition-opacity">
 						#{tag}
 					</span>
 				{/each}
 			</div>
 
 			<div class="flex items-start justify-between gap-4">
-				<Card.Title class="line-clamp-2 font-poppins text-xl leading-tight font-black transition-colors group-hover:text-primary md:text-2xl">
+				<Card.Title class="font-poppins text-lg leading-[1.3] font-black transition-colors group-hover:text-primary md:text-xl">
 					{post.title}
 				</Card.Title>
-				<div class="mt-1 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-					<ArrowUpRight class="size-6 text-primary" />
+				<div class="mt-1 shrink-0 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+					<ArrowUpRight class="size-5 text-primary" />
 				</div>
 			</div>
 
-			<Card.Description class="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground/80">
+			<Card.Description class="mt-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground/80">
 				{post.description}
 			</Card.Description>
 		</Card.Header>
