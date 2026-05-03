@@ -30,8 +30,11 @@ export class BlogService {
 		return this.repository.findById(id);
 	}
 
-	async getPublishedPostsByLocale(locale: string) {
-		return this.repository.getPublishedByLocale(locale);
+	async getPublishedPostsByLocale(
+		locale: string,
+		options: { limit?: number; lastDate?: string; search?: string } = {}
+	) {
+		return this.repository.getPublishedByLocale(locale, options);
 	}
 
 	async createPost(data: BlogPost) {
@@ -66,7 +69,9 @@ export class BlogService {
 	}
 
 	async getRelatedPosts(currentSlug: string, tags: string[], locale: string, limit = 3) {
-		const allPosts = await this.getPublishedPostsByLocale(locale);
+		// For related posts, we still fetch a reasonable amount to filter in memory
+		// or we could optimize this later with a dedicated tag query
+		const { posts: allPosts } = await this.getPublishedPostsByLocale(locale, { limit: 20 });
 
 		// 1. Filter by tags first (same tags as current post)
 		let related = allPosts.filter(

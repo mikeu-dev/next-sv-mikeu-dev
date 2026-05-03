@@ -7,24 +7,58 @@
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
 
+	import { Search, X, Loader2 } from '@lucide/svelte';
+
 	let { data }: { data: PageData } = $props();
+
+	// Reactive state for posts and pagination
+	let allPosts = $state(data.posts);
+	let nextCursor = $state(data.nextCursor);
+	let isLoadingMore = $state(false);
+
+	// Sync with server data on initial load or when data changes (e.g. search)
+	$effect(() => {
+		allPosts = data.posts;
+		nextCursor = data.nextCursor;
+	});
 
 	// State for category filtering
 	let selectedCategory = $state('All');
 
-	// Get unique categories from all posts
-	const categories = $derived(['All', ...new Set(data.posts.flatMap((post) => post.tags || []))]);
+	// Get unique categories from currently loaded posts
+	const categories = $derived(['All', ...new Set(allPosts.flatMap((post) => post.tags || []))]);
 
 	// Filtered posts
 	const filteredPosts = $derived(
 		selectedCategory === 'All'
-			? data.posts
-			: data.posts.filter((post) => post.tags?.includes(selectedCategory))
-	) as typeof data.posts;
+			? allPosts
+			: allPosts.filter((post) => post.tags?.includes(selectedCategory))
+	);
 
-	// Featured post (latest one from the filtered list, or just latest overall)
-	const featuredPost = $derived(data.posts[0]);
-	const remainingPosts = $derived(filteredPosts.filter((p) => p.slug !== featuredPost.slug));
+	// Featured post (only if not searching)
+	const featuredPost = $derived(!data.search && selectedCategory === 'All' ? allPosts[0] : null);
+	const gridPosts = $derived(featuredPost ? filteredPosts.filter((p) => p.slug !== featuredPost.slug) : filteredPosts);
+
+	async function loadMore() {
+		if (isLoadingMore || !nextCursor) return;
+		
+		isLoadingMore = true;
+		try {
+			const res = await fetch(`/api/blog?lastDate=${nextCursor}&q=${data.search || ''}`);
+			const result = await res.json();
+			
+			if (result.posts && result.posts.length > 0) {
+				allPosts = [...allPosts, ...result.posts];
+				nextCursor = result.nextCursor;
+			} else {
+				nextCursor = null;
+			}
+		} catch (err) {
+			console.error('Error loading more posts:', err);
+		} finally {
+			isLoadingMore = false;
+		}
+	}
 
 	// Animations
 	let container: HTMLElement;
@@ -62,7 +96,7 @@
 
 <div class="mx-auto mt-28 max-w-7xl px-4 pb-20 sm:px-6 lg:px-8" bind:this={container}>
 	<!-- Header Section -->
-	<header class="stagger-item mb-16 text-center">
+	<header class="stagger-item mb-12 text-center">
 		<h1 class="font-poppins text-5xl font-black tracking-tight md:text-7xl">
 			{m.blog_title()}<span class="text-primary">.</span>
 		</h1>
@@ -71,44 +105,87 @@
 		</p>
 	</header>
 
-	<!-- Featured Post Section (Only show if on 'All' or if featured post matches category) -->
-	{#if selectedCategory === 'All' || (featuredPost.tags && featuredPost.tags.includes(selectedCategory))}
+	<!-- Search Bar -->
+	<section class="stagger-item mx-auto mb-16 max-w-2xl">
+		<form action="/blog" method="GET" class="relative group">
+			<Search class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
+			<input 
+				type="text" 
+				name="q" 
+				placeholder="Search articles..." 
+				value={data.search}
+				class="w-full h-14 pl-12 pr-12 rounded-2xl border border-border bg-card/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-lg"
+			/>
+			{#if data.search}
+				<a href="/blog" class="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors">
+					<X class="size-5 text-muted-foreground" />
+				</a>
+			{/if}
+		</form>
+		{#if data.search}
+			<p class="mt-4 text-center text-sm text-muted-foreground">
+				Showing results for <span class="font-bold text-foreground">"{data.search}"</span>
+			</p>
+		{/if}
+	</section>
+
+	<!-- Featured Post Section -->
+	{#if featuredPost}
 		<section class="stagger-item mb-20">
 			<BlogFeatured post={featuredPost} />
 		</section>
 	{/if}
 
 	<!-- Category Filter -->
-	<section class="stagger-item mb-12 flex flex-wrap items-center justify-center gap-3">
-		{#each categories as category (category)}
-			<button
-				onclick={() => (selectedCategory = category)}
-				class={`rounded-full px-6 py-2 text-sm font-bold transition-all duration-300 ${
-					selectedCategory === category
-						? 'scale-105 bg-primary text-primary-foreground shadow-lg shadow-primary/20'
-						: 'bg-muted text-muted-foreground hover:bg-muted/80'
-				}`}
-			>
-				{category}
-			</button>
-		{/each}
-	</section>
+	{#if allPosts.length > 0}
+		<section class="stagger-item mb-12 flex flex-wrap items-center justify-center gap-3">
+			{#each categories as category (category)}
+				<button
+					onclick={() => (selectedCategory = category)}
+					class={`rounded-full px-6 py-2 text-sm font-bold transition-all duration-300 ${
+						selectedCategory === category
+							? 'scale-105 bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+							: 'bg-muted text-muted-foreground hover:bg-muted/80'
+					}`}
+				>
+					{category}
+				</button>
+			{/each}
+		</section>
+	{/if}
 
 	<!-- Blog Grid -->
 	<section class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-		{#each remainingPosts as post (post.slug)}
+		{#each gridPosts as post (post.slug)}
 			<div class="blog-grid-item">
 				<BlogCard {post} />
 			</div>
 		{/each}
 	</section>
 
-	{#if filteredPosts.length === 0}
-		<div class="py-20 text-center">
-			<h3 class="text-2xl font-bold">No articles found</h3>
-			<p class="mt-4 text-muted-foreground">{m.blog_stay_tuned()}</p>
-		</div>
-	{/if}
+	<!-- Load More / Empty State -->
+	<div class="mt-20 flex justify-center">
+		{#if nextCursor && selectedCategory === 'All'}
+			<button
+				onclick={loadMore}
+				disabled={isLoadingMore}
+				class="group flex items-center gap-3 rounded-full bg-primary px-10 py-4 text-sm font-bold tracking-widest text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:scale-105 hover:shadow-primary/30 disabled:opacity-50"
+			>
+				{#if isLoadingMore}
+					<Loader2 class="size-5 animate-spin" />
+					LOADING...
+				{:else}
+					LOAD MORE
+				{/if}
+			</button>
+		{:else if gridPosts.length === 0}
+			<div class="py-20 text-center">
+				<h3 class="text-2xl font-bold">No articles found</h3>
+				<p class="mt-4 text-muted-foreground">Try searching with different keywords or clearing your search.</p>
+				<a href="/blog" class="mt-8 inline-block text-primary font-bold hover:underline">Clear Search</a>
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style>
