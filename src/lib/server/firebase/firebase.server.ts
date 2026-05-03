@@ -15,6 +15,7 @@ if (!getApps().length) {
 		}),
 		databaseURL: `https://${FIREBASE_PROJECT_ID}.firebaseio.com`
 	});
+	admin.firestore().settings({ ignoreUndefinedProperties: true });
 }
 
 export const db = admin.firestore();
