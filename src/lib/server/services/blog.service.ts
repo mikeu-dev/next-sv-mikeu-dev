@@ -49,6 +49,13 @@ export class BlogService {
 		await this.repository.delete(id);
 		return true;
 	}
+
+	async getRelatedPosts(currentSlug: string, tags: string[], locale: string, limit = 3) {
+		const allPosts = await this.getPublishedPostsByLocale(locale);
+		return allPosts
+			.filter((post) => post.slug !== currentSlug && post.tags?.some((tag) => tags.includes(tag)))
+			.slice(0, limit);
+	}
 }
 
 export const blogService = new BlogService();
