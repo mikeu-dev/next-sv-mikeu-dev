@@ -27,7 +27,14 @@
 
 	// Use dynamic OG image if no specific image is provided
 	const finalImage = $derived.by(() => {
-		if (image) return image;
+		if (image) {
+			// If it's already an absolute URL, return it
+			if (image.startsWith('http')) return image;
+			// If it's a relative URL starting with /, prepend the site URL
+			if (image.startsWith('/')) return `${siteUrl}${image}`;
+			// Otherwise return as is
+			return image;
+		}
 		const t = encodeURIComponent(title || 'Mikeu Dev');
 		const s = encodeURIComponent(description || 'Fullstack Web Developer');
 		return `${siteUrl}/api/og?title=${t}&subtitle=${s}`;

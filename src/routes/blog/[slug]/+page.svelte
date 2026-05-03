@@ -9,6 +9,7 @@
 	import TableOfContents from '$lib/components/blog/table-of-contents.svelte';
 	import RelatedPosts from '$lib/components/blog/related-posts.svelte';
 	import BlogReactions from '$lib/components/blog/blog-reactions.svelte';
+	import BlogShare from '$lib/components/blog/blog-share.svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import SEO from '$lib/components/seo/seo.svelte';
@@ -24,6 +25,7 @@
 <SEO
 	title={data.meta.title}
 	description={data.meta.description}
+	image={data.meta.image}
 	type="article"
 	article={{
 		publishedTime: data.meta.date,
@@ -78,7 +80,10 @@
 
 			<MarkdownRenderer content={data.content} isRendered={true} />
 
-			<BlogReactions reactions={data.reactions} />
+			<div class="flex flex-col gap-8 border-t pt-10 pb-4 md:flex-row md:items-center md:justify-between">
+				<BlogReactions reactions={data.reactions} />
+				<BlogShare title={data.meta.title} />
+			</div>
 
 			<RelatedPosts posts={data.relatedPosts} />
 		</article>

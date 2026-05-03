@@ -85,7 +85,7 @@
 	/>
 {/if}
 
-<div class="flex items-center gap-6 border-t pt-10 pb-4">
+<div class="flex items-center gap-6 pb-4">
 	<div class="flex items-center gap-4">
 		<button
 			onclick={handleLike}

@@ -43,7 +43,8 @@ export const load: PageServerLoad = async (event) => {
 				date: post.date,
 				description: post.description,
 				readingTime: post.readingTime,
-				tags: post.tags
+				tags: post.tags,
+				image: post.thumbnailUrl
 			},
 			content: html,
 			headings,

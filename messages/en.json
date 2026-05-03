@@ -58,5 +58,8 @@
 	"blog_reaction_question": "Did you find this helpful?",
 	"blog_reaction_thanks": "Thank you for your feedback!",
 	"blog_views": "views",
-	"blog_related_posts": "Related Posts"
+	"blog_related_posts": "Related Posts",
+	"blog_share": "Share",
+	"blog_copy_link": "Copy Link",
+	"blog_link_copied": "Link copied!"
 }

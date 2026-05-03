@@ -58,5 +58,8 @@
 	"blog_reaction_question": "Apakah artikel ini membantu?",
 	"blog_reaction_thanks": "Terima kasih atas masukannya!",
 	"blog_views": "kali dilihat",
-	"blog_related_posts": "Artikel Terkait"
+	"blog_related_posts": "Artikel Terkait",
+	"blog_share": "Bagikan",
+	"blog_copy_link": "Salin Tautan",
+	"blog_link_copied": "Tautan disalin!"
 }
