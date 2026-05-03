@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as SimpleIcons from 'simple-icons';
+	import iconsData from 'simple-icons/icons.json';
 	import { Linkedin } from '@lucide/svelte';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import type { Component } from 'svelte';
@@ -57,23 +57,24 @@
 	// Get all available icons
 	const allIcons: IconInfo[] = [
 		...CUSTOM_ICONS.map((icon) => ({ ...icon, isPopular: POPULAR_SLUGS.includes(icon.slug) })),
-		...Object.keys(SimpleIcons)
-			.filter((key) => key.startsWith('si'))
-			.map((key) => {
-				const iconData = (
-					SimpleIcons as unknown as Record<string, { hex: string; title: string; slug: string }>
-				)[key];
-				const slug = iconData.slug || key.slice(2).toLowerCase();
-				return {
-					key,
-					slug,
-					name: key.slice(2), // Remove 'si' prefix
-					displayName: iconData.title || key.charAt(2).toUpperCase() + key.slice(3),
-					hex: iconData.hex,
-					source: 'simple' as const,
-					isPopular: POPULAR_SLUGS.includes(slug)
-				};
-			})
+		...(iconsData as Array<{ title: string; slug: string; hex: string }>).map((icon) => {
+			const name =
+				icon.title.charAt(0).toUpperCase() +
+				icon.title
+					.slice(1)
+					.replace(/\s+/g, '')
+					.replace(/[^\w]/g, '');
+			const key = 'si' + name;
+			return {
+				key,
+				slug: icon.slug,
+				name,
+				displayName: icon.title,
+				hex: icon.hex,
+				source: 'simple' as const,
+				isPopular: POPULAR_SLUGS.includes(icon.slug)
+			};
+		})
 	].sort((a, b) => {
 		// Sort popular icons first
 		if (a.isPopular && !b.isPopular) return -1;
