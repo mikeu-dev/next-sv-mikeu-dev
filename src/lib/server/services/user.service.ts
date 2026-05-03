@@ -9,11 +9,17 @@ interface UserData {
 }
 
 export class UserService {
-	private usersCollection = db.collection('users');
+	private get usersCollection() {
+		if (!db) return null;
+		return db.collection('users');
+	}
 
 	async createUser(uid: string, email: string, username: string): Promise<void> {
+		const col = this.usersCollection;
+		if (!col) throw new Error('Database not initialized');
+
 		const normalizedUsername = username.toLowerCase();
-		const snapshot = await this.usersCollection.where('username', '==', normalizedUsername).get();
+		const snapshot = await col.where('username', '==', normalizedUsername).get();
 
 		if (!snapshot.empty) {
 			throw new HttpException(409, 'Username already exists');
@@ -26,15 +32,15 @@ export class UserService {
 			createdAt: new Date()
 		};
 
-		await this.usersCollection.doc(uid).set(userData);
+		await col.doc(uid).set(userData);
 	}
 
 	async findByUsername(username: string): Promise<{ email: string } | null> {
+		const col = this.usersCollection;
+		if (!col) return null;
+
 		const normalizedUsername = username.toLowerCase();
-		const snapshot = await this.usersCollection
-			.where('username', '==', normalizedUsername)
-			.limit(1)
-			.get();
+		const snapshot = await col.where('username', '==', normalizedUsername).limit(1).get();
 
 		if (snapshot.empty) {
 			return null;

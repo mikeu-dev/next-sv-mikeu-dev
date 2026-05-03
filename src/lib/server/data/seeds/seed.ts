@@ -20,6 +20,10 @@ const usersToSeed = [
 ];
 
 export async function seedUsers() {
+	if (!db || !auth) {
+		console.warn('⚠️ seedUsers: Database or Auth not initialized. Skipping.');
+		return;
+	}
 	console.log('🚀 Starting user seeder...');
 
 	for (const userData of usersToSeed) {
@@ -73,4 +77,7 @@ export async function seedUsers() {
 	console.log('🌱 Seeding complete!');
 }
 
-seedUsers().catch(console.error);
+// Hanya jalankan jika di lingkungan yang tepat (opsional, bisa dihapus jika ingin manual)
+// if (process.env.RUN_SEEDER === 'true') {
+// 	seedUsers().catch(console.error);
+// }
