@@ -40,7 +40,10 @@ export class SettingsService {
 
 		try {
 			const sanitizedData = sanitizeForFirestore(data);
-			await currentDb.collection(this.collection).doc(this.DOC_GENERAL).set(sanitizedData, { merge: true });
+			await currentDb
+				.collection(this.collection)
+				.doc(this.DOC_GENERAL)
+				.set(sanitizedData, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update general settings', error);
 			throw error;
@@ -72,7 +75,10 @@ export class SettingsService {
 
 		try {
 			const sanitizedData = sanitizeForFirestore(data);
-			await currentDb.collection(this.collection).doc(this.DOC_PROFILE).set(sanitizedData, { merge: true });
+			await currentDb
+				.collection(this.collection)
+				.doc(this.DOC_PROFILE)
+				.set(sanitizedData, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update profile settings', error);
 			throw error;

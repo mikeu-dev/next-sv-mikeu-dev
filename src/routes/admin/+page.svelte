@@ -21,7 +21,7 @@
 	const stats = [
 		{
 			label: 'Total Projects',
-			value: data.stats.projects,
+			value: data.stats.projects || 0,
 			icon: FolderKanban,
 			color: 'text-blue-600',
 			bg: 'bg-blue-100 dark:bg-blue-900/20',
@@ -29,7 +29,7 @@
 		},
 		{
 			label: 'Total Articles',
-			value: data.stats.blogs,
+			value: data.stats.blogs || 0,
 			icon: FileText,
 			color: 'text-green-600',
 			bg: 'bg-green-100 dark:bg-green-900/20',
@@ -37,7 +37,7 @@
 		},
 		{
 			label: 'Total Messages',
-			value: data.stats.contacts,
+			value: data.stats.contacts || 0,
 			icon: MessageSquare,
 			color: 'text-orange-600',
 			bg: 'bg-orange-100 dark:bg-orange-900/20',
@@ -45,7 +45,7 @@
 		},
 		{
 			label: 'Tech Stack Items',
-			value: data.stats.techstack,
+			value: data.stats.techstack || 0,
 			icon: Layers,
 			color: 'text-purple-600',
 			bg: 'bg-purple-100 dark:bg-purple-900/20',
@@ -53,7 +53,7 @@
 		},
 		{
 			label: 'Total Visitors',
-			value: data.stats.visitors.total,
+			value: data.stats.visitors?.total || 0,
 			icon: Users,
 			color: 'text-pink-600',
 			bg: 'bg-pink-100 dark:bg-pink-900/20',
@@ -339,7 +339,7 @@
 							}}
 						>
 							<span>Manage Skills</span>
-							<span class="text-xs text-muted-foreground">{data.stats.skills} skills</span>
+							<span class="text-xs text-muted-foreground">{data.stats.skills || 0} skills</span>
 							<ArrowRight
 								class="ml-auto h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
 							/>
