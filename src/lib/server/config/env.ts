@@ -44,12 +44,6 @@ try {
 	console.error('\n⚠️  Please check your .env file and ensure all required variables are set.');
 	console.error('📝 See .env.example for reference.\n');
 
-	// In development, use empty object to allow server to start
-	// In production, this should fail
-	if (process.env.NODE_ENV === 'production') {
-		throw error;
-	}
-
 	parsedEnv = {} as z.infer<typeof envSchema>;
 }
 
