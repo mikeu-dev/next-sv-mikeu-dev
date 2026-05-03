@@ -23,7 +23,8 @@
 	@reference "tailwindcss";
 
 	:global(.prose pre) {
-		@apply my-8 overflow-x-auto rounded-xl bg-muted/30 p-0 shadow-sm;
+		@apply my-8 overflow-x-auto rounded-xl p-0 shadow-sm;
+		background-color: oklch(from var(--muted) l c h / 30%);
 		border: 1px solid oklch(from var(--border) l c h / 50%);
 	}
 
@@ -33,13 +34,15 @@
 	}
 
 	:global(.prose a) {
-		@apply font-semibold text-primary no-underline transition-colors hover:underline;
+		@apply font-semibold no-underline transition-colors hover:underline;
+		color: var(--primary);
 	}
 
 	:global(.prose blockquote) {
-		@apply py-1 pr-4 font-normal text-foreground/80 not-italic;
+		@apply py-1 pr-4 font-normal not-italic;
 		border-left: 4px solid oklch(from var(--primary) l c h / 40%);
 		background-color: oklch(from var(--primary) l c h / 5%);
+		color: oklch(from var(--foreground) l c h / 80%);
 	}
 
 	:global(.prose img) {
@@ -47,10 +50,13 @@
 	}
 
 	:global(.prose h2) {
-		@apply mt-12 scroll-mt-24 border-b pb-2 font-poppins font-bold;
+		@apply mt-12 scroll-mt-24 pb-2 font-bold;
+		font-family: var(--font-poppins);
+		border-bottom: 1px solid var(--border);
 	}
 
 	:global(.prose h3) {
-		@apply mt-8 scroll-mt-24 font-poppins font-bold;
+		@apply mt-8 scroll-mt-24 font-bold;
+		font-family: var(--font-poppins);
 	}
 </style>
