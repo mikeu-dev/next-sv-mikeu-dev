@@ -1,9 +1,9 @@
-import { UPLOADS_DIR } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import fs from 'fs';
 import path from 'path';
 
 export const getUploadsDir = () => {
-	const uploadsDir = UPLOADS_DIR || './uploads';
+	const uploadsDir = path.resolve(env.UPLOADS_DIR || './uploads');
 	if (!fs.existsSync(uploadsDir)) {
 		fs.mkdirSync(uploadsDir, { recursive: true });
 	}

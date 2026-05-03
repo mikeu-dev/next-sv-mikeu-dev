@@ -1,10 +1,5 @@
 import { Octokit } from 'octokit';
-import {
-	GITHUB_ACCESS_TOKEN,
-	GITHUB_USERNAME,
-	GITHUB_REPO,
-	GITHUB_BRANCH
-} from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { HttpException } from '../exceptions/http.exception';
 
 export class GitHubStorageService {
@@ -14,12 +9,14 @@ export class GitHubStorageService {
 	private branch: string;
 
 	constructor() {
+		const { GITHUB_ACCESS_TOKEN, GITHUB_USERNAME, GITHUB_REPO, GITHUB_BRANCH } = env;
+
 		if (!GITHUB_ACCESS_TOKEN) {
 			throw new Error('GITHUB_ACCESS_TOKEN is not defined in environment variables');
 		}
 		this.octokit = new Octokit({ auth: GITHUB_ACCESS_TOKEN });
-		this.owner = GITHUB_USERNAME;
-		this.repo = GITHUB_REPO;
+		this.owner = GITHUB_USERNAME || '';
+		this.repo = GITHUB_REPO || '';
 		this.branch = GITHUB_BRANCH || 'main'; // Default to main if not specified
 	}
 

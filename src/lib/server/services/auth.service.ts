@@ -1,5 +1,5 @@
 import { auth } from '../firebase/firebase.server';
-import { SESSION_EXPIRES_DAYS } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 export class AuthService {
 	async verifyIdToken(token: string) {
@@ -7,7 +7,7 @@ export class AuthService {
 	}
 
 	async createSessionCookie(token: string) {
-		const expiresIn = 60 * 60 * 24 * Number(SESSION_EXPIRES_DAYS || 5) * 1000;
+		const expiresIn = 60 * 60 * 24 * Number(env.SESSION_EXPIRES_DAYS || 5) * 1000;
 		return auth.createSessionCookie(token, { expiresIn });
 	}
 
