@@ -182,7 +182,7 @@ export const handleError: import('@sveltejs/kit').HandleServerError = async ({
 		url: event.url.toString(),
 		userAgent: event.request.headers.get('user-agent') || undefined,
 		locale: event.locals.paraglide?.locale,
-		userId: (event.locals.user?.uid as string) || (event.locals.user?.id as string),
+		userId: (event.locals.user?.uid as string) || (event.locals.user?.id as string) || null,
 		status,
 		context: {
 			errorId,

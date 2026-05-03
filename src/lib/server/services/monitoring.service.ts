@@ -10,7 +10,7 @@ export interface AppErrorLog {
 	url: string;
 	userAgent?: string;
 	locale?: string;
-	userId?: string;
+	userId?: string | null;
 	context?: Record<string, unknown>;
 	status?: number;
 }
@@ -25,12 +25,17 @@ export class MonitoringService {
 				timestamp: new Date()
 			};
 
+			// Manual cleanup: Remove undefined properties (Firestore requirement)
+			const sanitizedLog = Object.fromEntries(
+				Object.entries(fullLog).filter(([_, value]) => value !== undefined)
+			);
+
 			// Auto-clean: Limit to reasonable stack size
-			if (fullLog.stack && fullLog.stack.length > 5000) {
-				fullLog.stack = fullLog.stack.substring(0, 5000) + '... [truncated]';
+			if (sanitizedLog.stack && (sanitizedLog.stack as string).length > 5000) {
+				sanitizedLog.stack = (sanitizedLog.stack as string).substring(0, 5000) + '... [truncated]';
 			}
 
-			const docRef = await this.collection.add(fullLog);
+			const docRef = await this.collection.add(sanitizedLog);
 			return docRef.id;
 		} catch (error) {
 			// Fail silently to avoid infinite error loops
