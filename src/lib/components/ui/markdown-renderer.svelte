@@ -20,6 +20,8 @@
 </div>
 
 <style>
+	@reference "tailwindcss";
+
 	:global(.prose pre) {
 		@apply my-8 overflow-x-auto rounded-xl border border-border/50 bg-muted/30 p-0 shadow-sm;
 	}
