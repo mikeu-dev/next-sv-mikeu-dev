@@ -1,6 +1,7 @@
 import { db } from '$lib/server/firebase/firebase.server';
 import type { GeneralSettings, ProfileSettings, ResumeSettings } from '../schemas/settings.schema';
 import { defaultSettings } from '../schemas/settings.schema';
+import { sanitizeForFirestore } from '../utils/firestore';
 
 export class SettingsService {
 	private readonly collection = 'settings';
@@ -10,9 +11,16 @@ export class SettingsService {
 	private readonly DOC_PROFILE = 'profile';
 	private readonly DOC_RESUME = 'resume';
 
+	private get db() {
+		return db;
+	}
+
 	async getGeneralSettings(): Promise<GeneralSettings> {
+		const currentDb = this.db;
+		if (!currentDb) return defaultSettings.general as GeneralSettings;
+
 		try {
-			const doc = await db.collection(this.collection).doc(this.DOC_GENERAL).get();
+			const doc = await currentDb.collection(this.collection).doc(this.DOC_GENERAL).get();
 			if (!doc.exists) {
 				return defaultSettings.general as GeneralSettings;
 			}
@@ -27,8 +35,15 @@ export class SettingsService {
 	}
 
 	async updateGeneralSettings(data: GeneralSettings): Promise<void> {
+		const currentDb = this.db;
+		if (!currentDb) return;
+
 		try {
-			await db.collection(this.collection).doc(this.DOC_GENERAL).set(data, { merge: true });
+			const sanitizedData = sanitizeForFirestore(data);
+			await currentDb
+				.collection(this.collection)
+				.doc(this.DOC_GENERAL)
+				.set(sanitizedData, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update general settings', error);
 			throw error;
@@ -36,8 +51,11 @@ export class SettingsService {
 	}
 
 	async getProfileSettings(): Promise<ProfileSettings> {
+		const currentDb = this.db;
+		if (!currentDb) return defaultSettings.profile as ProfileSettings;
+
 		try {
-			const doc = await db.collection(this.collection).doc(this.DOC_PROFILE).get();
+			const doc = await currentDb.collection(this.collection).doc(this.DOC_PROFILE).get();
 			if (!doc.exists) {
 				return defaultSettings.profile as ProfileSettings;
 			}
@@ -52,8 +70,15 @@ export class SettingsService {
 	}
 
 	async updateProfileSettings(data: ProfileSettings): Promise<void> {
+		const currentDb = this.db;
+		if (!currentDb) return;
+
 		try {
-			await db.collection(this.collection).doc(this.DOC_PROFILE).set(data, { merge: true });
+			const sanitizedData = sanitizeForFirestore(data);
+			await currentDb
+				.collection(this.collection)
+				.doc(this.DOC_PROFILE)
+				.set(sanitizedData, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update profile settings', error);
 			throw error;
@@ -61,8 +86,11 @@ export class SettingsService {
 	}
 
 	async getResumeSettings(): Promise<ResumeSettings> {
+		const currentDb = this.db;
+		if (!currentDb) return defaultSettings.resume as ResumeSettings;
+
 		try {
-			const doc = await db.collection(this.collection).doc(this.DOC_RESUME).get();
+			const doc = await currentDb.collection(this.collection).doc(this.DOC_RESUME).get();
 			if (!doc.exists) {
 				return defaultSettings.resume as ResumeSettings;
 			}
@@ -77,11 +105,15 @@ export class SettingsService {
 	}
 
 	async updateResumeSettings(data: Partial<ResumeSettings>): Promise<void> {
+		const currentDb = this.db;
+		if (!currentDb) return;
+
 		try {
-			await db
+			const sanitizedData = sanitizeForFirestore(data);
+			await currentDb
 				.collection(this.collection)
 				.doc(this.DOC_RESUME)
-				.set({ ...data, updatedAt: new Date().toISOString() }, { merge: true });
+				.set({ ...sanitizedData, updatedAt: new Date().toISOString() }, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update resume settings', error);
 			throw error;

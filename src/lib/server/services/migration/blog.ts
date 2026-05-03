@@ -8,6 +8,11 @@ const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', {
 });
 
 export async function migrateBlogPosts() {
+	if (!db) {
+		console.warn('⚠️ migrateBlogPosts: Database not initialized.');
+		return { success: false, message: 'Database not initialized' };
+	}
+
 	const results = [];
 
 	try {

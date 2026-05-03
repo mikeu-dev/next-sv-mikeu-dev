@@ -26,21 +26,33 @@ export interface VisitorAnalytics {
 	referrers: [string, number][];
 }
 
+import { sanitizeForFirestore } from '../utils/firestore';
+
 export class VisitorService {
-	private readonly collection = 'counters';
-	private readonly logCollection = 'visitor_logs';
+	private readonly collectionName = 'counters';
+	private readonly logCollectionName = 'visitor_logs';
 	private readonly docId = 'visitors';
 	private repository = new VisitorRepository();
+
+	private get db() {
+		return db;
+	}
 
 	/**
 	 * Increment visitor count and log details.
 	 */
 	async increment(logData?: VisitorLogData): Promise<void> {
-		const ref = db.collection(this.collection).doc(this.docId);
+		const currentDb = this.db;
+		if (!currentDb) {
+			console.warn('⚠️ VisitorService: Database not initialized, skipping increment.');
+			return;
+		}
+
+		const ref = currentDb.collection(this.collectionName).doc(this.docId);
 		const todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }); // YYYY-MM-DD
 
 		try {
-			await db.runTransaction(async (t) => {
+			await currentDb.runTransaction(async (t) => {
 				const doc = await t.get(ref);
 
 				if (!doc.exists) {
@@ -63,45 +75,28 @@ export class VisitorService {
 			});
 
 			if (logData) {
-				// Deep sanitize visitor data before Firestore
-				const sanitize = (obj: unknown): unknown => {
-					if (obj === null || typeof obj !== 'object') return obj;
-					if (obj instanceof Date) return obj;
-					if (Array.isArray(obj)) return (obj as unknown[]).map((v) => sanitize(v));
-					return Object.fromEntries(
-						Object.entries(obj as Record<string, unknown>)
-							.filter(([_, v]) => v !== undefined)
-							.map(([k, v]) => [k, sanitize(v)])
-					);
-				};
-
-				await db.collection(this.logCollection).add({
-					...(sanitize(logData) as Record<string, unknown>),
+				await currentDb.collection(this.logCollectionName).add({
+					...sanitizeForFirestore(logData),
 					timestamp: FieldValue.serverTimestamp()
 				});
 			}
 		} catch (error) {
-			console.error('VisitorService: Failed to increment visitor count', error);
+			console.error('VisitorService: Error during increment', error);
 		}
 	}
 
-	/**
-	 * Get current visitor statistics
-	 */
-	async getStats(): Promise<VisitorStats> {
+	async getStats(): Promise<VisitorStats | null> {
+		const currentDb = this.db;
+		if (!currentDb) return null;
+
 		try {
-			const doc = await db.collection(this.collection).doc(this.docId).get();
-
-			if (!doc.exists) {
-				return { total: 0, today: 0, lastUpdated: '' };
-			}
-
+			const doc = await currentDb.collection(this.collectionName).doc(this.docId).get();
+			if (!doc.exists) return null;
 			const data = doc.data() as VisitorStats;
 			const todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
 			if (data.lastUpdated !== todayDate) {
 				return { ...data, today: 0 };
 			}
-
 			return data;
 		} catch (error) {
 			console.error('VisitorService: Failed to get stats', error);

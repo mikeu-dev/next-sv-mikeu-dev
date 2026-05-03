@@ -15,37 +15,35 @@ export interface AppErrorLog {
 	status?: number;
 }
 
+import { sanitizeForFirestore } from '../utils/firestore';
+
 export class MonitoringService {
-	private collection = db.collection(COLLECTIONS.ERROR_LOGS);
+	private get collection() {
+		if (!db) return null;
+		return db.collection(COLLECTIONS.ERROR_LOGS);
+	}
 
 	async logError(log: Omit<AppErrorLog, 'timestamp'>) {
+		const col = this.collection;
+		if (!col) {
+			console.warn('⚠️ MonitoringService: Database not initialized, skipping log.');
+			return null;
+		}
+
 		try {
 			const fullLog: AppErrorLog = {
 				...log,
 				timestamp: new Date()
 			};
 
-			// Manual cleanup: Deeply remove undefined properties (Firestore requirement)
-			const sanitize = (obj: unknown): unknown => {
-				if (obj === null || typeof obj !== 'object') return obj;
-				if (obj instanceof Date) return obj;
-				if (Array.isArray(obj)) return (obj as unknown[]).map((v) => sanitize(v));
-
-				return Object.fromEntries(
-					Object.entries(obj as Record<string, unknown>)
-						.filter(([_, v]) => v !== undefined)
-						.map(([k, v]) => [k, sanitize(v)])
-				);
-			};
-
-			const sanitizedLog = sanitize(fullLog) as AppErrorLog;
+			const sanitizedLog = sanitizeForFirestore(fullLog);
 
 			// Auto-clean: Limit to reasonable stack size
 			if (sanitizedLog.stack && (sanitizedLog.stack as string).length > 5000) {
 				sanitizedLog.stack = (sanitizedLog.stack as string).substring(0, 5000) + '... [truncated]';
 			}
 
-			const docRef = await this.collection.add(sanitizedLog);
+			const docRef = await col.add(sanitizedLog);
 			return docRef.id;
 		} catch (error) {
 			// Fail silently to avoid infinite error loops
@@ -55,7 +53,10 @@ export class MonitoringService {
 	}
 
 	async getLogs(limit = 50) {
-		const snapshot = await this.collection.orderBy('timestamp', 'desc').limit(limit).get();
+		const col = this.collection;
+		if (!col) return [];
+
+		const snapshot = await col.orderBy('timestamp', 'desc').limit(limit).get();
 
 		return snapshot.docs.map((doc) => ({
 			id: doc.id,
@@ -65,10 +66,13 @@ export class MonitoringService {
 	}
 
 	async clearOldLogs(daysToKeep = 7) {
+		const col = this.collection;
+		if (!col || !db) return 0;
+
 		const cutoff = new Date();
 		cutoff.setDate(cutoff.getDate() - daysToKeep);
 
-		const snapshot = await this.collection.where('timestamp', '<', cutoff).get();
+		const snapshot = await col.where('timestamp', '<', cutoff).get();
 
 		const batch = db.batch();
 		snapshot.docs.forEach((doc) => batch.delete(doc.ref));

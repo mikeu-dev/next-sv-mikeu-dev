@@ -325,6 +325,11 @@ Sangat mudah untuk mengintegrasikan Paraglide ke dalam proyek SvelteKit Anda. Mu
 ];
 
 export async function seedBlogPosts() {
+	if (!db) {
+		console.warn('⚠️ seedBlogPosts: Database not initialized.');
+		return { success: false, message: 'Database not initialized' };
+	}
+
 	const results = [];
 	const collection = db.collection(COLLECTIONS.BLOG_POSTS);
 

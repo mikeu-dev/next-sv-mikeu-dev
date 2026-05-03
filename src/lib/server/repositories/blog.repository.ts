@@ -13,10 +13,10 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 	}
 
 	async getPublishedByLocale(locale: string): Promise<BlogPost[]> {
-		const snapshot = await this.getCollection()
-			.where('locale', '==', locale)
-			.where('published', '==', true)
-			.get();
+		const col = this.getCollection();
+		if (!col) return [];
+
+		const snapshot = await col.where('locale', '==', locale).where('published', '==', true).get();
 
 		const posts = snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
 			...this.toPOJO(doc.data()),
@@ -28,7 +28,10 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 	}
 
 	async getBySlugIndoEn(slug: string, locale?: string): Promise<BlogPost | null> {
-		let query = this.getCollection().where('slug', '==', slug);
+		const col = this.getCollection();
+		if (!col) return null;
+
+		let query = col.where('slug', '==', slug);
 		if (locale) {
 			query = query.where('locale', '==', locale);
 		}
