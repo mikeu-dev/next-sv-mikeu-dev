@@ -93,8 +93,15 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 			const os = parser.getOS();
 			const device = parser.getDevice();
 
+			let ip = '0.0.0.0';
+			try {
+				ip = event.getClientAddress();
+			} catch (e) {
+				console.warn('Could not get client address:', e);
+			}
+
 			const visitorData = {
-				ip: event.getClientAddress(),
+				ip,
 				browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
 				os: `${os.name || 'Unknown'} ${os.version || ''}`.trim(),
 				device: device.type || 'desktop',
