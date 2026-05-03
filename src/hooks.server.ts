@@ -82,6 +82,7 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 		!event.url.pathname.startsWith('/admin') &&
 		!event.url.pathname.startsWith('/api') &&
 		!event.url.pathname.includes('sitemap.xml') &&
+		!event.url.pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|json|xml)$/) &&
 		!building
 	) {
 		// Only track public pages and skip during build
