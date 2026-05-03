@@ -112,8 +112,14 @@
 	</div>
 
 	<div class="hidden sm:block">
-		<p class="text-sm text-muted-foreground italic">
-			{hasLiked ? m.blog_reaction_thanks() : m.blog_reaction_question()}
-		</p>
+		<button
+			onclick={handleLike}
+			disabled={hasLiked || isLoading}
+			class="text-sm italic transition-colors select-none enabled:hover:text-primary disabled:cursor-default"
+		>
+			<p class="text-muted-foreground transition-colors group-hover:text-primary">
+				{hasLiked ? m.blog_reaction_thanks() : m.blog_reaction_question()}
+			</p>
+		</button>
 	</div>
 </div>
