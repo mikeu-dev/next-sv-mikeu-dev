@@ -23,7 +23,8 @@
 	@reference "tailwindcss";
 
 	:global(.prose pre) {
-		@apply my-8 overflow-x-auto rounded-xl border border-border/50 bg-muted/30 p-0 shadow-sm;
+		@apply my-8 overflow-x-auto rounded-xl bg-muted/30 p-0 shadow-sm;
+		border: 1px solid oklch(from var(--border) l c h / 50%);
 	}
 
 	:global(.prose pre code) {
@@ -36,7 +37,9 @@
 	}
 
 	:global(.prose blockquote) {
-		@apply border-l-4 border-primary/40 bg-primary/5 py-1 pr-4 font-normal text-foreground/80 not-italic;
+		@apply py-1 pr-4 font-normal text-foreground/80 not-italic;
+		border-left: 4px solid oklch(from var(--primary) l c h / 40%);
+		background-color: oklch(from var(--primary) l c h / 5%);
 	}
 
 	:global(.prose img) {
