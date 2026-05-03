@@ -1,5 +1,6 @@
 import { SocialsRepository } from '../repositories/socials.repository';
 import type { Socials } from '$lib/types';
+import { sanitizeForFirestore } from '../utils/firestore';
 
 export class SocialsService {
 	private repository = new SocialsRepository();
@@ -27,14 +28,16 @@ export class SocialsService {
 			return data;
 		} catch (error) {
 			console.error('Error fetching socials:', error);
-			throw error;
+			// Fallback: return null instead of throwing to prevent 500
+			return null;
 		}
 	}
 
 	async updateSocials(data: Socials): Promise<Socials | null> {
 		try {
+			const sanitizedData = sanitizeForFirestore(data);
 			const result = await this.repository.upsert('default', {
-				...data,
+				...sanitizedData,
 				updatedAt: new Date()
 			} as Partial<Socials>);
 

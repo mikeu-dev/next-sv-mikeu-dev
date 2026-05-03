@@ -26,6 +26,8 @@ export interface VisitorAnalytics {
 	referrers: [string, number][];
 }
 
+import { sanitizeForFirestore } from '../utils/firestore';
+
 export class VisitorService {
 	private readonly collection = 'counters';
 	private readonly logCollection = 'visitor_logs';
@@ -63,20 +65,8 @@ export class VisitorService {
 			});
 
 			if (logData) {
-				// Deep sanitize visitor data before Firestore
-				const sanitize = (obj: unknown): unknown => {
-					if (obj === null || typeof obj !== 'object') return obj;
-					if (obj instanceof Date) return obj;
-					if (Array.isArray(obj)) return (obj as unknown[]).map((v) => sanitize(v));
-					return Object.fromEntries(
-						Object.entries(obj as Record<string, unknown>)
-							.filter(([_, v]) => v !== undefined)
-							.map(([k, v]) => [k, sanitize(v)])
-					);
-				};
-
 				await db.collection(this.logCollection).add({
-					...(sanitize(logData) as Record<string, unknown>),
+					...sanitizeForFirestore(logData),
 					timestamp: FieldValue.serverTimestamp()
 				});
 			}

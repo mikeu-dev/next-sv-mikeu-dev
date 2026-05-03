@@ -1,6 +1,7 @@
 import { db } from '$lib/server/firebase/firebase.server';
 import type { GeneralSettings, ProfileSettings, ResumeSettings } from '../schemas/settings.schema';
 import { defaultSettings } from '../schemas/settings.schema';
+import { sanitizeForFirestore } from '../utils/firestore';
 
 export class SettingsService {
 	private readonly collection = 'settings';
@@ -28,7 +29,8 @@ export class SettingsService {
 
 	async updateGeneralSettings(data: GeneralSettings): Promise<void> {
 		try {
-			await db.collection(this.collection).doc(this.DOC_GENERAL).set(data, { merge: true });
+			const sanitizedData = sanitizeForFirestore(data);
+			await db.collection(this.collection).doc(this.DOC_GENERAL).set(sanitizedData, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update general settings', error);
 			throw error;
@@ -53,7 +55,8 @@ export class SettingsService {
 
 	async updateProfileSettings(data: ProfileSettings): Promise<void> {
 		try {
-			await db.collection(this.collection).doc(this.DOC_PROFILE).set(data, { merge: true });
+			const sanitizedData = sanitizeForFirestore(data);
+			await db.collection(this.collection).doc(this.DOC_PROFILE).set(sanitizedData, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update profile settings', error);
 			throw error;
@@ -78,10 +81,11 @@ export class SettingsService {
 
 	async updateResumeSettings(data: Partial<ResumeSettings>): Promise<void> {
 		try {
+			const sanitizedData = sanitizeForFirestore(data);
 			await db
 				.collection(this.collection)
 				.doc(this.DOC_RESUME)
-				.set({ ...data, updatedAt: new Date().toISOString() }, { merge: true });
+				.set({ ...sanitizedData, updatedAt: new Date().toISOString() }, { merge: true });
 		} catch (error) {
 			console.error('SettingsService: Failed to update resume settings', error);
 			throw error;
