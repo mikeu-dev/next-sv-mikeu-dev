@@ -54,5 +54,8 @@
 	"blog_empty": "Artikel baru akan segera hadir...",
 	"blog_stay_tuned": "Nantikan konten menarik lainnya!",
 	"blog_featured_label": "Artikel Unggulan",
-	"blog_latest_header": "Terbaru Dari"
+	"blog_latest_header": "Terbaru Dari",
+	"blog_reaction_question": "Apakah artikel ini membantu?",
+	"blog_reaction_thanks": "Terima kasih atas masukannya!",
+	"blog_views": "kali dilihat"
 }

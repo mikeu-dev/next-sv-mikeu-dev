@@ -54,5 +54,8 @@
 	"blog_empty": "New articles coming soon...",
 	"blog_stay_tuned": "Stay tuned for upcoming content!",
 	"blog_featured_label": "Featured Post",
-	"blog_latest_header": "Latest From"
+	"blog_latest_header": "Latest From",
+	"blog_reaction_question": "Did you find this helpful?",
+	"blog_reaction_thanks": "Thank you for your feedback!",
+	"blog_views": "views"
 }

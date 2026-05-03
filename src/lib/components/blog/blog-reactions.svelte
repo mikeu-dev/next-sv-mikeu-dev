@@ -2,6 +2,7 @@
 	import { Heart, Eye } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { onMount, tick } from 'svelte';
+	import { m } from '@/lib/paraglide/messages';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 
 	let { reactions = { likes: 0, views: 0 } } = $props<{
@@ -93,13 +94,13 @@
 
 		<div class="flex items-center gap-2 px-3 py-2 text-muted-foreground">
 			<Eye class="size-5" />
-			<span class="font-medium">{views} views</span>
+			<span class="font-medium">{views} {m.blog_views()}</span>
 		</div>
 	</div>
 
 	<div class="hidden sm:block">
 		<p class="text-sm text-muted-foreground italic">
-			{hasLiked ? 'Thank you for your feedback!' : 'Did you find this helpful?'}
+			{hasLiked ? m.blog_reaction_thanks() : m.blog_reaction_question()}
 		</p>
 	</div>
 </div>
