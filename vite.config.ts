@@ -56,13 +56,21 @@ export default defineConfig({
 		]
 	},
 	build: {
-		chunkSizeWarningLimit: 6000,
+		chunkSizeWarningLimit: 1000,
+		sourcemap: false,
+		reportCompressedSize: false,
 		rollupOptions: {
 			output: {
 				manualChunks: (id) => {
 					if (id.includes('node_modules')) {
 						if (id.includes('@lottiefiles/dotlottie-svelte') || id.includes('lottie-web')) {
 							return 'lottie';
+						}
+						if (id.includes('firebase')) {
+							return 'firebase';
+						}
+						if (id.includes('gsap') || id.includes('matter-js')) {
+							return 'animation';
 						}
 					}
 				}

@@ -167,12 +167,17 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 
 import { monitoringService } from '$lib/server/services/monitoring.service';
 
-export const handle: Handle = sequence(
-	handleSecurityHeaders,
-	handleParaglide,
-	handleVisitor,
-	handleAuth
-);
+export const handle: Handle = async ({ event, resolve }) => {
+	console.log(`[Hooks] Start handling request: ${event.url.pathname}`);
+	const response = await sequence(
+		handleSecurityHeaders,
+		handleParaglide,
+		handleVisitor,
+		handleAuth
+	)({ event, resolve });
+	console.log(`[Hooks] Finished handling request: ${event.url.pathname} with status ${response.status}`);
+	return response;
+};
 
 export const handleError: import('@sveltejs/kit').HandleServerError = async ({
 	error,
@@ -198,12 +203,9 @@ export const handleError: import('@sveltejs/kit').HandleServerError = async ({
 		}
 	});
 
-	// In production, don't show the real error message to the user
+	// For debugging purposes, we'll show the real error even in production temporarily
 	return {
-		message:
-			process.env.NODE_ENV === 'production'
-				? 'An unexpected error occurred. Our team has been notified.'
-				: message,
+		message: error instanceof Error ? error.message : message,
 		errorId
 	};
 };
