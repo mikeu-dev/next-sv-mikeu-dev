@@ -18,9 +18,18 @@ export interface AppErrorLog {
 import { sanitizeForFirestore } from '../utils/firestore';
 
 export class MonitoringService {
-	private collection = db.collection(COLLECTIONS.ERROR_LOGS);
+	private get collection() {
+		if (!db) return null;
+		return db.collection(COLLECTIONS.ERROR_LOGS);
+	}
 
 	async logError(log: Omit<AppErrorLog, 'timestamp'>) {
+		const col = this.collection;
+		if (!col) {
+			console.warn('⚠️ MonitoringService: Database not initialized, skipping log.');
+			return null;
+		}
+
 		try {
 			const fullLog: AppErrorLog = {
 				...log,
@@ -34,7 +43,7 @@ export class MonitoringService {
 				sanitizedLog.stack = (sanitizedLog.stack as string).substring(0, 5000) + '... [truncated]';
 			}
 
-			const docRef = await this.collection.add(sanitizedLog);
+			const docRef = await col.add(sanitizedLog);
 			return docRef.id;
 		} catch (error) {
 			// Fail silently to avoid infinite error loops
@@ -44,7 +53,10 @@ export class MonitoringService {
 	}
 
 	async getLogs(limit = 50) {
-		const snapshot = await this.collection.orderBy('timestamp', 'desc').limit(limit).get();
+		const col = this.collection;
+		if (!col) return [];
+
+		const snapshot = await col.orderBy('timestamp', 'desc').limit(limit).get();
 
 		return snapshot.docs.map((doc) => ({
 			id: doc.id,
@@ -54,10 +66,13 @@ export class MonitoringService {
 	}
 
 	async clearOldLogs(daysToKeep = 7) {
+		const col = this.collection;
+		if (!col || !db) return 0;
+
 		const cutoff = new Date();
 		cutoff.setDate(cutoff.getDate() - daysToKeep);
 
-		const snapshot = await this.collection.where('timestamp', '<', cutoff).get();
+		const snapshot = await col.where('timestamp', '<', cutoff).get();
 
 		const batch = db.batch();
 		snapshot.docs.forEach((doc) => batch.delete(doc.ref));

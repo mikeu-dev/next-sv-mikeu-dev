@@ -4,6 +4,7 @@ export abstract class BaseRepository<T> {
 	protected constructor(private readonly collectionName: string) {}
 
 	protected getCollection() {
+		if (!db) return null;
 		return db.collection(this.collectionName);
 	}
 
@@ -44,12 +45,16 @@ export abstract class BaseRepository<T> {
 	}
 
 	async create(data: Omit<T, 'id'>): Promise<T> {
-		const docRef = await db.collection(this.collectionName).add(data);
+		const col = this.getCollection();
+		if (!col) throw new Error('Database not initialized');
+		const docRef = await col.add(data);
 		return { ...data, id: docRef.id } as unknown as T;
 	}
 
 	async findAll(): Promise<T[]> {
-		const snapshot = await db.collection(this.collectionName).get();
+		const col = this.getCollection();
+		if (!col) return [];
+		const snapshot = await col.get();
 		return snapshot.docs.map((doc) => ({
 			...this.toPOJO(doc.data()),
 			id: doc.id
@@ -57,7 +62,9 @@ export abstract class BaseRepository<T> {
 	}
 
 	async findById(id: string): Promise<T | null> {
-		const doc = await db.collection(this.collectionName).doc(id).get();
+		const col = this.getCollection();
+		if (!col) return null;
+		const doc = await col.doc(id).get();
 		if (!doc.exists) {
 			return null;
 		}
@@ -65,7 +72,9 @@ export abstract class BaseRepository<T> {
 	}
 
 	async update(id: string, data: Partial<T>): Promise<T | null> {
-		await db.collection(this.collectionName).doc(id).update(data);
+		const col = this.getCollection();
+		if (!col) return null;
+		await col.doc(id).update(data);
 		return this.findById(id);
 	}
 
@@ -74,11 +83,15 @@ export abstract class BaseRepository<T> {
 	 * Creates the document if it doesn't exist, otherwise merges with existing data.
 	 */
 	async upsert(id: string, data: Partial<T>): Promise<T | null> {
-		await db.collection(this.collectionName).doc(id).set(data, { merge: true });
+		const col = this.getCollection();
+		if (!col) return null;
+		await col.doc(id).set(data, { merge: true });
 		return this.findById(id);
 	}
 
 	async delete(id: string): Promise<void> {
-		await db.collection(this.collectionName).doc(id).delete();
+		const col = this.getCollection();
+		if (!col) return;
+		await col.doc(id).delete();
 	}
 }
