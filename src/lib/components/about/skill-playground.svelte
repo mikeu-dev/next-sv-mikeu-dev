@@ -12,65 +12,91 @@
 	let { categories }: { categories: LocalizedCategory[] } = $props();
 
 	let container: HTMLElement;
-	let items: HTMLElement[] = $state([]);
-	let activeCategory = $state<string | null>(null);
 
-	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Vector, Body } = Matter;
+	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body } = Matter;
 
 	let engine: Matter.Engine;
 	let runner: Matter.Runner;
-	let ground: Matter.Body;
-	let rightWall: Matter.Body;
 
-	const categories_list = ['Frontend', 'Backend', 'GIS', 'Tools'];
-
-	// Flatten categories into items with category colors
 	const categoryColors: Record<string, string> = {
-		'Frontend': '#0d9488', // Teal
+		'Frontend': '#FF3E00', // Svelte Orange
 		'Backend': '#3b82f6',  // Blue
-		'GIS': '#8b5cf6',      // Purple
-		'Tools': '#64748b'     // Slate
+		'GIS': '#10b981',      // Emerald
+		'Tools': '#f59e0b'     // Amber
 	};
 
-	const allSkills = $derived(
-		categories.flatMap((cat) => (cat.items || []).map((item: Tag) => ({ 
-			...item, 
-			category: cat.category,
-			color: categoryColors[cat.category] || '#primary'
-		})))
-	);
+	// Tetris shape definitions (relative coordinates)
+	const shapes = {
+		I: [[0, 0], [1, 0], [2, 0], [3, 0]],
+		L: [[0, 0], [0, 1], [0, 2], [1, 2]],
+		J: [[1, 0], [1, 1], [1, 2], [0, 2]],
+		O: [[0, 0], [1, 0], [0, 1], [1, 1]],
+		T: [[0, 0], [1, 0], [2, 0], [1, 1]],
+		S: [[1, 0], [2, 0], [0, 1], [1, 1]],
+		Z: [[0, 0], [1, 0], [1, 1], [2, 1]]
+	};
+
+	const shapeKeys = Object.keys(shapes) as Array<keyof typeof shapes>;
+
+	// Group skills into Tetriminos
+	const tetriminos = $derived.by(() => {
+		const all: any[] = [];
+		let currentSkillIndex = 0;
+		
+		// Flatten skills first
+		const flatSkills = categories.flatMap(cat => 
+			(cat.items || []).map(item => ({ ...item, color: categoryColors[cat.category] || '#ccc' }))
+		);
+
+		while (currentSkillIndex < flatSkills.length) {
+			const shapeKey = shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+			const shapeCoords = shapes[shapeKey];
+			const pieceSkills: any[] = [];
+			
+			for (let i = 0; i < shapeCoords.length; i++) {
+				if (currentSkillIndex < flatSkills.length) {
+					pieceSkills.push({
+						...flatSkills[currentSkillIndex],
+						relX: shapeCoords[i][0],
+						relY: shapeCoords[i][1]
+					});
+					currentSkillIndex++;
+				}
+			}
+			
+			if (pieceSkills.length > 0) {
+				all.push({ shapeKey, skills: pieceSkills });
+			}
+		}
+		return all;
+	});
 
 	onMount(() => {
 		if (!container) return;
 
-		let width = container.clientWidth;
-		let height = 500;
+		const width = container.clientWidth;
+		const height = 600;
+		const blockSize = 45; // Size of each skill block
 
 		engine = Engine.create();
-		// Lower gravity for more "floaty" feel during sorting
-		engine.gravity.y = 0.8;
-		
+		engine.gravity.y = 1.2;
+
 		const world = engine.world;
 
-		// Walls
+		// Walls (Tetris Board Style)
 		const wallOptions = { isStatic: true, render: { visible: false }, friction: 0.5 };
-		ground = Bodies.rectangle(width / 2, height + 10, width + 1000, 20, wallOptions);
-		const leftWall = Bodies.rectangle(-10, height / 2, 20, height, wallOptions);
-		rightWall = Bodies.rectangle(width + 10, height / 2, 20, height, wallOptions);
-		const ceiling = Bodies.rectangle(width / 2, -500, width, 20, wallOptions);
-
-		Composite.add(world, [ground, leftWall, rightWall, ceiling]);
+		const ground = Bodies.rectangle(width / 2, height + 25, width, 50, wallOptions);
+		const leftWall = Bodies.rectangle(-25, height / 2, 50, height, wallOptions);
+		const rightWall = Bodies.rectangle(width + 25, height / 2, 50, height, wallOptions);
+		
+		Composite.add(world, [ground, leftWall, rightWall]);
 
 		// Mouse interaction
 		const mouse = Mouse.create(container);
 		const mouseConstraint = MouseConstraint.create(engine, {
 			mouse: mouse,
-			constraint: {
-				stiffness: 0.2,
-				render: { visible: false }
-			}
+			constraint: { stiffness: 0.2, render: { visible: false } }
 		});
-
 		Composite.add(world, mouseConstraint);
 
 		let runner_cleanup = () => {
@@ -78,67 +104,49 @@
 			Engine.clear(engine);
 		};
 
-		// Create bodies after a short delay to ensure elements are rendered and measured
+		// Create Tetrimino bodies
 		setTimeout(() => {
-			const skillBodies = allSkills.map((skill, i) => {
-				const element = items[i];
-				const elWidth = element ? element.offsetWidth : 120;
-				const elHeight = element ? element.offsetHeight : 40;
-				
-				const x = Math.random() * width;
-				const y = -100 - i * 40;
-				
-				const body = Bodies.rectangle(x, y, elWidth, elHeight, {
-					restitution: 0.6,
-					friction: 0.1,
-					frictionAir: 0.02,
-					chamfer: { radius: elHeight / 2 },
-					label: `skill-${i}`
+			const pieceBodies = tetriminos.map((piece, pieceIdx) => {
+				const startX = Math.random() * (width - 150) + 75;
+				const startY = -200 - pieceIdx * 250;
+
+				const parts = piece.skills.map((skill: any) => {
+					return Bodies.rectangle(
+						startX + skill.relX * blockSize,
+						startY + skill.relY * blockSize,
+						blockSize - 2, // Small gap
+						blockSize - 2,
+						{
+							chamfer: { radius: 8 },
+							render: { fillStyle: skill.color }
+						}
+					);
 				});
 
-				return { body, skill, id: i, width: elWidth, height: elHeight };
+				const body = Body.create({
+					parts,
+					restitution: 0.2,
+					friction: 0.8,
+					label: `piece-${pieceIdx}`
+				});
+
+				return { body, piece, id: pieceIdx };
 			});
 
-			skillBodies.forEach((sb) => {
-				Composite.add(world, sb.body);
-				const element = items[sb.id];
-				if (element) element.style.opacity = '1';
-			});
+			pieceBodies.forEach(pb => Composite.add(world, pb.body));
 
 			let rafId: number;
 			function update() {
-				// Apply magnetic forces if a category is selected
-				if (activeCategory) {
-					const centerX = width / 2;
-					const centerY = height / 2;
-					
-					skillBodies.forEach((sb) => {
-						if (sb.skill.category === activeCategory) {
-							// Pull to center
-							const force = Vector.sub({ x: centerX, y: centerY }, sb.body.position);
-							const distance = Vector.magnitude(force);
-							if (distance > 10) {
-								const normalizedForce = Vector.normalise(force);
-								Body.applyForce(sb.body, sb.body.position, Vector.mult(normalizedForce, 0.005 * sb.body.mass));
-							}
-						} else {
-							// Push others away slightly or just let them fall
-							const force = Vector.sub(sb.body.position, { x: centerX, y: centerY });
-							const distance = Vector.magnitude(force);
-							if (distance < 200) {
-								const normalizedForce = Vector.normalise(force);
-								Body.applyForce(sb.body, sb.body.position, Vector.mult(normalizedForce, 0.002 * sb.body.mass));
-							}
+				pieceBodies.forEach((pb) => {
+					pb.body.parts.slice(1).forEach((part, partIdx) => {
+						const skillId = `${pb.id}-${partIdx}`;
+						const element = document.getElementById(`skill-block-${skillId}`);
+						if (element) {
+							const { x, y } = part.position;
+							element.style.transform = `translate(${x - (blockSize-2)/2}px, ${y - (blockSize-2)/2}px) rotate(${pb.body.angle}rad)`;
+							element.style.opacity = '1';
 						}
 					});
-				}
-
-				skillBodies.forEach((sb) => {
-					const element = items[sb.id];
-					if (element) {
-						const { x, y } = sb.body.position;
-						element.style.transform = `translate(${x - sb.width / 2}px, ${y - sb.height / 2}px) rotate(${sb.body.angle}rad)`;
-					}
 				});
 				rafId = requestAnimationFrame(update);
 			}
@@ -154,96 +162,77 @@
 		runner = Runner.create();
 		Runner.run(runner, engine);
 
-		const handleResize = () => {
-			if (!container) return;
-			width = container.clientWidth;
-			Matter.Body.setPosition(ground, { x: width / 2, y: height + 10 });
-			Matter.Body.setPosition(rightWall, { x: width + 10, y: height / 2 });
-		};
-		window.addEventListener('resize', handleResize);
-
-		return () => {
-			runner_cleanup();
-			window.removeEventListener('resize', handleResize);
-		};
+		return () => runner_cleanup();
 	});
-
-	function toggleCategory(cat: string) {
-		if (activeCategory === cat) {
-			activeCategory = null;
-		} else {
-			activeCategory = cat;
-			// Small jump effect when sorting starts
-			Composite.allBodies(engine.world).forEach(body => {
-				if (!body.isStatic) {
-					Body.applyForce(body, body.position, { x: (Math.random() - 0.5) * 0.05, y: -0.05 });
-				}
-			});
-		}
-	}
 </script>
 
-<div class="space-y-6">
-	<!-- Category Filters -->
-	<div class="flex flex-wrap justify-end gap-2 px-4">
-		<button 
-			onclick={() => activeCategory = null}
-			class="rounded-full px-6 py-2 text-xs font-black uppercase tracking-widest transition-all {activeCategory === null ? 'bg-primary text-primary-foreground shadow-lg' : 'bg-muted hover:bg-muted/80'}"
-		>
-			All Stack
-		</button>
-		{#each categories_list as cat}
-			<button 
-				onclick={() => toggleCategory(cat)}
-				class="rounded-full px-6 py-2 text-xs font-black uppercase tracking-widest transition-all {activeCategory === cat ? 'shadow-lg text-white' : 'bg-muted hover:bg-muted/80'}"
-				style={activeCategory === cat ? `background-color: ${categoryColors[cat]}` : ''}
-			>
-				{cat}
-			</button>
-		{/each}
+<div class="relative mx-auto max-w-md">
+	<!-- Board Header -->
+	<div class="mb-4 flex items-center justify-between px-4">
+		<div class="flex flex-col">
+			<span class="text-[10px] font-black uppercase tracking-widest opacity-40">Skill Level</span>
+			<span class="font-mono text-2xl font-black italic text-primary">LVL 99</span>
+		</div>
+		<div class="h-px flex-1 mx-4 bg-muted/30"></div>
+		<div class="flex flex-col text-right">
+			<span class="text-[10px] font-black uppercase tracking-widest opacity-40">Next Stack</span>
+			<span class="font-mono text-xl font-black">NEXT GEN</span>
+		</div>
 	</div>
 
 	<div 
 		bind:this={container} 
-		class="relative h-[500px] w-full overflow-hidden rounded-[3rem] border bg-muted/10 backdrop-blur-md cursor-grab active:cursor-grabbing shadow-inner"
+		class="relative h-[600px] w-full overflow-hidden rounded-3xl border-4 border-muted bg-black/90 shadow-2xl cursor-grab active:cursor-grabbing"
 	>
-		<!-- Instruction -->
-		<div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-20">
-			<div class="text-center space-y-2">
-				{#if activeCategory}
-					<p class="text-3xl font-black uppercase italic tracking-tighter text-primary/30">
-						Filtering {activeCategory}
-					</p>
-				{:else}
-					<p class="text-sm font-black uppercase tracking-[0.3em]">
-						Interactive Stack
-					</p>
-					<p class="text-xs font-medium uppercase tracking-widest">
-						Drag & Toss to Explore
-					</p>
-				{/if}
-			</div>
+		<!-- Grid Overlay -->
+		<div class="pointer-events-none absolute inset-0 opacity-10" 
+			style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 45px 45px;">
 		</div>
 
-		{#each allSkills as skill, i (i)}
-			<div
-				bind:this={items[i]}
-				class="absolute left-0 top-0 flex items-center gap-3 rounded-full border bg-card px-5 py-3 shadow-md transition-all duration-300 hover:border-primary/50 group whitespace-nowrap"
-				style="pointer-events: none; opacity: 0; {activeCategory && skill.category !== activeCategory ? 'filter: grayscale(1) opacity(0.3); scale: 0.9;' : ''}"
-			>
-				<div class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-10 transition-opacity" style="background-color: {skill.color}"></div>
-				{#if skill.icon}
-					<Icon src={skill.icon} size={18} />
-				{:else}
-					<div class="size-2.5 rounded-full" style="background-color: {skill.color}"></div>
-				{/if}
-				<span class="text-xs font-black uppercase tracking-tight">
-					{skill.name}
-				</span>
-			</div>
+		<!-- Background Text -->
+		<div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+			<p class="text-4xl font-black uppercase italic tracking-tighter text-white/5 rotate-[-20deg]">
+				Stack Your Skills
+			</p>
+		</div>
+
+		{#each tetriminos as piece, pIdx}
+			{#each piece.skills as skill, sIdx}
+				<div
+					id="skill-block-{pIdx}-{sIdx}"
+					class="absolute left-0 top-0 flex items-center justify-center rounded-lg border-2 shadow-inner transition-opacity duration-300 group"
+					style="width: 43px; height: 43px; background-color: {skill.color}22; border-color: {skill.color}; opacity: 0; pointer-events: none;"
+					title={skill.name}
+				>
+					<div class="absolute inset-0 rounded-lg opacity-20" style="background-color: {skill.color}"></div>
+					{#if skill.icon}
+						<div class="z-10 scale-90 grayscale brightness-200 contrast-200">
+							<Icon src={skill.icon} size={20} />
+						</div>
+					{:else}
+						<span class="z-10 font-mono text-[8px] font-black text-white">{skill.name.slice(0,2)}</span>
+					{/if}
+					
+					<!-- Tooltip on hover -->
+					<div class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 scale-0 rounded bg-white px-2 py-1 text-[10px] font-black text-black group-hover:scale-100 transition-transform whitespace-nowrap z-50">
+						{skill.name}
+					</div>
+				</div>
+			{/each}
+		{/each}
+	</div>
+
+	<!-- Footer decoration -->
+	<div class="mt-4 flex justify-center gap-1 opacity-20">
+		{#each Array(10) as _}
+			<div class="h-2 w-2 rounded-full bg-primary"></div>
 		{/each}
 	</div>
 </div>
 
 <style>
+	/* Neon glow effect for active blocks */
+	[id^="skill-block-"] {
+		box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+	}
 </style>
