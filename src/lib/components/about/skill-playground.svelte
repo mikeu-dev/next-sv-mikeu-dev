@@ -280,7 +280,7 @@
 							<div class="rounded-[1px]" style="background-color: {isFilled ? tetriminos[nextPieceIdx].color : 'transparent'}"></div>
 						{/each}
 					</div>
-				{#/key}
+				{/key}
 				<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 			</div>
 		</div>
