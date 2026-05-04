@@ -3,7 +3,7 @@
 	import Matter from 'matter-js';
 	import type { Tag } from '$lib/types';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { fade, scale, fly } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 
 	interface LocalizedCategory {
 		category: string;
@@ -18,7 +18,6 @@
 	let nextPieceIdx = $state(1);
 	let spawnedCount = $state(0);
 	
-	// Particle system
 	let particles = $state<any[]>([]);
 
 	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Vector, Events } = Matter;
@@ -116,15 +115,13 @@
 	function createParticles(x: number, y: number, color: string, count = 5) {
 		for (let i = 0; i < count; i++) {
 			particles.push({
-				id: Math.random(),
-				x, y,
+				id: Math.random(), x, y,
 				vx: (Math.random() - 0.5) * 8,
 				vy: (Math.random() - 0.5) * 8,
-				life: 1.0,
-				color
+				life: 1.0, color
 			});
 		}
-		if (particles.length > 40) particles = particles.slice(-40);
+		if (particles.length > 30) particles = particles.slice(-30);
 	}
 
 	function initWalls() {
@@ -228,34 +225,34 @@
 </script>
 
 <div class="relative mx-auto max-w-[450px]">
-	<!-- Board Header HUD -->
+	<!-- Header HUD (Optimized for Light Backgrounds) -->
 	<div class="mb-8 flex items-end justify-between px-2">
 		<div class="flex flex-col gap-1">
 			<div class="flex items-center gap-2">
 				<div class="h-1 w-3 bg-primary rounded-full"></div>
-				<span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary/80">Career Matrix</span>
+				<span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-800/80">Career Matrix</span>
 			</div>
 			<div class="flex items-baseline gap-2">
-				<span class="font-mono text-4xl font-black italic text-white">S-RANK</span>
+				<span class="font-mono text-4xl font-black italic text-zinc-900">S-RANK</span>
 				<div class="flex gap-1.5 mb-1">
 					{#each Array(5) as _, i}
-						<div class="h-1.5 w-1.5 rounded-sm {i < comboCount ? 'bg-yellow-400' : 'bg-white/10'} transition-all duration-500"></div>
+						<div class="h-1.5 w-1.5 rounded-sm {i < comboCount ? 'bg-yellow-500' : 'bg-zinc-200'} transition-all duration-500"></div>
 					{/each}
 				</div>
 			</div>
 		</div>
 
-		<!-- Holographic Next Piece Preview -->
+		<!-- Holographic Preview (Optimized) -->
 		<div class="flex flex-col items-end gap-2">
-			<span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">Next Module</span>
+			<span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-800/60">Next Module</span>
 			<div class="relative group/next">
 				<div class="absolute -left-1 -top-1 size-1.5 border-l border-t border-primary/40"></div>
 				<div class="absolute -right-1 -top-1 size-1.5 border-r border-t border-primary/40"></div>
 				<div class="absolute -left-1 -bottom-1 size-1.5 border-l border-b border-primary/40"></div>
 				<div class="absolute -right-1 -bottom-1 size-1.5 border-r border-b border-primary/40"></div>
 				
-				<div class="h-14 w-20 bg-white/[0.02] backdrop-blur-sm flex items-center justify-center overflow-hidden border border-white/5">
-					<div class="absolute inset-x-0 h-[1px] bg-primary/20 z-10 animate-scanline"></div>
+				<div class="h-14 w-20 bg-zinc-50 flex items-center justify-center overflow-hidden border border-zinc-200 shadow-sm">
+					<div class="absolute inset-x-0 h-[1px] bg-primary/30 z-10 animate-scanline"></div>
 					{#key nextPieceIdx}
 						<div in:scale={{ start: 0.9, duration: 300 }} class="grid gap-1" style="grid-template-columns: repeat(4, 8px);">
 							{#each Array(16) as _, i}
@@ -265,7 +262,7 @@
 								{#if isFilled}
 									<div class="rounded-[1px]" style="background-color: {tetriminos[nextPieceIdx].color}"></div>
 								{:else}
-									<div class="size-0.5 bg-white/10 rounded-full"></div>
+									<div class="size-0.5 bg-zinc-200 rounded-full"></div>
 								{/if}
 							{/each}
 						</div>
@@ -275,22 +272,20 @@
 		</div>
 	</div>
 
+	<!-- The Playground Board (Stays Dark) -->
 	<div 
 		bind:this={container} 
-		class="relative h-[650px] w-full overflow-hidden rounded-[2.5rem] border-4 border-white/5 bg-[#010101] shadow-xl cursor-grab active:cursor-grabbing group/board"
+		class="relative h-[650px] w-full overflow-hidden rounded-[2.5rem] border-4 border-zinc-900/5 bg-[#010101] shadow-2xl cursor-grab active:cursor-grabbing group/board"
 	>
-		<!-- CRT / Scanline Overlays -->
 		<div class="pointer-events-none absolute inset-0 opacity-[0.05] z-30" 
 			style="background-image: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06)); background-size: 100% 4px, 3px 100%;"></div>
 		
-		<!-- Particles Layer -->
 		{#each particles as p (p.id)}
 			<div class="absolute pointer-events-none z-10"
 				style="left: {p.x}px; top: {p.y}px; width: 3px; height: 3px; background-color: {p.color}; opacity: {p.life}; transform: scale({p.life});"
 			></div>
 		{/each}
 
-		<!-- HUD Status Elements -->
 		<div class="pointer-events-none absolute inset-x-6 top-6 flex justify-between z-20 text-[8px] font-bold uppercase tracking-widest text-white/30">
 			<div class="flex flex-col gap-1">
 				<span>Integrity: 100%</span>
@@ -298,11 +293,10 @@
 			</div>
 			<div class="text-right flex flex-col gap-1">
 				<span>Kernel: V0.19</span>
-				<span>Interface: Optimized</span>
+				<span>Buffer: Optimized</span>
 			</div>
 		</div>
 
-		<!-- Interactive Hints -->
 		<div class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center opacity-0 group-hover/board:opacity-20 transition-opacity duration-1000">
 			<span class="text-5xl font-black italic tracking-tighter text-white uppercase">Sync Ready</span>
 			<span class="text-[9px] font-black tracking-[0.5em] text-white">INTERACT TO EXPLORE</span>
@@ -335,15 +329,15 @@
 		{/each}
 	</div>
 
-	<!-- Sidebar Controls & Stats -->
+	<!-- Sidebar Controls & Stats (Optimized for Light Backgrounds) -->
 	<div class="mt-8 flex flex-col sm:flex-row items-start justify-between gap-6 px-2">
 		<div class="flex flex-col gap-5 w-full sm:w-auto">
 			<div class="flex gap-2">
-				<button onclick={resetBoard} class="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/10 transition-all active:scale-95">
+				<button onclick={resetBoard} class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-800 hover:bg-zinc-50 transition-all active:scale-95 shadow-sm">
 					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
 					Reset
 				</button>
-				<button onclick={shakeBoard} class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-white/60 hover:bg-white/10 transition-all active:scale-95">
+				<button onclick={shakeBoard} class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-800 hover:bg-zinc-50 transition-all active:scale-95 shadow-sm">
 					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
 					Shake
 				</button>
@@ -351,15 +345,15 @@
 			<div class="flex flex-wrap gap-3">
 				{#each Object.keys(categoryColors) as cat}
 					<button onclick={() => activeFilter = activeFilter === cat ? null : cat}
-						class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all {activeFilter === cat ? 'bg-white/10 border-white/30 scale-105 shadow-md' : 'border-white/5 opacity-50 hover:opacity-100'}"
+						class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-all {activeFilter === cat ? 'bg-zinc-100 border-zinc-400 scale-105 shadow-sm' : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300'}"
 					>
 						<div class="h-2 w-2 rounded-full" style="background-color: {categoryColors[cat]};"></div>
-						<span class="text-[9px] font-black uppercase tracking-[0.2em] text-white">{cat}</span>
+						<span class="text-[9px] font-black uppercase tracking-[0.2em]">{cat}</span>
 					</button>
 				{/each}
 			</div>
 		</div>
-		<div class="text-right flex flex-col gap-1.5 opacity-30">
+		<div class="text-right flex flex-col gap-1.5 text-zinc-400">
 			<span class="text-[9px] font-black uppercase tracking-widest">Stack Nodes: {categories.reduce((acc, cat) => acc + cat.items.length, 0)}</span>
 			<span class="text-[9px] font-black uppercase tracking-widest">UX: Svelte-Runes</span>
 		</div>
