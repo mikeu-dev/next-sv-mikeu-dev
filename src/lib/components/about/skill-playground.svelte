@@ -255,35 +255,55 @@
 
 <div class="relative mx-auto max-w-[450px]">
 	<!-- Board Header HUD -->
-	<div class="mb-6 flex items-end justify-between px-2">
-		<div class="flex flex-col">
-			<span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/40 drop-shadow-sm">Career Matrix</span>
+	<div class="mb-8 flex items-end justify-between px-2">
+		<div class="flex flex-col gap-1">
+			<div class="flex items-center gap-2">
+				<div class="h-1 w-4 bg-primary rounded-full animate-pulse"></div>
+				<span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary/90 drop-shadow-[0_0_8px_rgba(var(--primary),0.4)]">Career Matrix</span>
+			</div>
 			<div class="flex items-baseline gap-2">
-				<span class="font-mono text-3xl font-black italic text-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.6)]">S-RANK</span>
-				<div class="flex gap-1">
-					{#each Array(comboCount > 5 ? 5 : comboCount) as _}
-						<div class="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)]"></div>
+				<span class="font-mono text-4xl font-black italic text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">S-RANK</span>
+				<div class="flex gap-1.5 mb-1">
+					{#each Array(5) as _, i}
+						<div class="h-2 w-2 rounded-sm {i < comboCount ? 'bg-yellow-400 shadow-[0_0_10px_#facc15]' : 'bg-white/10'} transition-all duration-500"></div>
 					{/each}
 				</div>
 			</div>
 		</div>
 
-		<!-- Next Piece HUD -->
-		<div class="flex flex-col items-end">
-			<span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/40 mb-2 drop-shadow-sm">Next Module</span>
-			<div class="h-12 w-16 rounded-xl border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center relative overflow-hidden shadow-lg">
-				{#key nextPieceIdx}
-					<div in:fly={{ y: 10, duration: 400 }} class="grid gap-0.5" 
-						style="grid-template-columns: repeat(4, 6px); grid-template-rows: repeat(4, 6px);">
-						{#each Array(16) as _, i}
-							{@const x = i % 4}
-							{@const y = Math.floor(i / 4)}
-							{@const isFilled = tetriminos[nextPieceIdx]?.skills.some(s => s.relX === x && s.relY === y)}
-							<div class="rounded-[1px]" style="background-color: {isFilled ? tetriminos[nextPieceIdx].color : 'transparent'}"></div>
-						{/each}
-					</div>
-				{/key}
-				<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+		<!-- Holographic Next Piece Preview -->
+		<div class="flex flex-col items-end gap-2">
+			<span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/80 drop-shadow-sm">Next Module</span>
+			<div class="relative group/next">
+				<!-- Tech Corners -->
+				<div class="absolute -left-1 -top-1 size-2 border-l-2 border-t-2 border-primary/50"></div>
+				<div class="absolute -right-1 -top-1 size-2 border-r-2 border-t-2 border-primary/50"></div>
+				<div class="absolute -left-1 -bottom-1 size-2 border-l-2 border-b-2 border-primary/50"></div>
+				<div class="absolute -right-1 -bottom-1 size-2 border-r-2 border-b-2 border-primary/50"></div>
+				
+				<div class="h-14 w-20 bg-white/[0.03] backdrop-blur-xl flex items-center justify-center overflow-hidden shadow-2xl transition-colors group-hover/next:bg-white/[0.07]">
+					<!-- Scanning Line Animation -->
+					<div class="absolute inset-x-0 h-[1px] bg-primary/30 z-10 animate-scanline"></div>
+					
+					{#key nextPieceIdx}
+						<div in:scale={{ start: 0.8, duration: 400 }} class="grid gap-1" 
+							style="grid-template-columns: repeat(4, 10px); grid-template-rows: repeat(4, 10px);">
+							{#each Array(16) as _, i}
+								{@const x = i % 4}
+								{@const y = Math.floor(i / 4)}
+								{@const isFilled = tetriminos[nextPieceIdx]?.skills.some(s => s.relX === x && s.relY === y)}
+								{#if isFilled}
+									<div class="rounded-sm shadow-[0_0_8px_currentcolor]" style="background-color: {tetriminos[nextPieceIdx].color}; color: {tetriminos[nextPieceIdx].color}"></div>
+								{#else}
+									<div class="rounded-full size-0.5 bg-white/5"></div>
+								{/if}
+							{/each}
+						</div>
+					{/key}
+					
+					<!-- Radar Grid Overlay -->
+					<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, #444 0.5px, transparent 0.5px); background-size: 10px 10px;"></div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -414,6 +434,15 @@
 	@keyframes subtle-pulse {
 		0%, 100% { background-color: #010101; }
 		50% { background-color: #080808; }
+	}
+
+	@keyframes scanline {
+		0% { top: -10%; }
+		100% { top: 110%; }
+	}
+
+	.animate-scanline {
+		animation: scanline 2s linear infinite;
 	}
 
 	/* Text-shadow for better legibility on dark BG */
