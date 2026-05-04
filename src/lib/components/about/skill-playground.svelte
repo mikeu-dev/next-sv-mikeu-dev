@@ -3,7 +3,7 @@
 	import Matter from 'matter-js';
 	import type { Tag } from '$lib/types';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { fade, scale } from 'svelte/transition';
+	import { fade, scale, fly } from 'svelte/transition';
 
 	interface LocalizedCategory {
 		category: string;
@@ -15,21 +15,21 @@
 	let container: HTMLElement;
 	let activeFilter = $state<string | null>(null);
 	let comboCount = $state(0);
+	let nextPieceIdx = $state(1);
+	let spawnedCount = $state(0);
+	
+	// Particle system
+	let particles = $state<any[]>([]);
 
-	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Vector } = Matter;
+	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Vector, Events } = Matter;
 
 	let engine: Matter.Engine;
 	let runner: Matter.Runner;
 
-	// Category Colors for Indicators
 	const categoryColors: Record<string, string> = {
-		'Frontend': '#FF3E00',
-		'Backend': '#3b82f6',
-		'GIS': '#10b981',
-		'Tools': '#f59e0b'
+		'Frontend': '#FF3E00', 'Backend': '#3b82f6', 'GIS': '#10b981', 'Tools': '#f59e0b'
 	};
 
-	// Official Tetris Colors (Neon Palette)
 	const tetrisColors: Record<string, string> = {
 		I: '#00f0f0', L: '#f0a000', J: '#0000f0', O: '#f0f000', T: '#a000f0', S: '#00f000', Z: '#f00000'
 	};
@@ -75,6 +75,7 @@
 		if (pb) {
 			Body.rotate(pb.body, Math.PI / 2);
 			comboCount++;
+			createParticles(pb.body.position.x, pb.body.position.y, pb.piece.color, 10);
 			setTimeout(() => { if (comboCount > 0) comboCount--; }, 2000);
 		}
 	}
@@ -82,8 +83,35 @@
 	function resetBoard() {
 		if (!engine) return;
 		Composite.clear(engine.world, false, true);
+		spawnedCount = 0;
+		nextPieceIdx = 1;
+		particles = [];
 		initWalls();
 		spawnSequentially();
+	}
+
+	function shakeBoard() {
+		pieceBodies.forEach(pb => {
+			Body.applyForce(pb.body, pb.body.position, { 
+				x: (Math.random() - 0.5) * 0.1 * pb.body.mass, 
+				y: -0.15 * pb.body.mass 
+			});
+		});
+		comboCount = 0;
+	}
+
+	function createParticles(x: number, y: number, color: string, count = 5) {
+		for (let i = 0; i < count; i++) {
+			particles.push({
+				id: Math.random(),
+				x, y,
+				vx: (Math.random() - 0.5) * 10,
+				vy: (Math.random() - 0.5) * 10,
+				life: 1.0,
+				color
+			});
+		}
+		if (particles.length > 50) particles = particles.slice(-50);
 	}
 
 	function initWalls() {
@@ -114,7 +142,9 @@
 				const pb = { body, piece, id: pieceIdx };
 				pieceBodies.push(pb);
 				Composite.add(engine.world, body);
-			}, pieceIdx * 800); // Spawn every 800ms
+				spawnedCount++;
+				if (pieceIdx < tetriminos.length - 1) nextPieceIdx = pieceIdx + 1;
+			}, pieceIdx * 800);
 		});
 	}
 
@@ -136,7 +166,6 @@
 		});
 		Composite.add(engine.world, mouseConstraint);
 
-		// Handle Click to Rotate
 		Matter.Events.on(mouseConstraint, 'mousedown', (event) => {
 			if (event.source.body) {
 				const bodyLabel = event.source.body.label;
@@ -147,10 +176,33 @@
 			}
 		});
 
+		// Collision Events for Particles
+		Events.on(engine, 'collisionStart', (event) => {
+			event.pairs.forEach((pair) => {
+				const bodyA = pair.bodyA;
+				const bodyB = pair.bodyB;
+				if (pair.collision.depth > 2) {
+					const pos = pair.collision.supports[0] || bodyA.position;
+					const pieceA = pieceBodies.find(p => p.body === bodyA || p.body === bodyA.parent);
+					const color = pieceA?.piece.color || '#ffffff';
+					createParticles(pos.x, pos.y, color, 3);
+				}
+			});
+		});
+
 		spawnSequentially();
 
 		let rafId: number;
 		function update() {
+			// Update Particles
+			particles = particles.map(p => ({
+				...p,
+				x: p.x + p.vx,
+				y: p.y + p.vy,
+				life: p.life - 0.02,
+				vy: p.vy + 0.2 // Gravity for particles
+			})).filter(p => p.life > 0);
+
 			pieceBodies.forEach((pb) => {
 				pb.body.parts.slice(1).forEach((part, partIdx) => {
 					const skillId = `${pb.id}-${partIdx}`;
@@ -159,8 +211,6 @@
 						const { x, y } = part.position;
 						element.style.transform = `translate(${x - blockSize/2}px, ${y - blockSize/2}px) rotate(${pb.body.angle}rad)`;
 						element.style.opacity = '1';
-						
-						// Highlight logic
 						const skill = pb.piece.skills[partIdx];
 						if (activeFilter && skill.category === activeFilter) {
 							element.classList.add('filter-active');
@@ -185,89 +235,162 @@
 </script>
 
 <div class="relative mx-auto max-w-[450px]">
-	<!-- Board Header -->
-	<div class="mb-6 flex items-center justify-between px-2">
+	<!-- Board Header HUD -->
+	<div class="mb-6 flex items-end justify-between px-2">
 		<div class="flex flex-col">
-			<span class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Power Level</span>
+			<span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Career Matrix</span>
 			<div class="flex items-baseline gap-2">
 				<span class="font-mono text-3xl font-black italic text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]">S-RANK</span>
-				{#if comboCount > 2}
-					<span in:scale class="text-xs font-black text-yellow-400 animate-bounce">X{comboCount} COMBO!</span>
-				{/if}
+				<div class="flex gap-1">
+					{#each Array(comboCount > 5 ? 5 : comboCount) as _}
+						<div class="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-pulse"></div>
+					{/each}
+				</div>
 			</div>
 		</div>
-		<button 
-			onclick={resetBoard}
-			class="group flex flex-col items-center gap-1 transition-opacity hover:opacity-100 opacity-60"
-		>
-			<div class="size-8 rounded-full border-2 border-primary flex items-center justify-center group-hover:rotate-180 transition-transform duration-500">
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+
+		<!-- Next Piece HUD -->
+		<div class="flex flex-col items-end">
+			<span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">Next Module</span>
+			<div class="h-12 w-16 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm flex items-center justify-center relative overflow-hidden">
+				{#key nextPieceIdx}
+					<div in:fly={{ y: 10, duration: 400 }} class="grid gap-0.5" 
+						style="grid-template-columns: repeat(4, 6px); grid-template-rows: repeat(4, 6px);">
+						{#each Array(16) as _, i}
+							{@const x = i % 4}
+							{@const y = Math.floor(i / 4)}
+							{@const isFilled = tetriminos[nextPieceIdx]?.skills.some(s => s.relX === x && s.relY === y)}
+							<div class="rounded-[1px]" style="background-color: {isFilled ? tetriminos[nextPieceIdx].color : 'transparent'}"></div>
+						{/each}
+					</div>
+				{/key}
+				<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
 			</div>
-			<span class="text-[8px] font-black uppercase tracking-tighter">System Reset</span>
-		</button>
+		</div>
 	</div>
 
 	<div 
 		bind:this={container} 
-		class="relative h-[650px] w-full overflow-hidden rounded-[2.5rem] border-8 border-muted/20 bg-[#050505] shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing group/board"
+		class="relative h-[650px] w-full overflow-hidden rounded-[2.5rem] border-8 border-muted/20 bg-[#020202] shadow-[0_0_60px_rgba(0,0,0,0.9)] cursor-grab active:cursor-grabbing group/board"
 	>
-		<!-- Grid Overlay -->
-		<div class="pointer-events-none absolute inset-0 opacity-[0.1]" 
-			style="background-image: linear-gradient(#222 1px, transparent 1px), linear-gradient(90deg, #222 1px, transparent 1px); background-size: 45px 45px;">
+		<!-- CRT / Scanline Overlays -->
+		<div class="pointer-events-none absolute inset-0 opacity-[0.08] z-30" 
+			style="background-image: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06)); background-size: 100% 4px, 3px 100%;"></div>
+		
+		<!-- Subtle Grid -->
+		<div class="pointer-events-none absolute inset-0 opacity-[0.05]" 
+			style="background-image: linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px); background-size: 45px 45px;"></div>
+
+		<!-- Particles Layer -->
+		{#each particles as p (p.id)}
+			<div 
+				class="absolute pointer-events-none z-10"
+				style="left: {p.x}px; top: {p.y}px; width: 4px; height: 4px; background-color: {p.color}; opacity: {p.life}; box-shadow: 0 0 5px {p.color}; transform: scale({p.life});"
+			></div>
+		{/each}
+
+		<!-- HUD Status Elements -->
+		<div class="pointer-events-none absolute inset-x-6 top-6 flex justify-between z-20 text-[8px] font-black uppercase tracking-widest text-white/20">
+			<div class="flex flex-col gap-1">
+				<span>Integrity: 100%</span>
+				<span>Uptime: {Math.floor(spawnedCount / tetriminos.length * 100)}%</span>
+			</div>
+			<div class="text-right flex flex-col gap-1">
+				<span>Buffer: Optimized</span>
+				<span>Region: {categories[0]?.items[0]?.name || 'Global'}</span>
+			</div>
 		</div>
 
-		<!-- Interactive Hint -->
-		<div class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center opacity-0 group-hover/board:opacity-20 transition-opacity duration-700">
-			<span class="text-4xl font-black italic tracking-tighter text-white uppercase">Tap to Rotate</span>
-			<span class="text-[10px] font-black tracking-widest text-white">Drag to Arrange</span>
+		<!-- Interactive Hints -->
+		<div class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center opacity-0 group-hover/board:opacity-20 transition-opacity duration-1000">
+			<span class="text-5xl font-black italic tracking-tighter text-white uppercase">Sync In Progress</span>
+			<span class="text-[9px] font-black tracking-[0.5em] text-white">INTERACT TO OPTIMIZE</span>
 		</div>
 
 		{#each tetriminos as piece, pIdx}
 			{#each piece.skills as skill, sIdx}
 				<div
 					id="skill-block-{pIdx}-{sIdx}"
-					class="absolute left-0 top-0 flex items-center justify-center rounded-sm border-[1px] shadow-[inset_0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 group"
-					style="width: 44.5px; height: 44.5px; background: linear-gradient(135deg, {piece.color}dd, {piece.color}aa); border-color: {piece.color}cc; opacity: 0; pointer-events: none;"
+					class="absolute left-0 top-0 flex items-center justify-center rounded-sm border-[1px] shadow-[inset_0_0_15px_rgba(255,255,255,0.15)] transition-all duration-300 group"
+					style="width: 44.5px; height: 44.5px; background: linear-gradient(135deg, {piece.color}ee, {piece.color}aa); border-color: {piece.color}; opacity: 0; pointer-events: none;"
 				>
-					<div class="absolute right-1 top-1 size-1.5 rounded-full" style="background-color: {skill.catColor}"></div>
+					<div class="absolute right-1 top-1 size-1.5 rounded-full shadow-[0_0_5px_white]" style="background-color: {skill.catColor}"></div>
 					<div class="relative z-10 flex flex-col items-center justify-center p-1">
 						{#if skill.icon}
-							<div class="scale-[0.85] brightness-0 invert opacity-90">
+							<div class="scale-[0.85] brightness-0 invert opacity-95 group-hover:scale-110 transition-transform">
 								<Icon src={skill.icon} size={22} />
 							</div>
 						{:else}
-							<span class="font-mono text-[7px] font-black text-white/90 leading-none">{skill.name.slice(0,4)}</span>
+							<span class="font-mono text-[7px] font-black text-white leading-none">{skill.name.slice(0,4)}</span>
 						{/if}
 					</div>
-					<div class="absolute inset-0 opacity-0 bg-white group-hover:opacity-30 transition-opacity"></div>
+					<div class="absolute inset-0 opacity-0 bg-white group-hover:opacity-40 transition-opacity"></div>
 				</div>
 			{/each}
 		{/each}
 	</div>
 
-	<!-- Interactive Footer Indicators -->
-	<div class="mt-6 flex justify-between px-4 sm:px-8">
-		{#each Object.keys(categoryColors) as cat}
-			<button 
-				onclick={() => activeFilter = activeFilter === cat ? null : cat}
-				class="flex items-center gap-2 px-2 py-1 rounded-md transition-all {activeFilter === cat ? 'bg-white/10 scale-110 shadow-lg' : 'opacity-40 hover:opacity-70'}"
-			>
-				<div class="h-2 w-2 rounded-full shadow-[0_0_8px_currentcolor]" style="background-color: {categoryColors[cat]}; color: {categoryColors[cat]}"></div>
-				<span class="text-[9px] font-black uppercase tracking-widest text-white">{cat}</span>
-			</button>
-		{/each}
+	<!-- Sidebar Controls & Stats -->
+	<div class="mt-8 flex items-start justify-between">
+		<div class="flex flex-col gap-4">
+			<div class="flex gap-2">
+				<button 
+					onclick={resetBoard}
+					class="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/10 transition-all active:scale-95"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+					Reset
+				</button>
+				<button 
+					onclick={shakeBoard}
+					class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white/60 hover:bg-white/10 transition-all active:scale-95"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+					Shake
+				</button>
+			</div>
+			
+			<!-- Footer Filter Legenda -->
+			<div class="flex flex-wrap gap-3">
+				{#each Object.keys(categoryColors) as cat}
+					<button 
+						onclick={() => activeFilter = activeFilter === cat ? null : cat}
+						class="flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all {activeFilter === cat ? 'bg-white/10 border-white/40 scale-105' : 'border-white/5 opacity-40 hover:opacity-100'}"
+					>
+						<div class="h-2 w-2 rounded-full" style="background-color: {categoryColors[cat]}; box-shadow: 0 0 8px {categoryColors[cat]}"></div>
+						<span class="text-[9px] font-black uppercase tracking-[0.2em] text-white">{cat}</span>
+					</button>
+				{/each}
+			</div>
+		</div>
+
+		<div class="text-right flex flex-col gap-1 opacity-20">
+			<span class="text-[8px] font-black uppercase tracking-widest">Module count: {categories.reduce((acc, cat) => acc + cat.items.length, 0)}</span>
+			<span class="text-[8px] font-black uppercase tracking-widest">Kernel: Matter-JS-Core</span>
+			<span class="text-[8px] font-black uppercase tracking-widest">Interface: Svelte-5-Runes</span>
+		</div>
 	</div>
 </div>
 
 <style>
 	.filter-active {
-		box-shadow: 0 0 25px rgba(255, 255, 255, 0.6) !important;
-		z-index: 40 !important;
-		filter: brightness(1.5) !important;
-		scale: 1.1;
+		box-shadow: 0 0 35px rgba(255, 255, 255, 0.8) !important;
+		z-index: 50 !important;
+		filter: brightness(1.8) !important;
+		scale: 1.15;
 	}
 
 	[id^="skill-block-"] {
-		will-change: transform;
+		will-change: transform, opacity;
+	}
+
+	/* Subtle flicker for the whole board bg */
+	.group\/board {
+		animation: subtle-pulse 10s infinite;
+	}
+
+	@keyframes subtle-pulse {
+		0%, 100% { background-color: #020202; }
+		50% { background-color: #050505; }
 	}
 </style>
