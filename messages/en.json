@@ -61,5 +61,19 @@
 	"blog_related_posts": "Related Posts",
 	"blog_share": "Share",
 	"blog_copy_link": "Copy Link",
-	"blog_link_copied": "Link copied!"
+	"blog_link_copied": "Link copied!",
+	"about_hero_title": "Crafting Digital Experiences with Passion",
+	"about_hero_resume": "Download Resume",
+	"about_hero_copy_email": "Copy Email",
+	"about_philosophy_title": "My Professional Philosophy",
+	"about_philosophy_efficiency_title": "Efficiency",
+	"about_philosophy_efficiency_desc": "Building systems that are fast, lean, and optimized for performance.",
+	"about_philosophy_scalability_title": "Scalability",
+	"about_philosophy_scalability_desc": "Designing architectures that grow alongside your business and user base.",
+	"about_philosophy_aesthetics_title": "Aesthetics",
+	"about_philosophy_aesthetics_desc": "Combining functionality with clean, modern, and intuitive design.",
+	"about_fun_facts_title": "Fun Facts",
+	"about_fun_facts_coffee": "Fueled by high-quality caffeine.",
+	"about_fun_facts_gaming": "Passionate about immersive gaming worlds.",
+	"about_fun_facts_music": "Vibing to lo-fi and deep house while coding."
 }
