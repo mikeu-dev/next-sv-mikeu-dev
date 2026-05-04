@@ -13,7 +13,18 @@
 		"incremental": true,
 		"tsBuildInfoFile": ".svelte-kit/tsconfig.tsbuildinfo"
 	},
-	"exclude": ["node_modules", "src/lib/server/scripts/**"]
+	"exclude": [
+		"node_modules",
+		".svelte-kit",
+		".vercel",
+		"build",
+		"dist",
+		"static",
+		"messages",
+		"src/lib/paraglide",
+		"src/paraglide",
+		"src/lib/server/scripts/**"
+	]
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
 	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
 	//
