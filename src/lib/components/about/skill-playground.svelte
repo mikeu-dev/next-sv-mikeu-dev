@@ -133,9 +133,11 @@
 	}
 
 	function initWalls() {
+		if (!container) return;
 		const width = container.clientWidth;
-		const height = 650;
+		const height = container.clientHeight;
 		const wallOptions = { isStatic: true, friction: 0.8, restitution: 0.1, render: { visible: false } };
+		// Place ground exactly at the bottom edge of the visible area
 		const ground = Bodies.rectangle(width / 2, height + 25, width, 50, wallOptions);
 		const leftWall = Bodies.rectangle(-25, height / 2, 50, height, wallOptions);
 		const rightWall = Bodies.rectangle(width + 25, height / 2, 50, height, wallOptions);
@@ -394,7 +396,7 @@
 </div>
 
 <style>
-	.filter-active {
+	:global(.filter-active) {
 		box-shadow: 0 0 45px rgba(255, 255, 255, 0.9) !important;
 		z-index: 60 !important;
 		filter: brightness(2) !important;
