@@ -135,6 +135,9 @@
 	h6 {
 		font-family: var(--font-poppins);
 	}
+	button {
+		@apply cursor-pointer;
+	}
 }
 
 /* Custom Prose Styling for Premium Blog Feel */
