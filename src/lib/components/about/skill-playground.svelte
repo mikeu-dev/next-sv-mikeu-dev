@@ -60,12 +60,12 @@
 	let isSpawning = false;
 	let spawnTimeouts: number[] = [];
 	let particles = $state<Particle[]>([]);
-	
+
 	// HUD Stats
 	let sessionStart = Date.now();
 	let uptime = $state(0);
 	let integrity = $state(100);
-	let kernelVersion = "0.24.5-STABLE";
+	let kernelVersion = '0.24.5-STABLE';
 
 	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
 	let engine = $state.raw<Matter.Engine>();
@@ -152,7 +152,7 @@
 				catColor: categoryColors[cat.category]
 			}))
 		);
-		
+
 		// Use a stable seed-like approach for shapes instead of Math.random
 		while (currentSkillIndex < flatSkills.length) {
 			const pseudoRandom = (currentSkillIndex * 1337) % shapeKeys.length;
@@ -199,9 +199,9 @@
 			Body.rotate(body, Math.PI / 2);
 			comboCount++;
 			createParticles(body.position.x, body.position.y, pb.piece.color, 12);
-			
+
 			// Pulse effect via state
-			pb.piece.skills.forEach(s => {
+			pb.piece.skills.forEach((s) => {
 				s.scale = 1.2;
 				s.brightness = 1.5;
 			});
@@ -249,41 +249,59 @@
 
 	function initWalls() {
 		if (!engine || canvasWidth === 0 || canvasHeight === 0) return;
-		
+
 		// Find and remove old walls
-		const existingWalls = engine.world.bodies.filter(b => b.label === 'wall');
+		const existingWalls = engine.world.bodies.filter((b) => b.label === 'wall');
 		Composite.remove(engine.world, existingWalls);
 
-		const options = { 
-			isStatic: true, 
-			friction: 0.8, 
-			restitution: 0.2, 
+		const options = {
+			isStatic: true,
+			friction: 0.8,
+			restitution: 0.2,
 			label: 'wall',
-			render: { visible: true, fillStyle: 'transparent' } 
+			render: { visible: true, fillStyle: 'transparent' }
 		};
 
 		const wallThickness = 100;
 		Composite.add(engine.world, [
 			// Floor
-			Bodies.rectangle(canvasWidth / 2, canvasHeight + wallThickness / 2, canvasWidth, wallThickness, options),
+			Bodies.rectangle(
+				canvasWidth / 2,
+				canvasHeight + wallThickness / 2,
+				canvasWidth,
+				wallThickness,
+				options
+			),
 			// Left Wall
-			Bodies.rectangle(-wallThickness / 2, canvasHeight / 2, wallThickness, canvasHeight * 2, options),
+			Bodies.rectangle(
+				-wallThickness / 2,
+				canvasHeight / 2,
+				wallThickness,
+				canvasHeight * 2,
+				options
+			),
 			// Right Wall
-			Bodies.rectangle(canvasWidth + wallThickness / 2, canvasHeight / 2, wallThickness, canvasHeight * 2, options)
+			Bodies.rectangle(
+				canvasWidth + wallThickness / 2,
+				canvasHeight / 2,
+				wallThickness,
+				canvasHeight * 2,
+				options
+			)
 		]);
 	}
 
 	function spawnSequentially() {
 		if (canvasWidth === 0 || isSpawning) return;
 		isSpawning = true;
-		
+
 		const blockSize = 45;
 		pieceBodies = [];
 		physicsBodies = [];
 		if (engine) Composite.clear(engine.world, false);
-		nextId = 0; 
+		nextId = 0;
 		initWalls();
-		
+
 		// Clear any existing timeouts
 		spawnTimeouts.forEach(clearTimeout);
 		spawnTimeouts = [];
@@ -291,7 +309,7 @@
 		tetriminos.forEach((piece, pieceIdx) => {
 			const timeout = window.setTimeout(() => {
 				// Calculate piece width to prevent spawning partially inside walls
-				const maxX = Math.max(...piece.skills.map(s => s.relX));
+				const maxX = Math.max(...piece.skills.map((s) => s.relX));
 				const pieceWidth = (maxX + 1) * blockSize;
 				const startX = Math.random() * (canvasWidth - pieceWidth - 40) + 20;
 				const parts = piece.skills.map((skill) =>
@@ -317,7 +335,7 @@
 				// Pre-cache elements
 				// Create reactive piece state for Svelte 5
 				const currentPieceId = nextId++;
-				const reactiveSkills = piece.skills.map(s => ({
+				const reactiveSkills = piece.skills.map((s) => ({
 					...s,
 					x: startX + s.relX * blockSize,
 					y: 50 + s.relY * blockSize,
@@ -327,21 +345,21 @@
 					brightness: 1
 				}));
 
-				const newPB = $state({ 
-					piece: { ...piece, skills: reactiveSkills }, 
+				const newPB = $state({
+					piece: { ...piece, skills: reactiveSkills },
 					id: currentPieceId
 				});
-				
+
 				body.label = `piece-${currentPieceId}`;
 				physicsBodies.push(body);
 				pieceBodies = [...pieceBodies, newPB];
-				
+
 				if (engine) {
 					Composite.add(engine.world, body);
 					spawnedCount++;
 					if (pieceIdx < tetriminos.length - 1) nextPieceIdx = pieceIdx + 1;
 				}
-				
+
 				// If this was the last piece, we're done spawning
 				if (pieceIdx === tetriminos.length - 1) {
 					isSpawning = false;
@@ -370,14 +388,18 @@
 				if (p.collision.depth > 2) {
 					const pos = p.collision.supports[0] || p.bodyA.position;
 					createParticles(pos.x, pos.y, '#ffffff', 2);
-					
+
 					// Flash effect on high impact via state
 					if (p.collision.depth > 5) {
-						const body = p.bodyA.label?.startsWith('piece-') ? p.bodyA : (p.bodyB.label?.startsWith('piece-') ? p.bodyB : null);
+						const body = p.bodyA.label?.startsWith('piece-')
+							? p.bodyA
+							: p.bodyB.label?.startsWith('piece-')
+								? p.bodyB
+								: null;
 						if (body) {
 							const id = parseInt(body.label.split('-')[1]);
-							const pb = pieceBodies.find(p => p.id === id);
-							if (pb) pb.piece.skills.forEach(s => s.brightness = 2);
+							const pb = pieceBodies.find((p) => p.id === id);
+							if (pb) pb.piece.skills.forEach((s) => (s.brightness = 2));
 						}
 					}
 				}
@@ -400,20 +422,20 @@
 
 			for (let i = 0; i < pieceBodies.length; i++) {
 				const pb = pieceBodies[i];
-				const body = physicsBodies.find(b => b.label === `piece-${pb.id}`);
+				const body = physicsBodies.find((b) => b.label === `piece-${pb.id}`);
 				if (!body) continue;
 
 				const parts = body.parts;
 				for (let j = 1; j < parts.length; j++) {
 					const part = parts[j];
 					const skill = pb.piece.skills[j - 1];
-					
+
 					if (skill) {
 						// Update reactive positions via proxy
 						skill.x = part.position.x;
 						skill.y = part.position.y;
 						skill.angle = body.angle;
-						
+
 						// Decay effects
 						if (skill.scale > 1) skill.scale -= 0.02;
 						if (skill.brightness > 1) skill.brightness -= 0.05;
@@ -642,7 +664,8 @@
 								class:text-white={!piece.isLight}
 								class:filter-active={activeFilter && skill.category === activeFilter}
 								style="width: 44.5px; height: 44.5px; background: {piece.color}dd; border-color: {piece.color}; 
-									   transform: translate({skill.x - 22.5}px, {skill.y - 22.5}px) rotate({skill.angle}rad) scale({skill.scale}); 
+									   transform: translate({skill.x - 22.5}px, {skill.y -
+									22.5}px) rotate({skill.angle}rad) scale({skill.scale}); 
 									   opacity: {skill.opacity}; filter: brightness({skill.brightness}); pointer-events: none;"
 							>
 								<div

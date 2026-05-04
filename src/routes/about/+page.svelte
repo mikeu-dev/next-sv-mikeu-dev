@@ -100,7 +100,8 @@
 		}
 
 		// Fun Facts Stagger Reveal
-		gsap.fromTo('.fact-card', 
+		gsap.fromTo(
+			'.fact-card',
 			{ opacity: 0, y: 40 },
 			{
 				y: 0,
@@ -486,7 +487,7 @@
 										>
 											<fact.icon class={`size-7 ${fact.color}`} />
 										</div>
-										
+
 										<!-- Interactive Mini-Widgets -->
 										<div class="flex items-center gap-2">
 											{#if i === 0}
@@ -494,22 +495,33 @@
 												<div class="flex flex-col items-end gap-1">
 													<div class="flex gap-0.5">
 														{#each Array(4) as _, j}
-															<div class="h-3 w-1 rounded-full {j < 3 ? 'bg-orange-500' : 'bg-zinc-200 dark:bg-zinc-800'} animate-pulse" style="animation-delay: {j * 150}ms"></div>
+															<div
+																class="h-3 w-1 rounded-full {j < 3
+																	? 'bg-orange-500'
+																	: 'bg-zinc-200 dark:bg-zinc-800'} animate-pulse"
+																style="animation-delay: {j * 150}ms"
+															></div>
 														{/each}
 													</div>
 												</div>
 											{:else if i === 2}
 												<!-- Music: Visualizer -->
-												<div class="flex items-end gap-0.5 h-4">
+												<div class="flex h-4 items-end gap-0.5">
 													{#each Array(4) as _, j}
-														<div class="w-1 bg-pink-500 rounded-full animate-visualizer" style="animation-delay: {j * 100}ms"></div>
+														<div
+															class="animate-visualizer w-1 rounded-full bg-pink-500"
+															style="animation-delay: {j * 100}ms"
+														></div>
 													{/each}
 												</div>
 											{:else if i === 1}
 												<!-- Gaming: Pulse -->
 												<div class="flex items-center gap-1.5">
-													<div class="size-2 rounded-full bg-red-500 animate-ping"></div>
-													<span class="text-[8px] font-black text-red-500 uppercase tracking-tighter">Live</span>
+													<div class="size-2 animate-ping rounded-full bg-red-500"></div>
+													<span
+														class="text-[8px] font-black tracking-tighter text-red-500 uppercase"
+														>Live</span
+													>
 												</div>
 											{/if}
 										</div>
@@ -521,7 +533,9 @@
 												{m.about_fun_facts_node_status()}
 											</p>
 											{#if i === 3}
-												<span class="text-[8px] font-mono text-emerald-500 animate-pulse">SYNCING_DATA...</span>
+												<span class="animate-pulse font-mono text-[8px] text-emerald-500"
+													>SYNCING_DATA...</span
+												>
 											{/if}
 										</div>
 										<p
@@ -584,9 +598,11 @@
 	.group:hover .animate-ping {
 		animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 	}
-	
+
 	/* Disable default animations unless hovered */
-	.animate-visualizer, .animate-pulse, .animate-ping {
+	.animate-visualizer,
+	.animate-pulse,
+	.animate-ping {
 		animation: none;
 	}
 </style>
