@@ -98,6 +98,20 @@
 				ease: 'power1.inOut'
 			});
 		}
+
+		// Fun Facts Stagger Reveal
+		gsap.from('.fact-card', {
+			y: 40,
+			opacity: 0,
+			duration: 1,
+			stagger: 0.15,
+			ease: 'power4.out',
+			scrollTrigger: {
+				trigger: '.facts-grid',
+				start: 'top 90%',
+				toggleActions: 'play none none none'
+			}
+		});
 	});
 
 	async function copyEmail() {
@@ -139,26 +153,6 @@
 			sub: 'Infinite Loop'
 		}
 	]);
-
-	onMount(() => {
-		gsap.registerPlugin(ScrollTrigger);
-
-		// ... existing hero animations ...
-
-		// Fun Facts Stagger Reveal - Re-activated with improved trigger
-		gsap.from('.fact-card', {
-			y: 40,
-			opacity: 0,
-			duration: 1,
-			stagger: 0.15,
-			ease: 'power4.out',
-			scrollTrigger: {
-				trigger: '.facts-grid',
-				start: 'top 90%', // Trigger earlier
-				toggleActions: 'play none none none'
-			}
-		});
-	});
 
 	let expandedIndex = $state(0);
 	function toggleJourney(index: number) {

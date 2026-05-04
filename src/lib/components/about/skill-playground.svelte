@@ -42,17 +42,22 @@
 	}
 
 	let { categories }: { categories: LocalizedCategory[] } = $props();
-
 	let container: HTMLElement;
+	let canvasWidth = $state(0);
+	let canvasHeight = $state(0);
+	let lastW = 0;
+	let lastH = 0;
 	let activeFilter = $state<string | null>(null);
 	let comboCount = $state(0);
 	let nextPieceIdx = $state(1);
 	let spawnedCount = $state(0);
+	let isSpawning = false;
+	let spawnTimeouts: number[] = [];
 	let particles = $state<Particle[]>([]);
 
 	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
-	let engine: Matter.Engine;
-	let runner: Matter.Runner;
+	let engine = $state<Matter.Engine>();
+	let runner = $state<Matter.Runner>();
 
 	const categoryColors: Record<string, string> = {
 		Frontend: '#FF3E00',
@@ -135,8 +140,11 @@
 				catColor: categoryColors[cat.category]
 			}))
 		);
+		
+		// Use a stable seed-like approach for shapes instead of Math.random
 		while (currentSkillIndex < flatSkills.length) {
-			const shapeKey = shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+			const pseudoRandom = (currentSkillIndex * 1337) % shapeKeys.length;
+			const shapeKey = shapeKeys[pseudoRandom];
 			const shapeCoords = shapes[shapeKey];
 			const pieceSkills: SkillItem[] = [];
 			for (let i = 0; i < shapeCoords.length; i++) {
@@ -212,24 +220,47 @@
 	}
 
 	function initWalls() {
-		if (!container) return;
-		const w = container.clientWidth;
-		const h = container.clientHeight;
-		const options = { isStatic: true, friction: 0.8, restitution: 0.1, render: { visible: false } };
+		if (!engine || canvasWidth === 0 || canvasHeight === 0) return;
+		
+		// Find and remove old walls
+		const existingWalls = engine.world.bodies.filter(b => b.label === 'wall');
+		Composite.remove(engine.world, existingWalls);
+
+		const options = { 
+			isStatic: true, 
+			friction: 0.8, 
+			restitution: 0.2, 
+			label: 'wall',
+			render: { visible: false } 
+		};
+
+		const wallThickness = 100;
 		Composite.add(engine.world, [
-			Bodies.rectangle(w / 2, h + 25, w, 50, options),
-			Bodies.rectangle(-25, h / 2, 50, h, options),
-			Bodies.rectangle(w + 25, h / 2, 50, h, options)
+			// Floor
+			Bodies.rectangle(canvasWidth / 2, canvasHeight + wallThickness / 2, canvasWidth, wallThickness, options),
+			// Left Wall
+			Bodies.rectangle(-wallThickness / 2, canvasHeight / 2, wallThickness, canvasHeight * 2, options),
+			// Right Wall
+			Bodies.rectangle(canvasWidth + wallThickness / 2, canvasHeight / 2, wallThickness, canvasHeight * 2, options)
 		]);
 	}
 
 	function spawnSequentially() {
-		const width = container.clientWidth;
+		if (canvasWidth === 0 || isSpawning) return;
+		isSpawning = true;
+		
 		const blockSize = 45;
 		pieceBodies = [];
+		Composite.clear(engine.world, false);
+		initWalls();
+		
+		// Clear any existing timeouts
+		spawnTimeouts.forEach(clearTimeout);
+		spawnTimeouts = [];
+
 		tetriminos.forEach((piece, pieceIdx) => {
-			setTimeout(() => {
-				const startX = Math.random() * (width - 200) + 100;
+			const timeout = window.setTimeout(() => {
+				const startX = Math.random() * (canvasWidth - 200) + 100;
 				const parts = piece.skills.map((skill) =>
 					Bodies.rectangle(
 						startX + skill.relX * blockSize,
@@ -255,15 +286,20 @@
 					spawnedCount++;
 					if (pieceIdx < tetriminos.length - 1) nextPieceIdx = pieceIdx + 1;
 				}
+				
+				// If this was the last piece, we're done spawning
+				if (pieceIdx === tetriminos.length - 1) {
+					isSpawning = false;
+				}
 			}, pieceIdx * 800);
+			spawnTimeouts.push(timeout);
 		});
 	}
 
 	onMount(() => {
 		if (!container) return;
 		engine = Engine.create({ gravity: { x: 0, y: 1.5 } });
-		engine.enableSleeping = true;
-		initWalls();
+		engine.enableSleeping = false;
 		const mc = MouseConstraint.create(engine, {
 			mouse: Mouse.create(container),
 			constraint: { stiffness: 0.1, render: { visible: false } }
@@ -284,34 +320,54 @@
 				}
 			});
 		});
-		spawnSequentially();
+
 		let rafId: number;
 		function update() {
+			if (engine) Engine.update(engine, 1000 / 60);
+			
 			particles = particles
 				.map((p) => ({ ...p, x: p.x + p.vx, y: p.y + p.vy, life: p.life - 0.03, vy: p.vy + 0.2 }))
 				.filter((p) => p.life > 0);
-			pieceBodies.forEach((pb) => {
-				pb.body.parts.slice(1).forEach((part: Matter.Body, i: number) => {
-					const el = document.getElementById(`skill-block-${pb.id}-${i}`);
+			for (let i = 0; i < pieceBodies.length; i++) {
+				const pb = pieceBodies[i];
+				const parts = pb.body.parts;
+				for (let j = 1; j < parts.length; j++) {
+					const part = parts[j];
+					const idx = j - 1;
+					const el = document.getElementById(`skill-block-${pb.id}-${idx}`);
 					if (el) {
 						el.style.transform = `translate(${part.position.x - 22.5}px, ${part.position.y - 22.5}px) rotate(${pb.body.angle}rad)`;
 						el.style.opacity = '1';
-						if (activeFilter && pb.piece.skills[i].category === activeFilter)
+						if (activeFilter && pb.piece.skills[idx].category === activeFilter) {
 							el.classList.add('filter-active');
-						else el.classList.remove('filter-active');
+						} else {
+							el.classList.remove('filter-active');
+						}
 					}
-				});
-			});
+				}
+			}
 			rafId = requestAnimationFrame(update);
 		}
 		update();
-		runner = Runner.create();
-		Runner.run(runner, engine);
 		return () => {
-			Runner.stop(runner);
-			Engine.clear(engine);
+			spawnTimeouts.forEach(clearTimeout);
+			if (engine) Engine.clear(engine);
 			cancelAnimationFrame(rafId);
 		};
+	});
+
+	$effect(() => {
+		if (engine && canvasWidth > 0 && canvasHeight > 0) {
+			// Only re-init if size change is significant (> 5px) to prevent jitter/performance issues
+			if (Math.abs(canvasWidth - lastW) > 5 || Math.abs(canvasHeight - lastH) > 5) {
+				lastW = canvasWidth;
+				lastH = canvasHeight;
+				initWalls();
+				if (tetriminos.length > 0 && spawnedCount === 0) {
+					spawnSequentially();
+				}
+			}
+		}
 	});
 </script>
 
@@ -445,6 +501,8 @@
 
 				<div
 					bind:this={container}
+					bind:clientWidth={canvasWidth}
+					bind:clientHeight={canvasHeight}
 					class="relative h-[600px] w-full cursor-grab overflow-hidden rounded-[2.5rem] border-4 border-zinc-900/5 bg-[#010101] shadow-2xl active:cursor-grabbing"
 				>
 					<div
