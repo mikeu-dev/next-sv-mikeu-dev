@@ -12,6 +12,7 @@
 	}
 
 	interface Particle {
+		id: string;
 		x: number;
 		y: number;
 		vx: number;
@@ -198,6 +199,7 @@
 	function createParticles(x: number, y: number, color: string, count = 5) {
 		for (let i = 0; i < count; i++) {
 			particles.push({
+				id: Math.random().toString(36).substring(2) + Date.now(),
 				x,
 				y,
 				vx: (Math.random() - 0.5) * 8,
@@ -275,7 +277,9 @@
 			e.pairs.forEach((p: Matter.Pair) => {
 				if (p.collision.depth > 2) {
 					const pos = p.collision.supports[0] || p.bodyA.position;
-					const piece = pieceBodies.find((pb) => pb.body === p.bodyA || pb.body === p.bodyA.parent);
+					const piece = pieceBodies.find(
+						(pb) => pb.body.id === p.bodyA.id || pb.body.id === p.bodyA.parent?.id
+					);
 					createParticles(pos.x, pos.y, piece?.piece.color || '#ffffff', 2);
 				}
 			});
@@ -464,7 +468,7 @@
 						style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 					></div>
 
-					{#each particles as p (p.x + p.y + p.life)}
+					{#each particles as p (p.id)}
 						<div
 							class="pointer-events-none absolute z-10"
 							style="left: {p.x}px; top: {p.y}px; width: 3px; height: 3px; background-color: {p.color}; opacity: {p.life}; transform: scale({p.life});"
@@ -500,7 +504,7 @@
 					</div>
 
 					{#each pieceBodies as pb (pb.id)}
-						{#each pb.piece.skills as skill, sIdx (skill.name)}
+						{#each pb.piece.skills as skill, sIdx (pb.id + '-' + sIdx)}
 							{@const piece = pb.piece}
 							<div
 								id="skill-block-{pb.id}-{sIdx}"
