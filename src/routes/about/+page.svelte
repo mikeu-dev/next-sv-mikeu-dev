@@ -113,8 +113,7 @@
 
 		// ... existing hero animations ...
 		
-		// Fun Facts Stagger Reveal (Disabled temporarily for debugging)
-		/*
+		// Fun Facts Stagger Reveal - Re-activated with improved trigger
 		gsap.from('.fact-card', {
 			y: 40,
 			opacity: 0,
@@ -123,11 +122,16 @@
 			ease: 'power4.out',
 			scrollTrigger: {
 				trigger: '.facts-grid',
-				start: 'top 85%'
+				start: 'top 90%', // Trigger earlier
+				toggleActions: 'play none none none'
 			}
 		});
-		*/
 	});
+
+	let expandedIndex = $state(0);
+	function toggleJourney(index: number) {
+		expandedIndex = expandedIndex === index ? -1 : index;
+	}
 </script>
 
 <div bind:this={container} class="noise-bg relative mx-auto mt-20 max-w-7xl overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
@@ -223,23 +227,68 @@
 		</div>
 
 		<div class="journey-container relative mx-auto max-w-4xl px-4">
-			<div class="absolute top-0 left-8 h-full w-1 bg-muted md:left-1/2 md:-translate-x-1/2">
-				<div bind:this={timelineProgress} class="w-full bg-primary" style="height: 0%"></div>
+			<!-- Central Timeline Line -->
+			<div class="absolute top-0 left-8 h-full w-1 bg-zinc-100 dark:bg-zinc-800 md:left-1/2 md:-translate-x-1/2 overflow-hidden rounded-full">
+				<div bind:this={timelineProgress} class="w-full bg-primary origin-top" style="height: 0%"></div>
 			</div>
 
-			<div class="space-y-24">
+			<div class="space-y-16">
 				{#each myJourney as item, i (i)}
-					<div class="journey-item relative flex flex-col md:flex-row md:items-center">
+					{@const isExpanded = expandedIndex === i}
+					<div class="journey-item relative flex flex-col md:flex-row md:items-center group">
+						<!-- Timeline Node -->
+						<div class={`absolute left-8 top-0 z-20 size-4 -translate-x-1/2 rounded-full border-4 bg-background transition-all duration-500 md:left-1/2 ${isExpanded ? 'border-primary scale-125 shadow-[0_0_15px_rgba(var(--primary),0.5)]' : 'border-zinc-300 dark:border-zinc-700'}`}></div>
+
 						<div class={`relative w-full pl-16 md:w-1/2 md:pl-0 ${i % 2 === 0 ? 'md:pr-20 md:text-right' : 'md:order-2 md:pl-20'}`}>
-							<div class="space-y-2">
-								<span class="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm font-black text-primary uppercase tracking-widest">
-									{item.year}
-								</span>
-								<h3 class="font-poppins text-3xl font-black italic">{item.title}</h3>
-								<p class="text-lg text-muted-foreground">{item.description}</p>
-							</div>
+							<!-- Experience Card -->
+							<button 
+								onclick={() => toggleJourney(i)}
+								class={`w-full text-left md:text-inherit p-6 rounded-3xl border transition-all duration-500 relative overflow-hidden group/card
+									${isExpanded 
+										? 'bg-white dark:bg-zinc-900 border-primary/20 shadow-2xl shadow-primary/5' 
+										: 'bg-zinc-50/50 dark:bg-zinc-900/30 border-transparent hover:border-zinc-200 dark:hover:border-zinc-800'}`}
+							>
+								<!-- Hover/Active Background Accent -->
+								<div class={`absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 to-transparent ${isExpanded ? 'opacity-100' : ''}`}></div>
+
+								<div class="relative z-10 space-y-3">
+									<div class={`flex items-center gap-3 ${i % 2 === 0 ? 'md:justify-end' : ''}`}>
+										<span class={`inline-block rounded-lg px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-colors duration-500 ${isExpanded ? 'bg-primary text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'}`}>
+											{item.year}
+										</span>
+										{#if isExpanded}
+											<div class="size-1.5 rounded-full bg-primary animate-pulse"></div>
+										{/if}
+									</div>
+
+									<h3 class={`font-poppins text-2xl font-black italic tracking-tight transition-colors duration-500 ${isExpanded ? 'text-zinc-900 dark:text-white' : 'text-zinc-400 dark:text-zinc-500'}`}>
+										{item.title}
+									</h3>
+
+									<!-- Collapsible Content -->
+									<div class={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+										<div class="overflow-hidden">
+											<p class="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+												{item.description}
+											</p>
+											
+											<!-- Professional Meta (Placeholder for future data) -->
+											<div class={`mt-6 flex flex-wrap gap-2 pt-6 border-t border-zinc-100 dark:border-zinc-800 ${i % 2 === 0 ? 'md:justify-end' : ''}`}>
+												<span class="text-[9px] font-bold uppercase tracking-tighter px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md text-zinc-500">Full Time</span>
+												<span class="text-[9px] font-bold uppercase tracking-tighter px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md text-zinc-500">On-Site</span>
+											</div>
+										</div>
+									</div>
+
+									<!-- Interaction Hint -->
+									{#if !isExpanded}
+										<div class={`text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 mt-2 transition-all duration-500 group-hover/card:text-primary ${i % 2 === 0 ? 'md:text-right' : ''}`}>
+											Click to expand details
+										</div>
+									{/if}
+								</div>
+							</button>
 						</div>
-						<div class="absolute left-8 top-0 size-4 -translate-x-1/2 rounded-full border-4 border-primary bg-background shadow-[0_0_0_8px_rgba(var(--primary),0.1)] md:left-1/2"></div>
 					</div>
 				{/each}
 			</div>
