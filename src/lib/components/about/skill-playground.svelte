@@ -3,7 +3,8 @@
 	import Matter from 'matter-js';
 	import type { Tag } from '$lib/types';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { scale, fade } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
+	import * as m from '$lib/paraglide/messages';
 
 	interface LocalizedCategory {
 		category: string;
@@ -192,16 +193,14 @@
 </script>
 
 <section class="mx-auto max-w-7xl px-6 py-24">
-	<!-- Adaptive Section Header -->
 	<div class="mb-16 max-w-2xl">
 		<div class="mb-4 flex items-center gap-3">
 			<div class="h-px w-8 bg-primary"></div>
-			<span class="text-[10px] font-black uppercase tracking-[0.5em] text-primary">Technical Ecosystem</span>
+			<span class="text-[10px] font-black uppercase tracking-[0.5em] text-primary">{m.skill_playground_ecosystem_label()}</span>
 		</div>
-		<h2 class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 sm:text-5xl">Engineering Arsenal.</h2>
-		<p class="text-lg leading-relaxed text-zinc-600">
-			Arsitektur teknologi yang saya gunakan untuk mentransformasi ide menjadi solusi yang terukur. 
-			Tinjau daftar arsenal saya secara langsung atau bereksperimen dengan simulator interaktif di samping.
+		<h2 class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 dark:text-white sm:text-5xl">{m.skill_playground_title()}</h2>
+		<p class="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+			{m.skill_playground_desc()}
 		</p>
 	</div>
 
@@ -212,29 +211,29 @@
 				<div class="flex flex-col gap-4">
 					<div class="flex items-center gap-3">
 						<div class="h-2 w-2 rounded-full" style="background-color: {categoryColors[cat.category]}"></div>
-						<h3 class="text-sm font-black uppercase tracking-widest text-zinc-900">{cat.category}</h3>
+						<h3 class="text-sm font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">{cat.category}</h3>
 					</div>
 					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
 						{#each cat.items as item}
-							<div class="group flex items-center gap-3 rounded-xl border border-zinc-100 bg-white p-3 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md">
-								<div class="flex size-8 items-center justify-center rounded-lg bg-zinc-50 transition-colors group-hover:bg-white">
+							<div class="group flex items-center gap-3 rounded-xl border border-zinc-100 bg-white p-3 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700">
+								<div class="flex size-8 items-center justify-center rounded-lg bg-zinc-50 transition-colors group-hover:bg-white dark:bg-zinc-800 dark:group-hover:bg-zinc-700">
 									{#if item.icon}
-										<Icon src={item.icon} size={18} class="text-zinc-600" />
+										<Icon src={item.icon} size={18} class="text-zinc-600 dark:text-zinc-400" />
 									{:else}
 										<span class="text-[8px] font-bold text-zinc-400">{item.name.slice(0,2)}</span>
 									{/if}
 								</div>
-								<span class="text-[11px] font-bold text-zinc-700">{item.name}</span>
+								<span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">{item.name}</span>
 							</div>
 						{/each}
 					</div>
 				</div>
 			{/each}
 
-			<div class="mt-4 rounded-2xl bg-zinc-50 p-6 border border-zinc-100">
-				<span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 block mb-2">Strategy Note</span>
-				<p class="text-xs italic text-zinc-500 leading-relaxed">
-					"Setiap teknologi dipilih bukan karena popularitasnya, melainkan karena efektivitasnya dalam menyelesaikan masalah bisnis yang spesifik."
+			<div class="mt-4 rounded-2xl bg-zinc-50 p-6 border border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800">
+				<span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 block mb-2">{m.skill_playground_strategy_note()}</span>
+				<p class="text-xs italic text-zinc-500 dark:text-zinc-400 leading-relaxed">
+					"{m.skill_playground_strategy_desc()}"
 				</p>
 			</div>
 		</div>
@@ -242,30 +241,29 @@
 		<!-- Right Side: Interactive Simulator -->
 		<div class="relative">
 			<div class="sticky top-10">
-				<!-- Playground HUD -->
 				<div class="mb-8 flex items-end justify-between px-2">
 					<div class="flex flex-col gap-1">
-						<span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Simulation Status</span>
+						<span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-500">{m.skill_playground_simulation_status()}</span>
 						<div class="flex items-baseline gap-2">
-							<span class="font-mono text-3xl font-black italic text-zinc-900">ACTIVE</span>
+							<span class="font-mono text-3xl font-black italic text-zinc-900 dark:text-white">{m.skill_playground_active()}</span>
 							<div class="flex gap-1.5 mb-1">
 								{#each Array(5) as _, i}
-									<div class="h-1.5 w-1.5 rounded-sm {i < comboCount ? 'bg-yellow-500' : 'bg-zinc-200'} transition-all duration-500"></div>
+									<div class="h-1.5 w-1.5 rounded-sm {i < comboCount ? 'bg-yellow-500' : 'bg-zinc-200 dark:bg-zinc-800'} transition-all duration-500"></div>
 								{/each}
 							</div>
 						</div>
 					</div>
 
 					<div class="flex flex-col items-end gap-2">
-						<span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Next Module</span>
-						<div class="relative h-12 w-16 bg-white border border-zinc-200 overflow-hidden shadow-sm">
+						<span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-500">{m.skill_playground_next_module()}</span>
+						<div class="relative h-12 w-16 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
 							<div class="absolute inset-x-0 h-[1px] bg-primary/30 z-10 animate-scanline"></div>
 							{#key nextPieceIdx}
 								<div in:scale={{ start: 0.9, duration: 300 }} class="grid place-content-center h-full">
 									<div class="grid gap-1" style="grid-template-columns: repeat(4, 6px);">
 										{#each Array(16) as _, i}
 											{@const isF = tetriminos[nextPieceIdx]?.skills.some(s => s.relX === (i % 4) && s.relY === Math.floor(i / 4))}
-											<div class="rounded-full {isF ? 'size-1.5' : 'size-0.5 bg-zinc-100'}" style="background-color: {isF ? tetriminos[nextPieceIdx].color : ''}"></div>
+											<div class="rounded-full {isF ? 'size-1.5' : 'size-0.5 bg-zinc-100 dark:bg-zinc-800'}" style="background-color: {isF ? tetriminos[nextPieceIdx].color : ''}"></div>
 										{/each}
 									</div>
 								</div>
@@ -288,8 +286,13 @@
 					{/each}
 
 					<div class="pointer-events-none absolute inset-x-6 top-6 flex justify-between z-20 text-[8px] font-bold uppercase tracking-widest text-white/30">
-						<div class="flex flex-col gap-1"><span>Integrity: 100%</span><span>Uptime: {Math.floor(spawnedCount / tetriminos.length * 100)}%</span></div>
-						<div class="text-right flex flex-col gap-1"><span>Kernel: V0.19</span><span>Buffer: Optimized</span></div>
+						<div class="flex flex-col gap-1"><span>{m.skill_playground_integrity()}: 100%</span><span>{m.skill_playground_uptime()}: {Math.floor(spawnedCount / tetriminos.length * 100)}%</span></div>
+						<div class="text-right flex flex-col gap-1"><span>{m.skill_playground_kernel()}: V0.19</span><span>{m.skill_playground_buffer()}: Optimized</span></div>
+					</div>
+
+					<div class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center opacity-0 group-hover/board:opacity-20 transition-opacity duration-1000">
+						<span class="text-5xl font-black italic tracking-tighter text-white uppercase">{m.skill_playground_sync_ready()}</span>
+						<span class="text-[9px] font-black tracking-[0.5em] text-white">{m.skill_playground_interact()}</span>
 					</div>
 
 					{#each tetriminos as piece, pIdx}
@@ -309,13 +312,13 @@
 				</div>
 
 				<div class="mt-6 flex gap-3">
-					<button onclick={resetBoard} class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-800 hover:bg-zinc-50 transition-all active:scale-95 shadow-sm">
+					<button onclick={resetBoard} class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-800 hover:bg-zinc-50 transition-all active:scale-95 shadow-sm dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
 						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-						Reset
+						{m.skill_playground_reset()}
 					</button>
-					<button onclick={shakeBoard} class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-800 hover:bg-zinc-50 transition-all active:scale-95 shadow-sm">
+					<button onclick={shakeBoard} class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-800 hover:bg-zinc-50 transition-all active:scale-95 shadow-sm dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
 						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
-						Shake
+						{m.skill_playground_shake()}
 					</button>
 				</div>
 			</div>

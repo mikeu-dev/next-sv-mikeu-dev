@@ -75,5 +75,21 @@
 	"about_fun_facts_title": "Fakta Menarik",
 	"about_fun_facts_coffee": "Ditenagai oleh kafein berkualitas tinggi.",
 	"about_fun_facts_gaming": "Sangat menyukai dunia gaming yang imersif.",
-	"about_fun_facts_music": "Menikmati lo-fi dan deep house saat ngoding."
+	"about_fun_facts_music": "Menikmati lo-fi dan deep house saat ngoding.",
+	"skill_playground_ecosystem_label": "Ekosistem Teknis",
+	"skill_playground_title": "Arsenal Rekayasa.",
+	"skill_playground_desc": "Arsitektur teknologi yang saya gunakan untuk mentransformasi ide menjadi solusi yang terukur. Tinjau daftar arsenal saya secara langsung atau bereksperimen dengan simulator interaktif di samping.",
+	"skill_playground_simulation_status": "Status Simulasi",
+	"skill_playground_active": "AKTIF",
+	"skill_playground_next_module": "Modul Berikutnya",
+	"skill_playground_integrity": "Integritas",
+	"skill_playground_uptime": "Waktu Aktif",
+	"skill_playground_kernel": "Kernel",
+	"skill_playground_buffer": "Buffer",
+	"skill_playground_strategy_note": "Catatan Strategi",
+	"skill_playground_strategy_desc": "Setiap teknologi dipilih bukan karena popularitasnya, melainkan karena efektivitasnya dalam menyelesaikan masalah bisnis yang spesifik.",
+	"skill_playground_reset": "Reset",
+	"skill_playground_shake": "Guncang",
+	"skill_playground_sync_ready": "Sinkronisasi Siap",
+	"skill_playground_interact": "INTERAKSI UNTUK EKSPLORASI"
 }
