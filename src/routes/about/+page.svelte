@@ -102,10 +102,30 @@
 	}
 
 	const funFacts = $derived([
-		{ icon: Coffee, text: m.about_fun_facts_coffee(), color: 'text-orange-500' },
-		{ icon: Gamepad2, text: m.about_fun_facts_gaming(), color: 'text-red-500' },
-		{ icon: Music, text: m.about_fun_facts_music(), color: 'text-pink-500' }
+		{ icon: Coffee, text: m.about_fun_facts_coffee(), color: 'text-orange-500', bg: 'bg-orange-500/10', sub: 'High Caffeine' },
+		{ icon: Gamepad2, text: m.about_fun_facts_gaming(), color: 'text-red-500', bg: 'bg-red-500/10', sub: 'Immersive Mode' },
+		{ icon: Music, text: m.about_fun_facts_music(), color: 'text-pink-500', bg: 'bg-pink-500/10', sub: 'Deep Beats' },
+		{ icon: CheckCircle2, text: m.about_fun_facts_learning(), color: 'text-emerald-500', bg: 'bg-emerald-500/10', sub: 'Infinite Loop' }
 	]);
+
+	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
+
+		// ... existing hero animations ...
+		
+		// Fun Facts Stagger Reveal
+		gsap.from('.fact-card', {
+			y: 40,
+			opacity: 0,
+			duration: 1,
+			stagger: 0.15,
+			ease: 'power4.out',
+			scrollTrigger: {
+				trigger: '.facts-grid',
+				start: 'top 85%'
+			}
+		});
+	});
 </script>
 
 <div bind:this={container} class="noise-bg relative mx-auto mt-20 max-w-7xl overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
@@ -224,32 +244,74 @@
 		</div>
 	</section>
 
-	<!-- Fun Facts Section -->
-	<section class="py-28">
-		<div class="relative overflow-hidden rounded-[4rem] border bg-card/30 p-12 backdrop-blur-md md:p-24">
+	<!-- Fun Facts Section (Redesigned) -->
+	<section class="py-32">
+		<div class="relative overflow-hidden rounded-[3rem] border border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 p-8 md:p-20 backdrop-blur-xl">
+			<!-- Decorative Gradients -->
 			<div class="absolute -right-24 -top-24 size-96 rounded-full bg-primary/10 blur-3xl"></div>
-			<div class="grid grid-cols-1 gap-16 lg:grid-cols-2">
-				<div class="space-y-8">
-					<h2 class="font-poppins text-5xl font-black tracking-tight md:text-7xl">
+			<div class="absolute -left-24 -bottom-24 size-96 rounded-full bg-blue-500/5 blur-3xl"></div>
+			
+			<div class="grid grid-cols-1 gap-20 lg:grid-cols-12">
+				<div class="space-y-8 lg:col-span-5">
+					<div class="flex items-center gap-3">
+						<div class="h-1 w-6 bg-primary rounded-full"></div>
+						<span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary">{m.about_fun_facts_label()}</span>
+					</div>
+					<h2 class="font-poppins text-5xl font-black tracking-tight text-zinc-900 dark:text-white md:text-7xl">
 						{m.about_fun_facts_title()}<span class="text-primary">.</span>
 					</h2>
-					<p class="text-2xl font-medium text-muted-foreground/80">
-						Beyond the lines of code and mapping coordinates, there's a human being fueled by curiosity.
+					<p class="text-xl font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed">
+						{m.about_fun_facts_desc_long()}
 					</p>
-					<div class="flex items-center gap-4 pt-10">
-						<div class="h-px w-20 bg-primary"></div>
-						<span class="font-black uppercase tracking-widest text-primary">Mikeu Dev</span>
+					
+					<div class="flex flex-col gap-4 pt-6">
+						<div class="flex items-center gap-4">
+							<div class="flex size-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+								<CheckCircle2 class="size-5 text-primary" />
+							</div>
+							<span class="text-sm font-bold text-zinc-700 dark:text-zinc-300">{m.about_fun_facts_growth()}</span>
+						</div>
+						<div class="flex items-center gap-4">
+							<div class="flex size-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+								<CheckCircle2 class="size-5 text-primary" />
+							</div>
+							<span class="text-sm font-bold text-zinc-700 dark:text-zinc-300">{m.about_fun_facts_detail()}</span>
+						</div>
 					</div>
 				</div>
-				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-					{#each funFacts as fact (fact.text)}
-						<div class="group flex items-center gap-6 rounded-4xl border bg-card/80 p-8 transition-all hover:-translate-y-2 hover:bg-card">
-							<div class={`flex size-16 items-center justify-center rounded-3xl bg-muted transition-colors group-hover:bg-primary/10 ${fact.color}`}>
-								<fact.icon class="size-8" />
+
+				<div class="lg:col-span-7">
+					<div class="facts-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
+						{#each funFacts as fact (fact.text)}
+							<div class="fact-card group relative overflow-hidden rounded-3xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/5">
+								<!-- Card Inner Glow -->
+								<div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+									style="background: radial-gradient(circle at top right, {fact.color.replace('text-', '').replace('-500', '')}11, transparent 70%);"></div>
+								
+								<div class="relative z-10 space-y-6">
+									<div class="flex items-center justify-between">
+										<div class={`flex size-14 items-center justify-center rounded-2xl transition-all duration-500 group-hover:scale-110 ${fact.bg}`}>
+											<fact.icon class={`size-7 ${fact.color}`} />
+										</div>
+										<span class="text-[9px] font-black uppercase tracking-widest text-zinc-400 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-2 group-hover:translate-x-0">
+											{fact.sub}
+										</span>
+									</div>
+									
+									<div class="space-y-2">
+										<p class="text-[9px] font-black uppercase tracking-widest text-zinc-400">{m.about_fun_facts_node_status()}</p>
+										<p class="text-lg font-black leading-tight tracking-tighter text-zinc-800 dark:text-zinc-100 uppercase">
+											{fact.text}
+										</p>
+									</div>
+								</div>
+
+								<!-- Bottom Accent Line -->
+								<div class="absolute bottom-0 left-0 h-1 w-0 bg-primary transition-all duration-500 group-hover:w-full"
+									style="background-color: currentColor; color: inherit;"></div>
 							</div>
-							<p class="text-lg font-black leading-tight uppercase tracking-tighter">{fact.text}</p>
-						</div>
-					{/each}
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>
