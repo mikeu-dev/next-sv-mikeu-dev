@@ -100,18 +100,22 @@
 		}
 
 		// Fun Facts Stagger Reveal
-		gsap.from('.fact-card', {
-			y: 40,
-			opacity: 0,
-			duration: 1,
-			stagger: 0.15,
-			ease: 'power4.out',
-			scrollTrigger: {
-				trigger: '.facts-grid',
-				start: 'top 90%',
-				toggleActions: 'play none none none'
+		gsap.fromTo('.fact-card', 
+			{ opacity: 0, y: 40 },
+			{
+				y: 0,
+				opacity: 1,
+				duration: 0.8,
+				stagger: 0.15,
+				ease: 'power3.out',
+				scrollTrigger: {
+					trigger: '.facts-grid',
+					start: 'top 85%',
+					toggleActions: 'play none none none'
+				}
 			}
-		});
+		);
+		ScrollTrigger.refresh();
 	});
 
 	async function copyEmail() {
@@ -123,31 +127,46 @@
 		}
 	}
 
+	let juiciness = $state({
+		caffeine: 95,
+		ping: 12,
+		syncStatus: 'SYNCING_DATA...'
+	});
+
+	$effect(() => {
+		const interval = setInterval(() => {
+			juiciness.caffeine = 94 + Math.floor(Math.random() * 5);
+			juiciness.ping = 10 + Math.floor(Math.random() * 5);
+			juiciness.syncStatus = Math.random() > 0.8 ? 'OPTIMIZED' : 'SYNCING_DATA...';
+		}, 3000);
+		return () => clearInterval(interval);
+	});
+
 	const funFacts = $derived([
 		{
 			icon: Coffee,
-			text: m.about_fun_facts_coffee(),
+			text: `${juiciness.caffeine}%`,
 			color: 'text-orange-500',
 			bg: 'bg-orange-500/10',
 			sub: 'High Caffeine'
 		},
 		{
 			icon: Gamepad2,
-			text: m.about_fun_facts_gaming(),
+			text: `${juiciness.ping}ms`,
 			color: 'text-red-500',
 			bg: 'bg-red-500/10',
-			sub: 'Immersive Mode'
+			sub: 'Live Gaming'
 		},
 		{
 			icon: Music,
-			text: m.about_fun_facts_music(),
+			text: '24/7',
 			color: 'text-pink-500',
 			bg: 'bg-pink-500/10',
 			sub: 'Deep Beats'
 		},
 		{
 			icon: CheckCircle2,
-			text: m.about_fun_facts_learning(),
+			text: juiciness.syncStatus,
 			color: 'text-emerald-500',
 			bg: 'bg-emerald-500/10',
 			sub: 'Infinite Loop'
@@ -556,7 +575,18 @@
 			height: 100%;
 		}
 	}
-	.animate-visualizer {
+	.group:hover .animate-visualizer {
 		animation: visualizer 0.8s ease-in-out infinite;
+	}
+	.group:hover .animate-pulse {
+		animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+	.group:hover .animate-ping {
+		animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+	}
+	
+	/* Disable default animations unless hovered */
+	.animate-visualizer, .animate-pulse, .animate-ping {
+		animation: none;
 	}
 </style>

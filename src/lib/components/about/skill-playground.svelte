@@ -26,6 +26,13 @@
 		relY: number;
 		catColor: string;
 		category: string;
+		// Reactive properties for rendering
+		x: number;
+		y: number;
+		angle: number;
+		opacity: number;
+		scale: number;
+		brightness: number;
 	}
 
 	interface Tetrimino {
@@ -36,7 +43,6 @@
 	}
 
 	interface PieceBody {
-		body: Matter.Body;
 		piece: Tetrimino;
 		id: number;
 	}
@@ -62,8 +68,8 @@
 	let kernelVersion = "0.24.5-STABLE";
 
 	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
-	let engine = $state<Matter.Engine>();
-	let runner = $state<Matter.Runner>();
+	let engine = $state.raw<Matter.Engine>();
+	let runner = $state.raw<Matter.Runner>();
 
 	const categoryColors: Record<string, string> = {
 		Frontend: '#FF3E00',
@@ -137,7 +143,7 @@
 	const shapeKeys = Object.keys(shapes) as Array<keyof typeof shapes>;
 
 	const tetriminos = $derived.by(() => {
-		const all: Tetrimino[] = [];
+		const all: any[] = []; // Keep it simple, we'll make it reactive during spawn
 		let currentSkillIndex = 0;
 		const flatSkills = categories.flatMap((cat) =>
 			(cat.items || []).map((item) => ({
@@ -158,7 +164,13 @@
 					pieceSkills.push({
 						...flatSkills[currentSkillIndex],
 						relX: shapeCoords[i][0],
-						relY: shapeCoords[i][1]
+						relY: shapeCoords[i][1],
+						x: 0,
+						y: -100,
+						angle: 0,
+						opacity: 0,
+						scale: 1,
+						brightness: 1
 					});
 					currentSkillIndex++;
 				}
@@ -177,27 +189,22 @@
 	});
 
 	let pieceBodies = $state<PieceBody[]>([]);
+	let physicsBodies: Matter.Body[] = []; // Non-reactive array for Matter.js bodies
+	let nextId = 0;
 
 	function rotatePiece(id: number) {
 		const pb = pieceBodies.find((p) => p.id === id);
-		if (pb) {
-			Body.rotate(pb.body, Math.PI / 2);
+		const body = physicsBodies.find((b) => b.label === `piece-${id}`);
+		if (pb && body) {
+			Body.rotate(body, Math.PI / 2);
 			comboCount++;
-			createParticles(pb.body.position.x, pb.body.position.y, pb.piece.color, 12);
+			createParticles(body.position.x, body.position.y, pb.piece.color, 12);
 			
-			// Pulse effect
-			const pbIdx = pieceBodies.findIndex(p => p.id === id);
-			const parts = pb.body.parts;
-			for (let j = 1; j < parts.length; j++) {
-				const el = document.getElementById(`skill-block-${pb.id}-${j-1}`);
-				if (el) {
-					el.animate([
-						{ transform: el.style.transform + ' scale(1)', filter: 'brightness(1)' },
-						{ transform: el.style.transform + ' scale(1.2)', filter: 'brightness(1.5)' },
-						{ transform: el.style.transform + ' scale(1)', filter: 'brightness(1)' }
-					], { duration: 300, ease: 'ease-out' });
-				}
-			}
+			// Pulse effect via state
+			pb.piece.skills.forEach(s => {
+				s.scale = 1.2;
+				s.brightness = 1.5;
+			});
 
 			setTimeout(() => {
 				if (comboCount > 0) comboCount--;
@@ -252,7 +259,7 @@
 			friction: 0.8, 
 			restitution: 0.2, 
 			label: 'wall',
-			render: { visible: false } 
+			render: { visible: true, fillStyle: 'transparent' } 
 		};
 
 		const wallThickness = 100;
@@ -272,7 +279,9 @@
 		
 		const blockSize = 45;
 		pieceBodies = [];
-		Composite.clear(engine.world, false);
+		physicsBodies = [];
+		if (engine) Composite.clear(engine.world, false);
+		nextId = 0; 
 		initWalls();
 		
 		// Clear any existing timeouts
@@ -281,11 +290,14 @@
 
 		tetriminos.forEach((piece, pieceIdx) => {
 			const timeout = window.setTimeout(() => {
-				const startX = Math.random() * (canvasWidth - 200) + 100;
+				// Calculate piece width to prevent spawning partially inside walls
+				const maxX = Math.max(...piece.skills.map(s => s.relX));
+				const pieceWidth = (maxX + 1) * blockSize;
+				const startX = Math.random() * (canvasWidth - pieceWidth - 40) + 20;
 				const parts = piece.skills.map((skill) =>
 					Bodies.rectangle(
 						startX + skill.relX * blockSize,
-						-100 + skill.relY * blockSize,
+						50 + skill.relY * blockSize,
 						blockSize - 1,
 						blockSize - 1,
 						{
@@ -301,7 +313,29 @@
 					frictionAir: 0.05,
 					label: `piece-${pieceIdx}`
 				});
-				pieceBodies.push({ body, piece, id: pieceIdx });
+
+				// Pre-cache elements
+				// Create reactive piece state for Svelte 5
+				const currentPieceId = nextId++;
+				const reactiveSkills = piece.skills.map(s => ({
+					...s,
+					x: startX + s.relX * blockSize,
+					y: 50 + s.relY * blockSize,
+					angle: 0,
+					opacity: 1,
+					scale: 1,
+					brightness: 1
+				}));
+
+				const newPB = $state({ 
+					piece: { ...piece, skills: reactiveSkills }, 
+					id: currentPieceId
+				});
+				
+				body.label = `piece-${currentPieceId}`;
+				physicsBodies.push(body);
+				pieceBodies = [...pieceBodies, newPB];
+				
 				if (engine) {
 					Composite.add(engine.world, body);
 					spawnedCount++;
@@ -319,7 +353,8 @@
 
 	onMount(() => {
 		if (!container) return;
-		engine = Engine.create({ gravity: { x: 0, y: 1.5 } });
+		engine = Engine.create();
+		engine.world.gravity.y = 1.0; // Correct: gravity is on the world
 		engine.enableSleeping = false;
 		const mc = MouseConstraint.create(engine, {
 			mouse: Mouse.create(container),
@@ -334,33 +369,27 @@
 			e.pairs.forEach((p: Matter.Pair) => {
 				if (p.collision.depth > 2) {
 					const pos = p.collision.supports[0] || p.bodyA.position;
-					const pb = pieceBodies.find(
-						(pb) => pb.body.id === p.bodyA.id || pb.body.id === p.bodyA.parent?.id || pb.body.id === p.bodyB.id || pb.body.id === p.bodyB.parent?.id
-					);
-					createParticles(pos.x, pos.y, pb?.piece.color || '#ffffff', 2);
+					createParticles(pos.x, pos.y, '#ffffff', 2);
 					
-					// Flash effect on high impact
+					// Flash effect on high impact via state
 					if (p.collision.depth > 5) {
-						const parts = pb?.body.parts;
-						if (parts) {
-							for (let j = 1; j < parts.length; j++) {
-								const el = document.getElementById(`skill-block-${pb.id}-${j-1}`);
-								if (el) {
-									el.style.filter = 'brightness(2)';
-									setTimeout(() => { if(el) el.style.filter = ''; }, 100);
-								}
-							}
+						const body = p.bodyA.label?.startsWith('piece-') ? p.bodyA : (p.bodyB.label?.startsWith('piece-') ? p.bodyB : null);
+						if (body) {
+							const id = parseInt(body.label.split('-')[1]);
+							const pb = pieceBodies.find(p => p.id === id);
+							if (pb) pb.piece.skills.forEach(s => s.brightness = 2);
 						}
 					}
 				}
 			});
 		});
 
+		runner = Runner.create();
+		Runner.run(runner, engine);
+		update();
+
 		let rafId: number;
 		function update() {
-			if (engine) Engine.update(engine, 1000 / 60);
-			
-			// Update HUD Stats
 			const now = Date.now();
 			uptime = Math.min(100, Math.floor((now - sessionStart) / 1000));
 			integrity = 99.5 + Math.random() * 0.5;
@@ -368,21 +397,26 @@
 			particles = particles
 				.map((p) => ({ ...p, x: p.x + p.vx, y: p.y + p.vy, life: p.life - 0.03, vy: p.vy + 0.2 }))
 				.filter((p) => p.life > 0);
+
 			for (let i = 0; i < pieceBodies.length; i++) {
 				const pb = pieceBodies[i];
-				const parts = pb.body.parts;
+				const body = physicsBodies.find(b => b.label === `piece-${pb.id}`);
+				if (!body) continue;
+
+				const parts = body.parts;
 				for (let j = 1; j < parts.length; j++) {
 					const part = parts[j];
-					const idx = j - 1;
-					const el = document.getElementById(`skill-block-${pb.id}-${idx}`);
-					if (el) {
-						el.style.transform = `translate(${part.position.x - 22.5}px, ${part.position.y - 22.5}px) rotate(${pb.body.angle}rad)`;
-						el.style.opacity = '1';
-						if (activeFilter && pb.piece.skills[idx].category === activeFilter) {
-							el.classList.add('filter-active');
-						} else {
-							el.classList.remove('filter-active');
-						}
+					const skill = pb.piece.skills[j - 1];
+					
+					if (skill) {
+						// Update reactive positions via proxy
+						skill.x = part.position.x;
+						skill.y = part.position.y;
+						skill.angle = body.angle;
+						
+						// Decay effects
+						if (skill.scale > 1) skill.scale -= 0.02;
+						if (skill.brightness > 1) skill.brightness -= 0.05;
 					}
 				}
 			}
@@ -603,11 +637,13 @@
 						{#each pb.piece.skills as skill, sIdx (pb.id + '-' + sIdx)}
 							{@const piece = pb.piece}
 							<div
-								id="skill-block-{pb.id}-{sIdx}"
 								class="group absolute top-0 left-0 flex items-center justify-center rounded-sm border-[1px] transition-all duration-300"
 								class:text-black={piece.isLight}
 								class:text-white={!piece.isLight}
-								style="width: 44.5px; height: 44.5px; background: {piece.color}dd; border-color: {piece.color}; opacity: 0; pointer-events: none;"
+								class:filter-active={activeFilter && skill.category === activeFilter}
+								style="width: 44.5px; height: 44.5px; background: {piece.color}dd; border-color: {piece.color}; 
+									   transform: translate({skill.x - 22.5}px, {skill.y - 22.5}px) rotate({skill.angle}rad) scale({skill.scale}); 
+									   opacity: {skill.opacity}; filter: brightness({skill.brightness}); pointer-events: none;"
 							>
 								<div
 									class="absolute top-1 right-1 size-1 rounded-full"
