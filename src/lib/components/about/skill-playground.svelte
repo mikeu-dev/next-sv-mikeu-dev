@@ -294,7 +294,7 @@
 								{@const isFilled = tetriminos[nextPieceIdx]?.skills.some(s => s.relX === x && s.relY === y)}
 								{#if isFilled}
 									<div class="rounded-sm shadow-[0_0_8px_currentcolor]" style="background-color: {tetriminos[nextPieceIdx].color}; color: {tetriminos[nextPieceIdx].color}"></div>
-								{#else}
+								{:else}
 									<div class="rounded-full size-0.5 bg-white/5"></div>
 								{/if}
 							{/each}
