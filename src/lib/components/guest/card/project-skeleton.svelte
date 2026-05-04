@@ -2,7 +2,7 @@
 	<!-- Image Skeleton -->
 	<div class="aspect-video w-full animate-pulse bg-muted"></div>
 
-	<div class="flex flex-1 flex-col p-6 space-y-4">
+	<div class="flex flex-1 flex-col space-y-4 p-6">
 		<!-- Tech Stack Skeleton -->
 		<div class="flex gap-2">
 			<div class="h-6 w-16 animate-pulse rounded-full bg-muted"></div>

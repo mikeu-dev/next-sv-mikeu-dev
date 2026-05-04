@@ -30,7 +30,7 @@
 
 	// Transform projects to localized version
 	let rawInitialProjects = $derived(projects[locale] || projects['en'] || []);
-	
+
 	// Maintain a dynamic list of projects for "Load More"
 	let projectsList = $state<Project[]>([]);
 	let hasMore = $state(true);
@@ -96,12 +96,12 @@
 		isLoadingMore = true;
 
 		try {
-			// In a real production app with hundreds of items, 
+			// In a real production app with hundreds of items,
 			// we would pass the last ID or timestamp for cursor-based pagination.
 			// For now, we'll fetch a larger set or use offset if API supports it.
 			const offset = projectsList.length;
 			const response = await fetch(`/api/projects?limit=${pageSize}&offset=${offset}`);
-			
+
 			if (response.ok) {
 				const newData = await response.json();
 				if (newData && Array.isArray(newData)) {
@@ -109,9 +109,9 @@
 						hasMore = false;
 					}
 					// Add only new projects that aren't already in the list
-					const existingIds = new Set(projectsList.map(p => p.id));
-					const filteredNewData = newData.filter(p => !existingIds.has(p.id));
-					
+					const existingIds = new Set(projectsList.map((p) => p.id));
+					const filteredNewData = newData.filter((p) => !existingIds.has(p.id));
+
 					if (filteredNewData.length === 0) {
 						hasMore = false;
 					} else {
@@ -138,7 +138,7 @@
 
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
-		
+
 		// Simulate loading for better UX feel (skeleton demo)
 		setTimeout(() => {
 			isLoading = false;
@@ -176,7 +176,7 @@
 					type="text"
 					bind:value={searchQuery}
 					placeholder="Search projects..."
-					class="h-12 w-full rounded-2xl border border-border/50 bg-card/50 pl-12 pr-4 text-sm outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/5"
+					class="h-12 w-full rounded-2xl border border-border/50 bg-card/50 pr-4 pl-12 text-sm transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/5"
 				/>
 			</div>
 
@@ -185,13 +185,17 @@
 				<div class="flex items-center rounded-2xl border border-border/50 bg-card/50 p-1">
 					<button
 						onclick={() => (sortBy = 'date')}
-						class="rounded-xl px-4 py-2 text-xs font-bold transition-all {sortBy === 'date' ? 'bg-primary text-white' : 'hover:bg-muted'}"
+						class="rounded-xl px-4 py-2 text-xs font-bold transition-all {sortBy === 'date'
+							? 'bg-primary text-white'
+							: 'hover:bg-muted'}"
 					>
 						Date
 					</button>
 					<button
 						onclick={() => (sortBy = 'title')}
-						class="rounded-xl px-4 py-2 text-xs font-bold transition-all {sortBy === 'title' ? 'bg-primary text-white' : 'hover:bg-muted'}"
+						class="rounded-xl px-4 py-2 text-xs font-bold transition-all {sortBy === 'title'
+							? 'bg-primary text-white'
+							: 'hover:bg-muted'}"
 					>
 						Name
 					</button>

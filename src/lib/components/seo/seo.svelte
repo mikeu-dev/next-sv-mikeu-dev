@@ -65,9 +65,10 @@
 			};
 		});
 
-		const xDefault = cleanPath.replace(/\/$/, '') === ''
-			? `${canonicalBase}/`
-			: `${canonicalBase}${cleanPath.replace(/\/$/, '')}`;
+		const xDefault =
+			cleanPath.replace(/\/$/, '') === ''
+				? `${canonicalBase}/`
+				: `${canonicalBase}${cleanPath.replace(/\/$/, '')}`;
 
 		return { list, xDefault };
 	});
@@ -78,7 +79,7 @@
 		if (pathSegments.length > 0 && locales.includes(pathSegments[0] as (typeof locales)[number])) {
 			pathSegments.shift();
 		}
-		
+
 		const breadcrumbItems = pathSegments.map((segment, index) => {
 			const partPath = '/' + pathSegments.slice(0, index + 1).join('/');
 			return {
@@ -142,11 +143,7 @@
 	{#each alternatesData.list as alt (alt.locale)}
 		<link rel="alternate" hreflang={alt.locale} href={alt.href} />
 	{/each}
-	<link
-		rel="alternate"
-		hreflang="x-default"
-		href={alternatesData.xDefault}
-	/>
+	<link rel="alternate" hreflang="x-default" href={alternatesData.xDefault} />
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type === 'article' ? 'article' : 'website'} />

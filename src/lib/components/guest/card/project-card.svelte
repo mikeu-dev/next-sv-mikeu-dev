@@ -91,7 +91,7 @@
 						href={project.demoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex size-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-primary hover:scale-110"
+						class="flex size-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-primary"
 						title={m.project_button_demo()}
 						onclick={(e) => e.stopPropagation()}
 					>
@@ -103,7 +103,7 @@
 						href={project.repoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex size-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:bg-primary hover:scale-110"
+						class="flex size-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-primary"
 						title={m.project_button_view_code()}
 						onclick={(e) => e.stopPropagation()}
 					>
@@ -134,7 +134,9 @@
 
 			<!-- Title & Description -->
 			<div class="flex items-start justify-between gap-4">
-				<h3 class="font-poppins text-xl leading-tight font-black transition-colors group-hover:text-primary">
+				<h3
+					class="font-poppins text-xl leading-tight font-black transition-colors group-hover:text-primary"
+				>
 					<a href={localizeHref(`/projects/${project.slug}`)}>
 						<span class="absolute inset-0 z-10" aria-hidden="true"></span>
 						{project.title}
@@ -157,7 +159,9 @@
 					class="flex items-center gap-2 text-sm font-bold text-primary opacity-80 transition-all group-hover:opacity-100"
 				>
 					<span>{m.work_card_button()}</span>
-					<div class="h-px w-8 bg-primary/30 transition-all group-hover:w-12 group-hover:bg-primary"></div>
+					<div
+						class="h-px w-8 bg-primary/30 transition-all group-hover:w-12 group-hover:bg-primary"
+					></div>
 				</div>
 			</div>
 		</div>
@@ -174,4 +178,3 @@
 		transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 </style>
-

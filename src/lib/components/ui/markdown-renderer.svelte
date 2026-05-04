@@ -19,7 +19,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	@reference "tailwindcss";
 
 	:global(.prose pre) {

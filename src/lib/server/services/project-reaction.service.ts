@@ -1,4 +1,7 @@
-import { ProjectReactionRepository, type ProjectReaction } from '../repositories/project-reaction.repository';
+import {
+	ProjectReactionRepository,
+	type ProjectReaction
+} from '../repositories/project-reaction.repository';
 
 export class ProjectReactionService {
 	private repository = new ProjectReactionRepository();

@@ -32,8 +32,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		relatedProjects = allProjects
 			.filter(
 				(p) =>
-					p.slug !== slug &&
-					p.tags?.some((t) => project?.tags?.some((pt) => pt.name === t.name))
+					p.slug !== slug && p.tags?.some((t) => project?.tags?.some((pt) => pt.name === t.name))
 			)
 			.slice(0, 3);
 	} catch (e) {

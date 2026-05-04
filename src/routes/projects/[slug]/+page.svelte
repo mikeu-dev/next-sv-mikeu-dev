@@ -43,13 +43,17 @@
 			duration: 0.8,
 			stagger: 0.1,
 			ease: 'power3.out'
-		}).from('.content-stagger', {
-			y: 20,
-			opacity: 0,
-			duration: 0.6,
-			stagger: 0.1,
-			ease: 'power2.out'
-		}, '-=0.4');
+		}).from(
+			'.content-stagger',
+			{
+				y: 20,
+				opacity: 0,
+				duration: 0.6,
+				stagger: 0.1,
+				ease: 'power2.out'
+			},
+			'-=0.4'
+		);
 	});
 </script>
 
@@ -71,32 +75,39 @@
 	<!-- Hero Section -->
 	<header class="mb-16 space-y-8">
 		<div class="max-w-4xl space-y-6">
-			<h1 class="hero-stagger font-poppins text-5xl leading-tight font-black tracking-tight md:text-7xl">
+			<h1
+				class="hero-stagger font-poppins text-5xl leading-tight font-black tracking-tight md:text-7xl"
+			>
 				{project.title}<span class="text-primary">.</span>
 			</h1>
 			<p class="hero-stagger text-xl leading-relaxed text-muted-foreground md:text-2xl">
 				{project.description}
 			</p>
-			
+
 			<div class="hero-stagger flex flex-wrap items-center gap-6 pt-4">
 				<ProjectReactions {reactions} />
-				<div class="h-6 w-px bg-border hidden md:block"></div>
+				<div class="hidden h-6 w-px bg-border md:block"></div>
 				<ProjectShare title={project.title} />
 			</div>
 		</div>
 
 		<!-- Featured Media -->
-		<div class="hero-stagger overflow-hidden rounded-3xl border border-border/50 bg-card shadow-2xl">
+		<div
+			class="hero-stagger overflow-hidden rounded-3xl border border-border/50 bg-card shadow-2xl"
+		>
 			{#if project.imagesUrl && project.imagesUrl.length > 0}
-				<Splide aria-label="Project Images" options={{ 
-					rewind: true, 
-					autoplay: true,
-					interval: 4000,
-					type: 'fade',
-					speed: 1000,
-					arrows: project.imagesUrl.length > 1,
-					pagination: project.imagesUrl.length > 1
-				}}>
+				<Splide
+					aria-label="Project Images"
+					options={{
+						rewind: true,
+						autoplay: true,
+						interval: 4000,
+						type: 'fade',
+						speed: 1000,
+						arrows: project.imagesUrl.length > 1,
+						pagination: project.imagesUrl.length > 1
+					}}
+				>
 					{#each project.imagesUrl as url (url)}
 						<SplideSlide>
 							<img src={url} alt={project.title} class="aspect-video w-full object-cover" />
@@ -117,7 +128,7 @@
 	<div class="grid grid-cols-1 gap-16 lg:grid-cols-[1fr_350px]">
 		<!-- Project Content -->
 		<div class="content-stagger space-y-12">
-			<article class="prose prose-lg dark:prose-invert max-w-none">
+			<article class="prose prose-lg max-w-none dark:prose-invert">
 				{#if project.content}
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html project.content}
@@ -137,13 +148,22 @@
 				<h3 class="font-poppins text-lg font-black">{m.project_button_demo()} & Code</h3>
 				<div class="flex flex-col gap-3">
 					{#if project.demoUrl}
-						<Button href={project.demoUrl} target="_blank" class="w-full rounded-xl py-6 font-bold shadow-lg shadow-primary/20">
+						<Button
+							href={project.demoUrl}
+							target="_blank"
+							class="w-full rounded-xl py-6 font-bold shadow-lg shadow-primary/20"
+						>
 							<ExternalLink class="mr-2 size-5" />
 							Live Preview
 						</Button>
 					{/if}
 					{#if project.repoUrl}
-						<Button href={project.repoUrl} target="_blank" variant="outline" class="w-full rounded-xl py-6 font-bold">
+						<Button
+							href={project.repoUrl}
+							target="_blank"
+							variant="outline"
+							class="w-full rounded-xl py-6 font-bold"
+						>
 							<Github class="mr-2 size-5" />
 							View Source
 						</Button>
@@ -154,14 +174,20 @@
 			<!-- Meta Data -->
 			<div class="space-y-6 rounded-3xl border border-border/50 bg-card/50 p-8 shadow-sm">
 				<div class="flex items-start gap-4">
-					<div class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+					<div
+						class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
+					>
 						<Layers class="size-5" />
 					</div>
 					<div>
-						<p class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tech Stack</p>
+						<p class="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+							Tech Stack
+						</p>
 						<div class="mt-3 flex flex-wrap gap-2">
 							{#each project.tags || [] as tag (tag.name)}
-								<span class="rounded-lg bg-muted px-3 py-1.5 text-xs font-bold transition-colors hover:bg-primary/10 hover:text-primary">
+								<span
+									class="rounded-lg bg-muted px-3 py-1.5 text-xs font-bold transition-colors hover:bg-primary/10 hover:text-primary"
+								>
 									{tag.name}
 								</span>
 							{/each}
@@ -170,12 +196,23 @@
 				</div>
 
 				<div class="flex items-center gap-4">
-					<div class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+					<div
+						class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
+					>
 						<Calendar class="size-5" />
 					</div>
 					<div>
-						<p class="text-xs font-bold text-muted-foreground uppercase tracking-widest">Project Date</p>
-						<p class="font-bold">{project.createdAt ? new Date(project.createdAt).toLocaleDateString(getLocale(), { month: 'long', year: 'numeric' }) : 'N/A'}</p>
+						<p class="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+							Project Date
+						</p>
+						<p class="font-bold">
+							{project.createdAt
+								? new Date(project.createdAt).toLocaleDateString(getLocale(), {
+										month: 'long',
+										year: 'numeric'
+									})
+								: 'N/A'}
+						</p>
 					</div>
 				</div>
 			</div>
