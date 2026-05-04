@@ -67,22 +67,58 @@
 
 		Composite.add(world, mouseConstraint);
 
-		// Create bodies
-		const skillBodies = allSkills.map((skill, i) => {
-			const x = Math.random() * width;
-			const y = -100 - i * 40;
-			const body = Bodies.rectangle(x, y, 120, 40, {
-				restitution: 0.6,
-				friction: 0.1,
-				chamfer: { radius: 20 },
-				label: `skill-${i}`
-			});
-			return { body, skill, id: i };
-		});
+		let runner_cleanup = () => {
+			Runner.stop(runner);
+			Engine.clear(engine);
+		};
 
-		skillBodies.forEach((sb) => {
-			Composite.add(world, sb.body);
-		});
+		// Create bodies after a short delay to ensure elements are rendered and measured
+		setTimeout(() => {
+			const skillBodies = allSkills.map((skill, i) => {
+				const element = items[i];
+				const elWidth = element ? element.offsetWidth : 120;
+				const elHeight = element ? element.offsetHeight : 40;
+				
+				const x = Math.random() * width;
+				const y = -100 - i * 40;
+				
+				const body = Bodies.rectangle(x, y, elWidth, elHeight, {
+					restitution: 0.6,
+					friction: 0.1,
+					chamfer: { radius: elHeight / 2 },
+					label: `skill-${i}`
+				});
+
+				return { body, skill, id: i, width: elWidth, height: elHeight };
+			});
+
+			skillBodies.forEach((sb) => {
+				Composite.add(world, sb.body);
+				// Make element visible now that physics takes over
+				const element = items[sb.id];
+				if (element) element.style.opacity = '1';
+			});
+
+			let rafId: number;
+			function update() {
+				skillBodies.forEach((sb) => {
+					const element = items[sb.id];
+					if (element) {
+						const { x, y } = sb.body.position;
+						element.style.transform = `translate(${x - sb.width / 2}px, ${y - sb.height / 2}px) rotate(${sb.body.angle}rad)`;
+					}
+				});
+				rafId = requestAnimationFrame(update);
+			}
+			update();
+
+			// Cleanup RAF on destroy (handled by the outer return)
+			const originalCleanup = runner_cleanup;
+			runner_cleanup = () => {
+				originalCleanup();
+				cancelAnimationFrame(rafId);
+			};
+		}, 100);
 
 		runner = Runner.create();
 		Runner.run(runner, engine);
@@ -96,23 +132,8 @@
 		};
 		window.addEventListener('resize', handleResize);
 
-		let rafId: number;
-		function update() {
-			skillBodies.forEach((sb) => {
-				const element = items[sb.id];
-				if (element) {
-					const { x, y } = sb.body.position;
-					element.style.transform = `translate(${x - 60}px, ${y - 20}px) rotate(${sb.body.angle}rad)`;
-				}
-			});
-			rafId = requestAnimationFrame(update);
-		}
-		update();
-
 		return () => {
-			Runner.stop(runner);
-			Engine.clear(engine);
-			cancelAnimationFrame(rafId);
+			runner_cleanup();
 			window.removeEventListener('resize', handleResize);
 		};
 	});
@@ -137,16 +158,16 @@
 	{#each allSkills as skill, i (i)}
 		<div
 			bind:this={items[i]}
-			class="absolute left-0 top-0 flex items-center gap-2 rounded-full border bg-card px-4 py-2 shadow-sm transition-colors hover:border-primary/50 group"
-			style="width: 120px; height: 40px; pointer-events: none;"
+			class="absolute left-0 top-0 flex items-center gap-3 rounded-full border bg-card px-5 py-3 shadow-md transition-colors hover:border-primary/50 group whitespace-nowrap"
+			style="pointer-events: none; opacity: 0;"
 		>
-			<div class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-5 transition-opacity" style="background-color: {skill.color}"></div>
+			<div class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-10 transition-opacity" style="background-color: {skill.color}"></div>
 			{#if skill.icon}
-				<Icon src={skill.icon} size={16} />
+				<Icon src={skill.icon} size={18} />
 			{:else}
-				<div class="size-2 rounded-full" style="background-color: {skill.color}"></div>
+				<div class="size-2.5 rounded-full" style="background-color: {skill.color}"></div>
 			{/if}
-			<span class="truncate text-[10px] font-black uppercase tracking-tighter">
+			<span class="text-xs font-black uppercase tracking-tight">
 				{skill.name}
 			</span>
 		</div>
@@ -154,5 +175,4 @@
 </div>
 
 <style>
-	/* Custom styles if needed */
 </style>
