@@ -11,9 +11,19 @@ import { z } from 'zod';
 
 const projectsService = new ProjectsService(new ProjectsRepository());
 
-export async function GET() {
+export async function GET({ url }: RequestEvent) {
 	try {
-		const projects = await projectsService.findAll();
+		const tag = url.searchParams.get('tag') || undefined;
+		const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
+		const orderBy = url.searchParams.get('orderBy') || 'createdAt';
+		const orderDirection = (url.searchParams.get('orderDirection') as 'asc' | 'desc') || 'desc';
+
+		const projects = await projectsService.findProjects({
+			tag,
+			limit,
+			orderBy,
+			orderDirection
+		});
 		return json(projects);
 	} catch (e) {
 		if (e instanceof HttpException) {

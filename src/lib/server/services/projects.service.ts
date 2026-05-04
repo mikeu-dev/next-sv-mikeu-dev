@@ -40,6 +40,26 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
 	async getProjectBySlug(slug: string): Promise<Project | null> {
 		return this.repository.findBySlug(slug);
 	}
+
+	async findProjects(options: {
+		tag?: string;
+		limit?: number;
+		orderBy?: string;
+		orderDirection?: 'asc' | 'desc';
+	}): Promise<Project[]> {
+		const where: [string, '==' | '>=' | '<=' | 'array-contains', unknown][] = [];
+		// Note: Firestore array-contains on object arrays is tricky.
+		// For now, we will handle complex filtering on the client-side
+		// if the dataset is small, or prepare the server for basic queries.
+
+		return this.repository.findWithQuery({
+			where: where.length > 0 ? where : undefined,
+			limit: options.limit,
+			orderBy: options.orderBy
+				? { field: options.orderBy, direction: options.orderDirection || 'desc' }
+				: { field: 'createdAt', direction: 'desc' }
+		});
+	}
 }
 
 export const projectsService = new ProjectsService(new ProjectsRepository());

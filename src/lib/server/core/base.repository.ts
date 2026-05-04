@@ -94,4 +94,40 @@ export abstract class BaseRepository<T> {
 		if (!col) return;
 		await col.doc(id).delete();
 	}
+
+	async findWithQuery(options: {
+		where?: [string, '==' | '>=' | '<=' | 'array-contains', unknown][];
+		orderBy?: { field: string; direction: 'asc' | 'desc' };
+		limit?: number;
+		startAfter?: unknown;
+	}): Promise<T[]> {
+		const col = this.getCollection();
+		if (!col) return [];
+
+		let query: FirebaseFirestore.Query = col;
+
+		if (options.where) {
+			for (const [field, op, value] of options.where) {
+				query = query.where(field, op, value);
+			}
+		}
+
+		if (options.orderBy) {
+			query = query.orderBy(options.orderBy.field, options.orderBy.direction);
+		}
+
+		if (options.limit) {
+			query = query.limit(options.limit);
+		}
+
+		if (options.startAfter) {
+			query = query.startAfter(options.startAfter);
+		}
+
+		const snapshot = await query.get();
+		return snapshot.docs.map((doc) => ({
+			...this.toPOJO(doc.data()),
+			id: doc.id
+		}));
+	}
 }
