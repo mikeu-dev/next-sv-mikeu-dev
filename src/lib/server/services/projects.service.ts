@@ -44,6 +44,7 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
 	async findProjects(options: {
 		tag?: string;
 		limit?: number;
+		offset?: number;
 		orderBy?: string;
 		orderDirection?: 'asc' | 'desc';
 	}): Promise<Project[]> {
@@ -55,6 +56,7 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
 		return this.repository.findWithQuery({
 			where: where.length > 0 ? where : undefined,
 			limit: options.limit,
+			offset: options.offset,
 			orderBy: options.orderBy
 				? { field: options.orderBy, direction: options.orderDirection || 'desc' }
 				: { field: 'createdAt', direction: 'desc' }

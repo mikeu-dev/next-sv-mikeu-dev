@@ -26,10 +26,23 @@
 
 	let locale = $derived(getLocale());
 	let isLoading = $state(true);
+	let isLoadingMore = $state(false);
 
 	// Transform projects to localized version
-	let rawProjects = $derived(projects[locale] || projects['en'] || []);
-	let projectsData = $derived(rawProjects.map((p) => getLocalizedProject(p, locale)));
+	let rawInitialProjects = $derived(projects[locale] || projects['en'] || []);
+	
+	// Maintain a dynamic list of projects for "Load More"
+	let projectsList = $state<Project[]>([]);
+	let hasMore = $state(true);
+	const pageSize = 6;
+
+	// Update list when initial data changes (e.g. locale change)
+	$effect(() => {
+		projectsList = [...rawInitialProjects];
+		hasMore = rawInitialProjects.length >= pageSize;
+	});
+
+	let projectsData = $derived(projectsList.map((p) => getLocalizedProject(p, locale)));
 
 	// Derived tags including 'All'
 	let allTags = $derived.by<FilterTag[]>(() => {
@@ -77,6 +90,43 @@
 
 		return result;
 	});
+
+	async function loadMore() {
+		if (isLoadingMore || !hasMore) return;
+		isLoadingMore = true;
+
+		try {
+			// In a real production app with hundreds of items, 
+			// we would pass the last ID or timestamp for cursor-based pagination.
+			// For now, we'll fetch a larger set or use offset if API supports it.
+			const offset = projectsList.length;
+			const response = await fetch(`/api/projects?limit=${pageSize}&offset=${offset}`);
+			
+			if (response.ok) {
+				const newData = await response.json();
+				if (newData && Array.isArray(newData)) {
+					if (newData.length < pageSize) {
+						hasMore = false;
+					}
+					// Add only new projects that aren't already in the list
+					const existingIds = new Set(projectsList.map(p => p.id));
+					const filteredNewData = newData.filter(p => !existingIds.has(p.id));
+					
+					if (filteredNewData.length === 0) {
+						hasMore = false;
+					} else {
+						projectsList = [...projectsList, ...filteredNewData];
+					}
+				} else {
+					hasMore = false;
+				}
+			}
+		} catch (error) {
+			console.error('Failed to load more projects:', error);
+		} finally {
+			isLoadingMore = false;
+		}
+	}
 
 	function filterProjects(tagName: string) {
 		selectedTag = tagName;
@@ -207,6 +257,24 @@
 					</div>
 				{/each}
 			</div>
+
+			<!-- Load More Button -->
+			{#if hasMore && searchQuery === '' && selectedTag === 'All'}
+				<div class="mt-16 flex justify-center">
+					<button
+						onclick={loadMore}
+						disabled={isLoadingMore}
+						class="group flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-black text-white transition-all hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-50"
+					>
+						{#if isLoadingMore}
+							<Icon iconName="Loader2" size={20} class="animate-spin" />
+							Loading...
+						{:else}
+							Load More Projects
+						{/if}
+					</button>
+				</div>
+			{/if}
 		{:else}
 			<!-- Empty State -->
 			<div class="flex flex-col items-center justify-center space-y-6 py-20 text-center">

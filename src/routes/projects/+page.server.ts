@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	let projectsResult: Record<string, Project[]> = { en: [], id: [] };
 
 	try {
-		const response = await fetch('/api/projects');
+		const response = await fetch('/api/projects?limit=6');
 
 		if (response.ok) {
 			const data = await response.json();

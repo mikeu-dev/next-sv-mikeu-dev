@@ -99,6 +99,7 @@ export abstract class BaseRepository<T> {
 		where?: [string, '==' | '>=' | '<=' | 'array-contains', unknown][];
 		orderBy?: { field: string; direction: 'asc' | 'desc' };
 		limit?: number;
+		offset?: number;
 		startAfter?: unknown;
 	}): Promise<T[]> {
 		const col = this.getCollection();
@@ -118,6 +119,10 @@ export abstract class BaseRepository<T> {
 
 		if (options.limit) {
 			query = query.limit(options.limit);
+		}
+
+		if (options.offset) {
+			query = query.offset(options.offset);
 		}
 
 		if (options.startAfter) {

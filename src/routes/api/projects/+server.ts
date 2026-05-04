@@ -15,12 +15,14 @@ export async function GET({ url }: RequestEvent) {
 	try {
 		const tag = url.searchParams.get('tag') || undefined;
 		const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
+		const offset = url.searchParams.get('offset') ? parseInt(url.searchParams.get('offset')!) : undefined;
 		const orderBy = url.searchParams.get('orderBy') || 'createdAt';
 		const orderDirection = (url.searchParams.get('orderDirection') as 'asc' | 'desc') || 'desc';
 
 		const projects = await projectsService.findProjects({
 			tag,
 			limit,
+			offset,
 			orderBy,
 			orderDirection
 		});
