@@ -277,8 +277,26 @@
 		bind:this={container} 
 		class="relative h-[650px] w-full overflow-hidden rounded-[2.5rem] border-4 border-zinc-900/5 bg-[#010101] shadow-2xl cursor-grab active:cursor-grabbing group/board"
 	>
+		<!-- Digital Mesh Grid -->
+		<div class="pointer-events-none absolute inset-0 opacity-[0.12]" 
+			style="background-image: linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px); background-size: 45px 45px;"></div>
+		
+		<!-- Radar Circle Accents -->
+		<div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.05]">
+			<div class="size-[200px] rounded-full border border-white"></div>
+			<div class="absolute size-[400px] rounded-full border border-white"></div>
+		</div>
+
+		<!-- Inner Vignette & Grain -->
+		<div class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"></div>
+		
+		<!-- CRT / Scanline Overlays -->
 		<div class="pointer-events-none absolute inset-0 opacity-[0.05] z-30" 
 			style="background-image: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06)); background-size: 100% 4px, 3px 100%;"></div>
+		
+		<!-- Noise Texture Overlay (CSS Generated) -->
+		<div class="pointer-events-none absolute inset-0 opacity-[0.03] z-20"
+			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
 		
 		{#each particles as p (p.id)}
 			<div class="absolute pointer-events-none z-10"
