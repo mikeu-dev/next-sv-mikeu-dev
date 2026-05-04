@@ -18,3 +18,13 @@ bun.lockb
 /storybook-static/
 project_structure.md
 .env*
+.DS_Store
+*.log
+.firebase/
+.idea/
+.vscode/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb

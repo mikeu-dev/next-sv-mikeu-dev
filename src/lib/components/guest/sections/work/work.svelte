@@ -4,7 +4,7 @@
 	import type { Project } from '$lib/types';
 	import { useWorkSection } from './work.svelte.js';
 	import { getLocale } from '@/lib/paraglide/runtime.js';
-	import * as m from '@/lib/paraglide/messages.js';
+	import { m } from '@/lib/paraglide/messages.js';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 
 	let { projects }: { projects: Project[] } = $props();

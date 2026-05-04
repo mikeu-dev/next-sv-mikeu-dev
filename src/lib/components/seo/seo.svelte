@@ -27,7 +27,14 @@
 
 	// Use dynamic OG image if no specific image is provided
 	const finalImage = $derived.by(() => {
-		if (image) return image;
+		if (image) {
+			// If it's already an absolute URL, return it
+			if (image.startsWith('http')) return image;
+			// If it's a relative URL starting with /, prepend the site URL
+			if (image.startsWith('/')) return `${siteUrl}${image}`;
+			// Otherwise return as is
+			return image;
+		}
 		const t = encodeURIComponent(title || 'Mikeu Dev');
 		const s = encodeURIComponent(description || 'Fullstack Web Developer');
 		return `${siteUrl}/api/og?title=${t}&subtitle=${s}`;
@@ -35,38 +42,54 @@
 
 	// Construct canonical URL using hardcoded domain to avoid non-www issues
 	// Remove trailing slash except for root
-	const path = page.url.pathname.replace(/\/$/, '');
-	const canonicalUrl = path === '' ? `${canonicalBase}/` : `${canonicalBase}${path}`;
+	const canonicalUrl = $derived.by(() => {
+		const path = page.url.pathname.replace(/\/$/, '');
+		return path === '' ? `${canonicalBase}/` : `${canonicalBase}${path}`;
+	});
 
 	// Generate alternate language links
-	const pathSegments = page.url.pathname.split('/').filter(Boolean);
-	if (pathSegments.length > 0 && locales.includes(pathSegments[0] as (typeof locales)[number])) {
-		pathSegments.shift();
-	}
-	const cleanPath = '/' + pathSegments.join('/');
+	const alternatesData = $derived.by(() => {
+		const pathSegments = page.url.pathname.split('/').filter(Boolean);
+		if (pathSegments.length > 0 && locales.includes(pathSegments[0] as (typeof locales)[number])) {
+			pathSegments.shift();
+		}
+		const cleanPath = '/' + pathSegments.join('/');
 
-	const alternates = locales.map((locale) => {
-		const isBase = locale === baseLocale;
-		const localizedPath = isBase ? cleanPath : `/${locale}${cleanPath.replace(/\/$/, '')}`;
-		const cleanLocPath = localizedPath.replace(/\/$/, '');
-		return {
-			locale,
-			href: cleanLocPath === '' ? `${canonicalBase}/` : `${canonicalBase}${cleanLocPath}`
-		};
+		const list = locales.map((locale) => {
+			const isBase = locale === baseLocale;
+			const localizedPath = isBase ? cleanPath : `/${locale}${cleanPath.replace(/\/$/, '')}`;
+			const cleanLocPath = localizedPath.replace(/\/$/, '');
+			return {
+				locale,
+				href: cleanLocPath === '' ? `${canonicalBase}/` : `${canonicalBase}${cleanLocPath}`
+			};
+		});
+
+		const xDefault =
+			cleanPath.replace(/\/$/, '') === ''
+				? `${canonicalBase}/`
+				: `${canonicalBase}${cleanPath.replace(/\/$/, '')}`;
+
+		return { list, xDefault };
 	});
 
 	// --- JSON-LD GENERATION ---
-	const breadcrumbItems = pathSegments.map((segment, index) => {
-		const partPath = '/' + pathSegments.slice(0, index + 1).join('/');
-		return {
-			'@type': 'ListItem',
-			position: index + 1,
-			name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
-			item: `${canonicalBase}${partPath}`
-		};
-	});
-
 	const jsonLd = $derived.by(() => {
+		const pathSegments = page.url.pathname.split('/').filter(Boolean);
+		if (pathSegments.length > 0 && locales.includes(pathSegments[0] as (typeof locales)[number])) {
+			pathSegments.shift();
+		}
+
+		const breadcrumbItems = pathSegments.map((segment, index) => {
+			const partPath = '/' + pathSegments.slice(0, index + 1).join('/');
+			return {
+				'@type': 'ListItem',
+				position: index + 1,
+				name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+				item: `${canonicalBase}${partPath}`
+			};
+		});
+
 		const graph: object[] = [
 			{
 				'@type': 'WebSite',
@@ -117,16 +140,10 @@
 		<meta name="robots" content="noindex, nofollow" />
 	{/if}
 
-	{#each alternates as alt (alt.locale)}
+	{#each alternatesData.list as alt (alt.locale)}
 		<link rel="alternate" hreflang={alt.locale} href={alt.href} />
 	{/each}
-	<link
-		rel="alternate"
-		hreflang="x-default"
-		href={cleanPath.replace(/\/$/, '') === ''
-			? `${canonicalBase}/`
-			: `${canonicalBase}${cleanPath.replace(/\/$/, '')}`}
-	/>
+	<link rel="alternate" hreflang="x-default" href={alternatesData.xDefault} />
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type === 'article' ? 'article' : 'website'} />

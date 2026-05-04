@@ -31,6 +31,9 @@ src/lib/data/
 src/lib/paraglide
 src/paraglide
 
+# Inlang
+project.inlang/cache
+
 *storybook.log
 storybook-static
 project_structure.md

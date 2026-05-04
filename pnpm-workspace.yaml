@@ -1,3 +1,6 @@
+ignoredBuiltDependencies:
+  - '@firebase/util'
+  - protobufjs
 onlyBuiltDependencies:
   - esbuild
   - '@tailwindcss/oxide'

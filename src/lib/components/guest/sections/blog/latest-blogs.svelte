@@ -1,10 +1,10 @@
 <script lang="ts">
-	import * as m from '$lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import BlogCard from '../../blog/blog-card.svelte';
 	import type { BlogPost } from '$lib/server/services/blog.service';
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { localizeHref } from '$lib/paraglide/runtime';
 

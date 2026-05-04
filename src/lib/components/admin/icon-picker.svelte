@@ -60,10 +60,7 @@
 		...(iconsData as Array<{ title: string; slug: string; hex: string }>).map((icon) => {
 			const name =
 				icon.title.charAt(0).toUpperCase() +
-				icon.title
-					.slice(1)
-					.replace(/\s+/g, '')
-					.replace(/[^\w]/g, '');
+				icon.title.slice(1).replace(/\s+/g, '').replace(/[^\w]/g, '');
 			const key = 'si' + name;
 			return {
 				key,

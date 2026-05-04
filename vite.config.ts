@@ -8,6 +8,17 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 export default defineConfig({
+	server: {
+		watch: {
+			ignored: [
+				'**/.svelte-kit/**',
+				'**/node_modules/**',
+				'**/static/**',
+				'**/messages/**',
+				'**/src/lib/paraglide/**'
+			]
+		}
+	},
 	resolve: {
 		alias: [
 			{

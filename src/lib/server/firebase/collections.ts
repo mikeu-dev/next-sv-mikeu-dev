@@ -10,5 +10,7 @@ export const COLLECTIONS = {
 	SKILLS: 'skills',
 	SOCIALS: 'socials',
 	ERROR_LOGS: 'error_logs',
-	CUSTOM_ICONS: 'custom_icons'
+	CUSTOM_ICONS: 'custom_icons',
+	BLOG_REACTIONS: 'blog_reactions',
+	PROJECT_REACTIONS: 'project_reactions'
 };

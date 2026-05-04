@@ -1,9 +1,7 @@
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onMount } from 'svelte';
 import { writable, get } from 'svelte/store';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function useWorkSection() {
 	const workSection = writable<HTMLElement | null>(null);
@@ -17,6 +15,7 @@ export function useWorkSection() {
 	}
 
 	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
 		const section = get(workSection);
 		const elements = get(projectCardElements);
 		if (!section) return;

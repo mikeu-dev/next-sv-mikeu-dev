@@ -12,19 +12,44 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 		super(COLLECTIONS.BLOG_POSTS);
 	}
 
-	async getPublishedByLocale(locale: string): Promise<BlogPost[]> {
+	async getPublishedByLocale(
+		locale: string,
+		options: { limit?: number; lastDate?: string; search?: string } = {}
+	): Promise<{ posts: BlogPost[]; nextCursor: string | null }> {
 		const col = this.getCollection();
-		if (!col) return [];
+		if (!col) return { posts: [], nextCursor: null };
 
-		const snapshot = await col.where('locale', '==', locale).where('published', '==', true).get();
+		let query = col
+			.where('locale', '==', locale)
+			.where('published', '==', true)
+			.orderBy('date', 'desc');
 
+		// Handle Search (Simple title search)
+		if (options.search) {
+			query = query
+				.where('title', '>=', options.search)
+				.where('title', '<=', options.search + '\uf8ff');
+		}
+
+		if (options.lastDate) {
+			query = query.startAfter(options.lastDate);
+		}
+
+		if (options.limit) {
+			query = query.limit(options.limit);
+		}
+
+		const snapshot = await query.get();
 		const posts = snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
 			...this.toPOJO(doc.data()),
 			id: doc.id
 		})) as BlogPost[];
 
-		// Sort in memory to avoid needing a composite index
-		return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+		const lastPost = posts[posts.length - 1];
+		return {
+			posts,
+			nextCursor: lastPost ? lastPost.date : null
+		};
 	}
 
 	async getBySlugIndoEn(slug: string, locale?: string): Promise<BlogPost | null> {

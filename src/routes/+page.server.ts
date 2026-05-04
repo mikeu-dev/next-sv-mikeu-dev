@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.catch(() => []),
 		latestPosts: blogService
 			.getPublishedPostsByLocale(locale)
-			.then((posts) => posts?.slice(0, 3) || [])
+			.then((posts) => posts?.posts.slice(0, 3) || [])
 			.catch(() => [])
 	};
 };
