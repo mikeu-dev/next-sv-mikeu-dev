@@ -59,7 +59,6 @@
 
 		// Scribble animation
 		gsap.from('.scribble-path', {
-			drawSVG: 0, // Requires DrawSVGPlugin, but we'll use strokeDasharray/offset trick
 			strokeDashoffset: 1000,
 			strokeDasharray: 1000,
 			duration: 1.5,

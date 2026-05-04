@@ -4,7 +4,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
 	import { base } from '$app/paths';
@@ -105,7 +105,7 @@
 
 	// --- Computed / Derived State ---
 	let isLoggedIn = $derived(Boolean(authState.user));
-	let currentPath = $derived($page.url.pathname);
+	let currentPath = $derived(page.url.pathname || '');
 
 	// --- UI Interaction Handlers ---
 	function toggleMobileMenu() {
