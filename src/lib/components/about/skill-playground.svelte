@@ -143,7 +143,7 @@
 	const shapeKeys = Object.keys(shapes) as Array<keyof typeof shapes>;
 
 	const tetriminos = $derived.by(() => {
-		const all: any[] = []; // Keep it simple, we'll make it reactive during spawn
+		const all: Tetrimino[] = [];
 		let currentSkillIndex = 0;
 		const flatSkills = categories.flatMap((cat) =>
 			(cat.items || []).map((item) => ({
@@ -223,12 +223,17 @@
 	}
 
 	function shakeBoard() {
-		pieceBodies.forEach((pb) => {
-			Body.applyForce(pb.body, pb.body.position, {
-				x: (Math.random() - 0.5) * 0.1 * pb.body.mass,
-				y: -0.15 * pb.body.mass
+		if (pieceBodies.length > 0) {
+			pieceBodies.forEach((pb) => {
+				const body = physicsBodies.find((b) => b.label === `piece-${pb.id}`);
+				if (body) {
+					Body.applyForce(body, body.position, {
+						x: (Math.random() - 0.5) * 0.1 * body.mass,
+						y: -0.15 * body.mass
+					});
+				}
 			});
-		});
+		}
 		comboCount = 0;
 	}
 
@@ -309,10 +314,10 @@
 		tetriminos.forEach((piece, pieceIdx) => {
 			const timeout = window.setTimeout(() => {
 				// Calculate piece width to prevent spawning partially inside walls
-				const maxX = Math.max(...piece.skills.map((s) => s.relX));
+				const maxX = Math.max(...piece.skills.map((s: SkillItem) => s.relX));
 				const pieceWidth = (maxX + 1) * blockSize;
 				const startX = Math.random() * (canvasWidth - pieceWidth - 40) + 20;
-				const parts = piece.skills.map((skill) =>
+				const parts = piece.skills.map((skill: SkillItem) =>
 					Bodies.rectangle(
 						startX + skill.relX * blockSize,
 						50 + skill.relY * blockSize,
@@ -335,7 +340,7 @@
 				// Pre-cache elements
 				// Create reactive piece state for Svelte 5
 				const currentPieceId = nextId++;
-				const reactiveSkills = piece.skills.map((s) => ({
+				const reactiveSkills = piece.skills.map((s: SkillItem) => ({
 					...s,
 					x: startX + s.relX * blockSize,
 					y: 50 + s.relY * blockSize,
@@ -579,7 +584,7 @@
 									<div class="grid gap-1" style="grid-template-columns: repeat(4, 6px);">
 										{#each Array(16) as _, i (i)}
 											{@const isF = tetriminos[nextPieceIdx]?.skills.some(
-												(s) => s.relX === i % 4 && s.relY === Math.floor(i / 4)
+												(s: SkillItem) => s.relX === i % 4 && s.relY === Math.floor(i / 4)
 											)}
 											<div
 												class="rounded-full {isF

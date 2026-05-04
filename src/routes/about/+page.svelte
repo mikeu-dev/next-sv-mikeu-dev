@@ -494,7 +494,7 @@
 												<!-- Coffee: Caffeine Level -->
 												<div class="flex flex-col items-end gap-1">
 													<div class="flex gap-0.5">
-														{#each Array(4) as _, j}
+														{#each Array(4) as _, j (j)}
 															<div
 																class="h-3 w-1 rounded-full {j < 3
 																	? 'bg-orange-500'
@@ -507,7 +507,7 @@
 											{:else if i === 2}
 												<!-- Music: Visualizer -->
 												<div class="flex h-4 items-end gap-0.5">
-													{#each Array(4) as _, j}
+													{#each Array(4) as _, j (j)}
 														<div
 															class="animate-visualizer w-1 rounded-full bg-pink-500"
 															style="animation-delay: {j * 100}ms"
