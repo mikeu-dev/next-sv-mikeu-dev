@@ -215,12 +215,17 @@
 					</div>
 					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
 						{#each cat.items as item}
-							<div class="group flex items-center gap-3 rounded-xl border border-zinc-100 bg-white p-3 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700">
-								<div class="flex size-8 items-center justify-center rounded-lg bg-zinc-50 transition-colors group-hover:bg-white dark:bg-zinc-800 dark:group-hover:bg-zinc-700">
+							{@const itemColor = item.color || categoryColors[cat.category]}
+							<div class="group flex items-center gap-3 rounded-xl border border-zinc-100 bg-white p-3 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+								style="--hover-border: {itemColor}44;"
+							>
+								<div class="flex size-9 items-center justify-center rounded-lg transition-colors group-hover:bg-white dark:group-hover:bg-zinc-700"
+									style="background-color: {itemColor}15;"
+								>
 									{#if item.icon}
-										<Icon src={item.icon} size={18} class="text-zinc-600 dark:text-zinc-400" />
+										<Icon src={item.icon} size={20} style="color: {itemColor};" />
 									{:else}
-										<span class="text-[8px] font-bold text-zinc-400">{item.name.slice(0,2)}</span>
+										<span class="text-[8px] font-bold" style="color: {itemColor};">{item.name.slice(0,2)}</span>
 									{/if}
 								</div>
 								<span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">{item.name}</span>
@@ -328,6 +333,8 @@
 
 <style>
 	:global(.filter-active) { box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important; z-index: 60 !important; filter: brightness(1.5) !important; scale: 1.1; }
+	.group { transition: border-color 0.3s ease; }
+	.group:hover { border-color: var(--hover-border) !important; }
 	@keyframes scanline { 0% { top: -10%; } 100% { top: 110%; } }
 	.animate-scanline { animation: scanline 2.5s linear infinite; }
 </style>
