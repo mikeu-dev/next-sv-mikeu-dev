@@ -113,7 +113,8 @@
 
 		// ... existing hero animations ...
 		
-		// Fun Facts Stagger Reveal
+		// Fun Facts Stagger Reveal (Disabled temporarily for debugging)
+		/*
 		gsap.from('.fact-card', {
 			y: 40,
 			opacity: 0,
@@ -125,6 +126,7 @@
 				start: 'top 85%'
 			}
 		});
+		*/
 	});
 </script>
 
@@ -282,7 +284,7 @@
 
 				<div class="lg:col-span-7">
 					<div class="facts-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
-						{#each funFacts as fact (fact.text)}
+						{#each funFacts as fact (fact.sub)}
 							<div class="fact-card group relative overflow-hidden rounded-3xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/5">
 								<!-- Card Inner Glow -->
 								<div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
