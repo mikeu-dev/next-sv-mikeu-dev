@@ -448,7 +448,7 @@
 
 				<div class="lg:col-span-7">
 					<div class="facts-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
-						{#each funFacts as fact (fact.sub)}
+						{#each funFacts as fact, i (fact.sub)}
 							<div
 								class="fact-card group relative overflow-hidden rounded-3xl border border-zinc-100 bg-white p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/5 dark:border-zinc-800 dark:bg-zinc-900"
 							>
@@ -467,17 +467,44 @@
 										>
 											<fact.icon class={`size-7 ${fact.color}`} />
 										</div>
-										<span
-											class="translate-x-2 transform text-[9px] font-black tracking-widest text-zinc-400 uppercase opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:opacity-100"
-										>
-											{fact.sub}
-										</span>
+										
+										<!-- Interactive Mini-Widgets -->
+										<div class="flex items-center gap-2">
+											{#if i === 0}
+												<!-- Coffee: Caffeine Level -->
+												<div class="flex flex-col items-end gap-1">
+													<div class="flex gap-0.5">
+														{#each Array(4) as _, j}
+															<div class="h-3 w-1 rounded-full {j < 3 ? 'bg-orange-500' : 'bg-zinc-200 dark:bg-zinc-800'} animate-pulse" style="animation-delay: {j * 150}ms"></div>
+														{/each}
+													</div>
+												</div>
+											{:else if i === 2}
+												<!-- Music: Visualizer -->
+												<div class="flex items-end gap-0.5 h-4">
+													{#each Array(4) as _, j}
+														<div class="w-1 bg-pink-500 rounded-full animate-visualizer" style="animation-delay: {j * 100}ms"></div>
+													{/each}
+												</div>
+											{:else if i === 1}
+												<!-- Gaming: Pulse -->
+												<div class="flex items-center gap-1.5">
+													<div class="size-2 rounded-full bg-red-500 animate-ping"></div>
+													<span class="text-[8px] font-black text-red-500 uppercase tracking-tighter">Live</span>
+												</div>
+											{/if}
+										</div>
 									</div>
 
 									<div class="space-y-2">
-										<p class="text-[9px] font-black tracking-widest text-zinc-400 uppercase">
-											{m.about_fun_facts_node_status()}
-										</p>
+										<div class="flex items-center justify-between">
+											<p class="text-[9px] font-black tracking-widest text-zinc-400 uppercase">
+												{m.about_fun_facts_node_status()}
+											</p>
+											{#if i === 3}
+												<span class="text-[8px] font-mono text-emerald-500 animate-pulse">SYNCING_DATA...</span>
+											{/if}
+										</div>
 										<p
 											class="text-lg leading-tight font-black tracking-tighter text-zinc-800 uppercase dark:text-zinc-100"
 										>
@@ -518,5 +545,18 @@
 
 	.noise-bg {
 		position: relative;
+	}
+
+	@keyframes visualizer {
+		0%,
+		100% {
+			height: 40%;
+		}
+		50% {
+			height: 100%;
+		}
+	}
+	.animate-visualizer {
+		animation: visualizer 0.8s ease-in-out infinite;
 	}
 </style>

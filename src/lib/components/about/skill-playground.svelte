@@ -54,6 +54,12 @@
 	let isSpawning = false;
 	let spawnTimeouts: number[] = [];
 	let particles = $state<Particle[]>([]);
+	
+	// HUD Stats
+	let sessionStart = Date.now();
+	let uptime = $state(0);
+	let integrity = $state(100);
+	let kernelVersion = "0.24.5-STABLE";
 
 	const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
 	let engine = $state<Matter.Engine>();
@@ -177,7 +183,22 @@
 		if (pb) {
 			Body.rotate(pb.body, Math.PI / 2);
 			comboCount++;
-			createParticles(pb.body.position.x, pb.body.position.y, pb.piece.color, 8);
+			createParticles(pb.body.position.x, pb.body.position.y, pb.piece.color, 12);
+			
+			// Pulse effect
+			const pbIdx = pieceBodies.findIndex(p => p.id === id);
+			const parts = pb.body.parts;
+			for (let j = 1; j < parts.length; j++) {
+				const el = document.getElementById(`skill-block-${pb.id}-${j-1}`);
+				if (el) {
+					el.animate([
+						{ transform: el.style.transform + ' scale(1)', filter: 'brightness(1)' },
+						{ transform: el.style.transform + ' scale(1.2)', filter: 'brightness(1.5)' },
+						{ transform: el.style.transform + ' scale(1)', filter: 'brightness(1)' }
+					], { duration: 300, ease: 'ease-out' });
+				}
+			}
+
 			setTimeout(() => {
 				if (comboCount > 0) comboCount--;
 			}, 2000);
@@ -313,10 +334,24 @@
 			e.pairs.forEach((p: Matter.Pair) => {
 				if (p.collision.depth > 2) {
 					const pos = p.collision.supports[0] || p.bodyA.position;
-					const piece = pieceBodies.find(
-						(pb) => pb.body.id === p.bodyA.id || pb.body.id === p.bodyA.parent?.id
+					const pb = pieceBodies.find(
+						(pb) => pb.body.id === p.bodyA.id || pb.body.id === p.bodyA.parent?.id || pb.body.id === p.bodyB.id || pb.body.id === p.bodyB.parent?.id
 					);
-					createParticles(pos.x, pos.y, piece?.piece.color || '#ffffff', 2);
+					createParticles(pos.x, pos.y, pb?.piece.color || '#ffffff', 2);
+					
+					// Flash effect on high impact
+					if (p.collision.depth > 5) {
+						const parts = pb?.body.parts;
+						if (parts) {
+							for (let j = 1; j < parts.length; j++) {
+								const el = document.getElementById(`skill-block-${pb.id}-${j-1}`);
+								if (el) {
+									el.style.filter = 'brightness(2)';
+									setTimeout(() => { if(el) el.style.filter = ''; }, 100);
+								}
+							}
+						}
+					}
 				}
 			});
 		});
@@ -325,6 +360,11 @@
 		function update() {
 			if (engine) Engine.update(engine, 1000 / 60);
 			
+			// Update HUD Stats
+			const now = Date.now();
+			uptime = Math.min(100, Math.floor((now - sessionStart) / 1000));
+			integrity = 99.5 + Math.random() * 0.5;
+
 			particles = particles
 				.map((p) => ({ ...p, x: p.x + p.vx, y: p.y + p.vy, life: p.life - 0.03, vy: p.vy + 0.2 }))
 				.filter((p) => p.life > 0);
@@ -537,15 +577,13 @@
 						class="pointer-events-none absolute inset-x-6 top-6 z-20 flex justify-between text-[8px] font-bold tracking-widest text-white/30 uppercase"
 					>
 						<div class="flex flex-col gap-1">
-							<span>{m.skill_playground_integrity()}: 100%</span><span
-								>{m.skill_playground_uptime()}: {Math.floor(
-									(spawnedCount / tetriminos.length) * 100
-								)}%</span
+							<span>{m.skill_playground_integrity()}: {integrity.toFixed(1)}%</span><span
+								>{m.skill_playground_uptime()}: {uptime}%</span
 							>
 						</div>
 						<div class="flex flex-col gap-1 text-right">
-							<span>{m.skill_playground_kernel()}: V0.19</span><span
-								>{m.skill_playground_buffer()}: Optimized</span
+							<span>{m.skill_playground_kernel()}: {kernelVersion}</span><span
+								>{m.skill_playground_buffer()}: OPTIMIZED_V3</span
 							>
 						</div>
 					</div>
