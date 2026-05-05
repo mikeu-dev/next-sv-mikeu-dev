@@ -47,8 +47,8 @@
 
 	function scrollToTop() {
 		// Reduced duration for more responsive feel
-		gsap.to(window, { 
-			duration: 0.5, 
+		gsap.to(window, {
+			duration: 0.5,
 			scrollTo: 0,
 			ease: 'power4.inOut'
 		});
@@ -69,7 +69,7 @@
 
 	onMount(() => {
 		window.addEventListener('scroll', handleScroll);
-		
+
 		if ('serviceWorker' in navigator && !dev) {
 			navigator.serviceWorker.register('/service-worker.js', {
 				type: dev ? 'module' : 'classic'
@@ -170,19 +170,25 @@
 <!-- Brutalist Scroll to Top Button -->
 <button
 	bind:this={scrollBtn}
-	class="group pointer-events-none fixed right-8 bottom-8 z-[9999] flex size-12 cursor-pointer items-center justify-center border-2 border-foreground bg-primary text-primary-foreground opacity-0 shadow-[4px_4px_0_var(--foreground)] transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:rotate-3 hover:bg-foreground hover:text-primary hover:shadow-[12px_12px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none scroll-top-origami"
+	class="group scroll-top-origami pointer-events-none fixed right-8 bottom-8 z-[9999] flex size-12 cursor-pointer items-center justify-center border-2 border-foreground bg-primary text-primary-foreground opacity-0 shadow-[4px_4px_0_var(--foreground)] transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:rotate-3 hover:bg-foreground hover:text-primary hover:shadow-[12px_12px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 	aria-label="Scroll to top"
 	onclick={scrollToTop}
 >
 	<!-- Decorative Shard (Visible on Hover) -->
-	<div class="absolute inset-0 -z-10 translate-x-0 translate-y-0 bg-primary-foreground/20 opacity-0 transition-all duration-300 group-hover:translate-x-3 group-hover:translate-y-3 group-hover:opacity-100" style="clip-path: polygon(20% 0, 100% 40%, 80% 100%, 0 70%);"></div>
-	
-	<ArrowUp class="relative z-10 size-6 transition-transform duration-300 group-hover:-translate-y-1" strokeWidth={3} />
+	<div
+		class="absolute inset-0 -z-10 translate-x-0 translate-y-0 bg-primary-foreground/20 opacity-0 transition-all duration-300 group-hover:translate-x-3 group-hover:translate-y-3 group-hover:opacity-100"
+		style="clip-path: polygon(20% 0, 100% 40%, 80% 100%, 0 70%);"
+	></div>
+
+	<ArrowUp
+		class="relative z-10 size-6 transition-transform duration-300 group-hover:-translate-y-1"
+		strokeWidth={3}
+	/>
 </button>
 
 <style lang="postcss">
 	@reference "tailwindcss";
-	
+
 	.scroll-top-origami {
 		clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
 	}

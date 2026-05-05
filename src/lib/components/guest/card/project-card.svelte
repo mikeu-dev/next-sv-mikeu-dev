@@ -21,7 +21,7 @@
 
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
-		
+
 		gsap.from(cardElement, {
 			rotateX: -30,
 			y: 100,
@@ -70,10 +70,14 @@
 </script>
 
 <article class="group relative h-full" bind:this={cardElement}>
-	<div class="project-card-inner relative flex h-full flex-col bg-card transition-all duration-500 hover:bg-primary/5 dark:hover:bg-primary/10">
-		
+	<div
+		class="project-card-inner relative flex h-full flex-col bg-card transition-all duration-500 hover:bg-primary/5 dark:hover:bg-primary/10"
+	>
 		<!-- Image Wrapper with Clip-Path -->
-		<div class="relative aspect-video overflow-hidden" style="clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);">
+		<div
+			class="relative aspect-video overflow-hidden"
+			style="clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);"
+		>
 			{#if project.thumbnailUrl}
 				<img
 					src={project.thumbnailUrl}
@@ -88,30 +92,38 @@
 			{/if}
 
 			<!-- Overlay Gradient -->
-			<div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+			<div
+				class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+			></div>
 
 			<!-- Technical Badges -->
 			<div class="absolute top-4 left-4 flex flex-col gap-2">
 				{#if isFeatured}
-					<div class="flex items-center gap-1.5 bg-yellow-500 px-3 py-1 font-mono text-[9px] font-black text-black tracking-widest uppercase">
+					<div
+						class="flex items-center gap-1.5 bg-yellow-500 px-3 py-1 font-mono text-[9px] font-black tracking-widest text-black uppercase"
+					>
 						<Trophy class="size-3" /> [FEATURED_PROJECT]
 					</div>
 				{/if}
 				{#if isNew}
-					<div class="flex items-center gap-1.5 bg-primary px-3 py-1 font-mono text-[9px] font-black text-primary-foreground tracking-widest uppercase">
+					<div
+						class="flex items-center gap-1.5 bg-primary px-3 py-1 font-mono text-[9px] font-black tracking-widest text-primary-foreground uppercase"
+					>
 						<Sparkles class="size-3" /> [NEW_DEPLOYMENT]
 					</div>
 				{/if}
 			</div>
 
 			<!-- Quick Actions -->
-			<div class="absolute top-4 right-4 flex flex-col gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100">
+			<div
+				class="absolute top-4 right-4 flex flex-col gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100"
+			>
 				{#if project.demoUrl}
 					<a
 						href={project.demoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white backdrop-blur-md transition-all hover:bg-primary hover:border-primary"
+						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white backdrop-blur-md transition-all hover:border-primary hover:bg-primary"
 						title={m.project_button_demo()}
 					>
 						<ExternalLink class="size-5" />
@@ -122,7 +134,7 @@
 						href={project.repoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white backdrop-blur-md transition-all hover:bg-primary hover:border-primary"
+						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white backdrop-blur-md transition-all hover:border-primary hover:bg-primary"
 						title={m.project_button_view_code()}
 					>
 						<Github class="size-5" />
@@ -151,7 +163,9 @@
 
 			<!-- Title & Description -->
 			<div class="flex items-start justify-between gap-4">
-				<h3 class="font-poppins text-2xl font-black leading-tight tracking-tighter transition-colors group-hover:text-primary lg:text-3xl">
+				<h3
+					class="font-poppins text-2xl leading-tight font-black tracking-tighter transition-colors group-hover:text-primary lg:text-3xl"
+				>
 					<a href={localizeHref(`/projects/${project.slug}`)}>
 						<span class="absolute inset-0 z-10" aria-hidden="true"></span>
 						{project.title}
@@ -162,17 +176,23 @@
 				</div>
 			</div>
 
-			<p class="mt-4 line-clamp-3 font-mono text-xs leading-relaxed text-muted-foreground/80 uppercase">
+			<p
+				class="mt-4 line-clamp-3 font-mono text-xs leading-relaxed text-muted-foreground/80 uppercase"
+			>
 				{project.description}
 			</p>
 
 			<!-- Footer Action -->
 			<div class="mt-auto flex items-center justify-between border-t border-foreground/10 pt-6">
-				<div class="flex items-center gap-2 font-mono text-[10px] font-black text-primary tracking-widest uppercase">
+				<div
+					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-primary uppercase"
+				>
 					<span>[EXPLORE_DETAILS]</span>
-					<div class="h-0.5 w-8 bg-primary/30 transition-all group-hover:w-16 group-hover:bg-primary"></div>
+					<div
+						class="h-0.5 w-8 bg-primary/30 transition-all group-hover:w-16 group-hover:bg-primary"
+					></div>
 				</div>
-				<div class="font-mono text-[8px] font-black text-foreground/30 uppercase tracking-widest">
+				<div class="font-mono text-[8px] font-black tracking-widest text-foreground/30 uppercase">
 					ID: {project.slug.toUpperCase().replace(/-/g, '_')}
 				</div>
 			</div>
@@ -204,4 +224,3 @@
 		}
 	}
 </style>
-

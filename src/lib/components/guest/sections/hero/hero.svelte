@@ -35,13 +35,13 @@
 
 		const ctx = gsap.context(() => {
 			if (!subtitle || !button || !bullets) return;
-			
+
 			// Custom Stagger for Brutalist Elements
-			gsap.from('.hero-stagger', { 
-				y: 30, 
-				opacity: 0, 
-				duration: 0.8, 
-				stagger: 0.1, 
+			gsap.from('.hero-stagger', {
+				y: 30,
+				opacity: 0,
+				duration: 0.8,
+				stagger: 0.1,
 				ease: 'expo.out',
 				delay: 1.2
 			});
@@ -55,7 +55,6 @@
 				ease: 'power4.out',
 				delay: 0.5
 			});
-
 		});
 
 		// --- Matter.js Logic (MAINTAINED) ---
@@ -66,8 +65,14 @@
 		const titleRect: DOMRect = heroTitle.getBoundingClientRect();
 		const wallOptions: IChamferableBodyDefinition = { isStatic: true, render: { visible: false } };
 
-		const floorY = 160; 
-		const floor = Bodies.rectangle(titleRect.width / 2, floorY, titleRect.width * 2, 20, wallOptions);
+		const floorY = 160;
+		const floor = Bodies.rectangle(
+			titleRect.width / 2,
+			floorY,
+			titleRect.width * 2,
+			20,
+			wallOptions
+		);
 		const wallLeft = Bodies.rectangle(
 			-100,
 			titleRect.height / 2,
@@ -165,22 +170,37 @@
 
 	<!-- Background Decorative Elements -->
 	<div class="pointer-events-none absolute inset-0 overflow-hidden">
-		<div class="origami-shard absolute -top-24 -left-24 size-[500px] bg-primary/5 dark:bg-primary/10" style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"></div>
-		<div class="origami-shard absolute -bottom-48 -right-48 size-[600px] bg-foreground/5" style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"></div>
-		<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-full bg-[radial-gradient(circle_at_center,var(--primary-foreground)_0%,transparent_70%)] opacity-20 dark:opacity-5"></div>
+		<div
+			class="origami-shard absolute -top-24 -left-24 size-[500px] bg-primary/5 dark:bg-primary/10"
+			style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"
+		></div>
+		<div
+			class="origami-shard absolute -right-48 -bottom-48 size-[600px] bg-foreground/5"
+			style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"
+		></div>
+		<div
+			class="absolute top-1/2 left-1/2 size-full -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle_at_center,var(--primary-foreground)_0%,transparent_70%)] opacity-20 dark:opacity-5"
+		></div>
 	</div>
 
-	<div class="container relative z-10 mx-auto px-6">
-		
+	<div class="relative z-10 container mx-auto px-6">
 		<!-- Technical Metadata Header -->
-		<div class="hero-stagger mb-12 flex flex-wrap items-center justify-center gap-6 border-b-2 border-foreground/10 pb-8">
-			<div class="flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+		<div
+			class="hero-stagger mb-12 flex flex-wrap items-center justify-center gap-6 border-b-2 border-foreground/10 pb-8"
+		>
+			<div
+				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
+			>
 				<Terminal class="size-3" /> CORE_IDENTIFIER: MIKEU_DEV_V5
 			</div>
-			<div class="flex items-center gap-2 font-mono text-[10px] font-black text-foreground/40 uppercase tracking-[0.2em]">
+			<div
+				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase"
+			>
 				<Cpu class="size-3" /> ARCH_TYPE: FULLSTACK_ARCHIVE
 			</div>
-			<div class="flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+			<div
+				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
+			>
 				<Activity class="size-3 animate-pulse" /> SYSTEM_STATUS: STABLE
 			</div>
 		</div>
@@ -189,7 +209,7 @@
 		<div class="relative mx-auto mb-12 inline-block" style="height: 180px;">
 			<h1
 				bind:this={heroTitle}
-				class="flex flex-wrap justify-center font-mono text-5xl font-black leading-none tracking-tighter text-foreground drop-shadow-2xl uppercase sm:text-7xl md:text-8xl lg:text-9xl"
+				class="flex flex-wrap justify-center font-mono text-5xl leading-none font-black tracking-tighter text-foreground uppercase drop-shadow-2xl sm:text-7xl md:text-8xl lg:text-9xl"
 			>
 				{#each titleChars as char, i (i)}
 					<span bind:this={letterElements[i]} class="inline-block" style="white-space: pre;">
@@ -203,7 +223,7 @@
 		<div class="hero-stagger mt-8">
 			<p
 				bind:this={heroSubtitle}
-				class="mx-auto max-w-3xl font-mono text-sm leading-relaxed text-muted-foreground uppercase tracking-widest sm:text-base md:text-lg"
+				class="mx-auto max-w-3xl font-mono text-sm leading-relaxed tracking-widest text-muted-foreground uppercase sm:text-base md:text-lg"
 			>
 				// {m.hero_subtitle()} //
 			</p>
@@ -211,9 +231,11 @@
 			<!-- Industrial Skills List -->
 			<div bind:this={bulletContainer} class="mt-12 flex flex-wrap justify-center gap-4">
 				{#each skills as skill (skill)}
-					<div class="group flex items-center gap-3 border-2 border-foreground/10 bg-foreground/[0.02] px-6 py-3 transition-all hover:border-primary hover:bg-primary/5">
+					<div
+						class="group flex items-center gap-3 border-2 border-foreground/10 bg-foreground/[0.02] px-6 py-3 transition-all hover:border-primary hover:bg-primary/5"
+					>
 						<Hash class="size-3 text-primary transition-transform group-hover:rotate-12" />
-						<span class="font-mono text-[11px] font-black uppercase tracking-wider text-foreground">
+						<span class="font-mono text-[11px] font-black tracking-wider text-foreground uppercase">
 							{skill}
 						</span>
 					</div>
@@ -248,7 +270,9 @@
 		</div>
 
 		<!-- Technical Footer ID -->
-		<div class="hero-stagger mt-24 flex items-center justify-center gap-8 font-mono text-[8px] font-black tracking-[0.4em] text-foreground/20 uppercase">
+		<div
+			class="hero-stagger mt-24 flex items-center justify-center gap-8 font-mono text-[8px] font-black tracking-[0.4em] text-foreground/20 uppercase"
+		>
 			<p>UID: 0x7F4B21_MIKEU</p>
 			<p>SECTOR: ALPHA_PRIMARY</p>
 			<p>LOAD_TIME: 242ms</p>
@@ -276,4 +300,3 @@
 		user-select: none;
 	}
 </style>
-

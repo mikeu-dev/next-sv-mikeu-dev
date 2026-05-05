@@ -29,7 +29,7 @@
 	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{
 		resolvedResumeUrls?: { en: string; id: string };
 	}>();
-	
+
 	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
 	let isMobileMenuOpen = $state(false);
@@ -45,7 +45,7 @@
 	let anchorElement: HTMLAnchorElement;
 	let headerElement: HTMLElement;
 	let devSpan: HTMLElement;
-	
+
 	// Scroll Behavior
 	let lastScrollTop = 0;
 	let hideHeader = $state(false);
@@ -80,7 +80,6 @@
 		confettiCannon = true;
 		playConfettiSound();
 	};
-
 
 	// --- Reactive Locale Sync ---
 	$effect(() => {
@@ -145,25 +144,28 @@
 
 		<div class="mx-auto flex max-w-screen-2xl items-center justify-between">
 			<!-- Branding (Pendulum Maintained) -->
-			<a
-				href="{base}/"
-				bind:this={anchorElement}
-				class="group relative flex items-center gap-3"
-			>
-				<div class="relative size-10 overflow-hidden border-2 border-foreground" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);">
+			<a href="{base}/" bind:this={anchorElement} class="group relative flex items-center gap-3">
+				<div
+					class="relative size-10 overflow-hidden border-2 border-foreground"
+					style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);"
+				>
 					<Avatar.Root class="size-full rounded-none!">
-						<Avatar.Image src="https://github.com/mikeu-dev.png" alt="@mikeu-dev" class="rounded-none!" />
+						<Avatar.Image
+							src="https://github.com/mikeu-dev.png"
+							alt="@mikeu-dev"
+							class="rounded-none!"
+						/>
 						<Avatar.Fallback class="rounded-none!">RR</Avatar.Fallback>
 					</Avatar.Root>
 				</div>
-				
+
 				<div class="flex flex-col">
-					<span class="font-poppins text-lg font-black tracking-tighter uppercase leading-none">
+					<span class="font-poppins text-lg leading-none font-black tracking-tighter uppercase">
 						Mikeu<span class="text-primary">.</span>
 					</span>
 					<span
 						bind:this={devSpan}
-						class="mt-1 inline-block origin-bottom-right bg-primary px-3 py-0.5 font-mono text-[10px] font-black text-primary-foreground uppercase tracking-widest"
+						class="mt-1 inline-block origin-bottom-right bg-primary px-3 py-0.5 font-mono text-[10px] font-black tracking-widest text-primary-foreground uppercase"
 						style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
 					>
 						Dev
@@ -177,12 +179,15 @@
 				{#each navLinksData as link (link.href)}
 					<a
 						href={`${base}${link.href}`}
-						class="group relative font-mono text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:text-primary"
+						class="group relative font-mono text-[10px] font-black tracking-[0.2em] uppercase transition-colors hover:text-primary"
 						class:text-primary={currentPath === link.href}
 						class:text-foreground={currentPath !== link.href}
 					>
 						{link.label}
-						<span class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full" class:w-full={currentPath === link.href}></span>
+						<span
+							class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"
+							class:w-full={currentPath === link.href}
+						></span>
 					</a>
 				{/each}
 			</div>
@@ -196,47 +201,67 @@
 						style="clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);"
 					>
 						<div class="flex items-center justify-center">
-							<SunIcon class="size-4 scale-100 dark:scale-0 transition-transform" />
-							<MoonIcon class="absolute size-4 scale-0 dark:scale-100 transition-transform" />
+							<SunIcon class="size-4 scale-100 transition-transform dark:scale-0" />
+							<MoonIcon class="absolute size-4 scale-0 transition-transform dark:scale-100" />
 						</div>
 					</DropdownMenu.Trigger>
-					<DropdownMenu.Content align="end" class="rounded-none! border-2 border-foreground font-mono text-[10px] font-black uppercase tracking-widest">
-						<DropdownMenu.Item onclick={() => setMode('light')} class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!">Light</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => setMode('dark')} class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!">Dark</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => resetMode()} class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!">System</DropdownMenu.Item>
+					<DropdownMenu.Content
+						align="end"
+						class="rounded-none! border-2 border-foreground font-mono text-[10px] font-black tracking-widest uppercase"
+					>
+						<DropdownMenu.Item
+							onclick={() => setMode('light')}
+							class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!"
+							>Light</DropdownMenu.Item
+						>
+						<DropdownMenu.Item
+							onclick={() => setMode('dark')}
+							class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!"
+							>Dark</DropdownMenu.Item
+						>
+						<DropdownMenu.Item
+							onclick={() => resetMode()}
+							class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!"
+							>System</DropdownMenu.Item
+						>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 
 				<!-- Locale Selector (Sharp) -->
 				<Select.Root type="single" bind:value={locale}>
-					<Select.Trigger class="h-10 w-24 border-2 border-foreground bg-background font-mono text-[10px] font-black uppercase tracking-widest!" style="clip-path: polygon(0 0, 85% 0, 100% 100%, 15% 100%);">
+					<Select.Trigger
+						class="h-10 w-24 border-2 border-foreground bg-background font-mono text-[10px] font-black tracking-widest! uppercase"
+						style="clip-path: polygon(0 0, 85% 0, 100% 100%, 15% 100%);"
+					>
 						<div class="flex items-center gap-2">
 							{#if locale === 'id'}<Id class="size-3" />ID{:else}<GbNir class="size-3" />EN{/if}
 						</div>
 					</Select.Trigger>
-					<Select.Content class="rounded-none! border-2 border-foreground font-mono text-[10px] font-black uppercase tracking-widest">
+					<Select.Content
+						class="rounded-none! border-2 border-foreground font-mono text-[10px] font-black tracking-widest uppercase"
+					>
 						<Select.Item value="id" class="cursor-pointer">ID</Select.Item>
 						<Select.Item value="en" class="cursor-pointer">EN</Select.Item>
 					</Select.Content>
 				</Select.Root>
 
-				<div class="h-8 w-0.5 bg-foreground/10 mx-2"></div>
+				<div class="mx-2 h-8 w-0.5 bg-foreground/10"></div>
 
 				{#if isLoggedIn}
-					<Button 
+					<Button
 						onclick={handleSignOut}
-						class="bg-destructive text-destructive-foreground hover:bg-foreground hover:text-background"
+						class="text-destructive-foreground bg-destructive hover:bg-foreground hover:text-background"
 						style="clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);"
 					>
 						Sign Out
 					</Button>
 				{:else}
 					<InstallButton />
-					<a 
-						href={resumeUrl} 
-						onclick={makeConfettiCannon} 
+					<a
+						href={resumeUrl}
+						onclick={makeConfettiCannon}
 						download
-						class="resume-btn-origami inline-flex h-10 items-center justify-center bg-primary px-6 font-poppins text-[10px] font-black text-primary-foreground uppercase tracking-tighter transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+						class="resume-btn-origami inline-flex h-10 items-center justify-center bg-primary px-6 font-poppins text-[10px] font-black tracking-tighter text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 					>
 						{m.nav_cv_button()}
 					</a>
@@ -244,7 +269,7 @@
 			</div>
 
 			<!-- Mobile Toggle -->
-			<button 
+			<button
 				onclick={toggleMobileMenu}
 				class="flex size-10 items-center justify-center border-2 border-foreground md:hidden"
 				style="clip-path: polygon(0 0, 100% 15%, 100% 100%, 0 85%);"
@@ -257,22 +282,33 @@
 
 <!-- ===================== MOBILE MENU (BRUTALIST) ===================== -->
 {#if isMobileMenuOpen}
-	<div 
+	<div
 		transition:fade={{ duration: 300 }}
 		class="fixed inset-0 z-[60] bg-background/95 backdrop-blur-2xl md:hidden"
 	>
 		<!-- Background Shards -->
 		<div class="pointer-events-none absolute inset-0 overflow-hidden">
-			<div class="absolute -top-24 -left-24 size-96 bg-primary/10" style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"></div>
-			<div class="absolute -bottom-48 -right-48 size-[500px] bg-foreground/5" style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"></div>
+			<div
+				class="absolute -top-24 -left-24 size-96 bg-primary/10"
+				style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"
+			></div>
+			<div
+				class="absolute -right-48 -bottom-48 size-[500px] bg-foreground/5"
+				style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"
+			></div>
 		</div>
 
 		<div class="relative flex h-full flex-col p-8">
 			<div class="flex items-center justify-between border-b-2 border-foreground pb-8">
-				<div class="flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase tracking-widest">
+				<div
+					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-primary uppercase"
+				>
 					<Terminal class="size-3" /> SYSTEM_MENU_V2.0
 				</div>
-				<button onclick={toggleMobileMenu} class="size-10 border-2 border-foreground flex items-center justify-center">
+				<button
+					onclick={toggleMobileMenu}
+					class="flex size-10 items-center justify-center border-2 border-foreground"
+				>
 					<X class="size-5" />
 				</button>
 			</div>
@@ -292,32 +328,54 @@
 
 			<div class="mt-auto grid grid-cols-2 gap-4 pb-12">
 				<div class="flex flex-col gap-4">
-					<div class="flex items-center gap-2 font-mono text-[8px] font-black text-muted-foreground uppercase tracking-widest">
+					<div
+						class="flex items-center gap-2 font-mono text-[8px] font-black tracking-widest text-muted-foreground uppercase"
+					>
 						<Command class="size-2" /> CORE_SETTINGS
 					</div>
 					<div class="flex gap-2">
-						<button onclick={() => setMode('light')} class="size-10 border border-foreground flex items-center justify-center"><SunIcon class="size-4" /></button>
-						<button onclick={() => setMode('dark')} class="size-10 border border-foreground flex items-center justify-center"><MoonIcon class="size-4" /></button>
+						<button
+							onclick={() => setMode('light')}
+							class="flex size-10 items-center justify-center border border-foreground"
+							><SunIcon class="size-4" /></button
+						>
+						<button
+							onclick={() => setMode('dark')}
+							class="flex size-10 items-center justify-center border border-foreground"
+							><MoonIcon class="size-4" /></button
+						>
 					</div>
 				</div>
 				<div class="flex flex-col gap-4">
-					<div class="flex items-center gap-2 font-mono text-[8px] font-black text-muted-foreground uppercase tracking-widest">
+					<div
+						class="flex items-center gap-2 font-mono text-[8px] font-black tracking-widest text-muted-foreground uppercase"
+					>
 						<Hash class="size-2" /> LOCALE_SYNC
 					</div>
 					<div class="flex gap-2">
-						<button onclick={() => locale = 'id'} class="h-10 border border-foreground px-4 font-mono text-[10px] font-black" class:bg-primary={locale === 'id'} class:text-primary-foreground={locale === 'id'}>ID</button>
-						<button onclick={() => locale = 'en'} class="h-10 border border-foreground px-4 font-mono text-[10px] font-black" class:bg-primary={locale === 'en'} class:text-primary-foreground={locale === 'en'}>EN</button>
+						<button
+							onclick={() => (locale = 'id')}
+							class="h-10 border border-foreground px-4 font-mono text-[10px] font-black"
+							class:bg-primary={locale === 'id'}
+							class:text-primary-foreground={locale === 'id'}>ID</button
+						>
+						<button
+							onclick={() => (locale = 'en')}
+							class="h-10 border border-foreground px-4 font-mono text-[10px] font-black"
+							class:bg-primary={locale === 'en'}
+							class:text-primary-foreground={locale === 'en'}>EN</button
+						>
 					</div>
 				</div>
 			</div>
 
 			<!-- Mobile Resume Button -->
 			<div class="mt-8">
-				<a 
-					href={resumeUrl} 
-					onclick={makeConfettiCannon} 
+				<a
+					href={resumeUrl}
+					onclick={makeConfettiCannon}
 					download
-					class="resume-btn-origami flex h-14 w-full items-center justify-center bg-primary font-poppins text-xs font-black text-primary-foreground uppercase tracking-tighter transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[6px_6px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+					class="resume-btn-origami flex h-14 w-full items-center justify-center bg-primary font-poppins text-xs font-black tracking-tighter text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[6px_6px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 				>
 					{m.nav_cv_button()}
 				</a>
@@ -325,6 +383,7 @@
 		</div>
 	</div>
 {/if}
+
 <style lang="postcss">
 	@reference "tailwindcss";
 
@@ -345,4 +404,3 @@
 		clip-path: polygon(0 0, 95% 5%, 100% 100%, 5% 95%);
 	}
 </style>
-

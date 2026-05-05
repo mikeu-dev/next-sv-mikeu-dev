@@ -23,7 +23,7 @@
 
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
-		
+
 		const sectionEl = $workSection;
 		if (!sectionEl) return;
 
@@ -42,14 +42,17 @@
 			duration: 1.2,
 			stagger: 0.1,
 			ease: 'power4.out'
-		})
-		.from('.work-stagger', {
-			y: 50,
-			opacity: 0,
-			duration: 1,
-			stagger: 0.15,
-			ease: 'expo.out'
-		}, '-=0.8');
+		}).from(
+			'.work-stagger',
+			{
+				y: 50,
+				opacity: 0,
+				duration: 1,
+				stagger: 0.15,
+				ease: 'expo.out'
+			},
+			'-=0.8'
+		);
 
 		// Mouse Parallax for section background elements
 		const handleMouseMove = (e: MouseEvent) => {
@@ -83,26 +86,29 @@
 				style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 			></div>
 
-			<div class="container relative mx-auto px-6">
+			<div class="relative container mx-auto px-6">
 				<div class="work-parallax-layer relative">
-					
 					<!-- Decorative Shards -->
-					<div 
+					<div
 						class="origami-shard absolute -top-32 -left-32 size-96 bg-primary/5 dark:bg-primary/10"
 						style="clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);"
 					></div>
-					<div 
-						class="origami-shard absolute -bottom-32 -right-32 size-80 bg-foreground/5"
+					<div
+						class="origami-shard absolute -right-32 -bottom-32 size-80 bg-foreground/5"
 						style="clip-path: polygon(0% 15%, 85% 0%, 100% 85%, 15% 100%);"
 					></div>
 
 					<!-- Header -->
 					<div class="work-stagger mb-16 border-b-2 border-foreground pb-12">
 						<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-							<div class="flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+							<div
+								class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
+							>
 								<Terminal class="size-3" /> ARCHIVE_SECTOR: PROJECTS_CATALOG
 							</div>
-							<div class="flex items-center gap-2 font-mono text-[10px] font-black text-foreground/40 uppercase tracking-[0.2em]">
+							<div
+								class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase"
+							>
 								<Command class="size-3 animate-pulse" /> [SCAN_STATUS: ACTIVE]
 							</div>
 						</div>
@@ -110,7 +116,9 @@
 						<h2 class="font-poppins text-5xl font-black tracking-tighter sm:text-7xl lg:text-8xl">
 							{m.work_title()}<span class="text-primary">.</span>
 						</h2>
-						<p class="mt-8 max-w-2xl font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm">
+						<p
+							class="mt-8 max-w-2xl font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm"
+						>
 							{m.work_subtitle()}
 						</p>
 					</div>
@@ -118,14 +126,19 @@
 					<!-- Grid -->
 					<div class="projects-grid grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
 						{#each localizedProjects as project, i (project.id)}
-							<div bind:this={$projectCardElements[i]} class="work-stagger h-full will-change-transform">
+							<div
+								bind:this={$projectCardElements[i]}
+								class="work-stagger h-full will-change-transform"
+							>
 								<ProjectCard {project} />
 							</div>
 						{/each}
 					</div>
 
 					<!-- Footer Technicality -->
-					<div class="mt-24 flex items-center justify-between border-t-2 border-foreground/10 pt-8 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase">
+					<div
+						class="mt-24 flex items-center justify-between border-t-2 border-foreground/10 pt-8 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase"
+					>
 						<div class="flex items-center gap-4">
 							<Hash class="size-3" />
 							<span>MIKEU_DEV // PROJECT_VAULT_V2</span>
@@ -137,7 +150,9 @@
 			</div>
 
 			<Tooltip.Content customAnchor={$virtualAnchor}>
-				<p class="font-mono text-[10px] font-bold uppercase tracking-widest">{m.work_tooltip?.() || $tooltipText}</p>
+				<p class="font-mono text-[10px] font-bold tracking-widest uppercase">
+					{m.work_tooltip?.() || $tooltipText}
+				</p>
 			</Tooltip.Content>
 		</section>
 	</Tooltip.Root>
@@ -162,4 +177,3 @@
 		pointer-events: none;
 	}
 </style>
-

@@ -241,12 +241,7 @@
 									class="flex size-12 items-center justify-center border-2 border-foreground transition-all hover:bg-foreground hover:text-background"
 									aria-label={social.label}
 								>
-									<Icon
-										iconName={social.iconName}
-										src={social.icon}
-										size={20}
-										strokeWidth={2.5}
-									/>
+									<Icon iconName={social.iconName} src={social.icon} size={20} strokeWidth={2.5} />
 								</a>
 							{/each}
 						{/await}

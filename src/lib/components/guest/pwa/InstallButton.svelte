@@ -35,11 +35,11 @@
 
 		<button
 			onclick={handleInstall}
-			class="group flex h-10 cursor-pointer items-center gap-2 border-2 border-foreground bg-background px-4 font-mono text-[10px] font-black uppercase tracking-widest transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none install-btn-origami"
+			class="group install-btn-origami flex h-10 cursor-pointer items-center gap-2 border-2 border-foreground bg-background px-4 font-mono text-[10px] font-black tracking-widest uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 		>
 			<Smartphone class="size-3 transition-transform group-hover:scale-110" />
 			<span>{m.pwa_install_button()}</span>
-			<Download class="size-2 text-primary opacity-50 group-hover:opacity-100 transition-opacity" />
+			<Download class="size-2 text-primary opacity-50 transition-opacity group-hover:opacity-100" />
 		</button>
 	</div>
 {/if}

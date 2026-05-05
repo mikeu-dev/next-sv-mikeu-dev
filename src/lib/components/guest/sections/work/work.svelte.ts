@@ -20,7 +20,7 @@ export function useWorkSection() {
 		function handleMouseMove(event: MouseEvent) {
 			virtualAnchor.set(createVirtualAnchor(event.clientX, event.clientY));
 		}
-		
+
 		section.addEventListener('mousemove', handleMouseMove);
 
 		return () => {
