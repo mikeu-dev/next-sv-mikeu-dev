@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { ArrowUpRight, ExternalLink, Github, Sparkles, Trophy, Hash } from '@lucide/svelte';
+	import { ArrowUpRight, ExternalLink, Github, Sparkles, Trophy } from '@lucide/svelte';
 	import type { LocalizedProject } from '$lib/utils/project-mapper';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { m } from '$lib/paraglide/messages';
@@ -22,18 +22,20 @@
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
 
-		gsap.from(cardElement, {
-			rotateX: -30,
-			y: 100,
-			opacity: 0,
-			duration: 1.2,
-			ease: 'power4.out',
-			scrollTrigger: {
-				trigger: cardElement,
-				start: 'top 90%',
-				toggleActions: 'play none none none'
-			}
-		});
+		if (cardElement) {
+			gsap.from(cardElement, {
+				rotateX: -30,
+				y: 100,
+				opacity: 0,
+				duration: 1.2,
+				ease: 'power4.out',
+				scrollTrigger: {
+					trigger: cardElement,
+					start: 'top 90%',
+					toggleActions: 'play none none none'
+				}
+			});
+		}
 
 		// Mouse interaction (Tilt)
 		const handleMouseMove = (e: MouseEvent) => {
@@ -51,12 +53,15 @@
 		};
 
 		const handleMouseLeave = () => {
-			gsap.to(cardElement?.querySelector('.project-card-inner'), {
-				rotateY: 0,
-				rotateX: 0,
-				duration: 0.8,
-				ease: 'power4.out'
-			});
+			const inner = cardElement?.querySelector('.project-card-inner');
+			if (inner) {
+				gsap.to(inner, {
+					rotateY: 0,
+					rotateX: 0,
+					duration: 0.8,
+					ease: 'power4.out'
+				});
+			}
 		};
 
 		cardElement?.addEventListener('mousemove', handleMouseMove);
@@ -153,7 +158,7 @@
 							class="flex items-center gap-1.5 border border-foreground/10 px-2.5 py-1 font-mono text-[9px] font-black tracking-widest uppercase transition-all group-hover:border-primary/50 group-hover:text-primary"
 						>
 							{#if tag.icon}
-								<Icon src={tag.icon as any} size={12} />
+								<Icon src={tag.icon} size={12} />
 							{/if}
 							{tag.name}
 						</span>
@@ -193,7 +198,7 @@
 					></div>
 				</div>
 				<div class="font-mono text-[8px] font-black tracking-widest text-foreground/30 uppercase">
-					ID: {project.slug.toUpperCase().replace(/-/g, '_')}
+					ID: {project.slug?.toUpperCase().replace(/-/g, '_') || 'UNKNOWN'}
 				</div>
 			</div>
 		</div>

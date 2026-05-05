@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Matter, { type IChamferableBodyDefinition } from 'matter-js';
-	import Button from '@/lib/components/ui/button/button.svelte';
 	import { gsap } from 'gsap';
 	import { m } from '@/lib/paraglide/messages';
 	import { Terminal, Cpu, Activity, Hash, ArrowRight } from '@lucide/svelte';

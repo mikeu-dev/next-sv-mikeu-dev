@@ -151,7 +151,7 @@
 
 			<Tooltip.Content customAnchor={$virtualAnchor}>
 				<p class="font-mono text-[10px] font-bold tracking-widest uppercase">
-					{m.work_tooltip?.() || $tooltipText}
+					{$tooltipText}
 				</p>
 			</Tooltip.Content>
 		</section>
