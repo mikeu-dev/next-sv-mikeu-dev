@@ -1,8 +1,5 @@
 <script lang="ts">
 	import Button from '@/lib/components/ui/button/button.svelte';
-	import Input from '@/lib/components/ui/input/input.svelte';
-	import Label from '@/lib/components/ui/label/label.svelte';
-	import Textarea from '@/lib/components/ui/textarea/textarea.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import { m } from '@/lib/paraglide/messages';
@@ -16,7 +13,6 @@
 		Github,
 		Linkedin,
 		Twitter,
-		ArrowRight,
 		Copy,
 		Check,
 		MapPin,
@@ -92,8 +88,8 @@
 
 		// Morphing blob animation for the abstract card
 		gsap.to('.organic-shape', {
-			borderRadius: '40% 60% 70% 30% / 40% 40% 60% 50%',
-			duration: 8,
+			borderRadius: '50% 50% 50% 50% / 40% 40% 60% 60%',
+			duration: 10,
 			repeat: -1,
 			yoyo: true,
 			ease: 'sine.inOut'
@@ -127,7 +123,7 @@
 
 	<div class="relative z-10 grid grid-cols-1 gap-16 lg:grid-cols-2">
 		<!-- Left Column: Info -->
-		<div class="space-y-12">
+		<div class="relative z-0 space-y-12">
 			<section class="space-y-6">
 				<div class="contact-reveal inline-flex items-center gap-3">
 					<div class="h-1 w-8 rounded-full bg-primary"></div>
@@ -213,7 +209,7 @@
 					Connect with me
 				</p>
 				<div class="flex flex-wrap gap-4">
-					{#each [{ icon: Github, href: 'https://github.com/mikeu-dev', label: 'GitHub' }, { icon: Linkedin, href: '#', label: 'LinkedIn' }, { icon: Twitter, href: '#', label: 'Twitter' }] as social}
+					{#each [{ icon: Github, href: 'https://github.com/mikeu-dev', label: 'GitHub' }, { icon: Linkedin, href: '#', label: 'LinkedIn' }, { icon: Twitter, href: '#', label: 'Twitter' }] as social (social.label)}
 						<a
 							href={social.href}
 							target="_blank"
@@ -229,15 +225,15 @@
 		</div>
 
 		<!-- Right Column: Abstract Organic Form Card -->
-		<div class="form-card-container relative flex items-center justify-center p-4">
+		<div class="form-card-container relative z-10 flex items-center justify-center p-4">
 			<!-- Animated Background Blobs Behind Card -->
 			<div class="absolute -top-10 -right-10 z-0 h-40 w-40 animate-pulse rounded-full bg-primary/20 blur-2xl"></div>
 			<div class="absolute -bottom-10 -left-10 z-0 h-40 w-40 animate-pulse rounded-full bg-blue-500/20 blur-2xl" style="animation-delay: 1s"></div>
 
 			<!-- The Abstract Organic Container -->
 			<div
-				class="organic-shape relative z-10 w-full overflow-hidden border border-white/20 bg-white/30 p-10 shadow-2xl backdrop-blur-3xl transition-all duration-700 hover:shadow-primary/10 dark:border-white/5 dark:bg-black/30 md:p-14"
-				style="border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;"
+				class="organic-shape relative z-10 w-full border border-white/20 bg-white/30 p-12 shadow-2xl backdrop-blur-3xl transition-all duration-700 hover:shadow-primary/10 dark:border-white/5 dark:bg-black/30 md:p-20"
+				style="border-radius: 40% 60% 60% 40% / 45% 45% 55% 55%;"
 			>
 				<div class="mb-10 space-y-2">
 					<h3 class="font-poppins text-3xl font-black italic tracking-tight uppercase">
@@ -311,6 +307,51 @@
 						<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 					</div>
 
+					<!-- Company & Budget Row -->
+					<div class="grid grid-cols-1 gap-10 sm:grid-cols-2">
+						<!-- Company Field -->
+						<div class="group relative">
+							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+								<Building2 class="size-5 text-primary" />
+							</div>
+							<input
+								type="text"
+								id="company"
+								name="company"
+								placeholder=" "
+								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
+							/>
+							<label
+								for="company"
+								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+							>
+								{m.contact_field_company()}
+							</label>
+							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+						</div>
+
+						<!-- Budget Field -->
+						<div class="group relative">
+							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+								<CircleDollarSign class="size-5 text-primary" />
+							</div>
+							<input
+								type="text"
+								id="budget"
+								name="budget"
+								placeholder=" "
+								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
+							/>
+							<label
+								for="budget"
+								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+							>
+								{m.contact_field_budget()}
+							</label>
+							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+						</div>
+					</div>
+
 					<!-- Message Field -->
 					<div class="group relative">
 						<div class="absolute -left-8 top-6 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
@@ -333,49 +374,53 @@
 						<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 					</div>
 
-					<Button
-						type="submit"
-						disabled={isSubmitting}
-						class="relative h-16 w-full overflow-hidden rounded-2xl bg-zinc-900 text-lg font-black tracking-widest uppercase transition-all hover:bg-zinc-800 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-zinc-100"
-					>
-						<div class="relative z-10 flex items-center justify-center gap-3">
-							{#if isSubmitting}
-								<Loader2 class="size-5 animate-spin" />
-								Syncing...
-							{:else}
-								{m.contact_page_button()}
-								<Send class="size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-							{/if}
-						</div>
-					</Button>
+					<div class="flex justify-center pt-4">
+						<Button
+							type="submit"
+							disabled={isSubmitting}
+							class="relative h-10 w-fit overflow-hidden rounded-2xl bg-zinc-900 px-10 text-base font-black tracking-widest uppercase transition-all hover:bg-zinc-800 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-zinc-100"
+						>
+							<div class="relative z-10 flex items-center justify-center gap-3">
+								{#if isSubmitting}
+									<Loader2 class="size-4 animate-spin" />
+									Syncing...
+								{:else}
+									{m.contact_page_button()}
+									<Send
+										class="size-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+									/>
+								{/if}
+							</div>
+						</Button>
+					</div>
 				</form>
 			</div>
 
-			<!-- Abstract SVG Accents -->
-			<svg class="absolute inset-0 z-0 h-full w-full opacity-20" viewBox="0 0 100 100">
+			<!-- Abstract SVG Accents (Expanded Reach) -->
+			<svg class="absolute -inset-20 z-0 h-[calc(100%+160px)] w-[calc(100%+160px)] opacity-30" viewBox="0 0 100 100">
 				<defs>
 					<linearGradient id="blob-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-						<stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.2" />
-						<stop offset="100%" style="stop-color:var(--color-blue-500);stop-opacity:0.2" />
+						<stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.4" />
+						<stop offset="100%" style="stop-color:var(--color-blue-500);stop-opacity:0.4" />
 					</linearGradient>
 				</defs>
-				<circle cx="10" cy="10" r="15" fill="url(#blob-grad)" class="animate-pulse" />
-				<circle cx="90" cy="90" r="20" fill="url(#blob-grad)" class="animate-pulse" style="animation-delay: 2s" />
+				<circle cx="5" cy="5" r="20" fill="url(#blob-grad)" class="animate-pulse" />
+				<circle cx="95" cy="95" r="25" fill="url(#blob-grad)" class="animate-pulse" style="animation-delay: 2s" />
+				<circle cx="0" cy="80" r="15" fill="url(#blob-grad)" class="animate-pulse" style="animation-delay: 1s" />
 			</svg>
 		</div>
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	@reference "tailwindcss";
 
 	:global(body) {
 		overflow-x: hidden;
 	}
 
-	.organic-shape {
-		will-change: border-radius, transform;
-		box-shadow: 0 25px 50px -12px rgba(var(--color-primary), 0.1);
+	.bg-blob {
+		will-change: transform;
 	}
 
 	form input,
