@@ -12,10 +12,8 @@
 	import { onNavigate, afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
-	import Button from '@/lib/components/ui/button/button.svelte';
 	import gsap from 'gsap';
 	import ScrollToPlugin from 'gsap/ScrollToPlugin';
-	import Icon from '@/lib/components/ui/icon.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
@@ -23,7 +21,6 @@
 
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
-	import { authState } from '$lib/stores/auth.svelte';
 	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
 
 	let { data, children } = $props();

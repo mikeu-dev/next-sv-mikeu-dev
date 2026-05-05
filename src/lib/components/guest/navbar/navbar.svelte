@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Select from '$lib/components/ui/select';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -16,8 +16,7 @@
 	import { signOut } from 'firebase/auth';
 	import { authState } from '$lib/stores/auth.svelte';
 	import InstallButton from '../pwa/InstallButton.svelte';
-	import { slide, fade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { fade } from 'svelte/transition';
 	import { getLocale, setLocale } from '../../../paraglide/runtime';
 	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
@@ -82,12 +81,6 @@
 		playConfettiSound();
 	};
 
-	const triggerSmallConfetti = async () => {
-		confettiCannon = false;
-		await tick();
-		confettiCannon = true;
-		playConfettiSound();
-	};
 
 	// --- Reactive Locale Sync ---
 	$effect(() => {
@@ -286,7 +279,7 @@
 			</div>
 
 			<nav class="mt-12 flex flex-col gap-6">
-				{#each navLinksData as link, i (link.href)}
+				{#each navLinksData as link (link.href)}
 					<a
 						href={`${base}${link.href}`}
 						onclick={toggleMobileMenu}
