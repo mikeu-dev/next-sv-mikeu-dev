@@ -236,8 +236,7 @@
 						href={resumeUrl} 
 						onclick={makeConfettiCannon} 
 						download
-						class="inline-flex h-10 items-center justify-center bg-primary px-6 font-poppins text-[10px] font-black text-primary-foreground uppercase tracking-tighter hover:bg-foreground transition-colors"
-						style="clip-path: polygon(5% 0, 100% 15%, 95% 100%, 0 85%);"
+						class="resume-btn-origami inline-flex h-10 items-center justify-center bg-primary px-6 font-poppins text-[10px] font-black text-primary-foreground uppercase tracking-tighter transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 					>
 						{m.nav_cv_button()}
 					</a>
@@ -311,10 +310,21 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Mobile Resume Button -->
+			<div class="mt-8">
+				<a 
+					href={resumeUrl} 
+					onclick={makeConfettiCannon} 
+					download
+					class="resume-btn-origami flex h-14 w-full items-center justify-center bg-primary font-poppins text-xs font-black text-primary-foreground uppercase tracking-tighter transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[6px_6px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+				>
+					{m.nav_cv_button()}
+				</a>
+			</div>
 		</div>
 	</div>
 {/if}
-
 <style lang="postcss">
 	@reference "tailwindcss";
 
@@ -324,6 +334,15 @@
 
 	nav {
 		transform-style: preserve-3d;
+	}
+
+	.resume-btn-origami {
+		clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	}
+
+	.resume-btn-origami:hover {
+		clip-path: polygon(0 0, 95% 5%, 100% 100%, 5% 95%);
 	}
 </style>
 

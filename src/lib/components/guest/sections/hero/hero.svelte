@@ -224,7 +224,7 @@
 			<div bind:this={heroButton} class="mt-16 flex flex-wrap justify-center gap-6">
 				<a
 					href="#contact"
-					class="group relative inline-flex h-16 items-center justify-center overflow-hidden bg-primary px-10 text-primary-foreground transition-all hover:bg-foreground hover:text-background"
+					class="group relative inline-flex h-16 items-center justify-center overflow-hidden bg-primary px-10 text-primary-foreground transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[6px_6px_0_var(--foreground)]"
 					style="clip-path: polygon(0 15%, 100% 0, 95% 100%, 5% 85%);"
 				>
 					<div class="flex items-center gap-3">
