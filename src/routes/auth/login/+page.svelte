@@ -22,7 +22,7 @@
 			// First try to resolve username if email looks like a username (no @)
 			// Or just assume it varies. The original dialog had logic for username lookup.
 			// Let's assume for owner login, likely using email directly.
-			// But to be consistent with AuthDialog, let's keep the username check if user inputs username.
+
 			if (!email.includes('@')) {
 				username = email;
 				const res = await fetch(`/api/users/find-by-username`, {

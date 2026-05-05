@@ -15,7 +15,7 @@
 	import { resetMode, setMode } from 'mode-watcher';
 	import { signOut } from 'firebase/auth';
 	import { authState } from '$lib/stores/auth.svelte';
-	import AuthDialog from './auth-dialog.svelte';
+
 	import InstallButton from '../pwa/InstallButton.svelte';
 	import { slide, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -31,7 +31,7 @@
 	}>();
 	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
-	let showAuthModal = $state(false);
+
 	let isMobileMenuOpen = $state(false);
 
 	let navLinksData = $derived(navLinks[locale] || navLinks['en']);
@@ -403,5 +403,3 @@
 	</div>
 {/if}
 
-<!-- ===================== AUTH DIALOG ===================== -->
-<AuthDialog bind:open={showAuthModal} />
