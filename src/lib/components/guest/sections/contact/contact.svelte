@@ -4,6 +4,7 @@
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowRight } from '@lucide/svelte';
 	import { m } from '@/lib/paraglide/messages';
+	import { localizeHref } from '$lib/paraglide/runtime';
 
 	let contactSection: HTMLElement;
 
@@ -37,8 +38,7 @@
 		{m.contact_subtitle_second_part()}
 	</p>
 	<a
-		href="https://github.com/mikeu-dev"
-		target="_blank"
+		href={localizeHref('/contact')}
 		class="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 	>
 		{m.contact_button()}
