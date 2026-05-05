@@ -62,7 +62,15 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 			}
 
 			if (response.status === 200) {
-				cache.put(event.request, response.clone());
+				const contentType = response.headers.get('content-type');
+				const isDataRequest = event.request.url.includes('__data.json');
+
+				// Only cache data requests if they are actually JSON
+				if (isDataRequest && contentType && !contentType.includes('json')) {
+					// Skip caching this response as it's likely an HTML 404/redirect page
+				} else {
+					cache.put(event.request, response.clone());
+				}
 			}
 
 			return response;
