@@ -1,11 +1,10 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import { m } from '@/lib/paraglide/messages';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { Terminal, Database, Activity, Cpu } from '@lucide/svelte';
+	import { Database, Activity, Cpu } from '@lucide/svelte';
 
 	let { socials = [], visitorStats = { total: 0, today: 0 } } = $props();
 
@@ -14,17 +13,20 @@
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
 		
-		gsap.from(footerElement?.querySelectorAll('.footer-stagger'), {
-			y: 20,
-			opacity: 0,
-			duration: 0.8,
-			stagger: 0.1,
-			ease: 'power3.out',
-			scrollTrigger: {
-				trigger: footerElement,
-				start: 'top 95%'
-			}
-		});
+		const targets = footerElement?.querySelectorAll('.footer-stagger');
+		if (targets && targets.length > 0) {
+			gsap.from(targets, {
+				y: 20,
+				opacity: 0,
+				duration: 0.8,
+				stagger: 0.1,
+				ease: 'power3.out',
+				scrollTrigger: {
+					trigger: footerElement,
+					start: 'top 95%'
+				}
+			});
+		}
 	});
 </script>
 
