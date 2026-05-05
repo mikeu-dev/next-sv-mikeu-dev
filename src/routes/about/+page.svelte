@@ -11,6 +11,7 @@
 	import { Mail, Coffee, Gamepad2, Music, CheckCircle2, ArrowRight } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import SkillPlayground from '$lib/components/about/skill-playground.svelte';
+	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
 
 	let { data }: { data: PageData } = $props();
 	let initialLocale = $state(getLocale());
@@ -121,7 +122,7 @@
 
 	async function copyEmail() {
 		try {
-			await navigator.clipboard.writeText('mikeu.dev@gmail.com');
+			await navigator.clipboard.writeText(PUBLIC_CONTACT_EMAIL);
 			toast.success(m.blog_link_copied());
 		} catch {
 			toast.error('Failed to copy email');
