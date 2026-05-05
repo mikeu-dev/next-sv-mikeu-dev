@@ -376,6 +376,7 @@
 
 	onMount(() => {
 		if (!container) return;
+		let rafId: number;
 		engine = Engine.create();
 		engine.world.gravity.y = 1.0; // Correct: gravity is on the world
 		engine.enableSleeping = false;
@@ -413,9 +414,6 @@
 
 		runner = Runner.create();
 		Runner.run(runner, engine);
-		update();
-
-		let rafId: number;
 		function update() {
 			const now = Date.now();
 			uptime = Math.min(100, Math.floor((now - sessionStart) / 1000));
