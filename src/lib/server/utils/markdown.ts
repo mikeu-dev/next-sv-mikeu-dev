@@ -20,6 +20,8 @@ export async function renderMarkdown(content: string) {
 			langs: [
 				'javascript',
 				'typescript',
+				'jsx',
+				'tsx',
 				'svelte',
 				'html',
 				'css',

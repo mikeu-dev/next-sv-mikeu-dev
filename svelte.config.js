@@ -17,6 +17,9 @@ const config = {
 		alias: {
 			'@/*': 'src/*',
 			'@lib/*': 'src/lib/*'
+		},
+		paths: {
+			relative: false
 		}
 	},
 	extensions: ['.svelte', '.svx']
