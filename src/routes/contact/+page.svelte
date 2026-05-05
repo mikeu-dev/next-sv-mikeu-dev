@@ -155,7 +155,9 @@
 				</h2>
 			</div>
 			<div class="archive-detail text-right font-mono text-sm leading-tight font-bold uppercase">
-				<p class="text-foreground/80">SECTOR: <span class="text-foreground">FULLSTACK_WEB_GIS</span></p>
+				<p class="text-foreground/80">
+					SECTOR: <span class="text-foreground">FULLSTACK_WEB_DEVELOPER</span>
+				</p>
 				<p class="text-foreground/80">
 					BASE_LOC: <span class="text-foreground">IDN // 7.79°S 110.37°E</span>
 				</p>
@@ -268,7 +270,7 @@
 										name="name"
 										required
 										placeholder="[FULL_NAME]"
-										class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg sm:text-xl font-black uppercase tracking-tighter outline-none placeholder:text-foreground/80 focus:border-primary"
+										class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg font-black tracking-tighter uppercase outline-none placeholder:text-foreground/80 focus:border-primary sm:text-xl"
 									/>
 									<label
 										for="name"
@@ -284,7 +286,7 @@
 										name="email"
 										required
 										placeholder="[EMAIL_ADDRESS]"
-										class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg sm:text-xl font-black uppercase tracking-tighter outline-none placeholder:text-foreground/80 focus:border-primary"
+										class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg font-black tracking-tighter uppercase outline-none placeholder:text-foreground/80 focus:border-primary sm:text-xl"
 									/>
 									<label
 										for="email"
@@ -308,7 +310,7 @@
 									required
 									rows="4"
 									placeholder="[WRITE_MESSAGE_HERE...]"
-									class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg sm:text-xl font-black uppercase tracking-tighter outline-none placeholder:text-foreground/80 focus:border-primary"
+									class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg font-black tracking-tighter uppercase outline-none placeholder:text-foreground/80 focus:border-primary sm:text-xl"
 								></textarea>
 								<label
 									for="message"
