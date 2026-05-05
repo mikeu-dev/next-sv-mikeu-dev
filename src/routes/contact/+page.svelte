@@ -80,15 +80,24 @@
 			stagger: 0.15,
 			ease: 'power4.out'
 		}).from(
-			'.form-card',
+			'.form-card-container',
 			{
-				x: 40,
+				scale: 0.9,
 				opacity: 0,
-				duration: 1,
-				ease: 'power3.out'
+				duration: 1.2,
+				ease: 'back.out(1.7)'
 			},
 			'-=0.8'
 		);
+
+		// Morphing blob animation for the abstract card
+		gsap.to('.organic-shape', {
+			borderRadius: '40% 60% 70% 30% / 40% 40% 60% 50%',
+			duration: 8,
+			repeat: -1,
+			yoyo: true,
+			ease: 'sine.inOut'
+		});
 	});
 </script>
 
@@ -219,18 +228,23 @@
 			</div>
 		</div>
 
-		<!-- Right Column: Form Card -->
-		<div class="form-card relative">
-			<div class="absolute -inset-4 z-0 rounded-[3rem] bg-primary/5 blur-3xl"></div>
+		<!-- Right Column: Abstract Organic Form Card -->
+		<div class="form-card-container relative flex items-center justify-center p-4">
+			<!-- Animated Background Blobs Behind Card -->
+			<div class="absolute -top-10 -right-10 z-0 h-40 w-40 animate-pulse rounded-full bg-primary/20 blur-2xl"></div>
+			<div class="absolute -bottom-10 -left-10 z-0 h-40 w-40 animate-pulse rounded-full bg-blue-500/20 blur-2xl" style="animation-delay: 1s"></div>
+
+			<!-- The Abstract Organic Container -->
 			<div
-				class="relative z-10 overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/30 p-8 shadow-2xl backdrop-blur-3xl dark:border-white/5 dark:bg-black/30"
+				class="organic-shape relative z-10 w-full overflow-hidden border border-white/20 bg-white/30 p-10 shadow-2xl backdrop-blur-3xl transition-all duration-700 hover:shadow-primary/10 dark:border-white/5 dark:bg-black/30 md:p-14"
+				style="border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;"
 			>
 				<div class="mb-10 space-y-2">
-					<h3 class="font-poppins text-2xl font-black italic tracking-tight uppercase">
-						Send a <span class="text-primary">Message</span>
+					<h3 class="font-poppins text-3xl font-black italic tracking-tight uppercase">
+						Get <span class="text-primary">Synced</span>
 					</h3>
-					<p class="text-xs font-mono font-medium tracking-tight text-muted-foreground">
-						// ERR_NO_COMMUNICATION_FOUND: ESTABLISHING_LINK...
+					<p class="text-[10px] font-mono font-medium tracking-tight text-muted-foreground">
+						// PROTOCOL: DIRECT_LINK_STABLISHED
 					</p>
 				</div>
 
@@ -253,96 +267,48 @@
 					}}
 					class="space-y-10"
 				>
-					<!-- Name & Email Row -->
-					<div class="grid grid-cols-1 gap-10 sm:grid-cols-2">
-						<!-- Name Field -->
-						<div class="group relative">
-							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
-								<User class="size-5 text-primary" />
-							</div>
-							<input
-								type="text"
-								id="name"
-								name="name"
-								required
-								placeholder=" "
-								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
-							/>
-							<label
-								for="name"
-								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
-							>
-								{m.contact_field_name()}
-							</label>
-							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+					<!-- Name Field -->
+					<div class="group relative">
+						<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+							<User class="size-5 text-primary" />
 						</div>
-
-						<!-- Email Field -->
-						<div class="group relative">
-							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
-								<Mail class="size-5 text-primary" />
-							</div>
-							<input
-								type="email"
-								id="email"
-								name="email"
-								required
-								placeholder=" "
-								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
-							/>
-							<label
-								for="email"
-								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
-							>
-								{m.contact_field_email()}
-							</label>
-							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
-						</div>
+						<input
+							type="text"
+							id="name"
+							name="name"
+							required
+							placeholder=" "
+							class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
+						/>
+						<label
+							for="name"
+							class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+						>
+							{m.contact_field_name()}
+						</label>
+						<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 					</div>
 
-					<!-- Company & Budget Row -->
-					<div class="grid grid-cols-1 gap-10 sm:grid-cols-2">
-						<!-- Company Field -->
-						<div class="group relative">
-							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
-								<Building2 class="size-5 text-primary" />
-							</div>
-							<input
-								type="text"
-								id="company"
-								name="company"
-								placeholder=" "
-								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
-							/>
-							<label
-								for="company"
-								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
-							>
-								{m.contact_field_company()}
-							</label>
-							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+					<!-- Email Field -->
+					<div class="group relative">
+						<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+							<Mail class="size-5 text-primary" />
 						</div>
-
-						<!-- Budget Field -->
-						<div class="group relative">
-							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
-								<CircleDollarSign class="size-5 text-primary" />
-							</div>
-							<input
-								type="text"
-								id="budget"
-								name="budget"
-								placeholder=" "
-								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
-							/>
-							<label
-								for="budget"
-								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
-							>
-								{m.contact_field_budget()}
-							</label>
-							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
-						</div>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							required
+							placeholder=" "
+							class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
+						/>
+						<label
+							for="email"
+							class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+						>
+							{m.contact_field_email()}
+						</label>
+						<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 					</div>
 
 					<!-- Message Field -->
@@ -354,7 +320,7 @@
 							id="message"
 							name="message"
 							required
-							rows="4"
+							rows="3"
 							placeholder=" "
 							class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
 						></textarea>
@@ -384,6 +350,18 @@
 					</Button>
 				</form>
 			</div>
+
+			<!-- Abstract SVG Accents -->
+			<svg class="absolute inset-0 z-0 h-full w-full opacity-20" viewBox="0 0 100 100">
+				<defs>
+					<linearGradient id="blob-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.2" />
+						<stop offset="100%" style="stop-color:var(--color-blue-500);stop-opacity:0.2" />
+					</linearGradient>
+				</defs>
+				<circle cx="10" cy="10" r="15" fill="url(#blob-grad)" class="animate-pulse" />
+				<circle cx="90" cy="90" r="20" fill="url(#blob-grad)" class="animate-pulse" style="animation-delay: 2s" />
+			</svg>
 		</div>
 	</div>
 </div>
@@ -395,8 +373,9 @@
 		overflow-x: hidden;
 	}
 
-	.bg-blob {
-		will-change: transform;
+	.organic-shape {
+		will-change: border-radius, transform;
+		box-shadow: 0 25px 50px -12px rgba(var(--color-primary), 0.1);
 	}
 
 	form input,
