@@ -217,17 +217,27 @@
 				</div>
 			</div>
 
-			<!-- Related Projects -->
-			{#if relatedProjects && relatedProjects.length > 0}
-				<div class="space-y-6">
-					<h3 class="font-poppins text-xl font-black">Related Projects</h3>
-					<div class="space-y-6">
-						{#each relatedProjects as related (related.id)}
-							<ProjectCard project={related} />
-						{/each}
-					</div>
-				</div>
-			{/if}
 		</aside>
 	</div>
+
+	<!-- Related Projects Section -->
+	{#if relatedProjects && relatedProjects.length > 0}
+		<section class="content-stagger mt-24 space-y-10 border-t border-border/50 pt-16">
+			<div class="flex items-end justify-between">
+				<div>
+					<h3 class="font-poppins text-3xl font-black tracking-tight md:text-4xl">
+						Related Projects<span class="text-primary">.</span>
+					</h3>
+					<p class="mt-2 text-muted-foreground">
+						Explore other projects that you might find interesting.
+					</p>
+				</div>
+			</div>
+			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+				{#each relatedProjects as related (related.id)}
+					<ProjectCard project={related} />
+				{/each}
+			</div>
+		</section>
+	{/if}
 </div>
