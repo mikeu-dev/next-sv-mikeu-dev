@@ -6,6 +6,8 @@
 	import { m } from '@/lib/paraglide/messages';
 	import { localizeHref } from '$lib/paraglide/runtime';
 
+	// Trigger reload
+
 	let contactSection: HTMLElement;
 
 	onMount(() => {
