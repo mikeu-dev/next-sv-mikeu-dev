@@ -59,9 +59,18 @@
 					</p>
 					
 					<nav class="flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] font-black uppercase tracking-[0.2em]">
-						<a href="/privacy-policy" class="transition-colors hover:text-primary">Privacy_Policy</a>
-						<a href="/terms-of-service" class="transition-colors hover:text-primary">Terms_Of_Service</a>
-						<a href="/disclaimer" class="transition-colors hover:text-primary">Disclaimer</a>
+						<a href="/privacy-policy" class="group relative transition-colors hover:text-primary">
+							Privacy_Policy
+							<span class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
+						</a>
+						<a href="/terms-of-service" class="group relative transition-colors hover:text-primary">
+							Terms_Of_Service
+							<span class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
+						</a>
+						<a href="/disclaimer" class="group relative transition-colors hover:text-primary">
+							Disclaimer
+							<span class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
+						</a>
 					</nav>
 				</div>
 			</div>
