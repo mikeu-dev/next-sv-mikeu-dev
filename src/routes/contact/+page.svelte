@@ -9,9 +9,6 @@
 	import { gsap } from 'gsap';
 	import {
 		Mail,
-		Github,
-		Linkedin,
-		Twitter,
 		Copy,
 		Check,
 		MapPin,
@@ -23,11 +20,16 @@
 		Command
 	} from '@lucide/svelte';
 	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
+	import Icon from '$lib/components/ui/icon.svelte';
+	import Skeleton from '$lib/components/ui/skeleton.svelte';
+	import type { SocialLink } from '$lib/types';
 
 	type ActionData = {
 		success: boolean;
 		message: string;
 	};
+
+	let { data }: { data: import('./$types').PageData } = $props();
 
 	let confettiCannon = $state(false);
 	let isSubmitting = $state(false);
@@ -223,14 +225,31 @@
 						<Command class="size-6 animate-pulse text-primary" />
 					</div>
 					<div class="flex flex-wrap gap-4">
-						{#each [{ icon: Github, href: '#', label: 'github' }, { icon: Linkedin, href: '#', label: 'linkedin' }, { icon: Twitter, href: '#', label: 'twitter' }] as social (social.label)}
-							<a
-								href={social.href}
-								class="flex size-12 items-center justify-center border-2 border-foreground transition-all hover:bg-foreground hover:text-background"
-							>
-								<social.icon class="size-5" />
-							</a>
-						{/each}
+						{#await data.socials}
+							<div class="flex gap-4">
+								<Skeleton class="size-12 rounded-none" />
+								<Skeleton class="size-12 rounded-none" />
+								<Skeleton class="size-12 rounded-none" />
+							</div>
+						{:then socialsData}
+							{@const socials = socialsData as SocialLink[]}
+							{#each socials as social (social.href)}
+								<a
+									href={social.href}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="flex size-12 items-center justify-center border-2 border-foreground transition-all hover:bg-foreground hover:text-background"
+									aria-label={social.label}
+								>
+									<Icon
+										iconName={social.iconName}
+										src={social.icon}
+										size={20}
+										strokeWidth={2.5}
+									/>
+								</a>
+							{/each}
+						{/await}
 					</div>
 				</div>
 			</div>
