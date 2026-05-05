@@ -22,7 +22,11 @@
 		MapPin,
 		Clock,
 		Send,
-		Loader2
+		Loader2,
+		User,
+		Building2,
+		CircleDollarSign,
+		MessageSquare
 	} from '@lucide/svelte';
 	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
 
@@ -217,10 +221,19 @@
 
 		<!-- Right Column: Form Card -->
 		<div class="form-card relative">
-			<div class="absolute -inset-4 z-0 rounded-[3rem] bg-primary/5 blur-2xl"></div>
+			<div class="absolute -inset-4 z-0 rounded-[3rem] bg-primary/5 blur-3xl"></div>
 			<div
-				class="relative z-10 overflow-hidden rounded-[2.5rem] border border-white/20 bg-white/40 p-8 shadow-2xl backdrop-blur-2xl dark:bg-black/40"
+				class="relative z-10 overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/30 p-8 shadow-2xl backdrop-blur-3xl dark:border-white/5 dark:bg-black/30"
 			>
+				<div class="mb-10 space-y-2">
+					<h3 class="font-poppins text-2xl font-black italic tracking-tight uppercase">
+						Send a <span class="text-primary">Message</span>
+					</h3>
+					<p class="text-xs font-mono font-medium tracking-tight text-muted-foreground">
+						// ERR_NO_COMMUNICATION_FOUND: ESTABLISHING_LINK...
+					</p>
+				</div>
+
 				<form
 					method="POST"
 					use:enhance={() => {
@@ -238,90 +251,136 @@
 							await applyAction(result);
 						};
 					}}
-					class="space-y-8"
+					class="space-y-10"
 				>
-					<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-						<div class="space-y-2">
-							<Label for="name" class="text-xs font-black tracking-widest uppercase opacity-60"
-								>{m.contact_field_name()}</Label
-							>
-							<Input
+					<!-- Name & Email Row -->
+					<div class="grid grid-cols-1 gap-10 sm:grid-cols-2">
+						<!-- Name Field -->
+						<div class="group relative">
+							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+								<User class="size-5 text-primary" />
+							</div>
+							<input
 								type="text"
 								id="name"
 								name="name"
-								placeholder={m.contact_field_placeholder({ name: m.contact_field_name() })}
-								class="h-14 rounded-2xl border-white/20 bg-white/20 px-4 transition-all focus:bg-white/40 dark:bg-black/20 dark:focus:bg-black/40"
 								required
+								placeholder=" "
+								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
 							/>
-						</div>
-						<div class="space-y-2">
-							<Label for="email" class="text-xs font-black tracking-widest uppercase opacity-60"
-								>{m.contact_field_email()}</Label
+							<label
+								for="name"
+								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
 							>
-							<Input
+								{m.contact_field_name()}
+							</label>
+							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+						</div>
+
+						<!-- Email Field -->
+						<div class="group relative">
+							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+								<Mail class="size-5 text-primary" />
+							</div>
+							<input
 								type="email"
 								id="email"
 								name="email"
-								placeholder={m.contact_field_placeholder({ name: m.contact_field_email() })}
-								class="h-14 rounded-2xl border-white/20 bg-white/20 px-4 transition-all focus:bg-white/40 dark:bg-black/20 dark:focus:bg-black/40"
 								required
+								placeholder=" "
+								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
 							/>
+							<label
+								for="email"
+								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+							>
+								{m.contact_field_email()}
+							</label>
+							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-						<div class="space-y-2">
-							<Label for="company" class="text-xs font-black tracking-widest uppercase opacity-60"
-								>{m.contact_field_company()}</Label
-							>
-							<Input
+					<!-- Company & Budget Row -->
+					<div class="grid grid-cols-1 gap-10 sm:grid-cols-2">
+						<!-- Company Field -->
+						<div class="group relative">
+							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+								<Building2 class="size-5 text-primary" />
+							</div>
+							<input
 								type="text"
 								id="company"
 								name="company"
-								placeholder={m.contact_field_company_placeholder()}
-								class="h-14 rounded-2xl border-white/20 bg-white/20 px-4 transition-all focus:bg-white/40 dark:bg-black/20 dark:focus:bg-black/40"
+								placeholder=" "
+								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
 							/>
-						</div>
-						<div class="space-y-2">
-							<Label for="budget" class="text-xs font-black tracking-widest uppercase opacity-60"
-								>{m.contact_field_budget()}</Label
+							<label
+								for="company"
+								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
 							>
-							<Input
+								{m.contact_field_company()}
+							</label>
+							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+						</div>
+
+						<!-- Budget Field -->
+						<div class="group relative">
+							<div class="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+								<CircleDollarSign class="size-5 text-primary" />
+							</div>
+							<input
 								type="text"
 								id="budget"
 								name="budget"
-								placeholder={m.contact_field_budget_placeholder()}
-								class="h-14 rounded-2xl border-white/20 bg-white/20 px-4 transition-all focus:bg-white/40 dark:bg-black/20 dark:focus:bg-black/40"
+								placeholder=" "
+								class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
 							/>
+							<label
+								for="budget"
+								class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+							>
+								{m.contact_field_budget()}
+							</label>
+							<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 						</div>
 					</div>
 
-					<div class="space-y-2">
-						<Label for="message" class="text-xs font-black tracking-widest uppercase opacity-60"
-							>{m.contact_field_message()}</Label
-						>
-						<Textarea
+					<!-- Message Field -->
+					<div class="group relative">
+						<div class="absolute -left-8 top-6 opacity-0 transition-all duration-300 group-focus-within:left-0 group-focus-within:opacity-100">
+							<MessageSquare class="size-5 text-primary" />
+						</div>
+						<textarea
 							id="message"
 							name="message"
-							rows={5}
-							placeholder={m.contact_field_placeholder({ name: m.contact_field_message() })}
-							class="resize-none rounded-2xl border-white/20 bg-white/20 px-4 py-3 transition-all focus:bg-white/40 dark:bg-black/20 dark:focus:bg-black/40"
 							required
-						/>
+							rows="4"
+							placeholder=" "
+							class="peer w-full border-b-2 border-muted bg-transparent py-2 pl-0 transition-all focus:border-primary focus:outline-none"
+						></textarea>
+						<label
+							for="message"
+							class="pointer-events-none absolute top-2 left-0 font-mono text-xs font-black tracking-widest text-muted-foreground uppercase transition-all peer-focus:-top-6 peer-focus:text-[10px] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-[10px]"
+						>
+							{m.contact_field_message()}
+						</label>
+						<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500 group-focus-within:w-full"></div>
 					</div>
 
 					<Button
 						type="submit"
 						disabled={isSubmitting}
-						class="h-16 w-full rounded-2xl text-lg font-black tracking-widest uppercase shadow-2xl shadow-primary/40 transition-transform active:scale-[0.98]"
+						class="relative h-16 w-full overflow-hidden rounded-2xl bg-zinc-900 text-lg font-black tracking-widest uppercase transition-all hover:bg-zinc-800 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-zinc-100"
 					>
-						{#if isSubmitting}
-							<Loader2 class="mr-2 size-5 animate-spin" />
-							Sending...
-						{:else}
-							{m.contact_page_button()}
-							<Send class="ml-2 size-5" />
-						{/if}
+						<div class="relative z-10 flex items-center justify-center gap-3">
+							{#if isSubmitting}
+								<Loader2 class="size-5 animate-spin" />
+								Syncing...
+							{:else}
+								{m.contact_page_button()}
+								<Send class="size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+							{/if}
+						</div>
 					</Button>
 				</form>
 			</div>
@@ -340,13 +399,19 @@
 		will-change: transform;
 	}
 
-	form :global(input),
-	form :global(textarea) {
-		@apply transition-all duration-300;
+	form input,
+	form textarea {
+		@apply transition-all duration-500 ease-in-out;
 	}
 
-	form :global(input:focus),
-	form :global(textarea:focus) {
-		@apply scale-[1.01] shadow-xl;
+	form input:focus,
+	form textarea:focus {
+		@apply pl-8;
+	}
+
+	/* Custom focus ring removal since we use underlined style */
+	form input:focus-visible,
+	form textarea:focus-visible {
+		outline: none;
 	}
 </style>
