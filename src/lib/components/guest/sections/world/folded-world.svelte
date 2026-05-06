@@ -81,7 +81,7 @@
 					'-=1'
 				)
 				.from(
-					'.hud-bottom-left, .hud-bottom-right',
+					'.hud-bottom-left, .hud-bottom-right, .hud-context',
 					{
 						y: 20,
 						opacity: 0,
@@ -157,6 +157,28 @@
 				<div class="hud-stat">
 					<span class="hud-stat-label">{m.world_hud_nodes()}</span>
 					<span class="hud-stat-value">{engine.state.nodeCount}</span>
+				</div>
+			</div>
+
+			<!-- Context Description -->
+			<div class="hud-context mt-12 hidden max-w-[280px] md:block">
+				<div class="mb-2 flex items-center gap-2">
+					<div class="h-1.5 w-1.5 animate-pulse bg-[#ff3333]"></div>
+					<span class="text-[9px] tracking-[0.2em] text-[#666]">SYSTEM_CONTEXT</span>
+				</div>
+				<p class="mb-4 text-[11px] leading-relaxed text-[#888]">
+					{m.world_description()}
+				</p>
+				<div class="border-l border-[#333] pl-3">
+					<p class="text-[10px] leading-relaxed text-[#666]">
+						{#if engine.viewMode === 'fold'}
+							{m.world_mode_fold_desc()}
+						{:else if engine.viewMode === 'heat'}
+							{m.world_mode_heat_desc()}
+						{:else}
+							{m.world_mode_time_desc()}
+						{/if}
+					</p>
 				</div>
 			</div>
 		</div>
