@@ -44,7 +44,7 @@
 	}
 
 	:global(.prose blockquote) {
-		@apply border-l-4 py-4 pr-6 pl-8 font-mono text-sm italic not-italic tracking-tight;
+		@apply border-l-4 py-4 pr-6 pl-8 font-mono text-sm tracking-tight italic not-italic;
 		background-color: oklch(from var(--primary) l c h / 5%);
 		border-color: var(--primary);
 		color: oklch(from var(--foreground) l c h / 80%);
@@ -69,7 +69,7 @@
 	}
 
 	:global(.prose p) {
-		@apply font-mono text-sm leading-relaxed tracking-tight uppercase mb-6;
+		@apply mb-6 font-mono text-sm leading-relaxed tracking-tight uppercase;
 		color: var(--muted-foreground);
 	}
 </style>

@@ -71,21 +71,24 @@
 
 		const ctx = gsap.context(() => {
 			const tl = gsap.timeline();
-			
+
 			tl.from('.header-origami', {
 				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
 				duration: 1,
 				ease: 'power4.inOut'
-			})
-			.from('.stagger-item', {
-				y: 50,
-				rotateX: -15,
-				skewY: 2,
-				opacity: 0,
-				duration: 0.8,
-				stagger: 0.1,
-				ease: 'expo.out'
-			}, '-=0.6');
+			}).from(
+				'.stagger-item',
+				{
+					y: 50,
+					rotateX: -15,
+					skewY: 2,
+					opacity: 0,
+					duration: 0.8,
+					stagger: 0.1,
+					ease: 'expo.out'
+				},
+				'-=0.6'
+			);
 		}, container);
 
 		return () => ctx.revert();
@@ -110,31 +113,44 @@
 
 <div class="relative mt-28 min-h-screen space-y-24 pb-32" bind:this={container}>
 	<!-- Industrial Background Element -->
-	<div class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]" 
-		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;">
-	</div>
+	<div
+		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
+		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
+	></div>
 
 	<!-- Header Section -->
 	<section class="container mx-auto px-4">
-		<div class="header-origami relative border-y-4 border-foreground py-16 text-center md:py-24"
-			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);">
+		<div
+			class="header-origami relative border-y-4 border-foreground py-16 text-center md:py-24"
+			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
+		>
 			<div class="absolute inset-0 -z-10 bg-primary/5"></div>
-			
-			<div class="inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase mb-6">
+
+			<div
+				class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase"
+			>
 				[KNOWLEDGE_ARCHIVE_v1.0]
 			</div>
-			
+
 			<h1 class="stagger-item font-poppins text-5xl font-black tracking-tighter md:text-8xl">
 				{m.blog_title()}<span class="text-primary">_</span>
 			</h1>
-			
-			<p class="stagger-item mx-auto mt-8 max-w-3xl font-mono text-xs leading-relaxed tracking-wider text-muted-foreground uppercase md:text-sm">
+
+			<p
+				class="stagger-item mx-auto mt-8 max-w-3xl font-mono text-xs leading-relaxed tracking-wider text-muted-foreground uppercase md:text-sm"
+			>
 				// {m.blog_subtitle()}
 			</p>
-			
+
 			<!-- Decorative Origami Shards -->
-			<div class="absolute -top-10 -right-10 size-40 bg-primary/10 transition-transform duration-500 hover:rotate-45" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
-			<div class="absolute -bottom-10 -left-10 size-32 bg-foreground/5 transition-transform duration-500 hover:-rotate-12" style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"></div>
+			<div
+				class="absolute -top-10 -right-10 size-40 bg-primary/10 transition-transform duration-500 hover:rotate-45"
+				style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
+			></div>
+			<div
+				class="absolute -bottom-10 -left-10 size-32 bg-foreground/5 transition-transform duration-500 hover:-rotate-12"
+				style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"
+			></div>
 		</div>
 	</section>
 
@@ -143,11 +159,15 @@
 		<div class="flex flex-col items-stretch justify-between gap-8 lg:flex-row lg:items-end">
 			<!-- Search Bar -->
 			<div class="stagger-item relative flex-1">
-				<div class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase">
+				<div
+					class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+				>
 					<Database class="size-3" /> [QUERY_DATABASE]
 				</div>
 				<form action="/blog" method="GET" class="group relative">
-					<Search class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+					<Search
+						class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
+					/>
 					<input
 						type="text"
 						name="q"
@@ -165,7 +185,9 @@
 					{/if}
 				</form>
 				{#if data.search}
-					<p class="mt-3 font-mono text-[9px] font-bold tracking-widest text-muted-foreground uppercase">
+					<p
+						class="mt-3 font-mono text-[9px] font-bold tracking-widest text-muted-foreground uppercase"
+					>
 						// RESULTS_FOR: <span class="text-foreground">"{data.search}"</span>
 					</p>
 				{/if}
@@ -173,11 +195,15 @@
 
 			<!-- Category Filter Label -->
 			<div class="stagger-item hidden lg:block">
-				<div class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase">
+				<div
+					class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+				>
 					<Filter class="size-3" /> [CATEGORY_SORT]
 				</div>
-				<div class="h-14 border-l-2 border-foreground/10 px-4 flex items-center">
-					<span class="font-mono text-[10px] font-black text-foreground/40 uppercase tracking-[0.3em]">
+				<div class="flex h-14 items-center border-l-2 border-foreground/10 px-4">
+					<span
+						class="font-mono text-[10px] font-black tracking-[0.3em] text-foreground/40 uppercase"
+					>
 						FILTER_ACTIVE
 					</span>
 				</div>
@@ -186,19 +212,24 @@
 
 		<!-- Category Filter Chips -->
 		<div class="stagger-item space-y-4">
-			<div class="lg:hidden flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase">
+			<div
+				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase lg:hidden"
+			>
 				<Filter class="size-3" /> [CATEGORY_SORT]
 			</div>
 			<div class="flex flex-wrap gap-3">
 				{#each categories as category (category)}
 					<button
 						onclick={() => (selectedCategory = category)}
-						class="group relative flex items-center gap-3 border-2 border-foreground px-5 py-2.5 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedCategory === category ? 'bg-foreground text-background' : 'bg-card'}"
+						class="group relative flex items-center gap-3 border-2 border-foreground px-5 py-2.5 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedCategory ===
+						category
+							? 'bg-foreground text-background'
+							: 'bg-card'}"
 					>
 						<span class="relative z-10 font-mono text-[10px] font-black tracking-widest uppercase">
 							{category}
 						</span>
-						
+
 						{#if selectedCategory === category}
 							<div class="absolute inset-0 -z-10 translate-x-1 translate-y-1 bg-primary"></div>
 						{/if}
@@ -210,7 +241,7 @@
 
 	<!-- Featured Post Section -->
 	{#if featuredPost}
-		<section class="container mx-auto stagger-item px-4">
+		<section class="stagger-item container mx-auto px-4">
 			<BlogFeatured post={featuredPost} />
 		</section>
 	{/if}
@@ -233,8 +264,10 @@
 					disabled={isLoadingMore}
 					class="group relative flex h-16 items-center gap-4 border-4 border-foreground bg-primary px-10 font-mono text-sm font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[8px_8px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50"
 				>
-					<div class="absolute inset-0 -z-10 translate-x-2 translate-y-2 bg-foreground/10 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"></div>
-					
+					<div
+						class="absolute inset-0 -z-10 translate-x-2 translate-y-2 bg-foreground/10 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"
+					></div>
+
 					{#if isLoadingMore}
 						<Loader2 class="size-5 animate-spin" />
 						[FETCHING_MORE...]
@@ -244,13 +277,21 @@
 					{/if}
 				</button>
 			{:else if gridPosts.length === 0}
-				<div class="mx-auto flex max-w-2xl flex-col items-center justify-center border-4 border-dashed border-foreground/20 py-32 text-center">
-					<div class="mb-8 border-2 border-foreground bg-muted p-8 shadow-[8px_8px_0_var(--foreground)]">
+				<div
+					class="mx-auto flex max-w-2xl flex-col items-center justify-center border-4 border-dashed border-foreground/20 py-32 text-center"
+				>
+					<div
+						class="mb-8 border-2 border-foreground bg-muted p-8 shadow-[8px_8px_0_var(--foreground)]"
+					>
 						<Database class="size-20 text-foreground" />
 					</div>
 					<div class="space-y-4">
-						<h3 class="font-poppins text-3xl font-black uppercase tracking-tighter">[ZERO_ENTRIES_FOUND]</h3>
-						<p class="font-mono text-xs tracking-widest text-muted-foreground uppercase">// SEARCH_QUERY_RETURNED_NULL_RESULT</p>
+						<h3 class="font-poppins text-3xl font-black tracking-tighter uppercase">
+							[ZERO_ENTRIES_FOUND]
+						</h3>
+						<p class="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+							// SEARCH_QUERY_RETURNED_NULL_RESULT
+						</p>
 					</div>
 					<a
 						href="/blog"

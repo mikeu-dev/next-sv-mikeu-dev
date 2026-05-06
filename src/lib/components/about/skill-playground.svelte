@@ -188,7 +188,7 @@
 	});
 
 	let pieceBodies = $state<PieceBody[]>([]);
-	let physicsBodies: Matter.Body[] = []; 
+	let physicsBodies: Matter.Body[] = [];
 	let nextId = 0;
 
 	function rotatePiece(id: number) {
@@ -366,7 +366,7 @@
 		if (!container) return;
 		let rafId: number;
 		engine = Engine.create();
-		engine.world.gravity.y = 1.0; 
+		engine.world.gravity.y = 1.0;
 		engine.enableSleeping = false;
 		const mc = MouseConstraint.create(engine, {
 			mouse: Mouse.create(container),
@@ -462,10 +462,14 @@
 				>[ECOSYSTEM_MODULE_v1.0]</span
 			>
 		</div>
-		<h2 class="mb-6 font-poppins text-5xl font-black tracking-tighter text-zinc-900 md:text-7xl dark:text-white">
+		<h2
+			class="mb-6 font-poppins text-5xl font-black tracking-tighter text-zinc-900 md:text-7xl dark:text-white"
+		>
 			{m.skill_playground_title()}<span class="text-primary">_</span>
 		</h2>
-		<p class="font-mono text-xs leading-relaxed tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+		<p
+			class="font-mono text-xs leading-relaxed tracking-wider text-zinc-600 uppercase dark:text-zinc-400"
+		>
 			// {m.skill_playground_desc()}
 		</p>
 	</div>
@@ -476,10 +480,7 @@
 			{#each categories as cat (cat.category)}
 				<div class="flex flex-col gap-6">
 					<div class="flex items-center gap-3 border-b border-zinc-100 pb-2 dark:border-zinc-800">
-						<div
-							class="size-3"
-							style="background-color: {categoryColors[cat.category]}"
-						></div>
+						<div class="size-3" style="background-color: {categoryColors[cat.category]}"></div>
 						<h3
 							class="font-mono text-xs font-black tracking-widest text-zinc-900 uppercase dark:text-zinc-100"
 						>
@@ -504,7 +505,8 @@
 										>
 									{/if}
 								</div>
-								<span class="font-mono text-[10px] font-black tracking-tighter text-zinc-700 uppercase dark:text-zinc-300"
+								<span
+									class="font-mono text-[10px] font-black tracking-tighter text-zinc-700 uppercase dark:text-zinc-300"
 									>{item.name}</span
 								>
 							</div>
@@ -517,7 +519,8 @@
 			<div
 				class="mt-4 border-2 border-dashed border-zinc-200 bg-zinc-50 p-8 dark:border-zinc-800 dark:bg-zinc-900"
 			>
-				<span class="mb-4 block font-mono text-[10px] font-black tracking-widest text-zinc-400 uppercase"
+				<span
+					class="mb-4 block font-mono text-[10px] font-black tracking-widest text-zinc-400 uppercase"
 					>[STRATEGY_PROTOCOL]</span
 				>
 				<p class="font-mono text-[10px] leading-relaxed text-zinc-500 italic dark:text-zinc-400">
@@ -557,9 +560,7 @@
 							class="font-mono text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
 							>[NEXT_MODULE]</span
 						>
-						<div
-							class="relative h-14 w-20 border-2 border-foreground bg-card"
-						>
+						<div class="relative h-14 w-20 border-2 border-foreground bg-card">
 							<div class="animate-scanline absolute inset-x-0 z-10 h-[1px] bg-primary/40"></div>
 							{#key nextPieceIdx}
 								<div
@@ -572,9 +573,7 @@
 												(s: SkillItem) => s.relX === i % 4 && s.relY === Math.floor(i / 4)
 											)}
 											<div
-												class="{isF
-													? 'size-1.5'
-													: 'size-0.5 bg-zinc-200 dark:bg-zinc-800'}"
+												class={isF ? 'size-1.5' : 'size-0.5 bg-zinc-200 dark:bg-zinc-800'}
 												style="background-color: {isF ? tetriminos[nextPieceIdx].color : ''}"
 											></div>
 										{/each}
@@ -597,9 +596,11 @@
 						class="pointer-events-none absolute inset-0 z-0 opacity-[0.15]"
 						style="background-image: linear-gradient(to right, #444 1px, transparent 1px), linear-gradient(to bottom, #444 1px, transparent 1px); background-size: 45px 45px;"
 					></div>
-					
+
 					<!-- Industrial Overlays -->
-					<div class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"></div>
+					<div
+						class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"
+					></div>
 					<div
 						class="pointer-events-none absolute inset-0 z-30 opacity-[0.05]"
 						style="background-image: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.3) 50%), linear-gradient(90deg, rgba(255,0,0,0.08), rgba(0,255,0,0.02), rgba(0,0,255,0.08)); background-size: 100% 4px, 3px 100%;"
@@ -631,7 +632,8 @@
 					<div
 						class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center opacity-0 transition-opacity duration-1000 group-hover:opacity-20"
 					>
-						<span class="font-poppins text-6xl font-black tracking-tighter text-white uppercase italic"
+						<span
+							class="font-poppins text-6xl font-black tracking-tighter text-white uppercase italic"
 							>[SYNC_ESTABLISHED]</span
 						>
 						<span class="font-mono text-[10px] font-black tracking-[0.5em] text-white"

@@ -10,7 +10,16 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { Search, SortAsc, SortDesc, BoxSelect, Database, Filter, SlidersHorizontal, Plus } from '@lucide/svelte';
+	import {
+		Search,
+		SortAsc,
+		SortDesc,
+		BoxSelect,
+		Database,
+		Filter,
+		SlidersHorizontal,
+		Plus
+	} from '@lucide/svelte';
 	import type { Tag } from '$lib/types';
 
 	interface FilterTag extends Partial<Tag> {
@@ -134,24 +143,27 @@
 		gsap.registerPlugin(ScrollTrigger);
 
 		isLoading = false;
-		
+
 		const ctx = gsap.context(() => {
 			// Enhanced Brutalist Entrance
 			const tl = gsap.timeline();
-			
+
 			tl.from('.header-origami', {
 				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
 				duration: 1,
 				ease: 'power4.inOut'
-			})
-			.from('.project-stagger', {
-				y: 30,
-				rotateX: -10,
-				opacity: 0,
-				duration: 0.6,
-				stagger: 0.1,
-				ease: 'expo.out'
-			}, '-=0.4');
+			}).from(
+				'.project-stagger',
+				{
+					y: 30,
+					rotateX: -10,
+					opacity: 0,
+					duration: 0.6,
+					stagger: 0.1,
+					ease: 'expo.out'
+				},
+				'-=0.4'
+			);
 		});
 
 		return () => ctx.revert();
@@ -160,31 +172,44 @@
 
 <div class="relative mt-28 min-h-screen space-y-24 pb-32">
 	<!-- Industrial Background Element -->
-	<div class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]" 
-		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;">
-	</div>
+	<div
+		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
+		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
+	></div>
 
 	<!-- Header Section -->
 	<section class="container mx-auto px-4">
-		<div class="header-origami relative border-y-4 border-foreground py-16 text-center md:py-24"
-			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);">
+		<div
+			class="header-origami relative border-y-4 border-foreground py-16 text-center md:py-24"
+			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
+		>
 			<div class="absolute inset-0 -z-10 bg-primary/5"></div>
-			
-			<div class="inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase mb-6">
+
+			<div
+				class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase"
+			>
 				[ARCHIVE_COLLECTION_v2.0]
 			</div>
-			
+
 			<h1 class="project-stagger font-poppins text-5xl font-black tracking-tighter md:text-8xl">
 				{m.projects_title()}<span class="text-primary">_</span>
 			</h1>
-			
-			<p class="project-stagger mx-auto mt-8 max-w-3xl font-mono text-xs leading-relaxed tracking-wider text-muted-foreground uppercase md:text-sm">
+
+			<p
+				class="project-stagger mx-auto mt-8 max-w-3xl font-mono text-xs leading-relaxed tracking-wider text-muted-foreground uppercase md:text-sm"
+			>
 				// {m.projects_subtitle()}
 			</p>
-			
+
 			<!-- Decorative Origami Shards -->
-			<div class="absolute -top-10 -right-10 size-40 bg-primary/10 transition-transform duration-500 hover:rotate-45" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
-			<div class="absolute -bottom-10 -left-10 size-32 bg-foreground/5 transition-transform duration-500 hover:-rotate-12" style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"></div>
+			<div
+				class="absolute -top-10 -right-10 size-40 bg-primary/10 transition-transform duration-500 hover:rotate-45"
+				style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
+			></div>
+			<div
+				class="absolute -bottom-10 -left-10 size-32 bg-foreground/5 transition-transform duration-500 hover:-rotate-12"
+				style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"
+			></div>
 		</div>
 	</section>
 
@@ -193,11 +218,15 @@
 		<div class="flex flex-col items-stretch justify-between gap-8 lg:flex-row lg:items-end">
 			<!-- Search Bar -->
 			<div class="project-stagger relative flex-1">
-				<div class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase">
+				<div
+					class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+				>
 					<Database class="size-3" /> [DATABASE_SEARCH]
 				</div>
 				<div class="group relative">
-					<Search class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+					<Search
+						class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
+					/>
 					<input
 						type="text"
 						bind:value={searchQuery}
@@ -209,13 +238,16 @@
 
 			<!-- Sorting -->
 			<div class="project-stagger flex flex-col gap-2">
-				<div class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase">
+				<div
+					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+				>
 					<SlidersHorizontal class="size-3" /> [SORT_ENGINE]
 				</div>
 				<div class="flex items-center border-2 border-foreground bg-card p-1">
 					<button
 						onclick={() => (sortBy = 'date')}
-						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy === 'date'
+						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy ===
+						'date'
 							? 'bg-foreground text-background'
 							: 'hover:bg-muted'}"
 					>
@@ -223,7 +255,8 @@
 					</button>
 					<button
 						onclick={() => (sortBy = 'title')}
-						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy === 'title'
+						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy ===
+						'title'
 							? 'bg-foreground text-background'
 							: 'hover:bg-muted'}"
 					>
@@ -247,14 +280,19 @@
 
 		<!-- Tag Filters -->
 		<div class="project-stagger space-y-4">
-			<div class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase">
+			<div
+				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+			>
 				<Filter class="size-3" /> [CATEGORICAL_FILTER]
 			</div>
 			<div class="flex flex-wrap gap-3">
 				{#each allTags as tag (tag.name)}
 					<button
 						onclick={() => filterProjects(tag.name)}
-						class="group relative flex items-center gap-3 border-2 border-foreground px-4 py-2 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedTag === tag.name ? 'bg-foreground text-background' : 'bg-card'}"
+						class="group relative flex items-center gap-3 border-2 border-foreground px-4 py-2 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedTag ===
+						tag.name
+							? 'bg-foreground text-background'
+							: 'bg-card'}"
 					>
 						<div class="relative z-10 flex items-center gap-2">
 							{#if 'iconName' in tag && tag.iconName}
@@ -266,7 +304,7 @@
 								{tag.name === 'All' ? m.projects_filter_all() : tag.name}
 							</span>
 						</div>
-						
+
 						{#if selectedTag === tag.name}
 							<div class="absolute inset-0 -z-10 translate-x-1 translate-y-1 bg-primary"></div>
 						{/if}
@@ -303,8 +341,10 @@
 						disabled={isLoadingMore}
 						class="group relative flex h-16 items-center gap-4 border-4 border-foreground bg-primary px-10 font-mono text-sm font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[8px_8px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50"
 					>
-						<div class="absolute inset-0 -z-10 translate-x-2 translate-y-2 bg-foreground/10 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"></div>
-						
+						<div
+							class="absolute inset-0 -z-10 translate-x-2 translate-y-2 bg-foreground/10 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"
+						></div>
+
 						{#if isLoadingMore}
 							<Icon iconName="Loader2" size={20} class="animate-spin" />
 							[FETCHING_MORE...]
@@ -317,13 +357,21 @@
 			{/if}
 		{:else}
 			<!-- Empty State -->
-			<div class="project-stagger mx-auto flex max-w-2xl flex-col items-center justify-center border-4 border-dashed border-foreground/20 py-32 text-center">
-				<div class="mb-8 border-2 border-foreground bg-muted p-8 shadow-[8px_8px_0_var(--foreground)]">
+			<div
+				class="project-stagger mx-auto flex max-w-2xl flex-col items-center justify-center border-4 border-dashed border-foreground/20 py-32 text-center"
+			>
+				<div
+					class="mb-8 border-2 border-foreground bg-muted p-8 shadow-[8px_8px_0_var(--foreground)]"
+				>
 					<BoxSelect class="size-20 text-foreground" />
 				</div>
 				<div class="space-y-4">
-					<h3 class="font-poppins text-3xl font-black uppercase tracking-tighter">[ZERO_RESULTS_FOUND]</h3>
-					<p class="font-mono text-xs tracking-widest text-muted-foreground uppercase">// THE_REQUESTED_QUERY_RETURNED_NULL_SET</p>
+					<h3 class="font-poppins text-3xl font-black tracking-tighter uppercase">
+						[ZERO_RESULTS_FOUND]
+					</h3>
+					<p class="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+						// THE_REQUESTED_QUERY_RETURNED_NULL_SET
+					</p>
 				</div>
 				<button
 					onclick={() => {
@@ -355,4 +403,3 @@
 		@apply max-w-7xl;
 	}
 </style>
-

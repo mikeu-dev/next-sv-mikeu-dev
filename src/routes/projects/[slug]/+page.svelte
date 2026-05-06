@@ -36,27 +36,35 @@
 	onMount(() => {
 		const ctx = gsap.context(() => {
 			const tl = gsap.timeline();
-			
+
 			tl.from('.header-origami', {
 				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
 				duration: 1,
 				ease: 'power4.inOut'
 			})
-			.from('.hero-stagger', {
-				y: 30,
-				rotateX: -10,
-				opacity: 0,
-				duration: 0.8,
-				stagger: 0.1,
-				ease: 'expo.out'
-			}, '-=0.4')
-			.from('.content-stagger', {
-				opacity: 0,
-				y: 20,
-				duration: 0.6,
-				stagger: 0.1,
-				ease: 'power2.out'
-			}, '-=0.2');
+				.from(
+					'.hero-stagger',
+					{
+						y: 30,
+						rotateX: -10,
+						opacity: 0,
+						duration: 0.8,
+						stagger: 0.1,
+						ease: 'expo.out'
+					},
+					'-=0.4'
+				)
+				.from(
+					'.content-stagger',
+					{
+						opacity: 0,
+						y: 20,
+						duration: 0.6,
+						stagger: 0.1,
+						ease: 'power2.out'
+					},
+					'-=0.2'
+				);
 		});
 
 		return () => ctx.revert();
@@ -67,13 +75,16 @@
 
 <div class="relative mt-28 min-h-screen pb-32">
 	<!-- Industrial Background -->
-	<div class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]" 
-		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;">
-	</div>
+	<div
+		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
+		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
+	></div>
 
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 		<!-- Navigation HUD -->
-		<div class="mb-12 flex flex-col gap-6 border-b-2 border-foreground/10 pb-8 md:flex-row md:items-center md:justify-between">
+		<div
+			class="mb-12 flex flex-col gap-6 border-b-2 border-foreground/10 pb-8 md:flex-row md:items-center md:justify-between"
+		>
 			<Breadcrumb items={breadcrumbItems} />
 			<a
 				href={localizeHref('/projects')}
@@ -85,20 +96,28 @@
 		</div>
 
 		<!-- Hero Section -->
-		<header class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 md:p-16"
-			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);">
+		<header
+			class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 md:p-16"
+			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
+		>
 			<div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
 				<div class="max-w-4xl space-y-8 lg:col-span-8">
 					<div class="hero-stagger">
-						<div class="inline-block border-2 border-foreground bg-primary px-3 py-1 font-mono text-[9px] font-black tracking-[0.2em] text-primary-foreground uppercase mb-4 shadow-[3px_3px_0_var(--foreground)]">
+						<div
+							class="mb-4 inline-block border-2 border-foreground bg-primary px-3 py-1 font-mono text-[9px] font-black tracking-[0.2em] text-primary-foreground uppercase shadow-[3px_3px_0_var(--foreground)]"
+						>
 							[PROJECT_SPEC_v2.0]
 						</div>
-						<h1 class="font-poppins text-5xl font-black tracking-tighter md:text-8xl italic uppercase">
+						<h1
+							class="font-poppins text-5xl font-black tracking-tighter uppercase italic md:text-8xl"
+						>
 							{project.title}<span class="text-primary">_</span>
 						</h1>
 					</div>
 
-					<p class="hero-stagger font-mono text-sm leading-relaxed tracking-wider text-muted-foreground uppercase md:text-lg">
+					<p
+						class="hero-stagger font-mono text-sm leading-relaxed tracking-wider text-muted-foreground uppercase md:text-lg"
+					>
 						// {project.description}
 					</p>
 
@@ -113,11 +132,19 @@
 				<div class="hero-stagger hidden lg:col-span-4 lg:block">
 					<div class="space-y-6 border-l-2 border-foreground/10 pl-8">
 						<div class="space-y-1">
-							<p class="font-mono text-[9px] font-black text-muted-foreground uppercase tracking-widest">[KERNEL_ID]</p>
+							<p
+								class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+							>
+								[KERNEL_ID]
+							</p>
 							<p class="font-mono text-xs font-black uppercase">PID-{project.id.slice(0, 8)}</p>
 						</div>
 						<div class="space-y-1">
-							<p class="font-mono text-[9px] font-black text-muted-foreground uppercase tracking-widest">[DEPLOY_STATUS]</p>
+							<p
+								class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+							>
+								[DEPLOY_STATUS]
+							</p>
 							<div class="flex items-center gap-2">
 								<div class="size-2 animate-pulse bg-green-500"></div>
 								<p class="font-mono text-xs font-black uppercase">OPERATIONAL</p>
@@ -130,12 +157,16 @@
 
 		<!-- Featured Media -->
 		<section class="hero-stagger mb-24">
-			<div class="relative border-4 border-foreground bg-card p-2 shadow-[12px_12px_0_var(--foreground)]"
-				style="clip-path: polygon(0 1%, 100% 0, 99% 100%, 1% 99%);">
-				<div class="absolute -top-4 -left-4 border-2 border-foreground bg-primary px-3 py-1 font-mono text-[10px] font-black text-white">
+			<div
+				class="relative border-4 border-foreground bg-card p-2 shadow-[12px_12px_0_var(--foreground)]"
+				style="clip-path: polygon(0 1%, 100% 0, 99% 100%, 1% 99%);"
+			>
+				<div
+					class="absolute -top-4 -left-4 border-2 border-foreground bg-primary px-3 py-1 font-mono text-[10px] font-black text-white"
+				>
 					[VISUAL_DATA_STREAM]
 				</div>
-				
+
 				{#if project.imagesUrl && project.imagesUrl.length > 0}
 					<Splide
 						aria-label="Project Images"
@@ -151,7 +182,11 @@
 					>
 						{#each project.imagesUrl as url (url)}
 							<SplideSlide>
-								<img src={url} alt={project.title} class="aspect-video w-full object-cover grayscale transition-all duration-700 hover:grayscale-0" />
+								<img
+									src={url}
+									alt={project.title}
+									class="aspect-video w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
+								/>
 							</SplideSlide>
 						{/each}
 					</Splide>
@@ -187,12 +222,14 @@
 			<!-- Sidebar Info -->
 			<aside class="content-stagger space-y-12">
 				<!-- Project Links -->
-				<div class="group relative border-4 border-foreground bg-card p-8 transition-all hover:shadow-[8px_8px_0_var(--primary)]">
+				<div
+					class="group relative border-4 border-foreground bg-card p-8 transition-all hover:shadow-[8px_8px_0_var(--primary)]"
+				>
 					<div class="mb-8 flex items-center justify-between border-b-2 border-foreground/10 pb-4">
 						<h3 class="font-poppins text-lg font-black uppercase italic">[ACCESS_PANEL]</h3>
 						<Zap class="size-5 text-primary" />
 					</div>
-					
+
 					<div class="flex flex-col gap-4">
 						{#if project.demoUrl}
 							<a
@@ -221,16 +258,22 @@
 				<div class="space-y-8 border-4 border-foreground bg-foreground/5 p-8">
 					<div class="space-y-6">
 						<div class="flex items-start gap-4">
-							<div class="flex size-10 shrink-0 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
+							<div
+								class="flex size-10 shrink-0 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground"
+							>
 								<Layers class="size-5" />
 							</div>
 							<div class="min-w-0 flex-1">
-								<p class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase mb-3">
+								<p
+									class="mb-3 font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+								>
 									[TECH_STACK_INVENTORY]
 								</p>
 								<div class="flex flex-wrap gap-2">
 									{#each project.tags || [] as tag (tag.name)}
-										<span class="border border-foreground/20 bg-background px-3 py-1 font-mono text-[10px] font-black uppercase transition-colors hover:bg-primary hover:text-white">
+										<span
+											class="border border-foreground/20 bg-background px-3 py-1 font-mono text-[10px] font-black uppercase transition-colors hover:bg-primary hover:text-white"
+										>
 											{tag.name}
 										</span>
 									{/each}
@@ -239,11 +282,15 @@
 						</div>
 
 						<div class="flex items-center gap-4">
-							<div class="flex size-10 shrink-0 items-center justify-center border-2 border-foreground bg-foreground text-background">
+							<div
+								class="flex size-10 shrink-0 items-center justify-center border-2 border-foreground bg-foreground text-background"
+							>
 								<Calendar class="size-5" />
 							</div>
 							<div>
-								<p class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase mb-1">
+								<p
+									class="mb-1 font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+								>
 									[TEMPORAL_MARK]
 								</p>
 								<p class="font-mono text-xs font-black uppercase">
@@ -262,7 +309,7 @@
 					<div class="border-t-2 border-foreground/10 pt-6">
 						<div class="flex items-center gap-3">
 							<div class="h-2 flex-1 bg-foreground/10">
-								<div class="h-full w-full bg-primary animate-pulse"></div>
+								<div class="h-full w-full animate-pulse bg-primary"></div>
 							</div>
 							<span class="font-mono text-[8px] font-black uppercase">INTEGRITY_CHECK: PASSED</span>
 						</div>
@@ -276,7 +323,9 @@
 			<section class="content-stagger mt-32 space-y-16 border-t-4 border-foreground pt-20">
 				<div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
 					<div>
-						<div class="inline-block border-2 border-foreground bg-foreground px-3 py-1 font-mono text-[9px] font-black text-background uppercase mb-4">
+						<div
+							class="mb-4 inline-block border-2 border-foreground bg-foreground px-3 py-1 font-mono text-[9px] font-black text-background uppercase"
+						>
 							[RELATED_DATA_NODES]
 						</div>
 						<h3 class="font-poppins text-4xl font-black tracking-tighter uppercase italic">
@@ -302,12 +351,12 @@
 
 	:global(.prose-origami) {
 		& :global(h2) {
-			@apply text-3xl font-black tracking-tighter uppercase italic border-l-4 pl-6 mt-16 mb-8;
+			@apply mt-16 mb-8 border-l-4 pl-6 text-3xl font-black tracking-tighter uppercase italic;
 			border-color: var(--primary);
 			font-family: var(--font-poppins);
 		}
 		& :global(p) {
-			@apply font-mono text-sm leading-relaxed tracking-tight uppercase mb-6;
+			@apply mb-6 font-mono text-sm leading-relaxed tracking-tight uppercase;
 			color: var(--muted-foreground);
 		}
 		& :global(strong) {
@@ -316,13 +365,13 @@
 			text-decoration-color: var(--primary);
 		}
 		& :global(ul) {
-			@apply space-y-3 mb-8;
+			@apply mb-8 space-y-3;
 		}
 		& :global(li) {
-			@apply font-mono text-sm uppercase flex items-start gap-4;
+			@apply flex items-start gap-4 font-mono text-sm uppercase;
 			&:before {
-				content: "[+]";
-				@apply font-black shrink-0;
+				content: '[+]';
+				@apply shrink-0 font-black;
 				color: var(--primary);
 			}
 		}
