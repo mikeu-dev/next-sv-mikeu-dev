@@ -17,6 +17,12 @@ export interface VisitorLogData {
 	language: string | null;
 	path: string;
 	timestamp?: Date | null;
+	// Geo fields — populated via GeoIP service
+	country?: string | null;
+	city?: string | null;
+	region?: string | null;
+	latitude?: number | null;
+	longitude?: number | null;
 }
 
 export interface VisitorAnalytics {
@@ -24,6 +30,19 @@ export interface VisitorAnalytics {
 	deviceMix: [string, number][];
 	browserMix: [string, number][];
 	referrers: [string, number][];
+}
+
+/** Aggregated geo node untuk Folded World visualization */
+export interface GeoNode {
+	readonly id: string;
+	readonly country: string;
+	readonly city: string | null;
+	readonly latitude: number;
+	readonly longitude: number;
+	readonly count: number;
+	readonly lastVisit: string;
+	readonly browsers: string[];
+	readonly devices: string[];
 }
 
 import { sanitizeForFirestore } from '../utils/firestore';
@@ -183,6 +202,80 @@ export class VisitorService {
 		} catch (error) {
 			console.error('VisitorService: Failed to get analytics', error);
 			return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
+		}
+	}
+
+	/**
+	 * Get aggregated geo data for Folded World visualization.
+	 * Groups visitor logs by country+city and returns geo nodes.
+	 */
+	async getGeoAggregation(limit: number = 500): Promise<GeoNode[]> {
+		try {
+			const logs = await this.repository.getWithGeoData(2000);
+
+			// Aggregate by country + city
+			const geoMap = new Map<string, {
+				country: string;
+				city: string | null;
+				latitude: number;
+				longitude: number;
+				count: number;
+				lastVisit: Date;
+				browsers: Set<string>;
+				devices: Set<string>;
+			}>();
+
+			for (const log of logs) {
+				if (!log.country || log.latitude == null || log.longitude == null) continue;
+
+				const key = `${log.country}::${log.city || 'unknown'}`;
+				const existing = geoMap.get(key);
+
+				const logDate = log.timestamp instanceof Date
+					? log.timestamp
+					: log.timestamp ? new Date(log.timestamp) : new Date();
+
+				if (existing) {
+					existing.count++;
+					if (logDate > existing.lastVisit) {
+						existing.lastVisit = logDate;
+					}
+					if (log.browser) existing.browsers.add(log.browser);
+					if (log.device) existing.devices.add(log.device);
+				} else {
+					geoMap.set(key, {
+						country: log.country,
+						city: log.city || null,
+						latitude: log.latitude,
+						longitude: log.longitude,
+						count: 1,
+						lastVisit: logDate,
+						browsers: new Set(log.browser ? [log.browser] : []),
+						devices: new Set(log.device ? [log.device] : [])
+					});
+				}
+			}
+
+			// Convert to array and sort by count descending
+			const nodes: GeoNode[] = Array.from(geoMap.entries())
+				.map(([key, data]) => ({
+					id: key,
+					country: data.country,
+					city: data.city,
+					latitude: data.latitude,
+					longitude: data.longitude,
+					count: data.count,
+					lastVisit: data.lastVisit.toISOString(),
+					browsers: Array.from(data.browsers),
+					devices: Array.from(data.devices)
+				}))
+				.sort((a, b) => b.count - a.count)
+				.slice(0, limit);
+
+			return nodes;
+		} catch (error) {
+			console.error('VisitorService: Failed to get geo aggregation', error);
+			return [];
 		}
 	}
 }
