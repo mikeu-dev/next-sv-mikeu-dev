@@ -45,19 +45,23 @@
 
 {#if headings.length > 0}
 	<nav class="hidden xl:block">
-		<div class="sticky top-32 max-h-[calc(100vh-160px)] overflow-y-auto">
-			<h4 class="mb-4 text-sm font-bold tracking-wider text-foreground uppercase">On This Page</h4>
-			<ul class="space-y-3 border-l text-sm">
+		<div class="space-y-4">
+			<ul class="space-y-1">
 				{#each headings as heading (heading.id)}
-					<li class={`${heading.depth === 3 ? 'pl-6' : 'pl-4'}`}>
+					<li class={`${heading.depth === 3 ? 'pl-4' : ''}`}>
 						<button
 							onclick={() => scrollTo(heading.id)}
-							class={`text-left transition-colors hover:text-primary ${
+							class={`group relative flex w-full items-center border-2 border-transparent px-3 py-2 text-left font-mono text-[10px] font-black tracking-widest uppercase transition-all ${
 								activeId === heading.id
-									? '-ml-[17px] border-l-2 border-primary pl-[15px] font-bold text-primary'
-									: 'text-muted-foreground'
+									? 'border-foreground bg-primary text-primary-foreground shadow-[3px_3px_0_var(--foreground)]'
+									: 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
 							}`}
 						>
+							{#if activeId === heading.id}
+								<span class="mr-2">[X]</span>
+							{:else}
+								<span class="mr-2 text-foreground/20 group-hover:text-primary">[-]</span>
+							{/if}
 							{heading.text}
 						</button>
 					</li>
