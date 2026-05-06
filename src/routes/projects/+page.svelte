@@ -133,27 +133,28 @@
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
 
-		setTimeout(() => {
-			isLoading = false;
-			
+		isLoading = false;
+		
+		const ctx = gsap.context(() => {
 			// Enhanced Brutalist Entrance
 			const tl = gsap.timeline();
 			
 			tl.from('.header-origami', {
 				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-				duration: 1.2,
+				duration: 1,
 				ease: 'power4.inOut'
 			})
 			.from('.project-stagger', {
-				y: 50,
-				rotateX: -15,
-				skewY: 2,
+				y: 30,
+				rotateX: -10,
 				opacity: 0,
-				duration: 0.8,
+				duration: 0.6,
 				stagger: 0.1,
 				ease: 'expo.out'
-			}, '-=0.6');
-		}, 600);
+			}, '-=0.4');
+		});
+
+		return () => ctx.revert();
 	});
 </script>
 

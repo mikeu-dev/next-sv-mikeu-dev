@@ -74,7 +74,7 @@
 			
 			tl.from('.header-origami', {
 				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-				duration: 1.2,
+				duration: 1,
 				ease: 'power4.inOut'
 			})
 			.from('.stagger-item', {
