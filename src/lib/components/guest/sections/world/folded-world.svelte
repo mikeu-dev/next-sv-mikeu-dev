@@ -86,7 +86,7 @@
 					'-=1'
 				)
 				.from(
-					'.hud-bottom-left, .hud-bottom-right, .hud-context',
+					'.hud-bottom-left, .hud-bottom-right, .hud-context, .hud-legend',
 					{
 						y: 20,
 						opacity: 0,
@@ -212,6 +212,35 @@
 		<!-- Bottom-right: Instructions -->
 		<div class="hud hud-bottom-right">
 			<span class="hud-meta">{m.world_hud_instructions()}</span>
+		</div>
+
+		<!-- Bottom-center: Legend -->
+		<div class="hud hud-legend">
+			<div class="legend-content">
+				<div class="legend-header">
+					<span class="legend-label">{m.world_hud_mode()} :: {currentModeLabel}</span>
+				</div>
+				<div class="legend-visual">
+					{#if engine.viewMode === 'fold'}
+						<div class="legend-bar neon-gradient"></div>
+						<div class="legend-scale">
+							<span>MIN</span>
+							<span>MAX DENSITY</span>
+						</div>
+					{:else if engine.viewMode === 'heat'}
+						<div class="legend-bar heat-gradient"></div>
+						<div class="legend-scale">
+							<span>NONE</span>
+							<span>HOTSPOT</span>
+						</div>
+					{:else}
+						<div class="legend-pulse-container">
+							<div class="legend-pulse-dot"></div>
+							<span class="legend-pulse-text">ACTIVE VISITOR FREQUENCY</span>
+						</div>
+					{/if}
+				</div>
+			</div>
 		</div>
 	{/if}
 
@@ -554,6 +583,107 @@
 		text-transform: uppercase;
 	}
 
+	/* --- Legend --- */
+
+	.hud-legend {
+		bottom: 24px;
+		left: 50%;
+		transform: translateX(-50%);
+		pointer-events: auto;
+	}
+
+	.legend-content {
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid #ddd;
+		padding: 10px 16px;
+		min-width: 200px;
+		clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+	}
+
+	:global(.dark) .legend-content {
+		background: rgba(15, 15, 15, 0.9);
+		border: 1px solid #333;
+	}
+
+	.legend-header {
+		margin-bottom: 8px;
+		border-bottom: 1px solid #eee;
+		padding-bottom: 4px;
+	}
+
+	:global(.dark) .legend-header {
+		border-color: #222;
+	}
+
+	.legend-label {
+		font-size: 8px;
+		letter-spacing: 0.2em;
+		color: #888;
+		text-transform: uppercase;
+	}
+
+	.legend-visual {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.legend-bar {
+		height: 6px;
+		width: 100%;
+		border: 1px solid #333;
+	}
+
+	.neon-gradient {
+		background: linear-gradient(90deg, #121212 0%, #00f3ff 100%);
+	}
+
+	.heat-gradient {
+		background: linear-gradient(90deg, #121212 0%, #ff3333 100%);
+	}
+
+	.legend-scale {
+		display: flex;
+		justify-content: space-between;
+		font-size: 7px;
+		letter-spacing: 0.1em;
+		color: #666;
+		text-transform: uppercase;
+	}
+
+	.legend-pulse-container {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 2px 0;
+	}
+
+	.legend-pulse-dot {
+		width: 6px;
+		height: 6px;
+		background: #ff3333;
+		border-radius: 50%;
+		animation: legend-pulse 1.5s ease-out infinite;
+	}
+
+	@keyframes legend-pulse {
+		0% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(3);
+			opacity: 0;
+		}
+	}
+
+	.legend-pulse-text {
+		font-size: 8px;
+		letter-spacing: 0.1em;
+		color: #aaa;
+		text-transform: uppercase;
+	}
+
 	/* --- Tooltip --- */
 
 	.world-tooltip {
@@ -759,6 +889,18 @@
 
 		.hud-bottom-right {
 			display: none;
+		}
+
+		.hud-legend {
+			bottom: 80px;
+			left: 16px;
+			transform: none;
+			width: calc(100% - 32px);
+		}
+
+		.legend-content {
+			min-width: 0;
+			padding: 8px 12px;
 		}
 
 		.hud-title {
