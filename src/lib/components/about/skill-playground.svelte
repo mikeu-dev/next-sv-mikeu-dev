@@ -153,7 +153,6 @@
 			}))
 		);
 
-		// Use a stable seed-like approach for shapes instead of Math.random
 		while (currentSkillIndex < flatSkills.length) {
 			const pseudoRandom = (currentSkillIndex * 1337) % shapeKeys.length;
 			const shapeKey = shapeKeys[pseudoRandom];
@@ -189,7 +188,7 @@
 	});
 
 	let pieceBodies = $state<PieceBody[]>([]);
-	let physicsBodies: Matter.Body[] = []; // Non-reactive array for Matter.js bodies
+	let physicsBodies: Matter.Body[] = []; 
 	let nextId = 0;
 
 	function rotatePiece(id: number) {
@@ -200,9 +199,8 @@
 			comboCount++;
 			createParticles(body.position.x, body.position.y, pb.piece.color, 12);
 
-			// Pulse effect via state
 			pb.piece.skills.forEach((s) => {
-				s.scale = 1.2;
+				s.scale = 1.1;
 				s.brightness = 1.5;
 			});
 
@@ -255,7 +253,6 @@
 	function initWalls() {
 		if (!engine || canvasWidth === 0 || canvasHeight === 0) return;
 
-		// Find and remove old walls
 		const existingWalls = engine.world.bodies.filter((b) => b.label === 'wall');
 		Composite.remove(engine.world, existingWalls);
 
@@ -269,7 +266,6 @@
 
 		const wallThickness = 100;
 		Composite.add(engine.world, [
-			// Floor
 			Bodies.rectangle(
 				canvasWidth / 2,
 				canvasHeight + wallThickness / 2,
@@ -277,7 +273,6 @@
 				wallThickness,
 				options
 			),
-			// Left Wall
 			Bodies.rectangle(
 				-wallThickness / 2,
 				canvasHeight / 2,
@@ -285,7 +280,6 @@
 				canvasHeight * 2,
 				options
 			),
-			// Right Wall
 			Bodies.rectangle(
 				canvasWidth + wallThickness / 2,
 				canvasHeight / 2,
@@ -307,13 +301,11 @@
 		nextId = 0;
 		initWalls();
 
-		// Clear any existing timeouts
 		spawnTimeouts.forEach(clearTimeout);
 		spawnTimeouts = [];
 
 		tetriminos.forEach((piece, pieceIdx) => {
 			const timeout = window.setTimeout(() => {
-				// Calculate piece width to prevent spawning partially inside walls
 				const maxX = Math.max(...piece.skills.map((s: SkillItem) => s.relX));
 				const pieceWidth = (maxX + 1) * blockSize;
 				const startX = Math.random() * (canvasWidth - pieceWidth - 40) + 20;
@@ -324,7 +316,6 @@
 						blockSize - 1,
 						blockSize - 1,
 						{
-							chamfer: { radius: 4 },
 							friction: 0.5,
 							restitution: 0.1,
 							density: 0.002
@@ -337,8 +328,6 @@
 					label: `piece-${pieceIdx}`
 				});
 
-				// Pre-cache elements
-				// Create reactive piece state for Svelte 5
 				const currentPieceId = nextId++;
 				const reactiveSkills = piece.skills.map((s: SkillItem) => ({
 					...s,
@@ -365,7 +354,6 @@
 					if (pieceIdx < tetriminos.length - 1) nextPieceIdx = pieceIdx + 1;
 				}
 
-				// If this was the last piece, we're done spawning
 				if (pieceIdx === tetriminos.length - 1) {
 					isSpawning = false;
 				}
@@ -378,7 +366,7 @@
 		if (!container) return;
 		let rafId: number;
 		engine = Engine.create();
-		engine.world.gravity.y = 1.0; // Correct: gravity is on the world
+		engine.world.gravity.y = 1.0; 
 		engine.enableSleeping = false;
 		const mc = MouseConstraint.create(engine, {
 			mouse: Mouse.create(container),
@@ -395,7 +383,6 @@
 					const pos = p.collision.supports[0] || p.bodyA.position;
 					createParticles(pos.x, pos.y, '#ffffff', 2);
 
-					// Flash effect on high impact via state
 					if (p.collision.depth > 5) {
 						const body = p.bodyA.label?.startsWith('piece-')
 							? p.bodyA
@@ -434,12 +421,10 @@
 					const skill = pb.piece.skills[j - 1];
 
 					if (skill) {
-						// Update reactive positions via proxy
 						skill.x = part.position.x;
 						skill.y = part.position.y;
 						skill.angle = body.angle;
 
-						// Decay effects
 						if (skill.scale > 1) skill.scale -= 0.02;
 						if (skill.brightness > 1) skill.brightness -= 0.05;
 					}
@@ -457,7 +442,6 @@
 
 	$effect(() => {
 		if (engine && canvasWidth > 0 && canvasHeight > 0) {
-			// Only re-init if size change is significant (> 5px) to prevent jitter/performance issues
 			if (Math.abs(canvasWidth - lastW) > 5 || Math.abs(canvasHeight - lastH) > 5) {
 				lastW = canvasWidth;
 				lastH = canvasHeight;
@@ -470,57 +454,57 @@
 	});
 </script>
 
-<section class="mx-auto max-w-7xl px-6 py-24">
-	<div class="mb-16 max-w-2xl">
+<section class="mx-auto max-w-7xl px-6 py-32">
+	<!-- Industrial Header -->
+	<div class="mb-20 max-w-2xl border-l-4 border-primary pl-8">
 		<div class="mb-4 flex items-center gap-3">
-			<div class="h-px w-8 bg-primary"></div>
-			<span class="text-[10px] font-black tracking-[0.5em] text-primary uppercase"
-				>{m.skill_playground_ecosystem_label()}</span
+			<span class="font-mono text-[10px] font-black tracking-[0.5em] text-primary uppercase"
+				>[ECOSYSTEM_MODULE_v1.0]</span
 			>
 		</div>
-		<h2 class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 sm:text-5xl dark:text-white">
-			{m.skill_playground_title()}
+		<h2 class="mb-6 font-poppins text-5xl font-black tracking-tighter text-zinc-900 md:text-7xl dark:text-white">
+			{m.skill_playground_title()}<span class="text-primary">_</span>
 		</h2>
-		<p class="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-			{m.skill_playground_desc()}
+		<p class="font-mono text-xs leading-relaxed tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+			// {m.skill_playground_desc()}
 		</p>
 	</div>
 
-	<div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
-		<div class="flex flex-col gap-10">
+	<div class="grid grid-cols-1 gap-16 lg:grid-cols-2">
+		<!-- Categories List -->
+		<div class="flex flex-col gap-12">
 			{#each categories as cat (cat.category)}
-				<div class="flex flex-col gap-4">
-					<div class="flex items-center gap-3">
+				<div class="flex flex-col gap-6">
+					<div class="flex items-center gap-3 border-b border-zinc-100 pb-2 dark:border-zinc-800">
 						<div
-							class="h-2 w-2 rounded-full"
+							class="size-3"
 							style="background-color: {categoryColors[cat.category]}"
 						></div>
 						<h3
-							class="text-sm font-black tracking-widest text-zinc-900 uppercase dark:text-zinc-100"
+							class="font-mono text-xs font-black tracking-widest text-zinc-900 uppercase dark:text-zinc-100"
 						>
-							{cat.category}
+							[CAT_{cat.category.toUpperCase()}]
 						</h3>
 					</div>
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+					<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
 						{#each cat.items as item (item.name)}
 							{@const itemColor = item.color || categoryColors[cat.category]}
 							<div
-								class="group flex items-center gap-3 rounded-xl border border-zinc-100 bg-white p-3 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
-								style="--hover-border: {itemColor}44;"
+								class="group relative flex items-center gap-3 border-2 border-zinc-100 bg-white p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:border-foreground hover:shadow-[4px_4px_0_var(--foreground)] dark:border-zinc-800 dark:bg-zinc-900"
 							>
 								<div
-									class="flex size-9 items-center justify-center rounded-lg transition-colors group-hover:bg-white dark:group-hover:bg-zinc-700"
+									class="flex size-10 items-center justify-center transition-colors group-hover:bg-foreground group-hover:text-background"
 									style="background-color: {itemColor}15;"
 								>
 									{#if item.icon}
-										<Icon src={item.icon} size={20} style="color: {itemColor};" />
+										<Icon src={item.icon} size={22} style="color: {itemColor};" />
 									{:else}
-										<span class="text-[8px] font-bold" style="color: {itemColor};"
+										<span class="font-mono text-[9px] font-black" style="color: {itemColor};"
 											>{item.name.slice(0, 2)}</span
 										>
 									{/if}
 								</div>
-								<span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300"
+								<span class="font-mono text-[10px] font-black tracking-tighter text-zinc-700 uppercase dark:text-zinc-300"
 									>{item.name}</span
 								>
 							</div>
@@ -529,35 +513,38 @@
 				</div>
 			{/each}
 
+			<!-- Technical Note -->
 			<div
-				class="mt-4 rounded-2xl border border-zinc-100 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900"
+				class="mt-4 border-2 border-dashed border-zinc-200 bg-zinc-50 p-8 dark:border-zinc-800 dark:bg-zinc-900"
 			>
-				<span class="mb-2 block text-[10px] font-black tracking-widest text-zinc-400 uppercase"
-					>{m.skill_playground_strategy_note()}</span
+				<span class="mb-4 block font-mono text-[10px] font-black tracking-widest text-zinc-400 uppercase"
+					>[STRATEGY_PROTOCOL]</span
 				>
-				<p class="text-xs leading-relaxed text-zinc-500 italic dark:text-zinc-400">
+				<p class="font-mono text-[10px] leading-relaxed text-zinc-500 italic dark:text-zinc-400">
 					"{m.skill_playground_strategy_desc()}"
 				</p>
 			</div>
 		</div>
 
+		<!-- Simulation Section -->
 		<div class="relative">
-			<div class="sticky top-10">
-				<div class="mb-8 flex items-end justify-between px-2">
-					<div class="flex flex-col gap-1">
+			<div class="sticky top-24">
+				<!-- Simulation HUD -->
+				<div class="mb-10 flex items-end justify-between border-b-2 border-foreground pb-6">
+					<div class="flex flex-col gap-2">
 						<span
-							class="text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
-							>{m.skill_playground_simulation_status()}</span
+							class="font-mono text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
+							>[STATUS_MONITOR]</span
 						>
-						<div class="flex items-baseline gap-2">
-							<span class="font-mono text-3xl font-black text-zinc-900 italic dark:text-white"
+						<div class="flex items-baseline gap-4">
+							<span class="font-mono text-4xl font-black text-zinc-900 italic dark:text-white"
 								>{m.skill_playground_active()}</span
 							>
-							<div class="mb-1 flex gap-1.5">
+							<div class="mb-1 flex gap-2">
 								{#each Array(5) as _, i (i)}
 									<div
-										class="h-1.5 w-1.5 rounded-sm {i < comboCount
-											? 'bg-yellow-500'
+										class="size-2 {i < comboCount
+											? 'bg-primary'
 											: 'bg-zinc-200 dark:bg-zinc-800'} transition-all duration-500"
 									></div>
 								{/each}
@@ -567,27 +554,27 @@
 
 					<div class="flex flex-col items-end gap-2">
 						<span
-							class="text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
-							>{m.skill_playground_next_module()}</span
+							class="font-mono text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
+							>[NEXT_MODULE]</span
 						>
 						<div
-							class="relative h-12 w-16 overflow-hidden border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+							class="relative h-14 w-20 border-2 border-foreground bg-card"
 						>
-							<div class="animate-scanline absolute inset-x-0 z-10 h-[1px] bg-primary/30"></div>
+							<div class="animate-scanline absolute inset-x-0 z-10 h-[1px] bg-primary/40"></div>
 							{#key nextPieceIdx}
 								<div
 									in:scale={{ start: 0.9, duration: 300 }}
 									class="grid h-full place-content-center"
 								>
-									<div class="grid gap-1" style="grid-template-columns: repeat(4, 6px);">
+									<div class="grid gap-1.5" style="grid-template-columns: repeat(4, 6px);">
 										{#each Array(16) as _, i (i)}
 											{@const isF = tetriminos[nextPieceIdx]?.skills.some(
 												(s: SkillItem) => s.relX === i % 4 && s.relY === Math.floor(i / 4)
 											)}
 											<div
-												class="rounded-full {isF
+												class="{isF
 													? 'size-1.5'
-													: 'size-0.5 bg-zinc-100 dark:bg-zinc-800'}"
+													: 'size-0.5 bg-zinc-200 dark:bg-zinc-800'}"
 												style="background-color: {isF ? tetriminos[nextPieceIdx].color : ''}"
 											></div>
 										{/each}
@@ -598,95 +585,90 @@
 					</div>
 				</div>
 
+				<!-- Simulation Board -->
 				<div
 					bind:this={container}
 					bind:clientWidth={canvasWidth}
 					bind:clientHeight={canvasHeight}
-					class="relative h-[600px] w-full cursor-grab overflow-hidden rounded-[2.5rem] border-4 border-zinc-900/5 bg-[#010101] shadow-2xl active:cursor-grabbing"
+					class="relative h-[650px] w-full cursor-grab overflow-hidden border-4 border-foreground bg-[#0a0a0a] active:cursor-grabbing"
 				>
+					<!-- Grid Lines -->
 					<div
-						class="pointer-events-none absolute inset-0 z-0 opacity-[0.25]"
+						class="pointer-events-none absolute inset-0 z-0 opacity-[0.15]"
 						style="background-image: linear-gradient(to right, #444 1px, transparent 1px), linear-gradient(to bottom, #444 1px, transparent 1px); background-size: 45px 45px;"
 					></div>
+					
+					<!-- Industrial Overlays -->
+					<div class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"></div>
 					<div
-						class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.15]"
-					>
-						<div class="size-[200px] rounded-full border-2 border-white/40"></div>
-					</div>
-					<div
-						class="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_0_150px_rgba(0,0,0,1)]"
-					></div>
-					<div
-						class="pointer-events-none absolute inset-0 z-30 opacity-[0.1]"
+						class="pointer-events-none absolute inset-0 z-30 opacity-[0.05]"
 						style="background-image: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.3) 50%), linear-gradient(90deg, rgba(255,0,0,0.08), rgba(0,255,0,0.02), rgba(0,0,255,0.08)); background-size: 100% 4px, 3px 100%;"
 					></div>
-					<div
-						class="pointer-events-none absolute inset-0 z-20 opacity-[0.1]"
-						style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
-					></div>
 
+					<!-- Particles -->
 					{#each particles as p (p.id)}
 						<div
 							class="pointer-events-none absolute z-10"
-							style="left: {p.x}px; top: {p.y}px; width: 3px; height: 3px; background-color: {p.color}; opacity: {p.life}; transform: scale({p.life});"
+							style="left: {p.x}px; top: {p.y}px; width: 4px; height: 4px; background-color: {p.color}; opacity: {p.life}; transform: scale({p.life});"
 						></div>
 					{/each}
 
+					<!-- System Stats -->
 					<div
-						class="pointer-events-none absolute inset-x-6 top-6 z-20 flex justify-between text-[8px] font-bold tracking-widest text-white/30 uppercase"
+						class="pointer-events-none absolute inset-x-8 top-8 z-20 flex justify-between font-mono text-[9px] font-black tracking-widest text-white/30 uppercase"
 					>
 						<div class="flex flex-col gap-1">
-							<span>{m.skill_playground_integrity()}: {integrity.toFixed(1)}%</span><span
-								>{m.skill_playground_uptime()}: {uptime}%</span
-							>
+							<span>[INTEGRITY: {integrity.toFixed(1)}%]</span>
+							<span>[UPTIME: {uptime}S]</span>
 						</div>
 						<div class="flex flex-col gap-1 text-right">
-							<span>{m.skill_playground_kernel()}: {kernelVersion}</span><span
-								>{m.skill_playground_buffer()}: OPTIMIZED_V3</span
-							>
+							<span>[KERNEL: {kernelVersion}]</span>
+							<span>[PROCESS: SYNC_V3]</span>
 						</div>
 					</div>
 
+					<!-- Interaction Hint -->
 					<div
-						class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center opacity-0 transition-opacity duration-1000 group-hover/board:opacity-20"
+						class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center opacity-0 transition-opacity duration-1000 group-hover:opacity-20"
 					>
-						<span class="text-5xl font-black tracking-tighter text-white uppercase italic"
-							>{m.skill_playground_sync_ready()}</span
+						<span class="font-poppins text-6xl font-black tracking-tighter text-white uppercase italic"
+							>[SYNC_ESTABLISHED]</span
 						>
-						<span class="text-[9px] font-black tracking-[0.5em] text-white"
-							>{m.skill_playground_interact()}</span
+						<span class="font-mono text-[10px] font-black tracking-[0.5em] text-white"
+							>INITIATE_INTERACTION_PROTOCOL</span
 						>
 					</div>
 
+					<!-- Physics Pieces -->
 					{#each pieceBodies as pb (pb.id)}
 						{#each pb.piece.skills as skill, sIdx (pb.id + '-' + sIdx)}
 							{@const piece = pb.piece}
 							<div
-								class="group absolute top-0 left-0 flex items-center justify-center rounded-sm border-[1px] transition-all duration-300"
+								class="group absolute top-0 left-0 flex items-center justify-center border-2"
 								class:text-black={piece.isLight}
 								class:text-white={!piece.isLight}
 								class:filter-active={activeFilter && skill.category === activeFilter}
-								style="width: 44.5px; height: 44.5px; background: {piece.color}dd; border-color: {piece.color}; 
+								style="width: 44.5px; height: 44.5px; background: {piece.color}ee; border-color: {piece.color}; 
 									   transform: translate({skill.x - 22.5}px, {skill.y -
 									22.5}px) rotate({skill.angle}rad) scale({skill.scale}); 
 									   opacity: {skill.opacity}; filter: brightness({skill.brightness}); pointer-events: none;"
 							>
 								<div
-									class="absolute top-1 right-1 size-1 rounded-full"
+									class="absolute top-1 right-1 size-1.5"
 									style="background-color: {skill.catColor}"
 								></div>
 								<div class="relative z-10 flex flex-col items-center justify-center p-1">
 									{#if skill.icon}
 										<div
-											class="scale-[0.8] opacity-90 transition-transform group-hover:scale-105"
+											class="scale-[0.85] opacity-90 transition-transform group-hover:scale-110"
 											class:brightness-0={piece.isLight}
 											class:invert={!piece.isLight}
 										>
-											<Icon src={skill.icon} size={20} />
+											<Icon src={skill.icon} size={22} />
 										</div>
 									{:else}
-										<span class="font-mono text-[7px] leading-none font-bold"
-											>{skill.name.slice(0, 4)}</span
+										<span class="font-mono text-[8px] leading-none font-black"
+											>{skill.name.slice(0, 4).toUpperCase()}</span
 										>
 									{/if}
 								</div>
@@ -695,15 +677,16 @@
 					{/each}
 				</div>
 
-				<div class="mt-6 flex gap-3">
+				<!-- Simulation Controls -->
+				<div class="mt-8 flex gap-4">
 					<button
 						onclick={resetBoard}
-						class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black tracking-widest text-zinc-800 uppercase shadow-sm transition-all hover:bg-zinc-50 active:scale-95 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+						class="flex flex-1 items-center justify-center gap-3 border-2 border-foreground bg-card px-8 py-4 font-mono text-[10px] font-black tracking-widest text-zinc-800 uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-primary hover:text-white hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none dark:text-zinc-300"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							width="14"
-							height="14"
+							width="16"
+							height="16"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
@@ -714,16 +697,16 @@
 								d="M3 3v5h5"
 							/></svg
 						>
-						{m.skill_playground_reset()}
+						[RESET_ENGINE]
 					</button>
 					<button
 						onclick={shakeBoard}
-						class="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[10px] font-black tracking-widest text-zinc-800 uppercase shadow-sm transition-all hover:bg-zinc-50 active:scale-95 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+						class="flex flex-1 items-center justify-center gap-3 border-2 border-foreground bg-card px-8 py-4 font-mono text-[10px] font-black tracking-widest text-zinc-800 uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-zinc-100 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none dark:text-zinc-300 dark:hover:bg-zinc-800"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							width="14"
-							height="14"
+							width="16"
+							height="16"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
@@ -734,7 +717,7 @@
 								d="M7 4v16"
 							/></svg
 						>
-						{m.skill_playground_shake()}
+						[INIT_SHAKE]
 					</button>
 				</div>
 			</div>
@@ -742,19 +725,16 @@
 	</div>
 </section>
 
-<style>
+<style lang="postcss">
+	@reference "tailwindcss";
+
 	:global(.filter-active) {
-		box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important;
+		box-shadow: 0 0 20px rgba(255, 255, 255, 0.5) !important;
 		z-index: 60 !important;
-		filter: brightness(1.5) !important;
-		scale: 1.1;
+		filter: brightness(1.8) !important;
+		transform: scale(1.15) !important;
 	}
-	.group {
-		transition: border-color 0.3s ease;
-	}
-	.group:hover {
-		border-color: var(--hover-border) !important;
-	}
+
 	@keyframes scanline {
 		0% {
 			top: -10%;
@@ -763,7 +743,12 @@
 			top: 110%;
 		}
 	}
+
 	.animate-scanline {
 		animation: scanline 2.5s linear infinite;
+	}
+
+	button {
+		@apply cursor-pointer;
 	}
 </style>
