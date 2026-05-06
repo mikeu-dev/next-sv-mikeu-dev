@@ -39,3 +39,5 @@ storybook-static
 project_structure.md
 src/routes/seed/+server.ts
 src/lib/posts/
+
+*.code-workspace
