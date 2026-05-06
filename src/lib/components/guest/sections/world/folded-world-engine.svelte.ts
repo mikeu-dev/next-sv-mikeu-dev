@@ -211,8 +211,8 @@ export function createFoldedWorldEngine() {
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
 
-		// Convert to non-indexed for flat shading + per-face attributes
-		const nonIndexed = geometry.toNonIndexed();
+		// Convert to non-indexed for flat shading + per-face attributes (only if indexed)
+		const nonIndexed = geometry.index ? geometry.toNonIndexed() : geometry;
 		nonIndexed.computeVertexNormals();
 
 		const posAttr = nonIndexed.getAttribute('position');
