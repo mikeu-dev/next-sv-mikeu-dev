@@ -79,13 +79,19 @@
 	};
 
 	const tetrisColors: Record<string, string> = {
-		I: '#00f0f0',
-		L: '#f0a000',
-		J: '#0000f0',
-		O: '#f0f000',
-		T: '#a000f0',
-		S: '#00f000',
-		Z: '#f00000'
+		I: '#22d3ee', // Cyan
+		L: '#fb923c', // Orange
+		J: '#3b82f6', // Blue
+		O: '#facc15', // Yellow
+		T: '#c084fc', // Purple
+		S: '#4ade80', // Green
+		Z: '#f87171', // Red
+		P: '#f472b6', // Rose
+		D: '#94a3b8', // Slate
+		V: '#2dd4bf', // Teal
+		U: '#818cf8', // Indigo
+		B: '#a78bfa', // Violet
+		X: '#fb7185' // Rose
 	};
 
 	function isColorLight(hex: string) {
@@ -137,7 +143,38 @@
 			[1, 0],
 			[1, 1],
 			[2, 1]
-		]
+		],
+		P: [
+			[1, 0],
+			[0, 1],
+			[1, 1],
+			[2, 1],
+			[1, 2]
+		], // Plus
+		D: [[0, 0]], // Dot
+		V: [
+			[0, 0],
+			[0, 1],
+			[1, 1]
+		], // Small Corner
+		U: [
+			[0, 0],
+			[2, 0],
+			[0, 1],
+			[1, 1],
+			[2, 1]
+		], // U-Shape
+		B: [
+			[0, 0],
+			[1, 0]
+		], // Short Stick
+		X: [
+			[0, 0],
+			[2, 0],
+			[1, 1],
+			[0, 2],
+			[2, 2]
+		] // X-Shape
 	};
 
 	const defaultUrls: Record<string, string> = {
