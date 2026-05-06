@@ -137,7 +137,11 @@
 	{#if engine.state.ready}
 		<!-- Top-left: Title & Stats -->
 		<div class="hud hud-top-left">
-			<h2 class="hud-title">{m.world_title().split(' ').join('<br />')}</h2>
+			<h2 class="hud-title">
+				{#each m.world_title().split(' ') as word, i (i)}
+					{word}{#if i < m.world_title().split(' ').length - 1}<br />{/if}
+				{/each}
+			</h2>
 			<div class="hud-divider"></div>
 			<div class="hud-stats">
 				<div class="hud-stat">
