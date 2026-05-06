@@ -65,7 +65,7 @@ export const getWorldColors = (isDark: boolean) => ({
 	background: isDark ? 0x0a0a0a : 0xfafafa,
 	wireframe: isDark ? 0xe0e0e0 : 0x1a1a1a,
 	faceCold: isDark ? 0x121212 : 0xf5f5f5, 
-	faceHot: 0xff0000, // NEON RED for testing visibility
+	faceHot: isDark ? 0xffffff : 0x000000, // High contrast: White on Dark, Black on Light
 	accent: 0xff3333,
 	text: isDark ? '#fafafa' : '#0a0a0a',
 	textMuted: isDark ? '#666666' : '#999999'

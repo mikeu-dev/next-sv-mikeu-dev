@@ -43,6 +43,11 @@
 		engine.updateTheme(isDark);
 	});
 
+	// --- Data Sync ---
+	$effect(() => {
+		engine.updateNodes(nodes);
+	});
+
 	// --- HUD Entrance Animations ---
 	$effect(() => {
 		if (engine.state.ready) {

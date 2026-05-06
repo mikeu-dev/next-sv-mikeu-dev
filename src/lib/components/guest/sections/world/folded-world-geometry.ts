@@ -57,7 +57,7 @@ export function sphericalDistance(lat1: number, lng1: number, lat2: number, lng2
 export function mapNodesToFaces(
 	faceCenters: [number, number][],
 	nodes: GeoNode[],
-	influenceRadius: number = 0.5
+	influenceRadius: number = 0.8
 ): Float32Array {
 	const intensities = new Float32Array(faceCenters.length);
 
