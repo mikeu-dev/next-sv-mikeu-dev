@@ -15,13 +15,8 @@ import type {
 	TooltipData,
 	DetailPanelData
 } from './folded-world.types';
-import { DEFAULT_WORLD_CONFIG, WORLD_COLORS } from './folded-world.types';
-import {
-	mapNodesToFaces,
-	faceCenter,
-	paperFoldDisplacement,
-	findNearestNode
-} from './folded-world-geometry';
+import { mapNodesToFaces, faceCenter, paperFoldDisplacement, findNearestNode } from './folded-world-geometry';
+import { getWorldColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import {
 	vertexShader,
 	fragmentShader,
@@ -101,7 +96,8 @@ export function createFoldedWorldEngine() {
 	async function init(
 		container: HTMLElement,
 		canvas: HTMLCanvasElement,
-		nodes: GeoNode[]
+		nodes: GeoNode[],
+		isDark: boolean = true
 	): Promise<void> {
 		containerEl = container;
 		canvasEl = canvas;
@@ -115,8 +111,8 @@ export function createFoldedWorldEngine() {
 			// Dynamic import Three.js — keeps it out of main bundle
 			THREE = await import('three');
 
-			setupScene();
-			buildGlobe();
+			setupScene(isDark);
+			buildGlobe(isDark);
 			applyDeformations();
 			setupEventListeners();
 
@@ -176,8 +172,10 @@ export function createFoldedWorldEngine() {
 
 	// --- Scene Setup ---
 
-	function setupScene(): void {
+	function setupScene(isDark: boolean): void {
 		if (!canvasEl || !containerEl) return;
+
+		const colors = getWorldColors(isDark);
 
 		const width = containerEl.clientWidth;
 		const height = containerEl.clientHeight;
@@ -191,7 +189,7 @@ export function createFoldedWorldEngine() {
 		});
 		renderer.setSize(width, height);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-		renderer.setClearColor(WORLD_COLORS.background, 1);
+		renderer.setClearColor(colors.background, 1);
 
 		// Scene
 		scene = new THREE.Scene();
@@ -206,7 +204,8 @@ export function createFoldedWorldEngine() {
 		mouseVec = new THREE.Vector2();
 	}
 
-	function buildGlobe(): void {
+	function buildGlobe(isDark: boolean): void {
+		const colors = getWorldColors(isDark);
 		// Icosahedron geometry — subdivided for more faces
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
@@ -261,11 +260,11 @@ export function createFoldedWorldEngine() {
 				uMaxExtrusion: { value: config.maxExtrusion },
 				uTime: { value: 0 },
 				uMode: { value: 0 },
-				uColorCold: { value: new THREE.Color(WORLD_COLORS.faceCold) },
-				uColorHot: { value: new THREE.Color(WORLD_COLORS.faceHot) },
-				uAccentColor: { value: new THREE.Color(WORLD_COLORS.accent) },
+				uColorCold: { value: new THREE.Color(colors.faceCold) },
+				uColorHot: { value: new THREE.Color(colors.faceHot) },
+				uAccentColor: { value: new THREE.Color(colors.accent) },
 				uHoveredIntensity: { value: -1.0 },
-				uWireColor: { value: new THREE.Color(WORLD_COLORS.wireframe) },
+				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity }
 			},
 			side: THREE.FrontSide
@@ -284,7 +283,7 @@ export function createFoldedWorldEngine() {
 				uMaxExtrusion: { value: config.maxExtrusion },
 				uMode: { value: 0 },
 				uTime: { value: 0 },
-				uWireColor: { value: new THREE.Color(WORLD_COLORS.wireframe) },
+				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity }
 			},
 			transparent: true,
@@ -550,6 +549,28 @@ export function createFoldedWorldEngine() {
 		renderer.setSize(width, height);
 	}
 
+	function updateTheme(isDark: boolean): void {
+		if (!state.ready) return;
+
+		const colors = getWorldColors(isDark);
+
+		// Update Renderer
+		if (renderer) {
+			renderer.setClearColor(colors.background, 1);
+		}
+
+		// Update Materials
+		if (mainMaterial) {
+			mainMaterial.uniforms.uColorCold.value.set(colors.faceCold);
+			mainMaterial.uniforms.uColorHot.value.set(colors.faceHot);
+			mainMaterial.uniforms.uWireColor.value.set(colors.wireframe);
+		}
+
+		if (wireframeMaterial) {
+			wireframeMaterial.uniforms.uWireColor.value.set(colors.wireframe);
+		}
+	}
+
 	// --- Setters ---
 
 	function setViewMode(mode: ViewMode): void {
@@ -584,6 +605,7 @@ export function createFoldedWorldEngine() {
 		destroy,
 		updateNodes,
 		setViewMode,
+		updateTheme,
 		closeDetailPanel
 	};
 }

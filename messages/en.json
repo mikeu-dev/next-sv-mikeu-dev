@@ -97,5 +97,20 @@
 	"skill_playground_reset": "Reset",
 	"skill_playground_shake": "Shake",
 	"skill_playground_sync_ready": "Sync Ready",
-	"skill_playground_interact": "INTERACT TO EXPLORE"
+	"skill_playground_interact": "INTERACT TO EXPLORE",
+	"world_title": "FOLDED WORLD",
+	"world_description": "An interactive 3D visualization of global visitors. Each visitor leaves a digital imprint on the folded world mesh.",
+	"world_loading": "INITIALIZING WORLD_MESH",
+	"world_loading_engine": "Preparing 3D visualization engine...",
+	"world_err_webgl": "This device may not support WebGL.",
+	"world_hud_total": "TOTAL",
+	"world_hud_today": "TODAY",
+	"world_hud_nodes": "NODES",
+	"world_hud_mode": "MODE",
+	"world_hud_instructions": "DRAG TO ROTATE · SCROLL TO ZOOM",
+	"world_detail_visitors": "VISITORS",
+	"world_detail_last_visit": "LAST VISIT",
+	"world_detail_coords": "COORDS",
+	"world_detail_browsers": "BROWSERS",
+	"world_detail_devices": "DEVICES"
 }

@@ -3,15 +3,17 @@
 	import { createFoldedWorldEngine } from './folded-world-engine.svelte';
 	import { formatRelativeTime } from './folded-world-geometry';
 	import type { GeoNode, ViewMode } from './folded-world.types';
+	import { m } from '$lib/paraglide/messages';
 	import gsap from 'gsap';
 
 	interface Props {
 		nodes: GeoNode[];
 		totalVisitors: number;
 		todayVisitors?: number;
+		isDark?: boolean;
 	}
 
-	let { nodes, totalVisitors, todayVisitors = 0 }: Props = $props();
+	let { nodes, totalVisitors, todayVisitors = 0, isDark = true }: Props = $props();
 
 	const engine = createFoldedWorldEngine();
 
@@ -29,11 +31,16 @@
 	);
 
 	onMount(() => {
-		engine.init(containerEl, canvasEl, nodes);
+		engine.init(containerEl, canvasEl, nodes, isDark);
 
 		return () => {
 			engine.destroy();
 		};
+	});
+
+	// --- Theme Sync ---
+	$effect(() => {
+		engine.updateTheme(isDark);
 	});
 
 	// --- HUD Entrance Animations ---
@@ -110,7 +117,7 @@
 	{#if engine.state.loading}
 		<div class="loading-overlay">
 			<div class="loading-shape"></div>
-			<p class="loading-text">INITIALIZING WORLD_MESH</p>
+			<p class="loading-text">{m.world_loading()}</p>
 			<div class="loading-bar">
 				<div class="loading-bar-fill"></div>
 			</div>
@@ -122,7 +129,7 @@
 		<div class="error-overlay">
 			<p class="error-code">ERR::WEBGL_FAIL</p>
 			<p class="error-msg">{engine.state.error}</p>
-			<p class="error-hint">Perangkat ini mungkin tidak mendukung WebGL.</p>
+			<p class="error-hint">{m.world_err_webgl()}</p>
 		</div>
 	{/if}
 
@@ -130,21 +137,21 @@
 	{#if engine.state.ready}
 		<!-- Top-left: Title & Stats -->
 		<div class="hud hud-top-left">
-			<h2 class="hud-title">FOLDED<br />WORLD</h2>
+			<h2 class="hud-title">{m.world_title().split(' ').join('<br />')}</h2>
 			<div class="hud-divider"></div>
 			<div class="hud-stats">
 				<div class="hud-stat">
-					<span class="hud-stat-label">TOTAL</span>
+					<span class="hud-stat-label">{m.world_hud_total()}</span>
 					<span class="hud-stat-value">{formatCount(totalVisitors)}</span>
 				</div>
 				{#if todayVisitors > 0}
 					<div class="hud-stat">
-						<span class="hud-stat-label">TODAY</span>
+						<span class="hud-stat-label">{m.world_hud_today()}</span>
 						<span class="hud-stat-value">{formatCount(todayVisitors)}</span>
 					</div>
 				{/if}
 				<div class="hud-stat">
-					<span class="hud-stat-label">NODES</span>
+					<span class="hud-stat-label">{m.world_hud_nodes()}</span>
 					<span class="hud-stat-value">{engine.state.nodeCount}</span>
 				</div>
 			</div>
@@ -152,7 +159,7 @@
 
 		<!-- Top-right: Mode Toggle -->
 		<div class="hud hud-top-right">
-			<span class="hud-mode-label">MODE: {currentModeLabel}</span>
+			<span class="hud-mode-label">{m.world_hud_mode()}: {currentModeLabel}</span>
 			<div class="hud-mode-buttons">
 				{#each VIEW_MODES as mode (mode.id)}
 					<button
@@ -173,7 +180,7 @@
 
 		<!-- Bottom-right: Instructions -->
 		<div class="hud hud-bottom-right">
-			<span class="hud-meta">DRAG TO ROTATE · SCROLL TO ZOOM</span>
+			<span class="hud-meta">{m.world_hud_instructions()}</span>
 		</div>
 	{/if}
 
@@ -210,15 +217,15 @@
 
 			<div class="detail-grid">
 				<div class="detail-item">
-					<span class="detail-label">VISITORS</span>
+					<span class="detail-label">{m.world_detail_visitors()}</span>
 					<span class="detail-value">{node.count}</span>
 				</div>
 				<div class="detail-item">
-					<span class="detail-label">LAST VISIT</span>
+					<span class="detail-label">{m.world_detail_last_visit()}</span>
 					<span class="detail-value">{formatRelativeTime(node.lastVisit)}</span>
 				</div>
 				<div class="detail-item">
-					<span class="detail-label">COORDS</span>
+					<span class="detail-label">{m.world_detail_coords()}</span>
 					<span class="detail-value">{node.latitude.toFixed(2)}°, {node.longitude.toFixed(2)}°</span
 					>
 				</div>
@@ -226,7 +233,7 @@
 
 			{#if node.browsers.length > 0}
 				<div class="detail-section">
-					<span class="detail-label">BROWSERS</span>
+					<span class="detail-label">{m.world_detail_browsers()}</span>
 					<div class="detail-tags">
 						{#each node.browsers.slice(0, 5) as browser (browser)}
 							<span class="detail-tag">{browser}</span>
@@ -237,7 +244,7 @@
 
 			{#if node.devices.length > 0}
 				<div class="detail-section">
-					<span class="detail-label">DEVICES</span>
+					<span class="detail-label">{m.world_detail_devices()}</span>
 					<div class="detail-tags">
 						{#each node.devices.slice(0, 5) as device (device)}
 							<span class="detail-tag">{device}</span>
@@ -260,8 +267,12 @@
 		height: 100%;
 		min-height: 100dvh;
 		overflow: hidden;
-		background: #0a0a0a;
+		background: #f0f0f0;
 		font-family: 'JetBrains Mono', 'Courier New', monospace;
+	}
+
+	:global(.dark) .folded-world-container {
+		background: #0a0a0a;
 	}
 
 	.folded-world-canvas {
@@ -285,8 +296,12 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		background: #0a0a0a;
+		background: #f0f0f0;
 		z-index: 50;
+	}
+
+	:global(.dark) .loading-overlay {
+		background: #0a0a0a;
 	}
 
 	.loading-shape {
@@ -347,8 +362,12 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		background: #0a0a0a;
+		background: #f0f0f0;
 		z-index: 50;
+	}
+
+	:global(.dark) .error-overlay {
+		background: #0a0a0a;
 	}
 
 	.error-code {
@@ -406,10 +425,14 @@
 		font-size: 28px;
 		font-weight: 900;
 		letter-spacing: 0.15em;
-		line-height: 1;
-		color: #fafafa;
+		line-height: 1.1;
+		color: #0a0a0a;
 		text-transform: uppercase;
 		margin: 0;
+	}
+
+	:global(.dark) .hud-title {
+		color: #fafafa;
 	}
 
 	.hud-divider {
@@ -440,8 +463,12 @@
 	.hud-stat-value {
 		font-size: 18px;
 		font-weight: 700;
-		color: #fafafa;
+		color: #0a0a0a;
 		letter-spacing: 0.05em;
+	}
+
+	:global(.dark) .hud-stat-value {
+		color: #fafafa;
 	}
 
 	.hud-mode-label {
@@ -478,6 +505,12 @@
 	}
 
 	.hud-mode-btn.active {
+		background: #1a1a1a;
+		border-color: #1a1a1a;
+		color: #fafafa;
+	}
+
+	:global(.dark) .hud-mode-btn.active {
 		background: #e0e0e0;
 		border-color: #e0e0e0;
 		color: #0a0a0a;
@@ -517,20 +550,30 @@
 		flex-shrink: 0;
 	}
 
+	.tooltip-location {
+		font-size: 12px;
+		font-weight: 700;
+		color: #0a0a0a;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		margin: 0;
+	}
+
+	:global(.dark) .tooltip-location {
+		color: #fafafa;
+	}
+
 	.tooltip-content {
-		background: rgba(15, 15, 15, 0.95);
-		border: 1px solid #333;
+		background: rgba(255, 255, 255, 0.95);
+		border: 1px solid #ddd;
 		border-left: none;
 		padding: 8px 14px;
 	}
 
-	.tooltip-location {
-		font-size: 12px;
-		font-weight: 700;
-		color: #fafafa;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		margin: 0;
+	:global(.dark) .tooltip-content {
+		background: rgba(15, 15, 15, 0.95);
+		border: 1px solid #333;
+		border-left: none;
 	}
 
 	.tooltip-detail {
@@ -547,12 +590,17 @@
 		top: 50%;
 		transform: translateY(-50%);
 		width: 280px;
-		background: rgba(15, 15, 15, 0.95);
-		border: 1.5px solid #333;
+		background: rgba(255, 255, 255, 0.95);
+		border: 1.5px solid #ddd;
 		padding: 24px;
 		z-index: 20;
 		clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%);
 		animation: panel-in 0.2s ease-out;
+	}
+
+	:global(.dark) .detail-panel {
+		background: rgba(15, 15, 15, 0.95);
+		border: 1.5px solid #333;
 	}
 
 	@keyframes panel-in {
@@ -586,11 +634,15 @@
 	.detail-title {
 		font-size: 16px;
 		font-weight: 900;
-		color: #fafafa;
+		color: #0a0a0a;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		margin: 0;
 		padding-right: 30px;
+	}
+
+	:global(.dark) .detail-title {
+		color: #fafafa;
 	}
 
 	.detail-divider {
@@ -623,6 +675,10 @@
 	.detail-value {
 		font-size: 13px;
 		font-weight: 600;
+		color: #1a1a1a;
+	}
+
+	:global(.dark) .detail-value {
 		color: #e0e0e0;
 	}
 
@@ -640,10 +696,16 @@
 	.detail-tag {
 		font-size: 9px;
 		padding: 3px 8px;
+		background: #e5e5e5;
+		border: 1px solid #ccc;
+		color: #666;
+		letter-spacing: 0.05em;
+	}
+
+	:global(.dark) .detail-tag {
 		background: #1a1a1a;
 		border: 1px solid #333;
 		color: #aaa;
-		letter-spacing: 0.05em;
 	}
 
 	/* --- Responsive --- */

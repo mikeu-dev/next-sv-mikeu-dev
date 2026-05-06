@@ -96,6 +96,21 @@
 	"skill_playground_strategy_desc": "Setiap teknologi dipilih bukan karena popularitasnya, melainkan karena efektivitasnya dalam menyelesaikan masalah bisnis yang spesifik.",
 	"skill_playground_reset": "Reset",
 	"skill_playground_shake": "Guncang",
-	"skill_playground_sync_ready": "Sinkronisasi Siap",
-	"skill_playground_interact": "INTERAKSI UNTUK EKSPLORASI"
+	"skill_playground_sync_ready": "Sync Ready",
+	"skill_playground_interact": "INTERAKSI UNTUK EKSPLORASI",
+	"world_title": "DUNIA LIPAT",
+	"world_description": "Visualisasi 3D interaktif dari pengunjung global. Setiap pengunjung meninggalkan jejak digital pada jaring dunia yang terlipat.",
+	"world_loading": "MENGINISIALISASI WORLD_MESH",
+	"world_loading_engine": "Menyiapkan mesin visualisasi 3D...",
+	"world_err_webgl": "Perangkat ini mungkin tidak mendukung WebGL.",
+	"world_hud_total": "TOTAL",
+	"world_hud_today": "HARI INI",
+	"world_hud_nodes": "TITIK",
+	"world_hud_mode": "MODE",
+	"world_hud_instructions": "SERET UNTUK ROTASI · GULIR UNTUK ZOOM",
+	"world_detail_visitors": "PENGUNJUNG",
+	"world_detail_last_visit": "KUNJUNGAN TERAKHIR",
+	"world_detail_coords": "KOORDINAT",
+	"world_detail_browsers": "BROWSER",
+	"world_detail_devices": "PERANGKAT"
 }

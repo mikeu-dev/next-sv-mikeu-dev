@@ -61,12 +61,14 @@ export const DEFAULT_WORLD_CONFIG: WorldConfig = {
 };
 
 /** Color palette — Brutalist Monochrome */
-export const WORLD_COLORS = {
-	background: 0x0a0a0a,
-	wireframe: 0xe0e0e0,
-	faceCold: 0x1a1a1a,
-	faceHot: 0xd4d4d4,
+export const getWorldColors = (isDark: boolean) => ({
+	background: isDark ? 0x0a0a0a : 0xfafafa,
+	wireframe: isDark ? 0xe0e0e0 : 0x1a1a1a,
+	faceCold: isDark ? 0x1a1a1a : 0xf0f0f0,
+	faceHot: isDark ? 0xd4d4d4 : 0x404040,
 	accent: 0xff3333,
-	text: '#fafafa',
-	textMuted: '#666666'
-} as const;
+	text: isDark ? '#fafafa' : '#0a0a0a',
+	textMuted: isDark ? '#666666' : '#999999'
+});
+
+export const WORLD_COLORS = getWorldColors(true); // Default to dark for legacy/static usage

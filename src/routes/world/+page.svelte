@@ -1,20 +1,17 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { m } from '$lib/paraglide/messages';
+	import { mode } from 'mode-watcher';
 
 	let { data }: { data: PageData } = $props();
+	let isDark = $derived(mode.current === 'dark');
 </script>
 
 <svelte:head>
-	<title>Folded World — Interactive Visitor Map | mikeu.dev</title>
-	<meta
-		name="description"
-		content="An interactive 3D visualization of global visitors. Each visitor leaves a digital imprint on the folded world mesh."
-	/>
-	<meta property="og:title" content="Folded World — Interactive Visitor Map" />
-	<meta
-		property="og:description"
-		content="Explore the digital footprints of global visitors through a brutalist 3D mesh visualization."
-	/>
+	<title>{m.world_title()} — Interactive Visitor Map | mikeu.dev</title>
+	<meta name="description" content={m.world_description()} />
+	<meta property="og:title" content={m.world_title()} />
+	<meta property="og:description" content={m.world_description()} />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
@@ -38,6 +35,7 @@
 			nodes={data.geoNodes}
 			totalVisitors={data.stats.total}
 			todayVisitors={data.stats.today}
+			{isDark}
 		/>
 	{:catch}
 		<!-- Fallback for devices that can't load Three.js -->
