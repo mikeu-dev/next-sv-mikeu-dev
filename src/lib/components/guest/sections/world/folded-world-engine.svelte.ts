@@ -252,6 +252,11 @@ export function createFoldedWorldEngine() {
 		nonIndexed.setAttribute('intensity', new THREE.BufferAttribute(intensities, 1));
 		nonIndexed.setAttribute('foldOffset', new THREE.BufferAttribute(foldOffsets, 1));
 
+		// Load world mask texture
+		const textureLoader = new THREE.TextureLoader();
+		const worldMask = textureLoader.load('/images/world-mask.png');
+		worldMask.wrapS = THREE.RepeatWrapping;
+
 		// Main mesh material (custom shader)
 		mainMaterial = new THREE.ShaderMaterial({
 			vertexShader,
@@ -265,7 +270,8 @@ export function createFoldedWorldEngine() {
 				uAccentColor: { value: new THREE.Color(colors.accent) },
 				uHoveredIntensity: { value: -1.0 },
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
-				uOpacity: { value: config.wireframeOpacity }
+				uOpacity: { value: config.wireframeOpacity },
+				uWorldMask: { value: worldMask }
 			},
 			side: THREE.FrontSide
 		});

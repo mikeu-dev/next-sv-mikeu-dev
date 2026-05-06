@@ -28,10 +28,11 @@ export const vertexShader = /* glsl */ `
 
 	varying float vIntensity;
 	varying vec3 vNormal;
-	varying vec3 vWorldPosition;
+	varying vec3 vLocalPosition;
 
 	void main() {
 		vIntensity = intensity;
+		vLocalPosition = position;
 		vNormal = normalize(normalMatrix * normal);
 
 		vec3 pos = position;
@@ -49,7 +50,7 @@ export const vertexShader = /* glsl */ `
 		}
 		// HEAT mode (1) — no vertex displacement
 
-		vWorldPosition = (modelMatrix * vec4(pos, 1.0)).xyz;
+
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}
@@ -67,6 +68,7 @@ export const vertexShader = /* glsl */ `
  * - uTime: float — animation time
  */
 export const fragmentShader = /* glsl */ `
+	uniform sampler2D uWorldMask;
 	uniform vec3 uColorCold;
 	uniform vec3 uColorHot;
 	uniform vec3 uAccentColor;
@@ -76,35 +78,53 @@ export const fragmentShader = /* glsl */ `
 
 	varying float vIntensity;
 	varying vec3 vNormal;
-	varying vec3 vWorldPosition;
+	varying vec3 vLocalPosition;
+
+	#define PI 3.14159265359
 
 	void main() {
+		// Calculate UV using Local Position so it rotates with the mesh
+		vec3 nPos = normalize(vLocalPosition);
+		
+		// Improved UV mapping for equirectangular projection
+		// u: maps longitude [-180, 180] to [0, 1]
+		// v: maps latitude [-90, 90] to [0, 1]
+		float u = fract(atan(nPos.z, -nPos.x) / (2.0 * PI));
+		float v = 1.0 - acos(nPos.y) / PI;
+		
+		// Sample world mask (continents)
+		float mask = texture2D(uWorldMask, vec2(u, v)).r;
+
 		// Base color: interpolate between cold and hot with sharper transition
 		float colorT = pow(vIntensity, 1.5);
 		vec3 baseColor = mix(uColorCold, uColorHot, colorT);
 
+		// Subtle continent highlight
+		baseColor += mask * 0.08;
+
 		// Directional lighting (brutalist — harsh, single light)
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.8));
 		float diffuse = max(dot(vNormal, lightDir), 0.0);
-		float ambient = 0.2;
-		float lighting = ambient + diffuse * 0.8;
+		float ambient = 0.25;
+		float lighting = ambient + diffuse * 0.75;
 
 		vec3 finalColor = baseColor * lighting;
 
 		// HEAT mode — more saturated color range
 		if (uMode == 1) {
 			vec3 heatColor = mix(
-				vec3(0.1, 0.1, 0.12),  // cold: dark blue-gray
-				uAccentColor,            // hot: red accent
-				pow(vIntensity, 1.5)
+				uColorCold,
+				uAccentColor,
+				pow(vIntensity, 1.2)
 			);
-			finalColor = heatColor * lighting;
+			finalColor = (heatColor + mask * 0.1) * lighting;
 		}
 
 		// TIMELINE mode — pulsing glow
 		if (uMode == 2) {
 			float pulse = sin(uTime * 2.0 + vIntensity * 6.28318) * 0.5 + 0.5;
 			finalColor += uAccentColor * vIntensity * pulse * 0.3;
+			finalColor += mask * 0.05;
 		}
 
 		// Hover highlight — sharp edge glow
@@ -114,7 +134,7 @@ export const fragmentShader = /* glsl */ `
 
 		// Film grain effect (brutalist texture)
 		float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-		finalColor += (grain - 0.5) * 0.03;
+		finalColor += (grain - 0.5) * 0.04;
 
 		gl_FragColor = vec4(finalColor, 1.0);
 	}
