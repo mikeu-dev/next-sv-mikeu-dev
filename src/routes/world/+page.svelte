@@ -15,10 +15,7 @@
 		property="og:description"
 		content="Explore the digital footprints of global visitors through a brutalist 3D mesh visualization."
 	/>
-	<link
-		rel="preconnect"
-		href="https://fonts.googleapis.com"
-	/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
 		rel="stylesheet"
@@ -92,7 +89,8 @@
 	}
 
 	@keyframes shape-pulse {
-		0%, 100% {
+		0%,
+		100% {
 			transform: scale(1) rotate(0deg);
 			opacity: 0.5;
 		}

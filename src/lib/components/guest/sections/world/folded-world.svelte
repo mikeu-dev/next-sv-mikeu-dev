@@ -47,25 +47,41 @@
 				skewX: -20,
 				stagger: 0.1
 			})
-			.from('.hud-divider', {
-				scaleX: 0,
-				transformOrigin: 'left',
-				duration: 0.8
-			}, '-=0.8')
-			.from('.hud-stat', {
-				y: 20,
-				opacity: 0,
-				stagger: 0.05
-			}, '-=0.6')
-			.from('.hud-top-right', {
-				x: 40,
-				opacity: 0
-			}, '-=1')
-			.from('.hud-bottom-left, .hud-bottom-right', {
-				y: 20,
-				opacity: 0,
-				stagger: 0.1
-			}, '-=0.8');
+				.from(
+					'.hud-divider',
+					{
+						scaleX: 0,
+						transformOrigin: 'left',
+						duration: 0.8
+					},
+					'-=0.8'
+				)
+				.from(
+					'.hud-stat',
+					{
+						y: 20,
+						opacity: 0,
+						stagger: 0.05
+					},
+					'-=0.6'
+				)
+				.from(
+					'.hud-top-right',
+					{
+						x: 40,
+						opacity: 0
+					},
+					'-=1'
+				)
+				.from(
+					'.hud-bottom-left, .hud-bottom-right',
+					{
+						y: 20,
+						opacity: 0,
+						stagger: 0.1
+					},
+					'-=0.8'
+				);
 		}
 	});
 
@@ -73,7 +89,8 @@
 		engine.setViewMode(mode);
 
 		// Subtle feedback animation
-		gsap.fromTo('.hud-mode-label',
+		gsap.fromTo(
+			'.hud-mode-label',
 			{ opacity: 0.5, x: -5 },
 			{ opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' }
 		);
@@ -85,15 +102,9 @@
 	}
 </script>
 
-<div
-	class="folded-world-container"
-	bind:this={containerEl}
->
+<div class="folded-world-container" bind:this={containerEl}>
 	<!-- Three.js Canvas -->
-	<canvas
-		bind:this={canvasEl}
-		class="folded-world-canvas"
-	></canvas>
+	<canvas bind:this={canvasEl} class="folded-world-canvas"></canvas>
 
 	<!-- Loading State -->
 	{#if engine.state.loading}
@@ -208,7 +219,8 @@
 				</div>
 				<div class="detail-item">
 					<span class="detail-label">COORDS</span>
-					<span class="detail-value">{node.latitude.toFixed(2)}°, {node.longitude.toFixed(2)}°</span>
+					<span class="detail-value">{node.latitude.toFixed(2)}°, {node.longitude.toFixed(2)}°</span
+					>
 				</div>
 			</div>
 
@@ -286,8 +298,12 @@
 	}
 
 	@keyframes loading-spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading-text {
@@ -314,8 +330,12 @@
 	}
 
 	@keyframes loading-slide {
-		0% { transform: translateX(-100%); }
-		100% { transform: translateX(350%); }
+		0% {
+			transform: translateX(-100%);
+		}
+		100% {
+			transform: translateX(350%);
+		}
 	}
 
 	/* --- Error State --- */

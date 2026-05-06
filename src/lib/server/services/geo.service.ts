@@ -84,9 +84,12 @@ async function fetchFromIpApi(ip: string): Promise<GeoData> {
 		const controller = new AbortController();
 		const timeout = setTimeout(() => controller.abort(), 2000);
 
-		const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city,regionName,lat,lon`, {
-			signal: controller.signal
-		});
+		const response = await fetch(
+			`http://ip-api.com/json/${ip}?fields=status,country,city,regionName,lat,lon`,
+			{
+				signal: controller.signal
+			}
+		);
 
 		clearTimeout(timeout);
 

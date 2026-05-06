@@ -214,16 +214,19 @@ export class VisitorService {
 			const logs = await this.repository.getWithGeoData(2000);
 
 			// Aggregate by country + city
-			const geoMap = new Map<string, {
-				country: string;
-				city: string | null;
-				latitude: number;
-				longitude: number;
-				count: number;
-				lastVisit: Date;
-				browsers: Set<string>;
-				devices: Set<string>;
-			}>();
+			const geoMap = new Map<
+				string,
+				{
+					country: string;
+					city: string | null;
+					latitude: number;
+					longitude: number;
+					count: number;
+					lastVisit: Date;
+					browsers: Set<string>;
+					devices: Set<string>;
+				}
+			>();
 
 			for (const log of logs) {
 				if (!log.country || log.latitude == null || log.longitude == null) continue;
@@ -231,9 +234,12 @@ export class VisitorService {
 				const key = `${log.country}::${log.city || 'unknown'}`;
 				const existing = geoMap.get(key);
 
-				const logDate = log.timestamp instanceof Date
-					? log.timestamp
-					: log.timestamp ? new Date(log.timestamp) : new Date();
+				const logDate =
+					log.timestamp instanceof Date
+						? log.timestamp
+						: log.timestamp
+							? new Date(log.timestamp)
+							: new Date();
 
 				if (existing) {
 					existing.count++;

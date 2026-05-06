@@ -1,8 +1,8 @@
 import Matter from 'matter-js';
-import { 
-	shapes, 
-	tetrisColors, 
-	categoryColors, 
+import {
+	shapes,
+	tetrisColors,
+	categoryColors,
 	isColorLight,
 	type LocalizedCategory,
 	type PieceBody,
@@ -22,22 +22,22 @@ export class SkillEngine {
 	comboCount = $state(0);
 	nextPieceIdx = $state(1);
 	spawnedCount = $state(0);
-	
+
 	// Physics internals
 	physicsBodies: Matter.Body[] = [];
 	nextId = 0;
 	isSpawning = false;
 	spawnTimeouts: number[] = [];
-	
+
 	// HUD State
 	sessionStart = Date.now();
 	uptime = $state(0);
 	integrity = $state(100);
-	
+
 	// Dimensions
 	canvasWidth = $state(0);
 	canvasHeight = $state(0);
-	
+
 	private container: HTMLElement | null = null;
 	private categories: LocalizedCategory[] = [];
 
@@ -50,7 +50,7 @@ export class SkillEngine {
 		const all: Tetrimino[] = [];
 		let currentSkillIndex = 0;
 		const shapeKeys = Object.keys(shapes);
-		
+
 		const flatSkills = this.categories.flatMap((cat) =>
 			(cat.items || []).map((item) => ({
 				...item,
@@ -64,7 +64,7 @@ export class SkillEngine {
 			const shapeKey = shapeKeys[pseudoRandom];
 			const shapeCoords = shapes[shapeKey];
 			const pieceSkills: SkillItem[] = [];
-			
+
 			for (let i = 0; i < shapeCoords.length; i++) {
 				if (currentSkillIndex < flatSkills.length) {
 					pieceSkills.push({
@@ -238,7 +238,7 @@ export class SkillEngine {
 				const maxX = Math.max(...piece.skills.map((s) => s.relX));
 				const pieceWidth = (maxX + 1) * blockSize;
 				const startX = Math.random() * (this.canvasWidth - pieceWidth - 40) + 20;
-				
+
 				const parts = piece.skills.map((skill) =>
 					Bodies.rectangle(
 						startX + skill.relX * blockSize,
@@ -253,7 +253,7 @@ export class SkillEngine {
 						}
 					)
 				);
-				
+
 				const body = Body.create({
 					parts,
 					frictionAir: 0.05,

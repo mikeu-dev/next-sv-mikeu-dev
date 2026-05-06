@@ -30,12 +30,7 @@ export function latLngToSphere(
  * Hitung jarak antara dua titik di permukaan sphere (great-circle distance).
  * Return dalam radians.
  */
-export function sphericalDistance(
-	lat1: number,
-	lng1: number,
-	lat2: number,
-	lng2: number
-): number {
+export function sphericalDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
 	const phi1 = (lat1 * Math.PI) / 180;
 	const phi2 = (lat2 * Math.PI) / 180;
 	const dPhi = ((lat2 - lat1) * Math.PI) / 180;

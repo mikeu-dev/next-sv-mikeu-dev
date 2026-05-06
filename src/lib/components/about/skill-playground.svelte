@@ -4,15 +4,15 @@
 	import * as m from '$lib/paraglide/messages';
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import { SkillEngine } from './skill-playground-engine.svelte';
-	import { 
-		categoryColors, 
-		defaultUrls, 
+	import {
+		categoryColors,
+		defaultUrls,
 		type LocalizedCategory,
 		type SkillItem
 	} from './skill-playground.types';
 
 	let { categories }: { categories: LocalizedCategory[] } = $props();
-	
+
 	const engine = new SkillEngine(categories);
 	let container: HTMLElement;
 	let lastW = 0;
@@ -115,7 +115,9 @@
 								</div>
 
 								{#if item.url || defaultUrls[item.name]}
-									<div class="absolute top-2 right-2 opacity-0 transition-all group-hover:opacity-100">
+									<div
+										class="absolute top-2 right-2 opacity-0 transition-all group-hover:opacity-100"
+									>
 										<Icon iconName="ExternalLink" size={10} class="text-zinc-400" />
 									</div>
 								{/if}
@@ -184,7 +186,9 @@
 											)}
 											<div
 												class={isF ? 'size-1.5' : 'size-0.5 bg-zinc-200 dark:bg-zinc-800'}
-												style="background-color: {isF ? engine.tetriminos[engine.nextPieceIdx].color : ''}"
+												style="background-color: {isF
+													? engine.tetriminos[engine.nextPieceIdx].color
+													: ''}"
 											></div>
 										{/each}
 									</div>

@@ -47,7 +47,7 @@ interface EngineState {
  */
 export function createFoldedWorldEngine() {
 	// --- Reactive State ---
-	let state = $state<EngineState>({
+	const state = $state<EngineState>({
 		ready: false,
 		loading: true,
 		error: null,
@@ -59,7 +59,7 @@ export function createFoldedWorldEngine() {
 	let viewMode = $state<ViewMode>('fold');
 	let tooltip = $state<TooltipData>({ visible: false, x: 0, y: 0, node: null });
 	let detailPanel = $state<DetailPanelData>({ visible: false, node: null });
-	let config = $state<WorldConfig>({ ...DEFAULT_WORLD_CONFIG });
+	const config = $state<WorldConfig>({ ...DEFAULT_WORLD_CONFIG });
 
 	// --- Internal State (non-reactive) ---
 	let THREE: ThreeModule;
@@ -225,11 +225,7 @@ export function createFoldedWorldEngine() {
 		faceCentersCache = [];
 		for (let i = 0; i < faceCountVal; i++) {
 			const i0 = i * 3;
-			const v0: [number, number, number] = [
-				posAttr.getX(i0),
-				posAttr.getY(i0),
-				posAttr.getZ(i0)
-			];
+			const v0: [number, number, number] = [posAttr.getX(i0), posAttr.getY(i0), posAttr.getZ(i0)];
 			const v1: [number, number, number] = [
 				posAttr.getX(i0 + 1),
 				posAttr.getY(i0 + 1),
@@ -496,8 +492,7 @@ export function createFoldedWorldEngine() {
 					// Highlight hovered face
 					if (mainMaterial) {
 						const intensityAttr = mainMesh.geometry.getAttribute('intensity');
-						mainMaterial.uniforms.uHoveredIntensity.value =
-							intensityAttr.getX(faceIdx * 3);
+						mainMaterial.uniforms.uHoveredIntensity.value = intensityAttr.getX(faceIdx * 3);
 					}
 
 					if (canvasEl) canvasEl.style.cursor = 'pointer';
@@ -568,11 +563,21 @@ export function createFoldedWorldEngine() {
 	// --- Return public API ---
 	return {
 		// State (readonly access via getters)
-		get state() { return state; },
-		get viewMode() { return viewMode; },
-		get tooltip() { return tooltip; },
-		get detailPanel() { return detailPanel; },
-		get config() { return config; },
+		get state() {
+			return state;
+		},
+		get viewMode() {
+			return viewMode;
+		},
+		get tooltip() {
+			return tooltip;
+		},
+		get detailPanel() {
+			return detailPanel;
+		},
+		get config() {
+			return config;
+		},
 
 		// Methods
 		init,
