@@ -140,6 +140,33 @@
 		]
 	};
 
+	const defaultUrls: Record<string, string> = {
+		Svelte: 'https://svelte.dev',
+		SvelteKit: 'https://kit.svelte.dev',
+		TailwindCSS: 'https://tailwindcss.com',
+		TypeScript: 'https://www.typescriptlang.org',
+		GSAP: 'https://gsap.com',
+		'Matter.js': 'https://brm.io/matter-js/',
+		Firebase: 'https://firebase.google.com',
+		Vite: 'https://vitejs.dev',
+		React: 'https://react.dev',
+		'Node.js': 'https://nodejs.org',
+		'Next.js': 'https://nextjs.org',
+		Prisma: 'https://www.prisma.io',
+		Drizzle: 'https://orm.drizzle.team',
+		PostgreSQL: 'https://www.postgresql.org',
+		Supabase: 'https://supabase.com',
+		Lucide: 'https://lucide.dev',
+		Storybook: 'https://storybook.js.org',
+		Playwright: 'https://playwright.dev',
+		Vitest: 'https://vitest.dev',
+		ESLint: 'https://eslint.org',
+		Prettier: 'https://prettier.io',
+		Docker: 'https://www.docker.com',
+		Git: 'https://git-scm.com',
+		GitHub: 'https://github.com'
+	};
+
 	const shapeKeys = Object.keys(shapes) as Array<keyof typeof shapes>;
 
 	const tetriminos = $derived.by(() => {
@@ -490,8 +517,15 @@
 					<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
 						{#each cat.items as item (item.name)}
 							{@const itemColor = item.color || categoryColors[cat.category]}
-							<div
-								class="group relative flex items-center gap-3 border-2 border-zinc-100 bg-white p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:border-foreground hover:shadow-[4px_4px_0_var(--foreground)] dark:border-zinc-800 dark:bg-zinc-900"
+							<svelte:element
+								this={item.url || defaultUrls[item.name] ? 'a' : 'div'}
+								href={item.url || defaultUrls[item.name]}
+								target={item.url || defaultUrls[item.name] ? '_blank' : undefined}
+								rel={item.url || defaultUrls[item.name] ? 'noopener noreferrer' : undefined}
+								class="group relative flex items-center gap-3 border-2 border-zinc-100 bg-white p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:border-foreground hover:shadow-[4px_4px_0_var(--foreground)] dark:border-zinc-800 dark:bg-zinc-900 {item.url ||
+								defaultUrls[item.name]
+									? 'cursor-alias'
+									: ''}"
 							>
 								<div
 									class="flex size-10 items-center justify-center transition-colors group-hover:bg-foreground group-hover:text-background"
@@ -505,11 +539,26 @@
 										>
 									{/if}
 								</div>
-								<span
-									class="font-mono text-[10px] font-black tracking-tighter text-zinc-700 uppercase dark:text-zinc-300"
-									>{item.name}</span
-								>
-							</div>
+								<div class="flex flex-col">
+									<span
+										class="font-mono text-[10px] font-black tracking-tighter text-zinc-700 uppercase dark:text-zinc-300"
+										>{item.name}</span
+									>
+									{#if item.url || defaultUrls[item.name]}
+										<span
+											class="font-mono text-[8px] font-bold text-primary opacity-0 transition-opacity group-hover:opacity-100"
+										>
+											[VIEW_SOURCE]
+										</span>
+									{/if}
+								</div>
+
+								{#if item.url || defaultUrls[item.name]}
+									<div class="absolute top-2 right-2 opacity-0 transition-all group-hover:opacity-100">
+										<Icon iconName="ExternalLink" size={10} class="text-zinc-400" />
+									</div>
+								{/if}
+							</svelte:element>
 						{/each}
 					</div>
 				</div>
