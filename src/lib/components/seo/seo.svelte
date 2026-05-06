@@ -35,9 +35,9 @@
 			// Otherwise return as is
 			return image;
 		}
-		const t = encodeURIComponent(title || 'Mikeu Dev');
-		const s = encodeURIComponent(description || 'Fullstack Web Developer');
-		return `${siteUrl}/api/og?title=${t}&subtitle=${s}`;
+		// Fallback to static PNG for better compatibility with WhatsApp/Social Media
+		// SVG images (from /api/og) are often not supported by link crawlers
+		return `${siteUrl}/images/og-default.png`;
 	});
 
 	// Construct canonical URL using hardcoded domain to avoid non-www issues
@@ -146,21 +146,40 @@
 	<link rel="alternate" hreflang="x-default" href={alternatesData.xDefault} />
 
 	<!-- Open Graph / Facebook -->
+	<meta property="og:site_name" content="Mikeu Dev" />
 	<meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:title" content={finalTitle} />
 	<meta property="og:description" content={finalDescription} />
+
+	<!-- Primary OG Image (1200x630) -->
 	<meta property="og:image" content={finalImage} />
+	<meta property="og:image:secure_url" content={finalImage} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:type" content="image/png" />
+
+	<!-- WhatsApp/Square Thumbnail (300x300) -->
+	<meta property="og:image" content="{siteUrl}/images/og-default.png" />
+	<meta property="og:image:width" content="300" />
+	<meta property="og:image:height" content="300" />
+
 	{#if type === 'article' && article?.publishedTime}
 		<meta property="article:published_time" content={article.publishedTime} />
 	{/if}
 
+	<!-- Microsoft / Microsoft Apps -->
+	<meta name="msapplication-TileImage" content="{siteUrl}/images/og-default.png" />
+	<meta name="msapplication-TileColor" content="#0f172a" />
+
 	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content={canonicalUrl} />
-	<meta property="twitter:title" content={finalTitle} />
-	<meta property="twitter:description" content={finalDescription} />
-	<meta property="twitter:image" content={finalImage} />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content={canonicalUrl} />
+	<meta name="twitter:title" content={finalTitle} />
+	<meta name="twitter:description" content={finalDescription} />
+	<meta name="twitter:image" content={finalImage} />
+	<meta name="twitter:site" content="@mikeu_dev" />
+	<meta name="twitter:creator" content="@mikeu_dev" />
 
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html jsonLdScript}
