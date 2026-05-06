@@ -63,8 +63,9 @@ export function mapNodesToFaces(
 
 	if (nodes.length === 0) return intensities;
 
-	// Find max count for normalization
-	const maxCount = Math.max(...nodes.map((n) => n.count), 1);
+	// Use log scale for normalization to ensure small counts are visible
+	const getVal = (count: number) => Math.log10(count + 1);
+	const maxVal = getVal(Math.max(...nodes.map((n) => n.count), 1));
 
 	for (let i = 0; i < faceCenters.length; i++) {
 		const [fLat, fLng] = faceCenters[i];
@@ -74,15 +75,15 @@ export function mapNodesToFaces(
 			const dist = sphericalDistance(fLat, fLng, node.latitude, node.longitude);
 
 			if (dist < influenceRadius) {
-				// Inverse distance weighting, normalized by max count
-				const weight = 1 - dist / influenceRadius;
-				const normalizedCount = node.count / maxCount;
-				totalIntensity += weight * normalizedCount;
+				// Inverse distance weighting with ease-out curve
+				const weight = Math.pow(1 - dist / influenceRadius, 1.5);
+				const normalizedVal = getVal(node.count) / maxVal;
+				totalIntensity += weight * normalizedVal;
 			}
 		}
 
-		// Clamp to [0, 1]
-		intensities[i] = Math.min(totalIntensity, 1);
+		// Clamp to [0, 1] with a slight boost to ensure visibility
+		intensities[i] = Math.min(totalIntensity * 1.2, 1);
 	}
 
 	return intensities;

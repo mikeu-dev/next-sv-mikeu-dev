@@ -52,9 +52,9 @@ export interface DetailPanelData {
 
 /** Default configuration */
 export const DEFAULT_WORLD_CONFIG: WorldConfig = {
-	subdivisions: 2,
+	subdivisions: 4,
 	autoRotateSpeed: 0.15,
-	maxExtrusion: 0.4,
+	maxExtrusion: 0.6,
 	enableParticles: true,
 	wireframeOpacity: 0.6,
 	backgroundColor: '#0a0a0a'
@@ -64,8 +64,8 @@ export const DEFAULT_WORLD_CONFIG: WorldConfig = {
 export const getWorldColors = (isDark: boolean) => ({
 	background: isDark ? 0x0a0a0a : 0xfafafa,
 	wireframe: isDark ? 0xe0e0e0 : 0x1a1a1a,
-	faceCold: isDark ? 0x1a1a1a : 0xf0f0f0,
-	faceHot: isDark ? 0xd4d4d4 : 0x404040,
+	faceCold: isDark ? 0x121212 : 0xf5f5f5, 
+	faceHot: 0xff0000, // NEON RED for testing visibility
 	accent: 0xff3333,
 	text: isDark ? '#fafafa' : '#0a0a0a',
 	textMuted: isDark ? '#666666' : '#999999'

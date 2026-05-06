@@ -302,7 +302,7 @@ export function createFoldedWorldEngine() {
 		const intensityAttr = geometry.getAttribute('intensity');
 
 		// Map geo nodes to face intensities
-		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes);
+		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.8);
 
 		// Spread face intensity to all 3 vertices of each face
 		for (let face = 0; face < faceIntensities.length; face++) {

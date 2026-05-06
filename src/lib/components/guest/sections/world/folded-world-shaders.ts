@@ -79,8 +79,9 @@ export const fragmentShader = /* glsl */ `
 	varying vec3 vWorldPosition;
 
 	void main() {
-		// Base color: interpolate between cold and hot
-		vec3 baseColor = mix(uColorCold, uColorHot, vIntensity);
+		// Base color: interpolate between cold and hot with sharper transition
+		float colorT = pow(vIntensity, 1.5);
+		vec3 baseColor = mix(uColorCold, uColorHot, colorT);
 
 		// Directional lighting (brutalist — harsh, single light)
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.8));
