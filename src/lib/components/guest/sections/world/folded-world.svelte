@@ -380,12 +380,12 @@
 	}
 
 	.hud-top-left {
-		top: 24px;
+		top: 112px;
 		left: 24px;
 	}
 
 	.hud-top-right {
-		top: 24px;
+		top: 112px;
 		right: 24px;
 		text-align: right;
 		pointer-events: auto;
@@ -650,12 +650,12 @@
 
 	@media (max-width: 640px) {
 		.hud-top-left {
-			top: 16px;
+			top: 90px;
 			left: 16px;
 		}
 
 		.hud-top-right {
-			top: 16px;
+			top: 90px;
 			right: 16px;
 		}
 
