@@ -222,7 +222,22 @@
 		const pb = pieceBodies.find((p) => p.id === id);
 		const body = physicsBodies.find((b) => b.label === `piece-${id}`);
 		if (pb && body) {
+			// Reset velocity and add a strong upward "pop" to clear the area
+			Body.setVelocity(body, { x: 0, y: -6 });
 			Body.rotate(body, Math.PI / 2);
+			Body.setAngularVelocity(body, 0);
+
+			// Radial Push: Gently push neighbors away to prevent "+" merging during the sweep
+			physicsBodies.forEach((other) => {
+				if (other === body || !other.label.startsWith('piece-')) return;
+				const diff = Matter.Vector.sub(other.position, body.position);
+				const dist = Matter.Vector.magnitude(diff);
+				if (dist < 120) {
+					const pushForce = Matter.Vector.mult(Matter.Vector.normalise(diff), 0.05 * other.mass);
+					Body.applyForce(other, other.position, pushForce);
+				}
+			});
+
 			comboCount++;
 			createParticles(body.position.x, body.position.y, pb.piece.color, 12);
 
@@ -340,12 +355,13 @@
 					Bodies.rectangle(
 						startX + skill.relX * blockSize,
 						50 + skill.relY * blockSize,
-						blockSize - 1,
-						blockSize - 1,
+						blockSize - 0.8,
+						blockSize - 0.8,
 						{
-							friction: 0.5,
-							restitution: 0.1,
-							density: 0.002
+							friction: 0.3,
+							restitution: 0.05,
+							density: 0.001,
+							slop: 0.05
 						}
 					)
 				);
@@ -395,6 +411,9 @@
 		engine = Engine.create();
 		engine.world.gravity.y = 1.0;
 		engine.enableSleeping = false;
+		engine.positionIterations = 30;
+		engine.velocityIterations = 30;
+		engine.constraintIterations = 10;
 		const mc = MouseConstraint.create(engine, {
 			mouse: Mouse.create(container),
 			constraint: { stiffness: 0.1, render: { visible: false } }
@@ -699,9 +718,9 @@
 								class:text-black={piece.isLight}
 								class:text-white={!piece.isLight}
 								class:filter-active={activeFilter && skill.category === activeFilter}
-								style="width: 44.5px; height: 44.5px; background: {piece.color}ee; border-color: {piece.color}; 
-									   transform: translate({skill.x - 22.5}px, {skill.y -
-									22.5}px) rotate({skill.angle}rad) scale({skill.scale}); 
+								style="width: 44.2px; height: 44.2px; background: {piece.color}ee; border-color: {piece.color}; 
+									   transform: translate({skill.x - 22.1}px, {skill.y -
+									22.1}px) rotate({skill.angle}rad) scale({skill.scale}); 
 									   opacity: {skill.opacity}; filter: brightness({skill.brightness}); pointer-events: none;"
 							>
 								<div
