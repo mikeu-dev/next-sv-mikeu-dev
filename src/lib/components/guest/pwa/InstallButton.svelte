@@ -1,27 +1,21 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
 	import { pwaState } from '$lib/stores/pwa.svelte';
 	import { m } from '@/lib/paraglide/messages';
-	import SmartphoneIcon from '@lucide/svelte/icons/smartphone';
+	import { Download, Smartphone } from '@lucide/svelte';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { tick } from 'svelte';
 	import { fade } from 'svelte/transition';
-
 	import { cn } from '$lib/utils';
 
 	let { class: className = '' } = $props();
-
 	let confettiCannon = $state(false);
 
 	const handleInstall = async () => {
-		// Trigger confetti
 		confettiCannon = false;
 		await tick();
 		confettiCannon = true;
 		playConfettiSound();
-
-		// Trigger PWA install
 		await pwaState.install();
 	};
 </script>
@@ -39,13 +33,26 @@
 			</div>
 		{/if}
 
-		<Button
-			variant="outline"
+		<button
 			onclick={handleInstall}
-			class="group flex cursor-pointer items-center gap-2 border-teal-600/50 hover:bg-teal-600/10 hover:text-teal-600 dark:border-teal-400/50 dark:hover:bg-teal-400/10 dark:hover:text-teal-400"
+			class="group install-btn-origami flex h-10 cursor-pointer items-center gap-2 border-2 border-foreground bg-background px-4 font-mono text-[10px] font-black tracking-widest uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 		>
-			<SmartphoneIcon class="h-4 w-4 transition-transform group-hover:scale-110" />
+			<Smartphone class="size-3 transition-transform group-hover:scale-110" />
 			<span>{m.pwa_install_button()}</span>
-		</Button>
+			<Download class="size-2 text-primary opacity-50 transition-opacity group-hover:opacity-100" />
+		</button>
 	</div>
 {/if}
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	.install-btn-origami {
+		clip-path: polygon(0 0, 90% 0, 100% 25%, 100% 100%, 10% 100%, 0 75%);
+		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	}
+
+	.install-btn-origami:hover {
+		clip-path: polygon(10% 0, 100% 0, 90% 75%, 90% 100%, 0 100%, 0 25%);
+	}
+</style>

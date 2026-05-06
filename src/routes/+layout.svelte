@@ -12,20 +12,23 @@
 	import { onNavigate, afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
-	import Button from '@/lib/components/ui/button/button.svelte';
 	import gsap from 'gsap';
 	import ScrollToPlugin from 'gsap/ScrollToPlugin';
-	import Icon from '@/lib/components/ui/icon.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
+	import { ArrowUp } from '@lucide/svelte';
 
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
-	import { authState } from '$lib/stores/auth.svelte';
 	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
 
 	let { data, children } = $props();
+
+	// Register GSAP Plugin globally once
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollToPlugin);
+	}
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
@@ -43,46 +46,45 @@
 	let liveStats = $state({ total: 0, today: 0 });
 
 	function scrollToTop() {
-		gsap.registerPlugin(ScrollToPlugin);
-		gsap.to(window, { duration: 1, scrollTo: 0 });
+		// Reduced duration for more responsive feel
+		gsap.to(window, {
+			duration: 0.5,
+			scrollTo: 0,
+			ease: 'power4.inOut'
+		});
 	}
 
 	function handleScroll() {
 		if (!scrollBtn) return;
 		const show = window.scrollY > 300;
 		gsap.to(scrollBtn, {
-			duration: 0.4,
+			duration: 0.3,
 			opacity: show ? 1 : 0,
-			scale: show ? 1 : 0.5,
+			scale: show ? 1 : 0.8,
+			y: show ? 0 : 20,
 			pointerEvents: show ? 'auto' : 'none',
-			ease: 'power2.out'
+			ease: 'back.out(1.7)'
 		});
 	}
 
 	onMount(() => {
 		window.addEventListener('scroll', handleScroll);
 
-		// Manual Service Worker registration for PWA testing
 		if ('serviceWorker' in navigator && !dev) {
 			navigator.serviceWorker.register('/service-worker.js', {
 				type: dev ? 'module' : 'classic'
 			});
 		}
 
-		// PWA Installation prompt capturing
 		window.addEventListener('beforeinstallprompt', (e) => {
-			// Prevent the mini-infobar from appearing on mobile
 			e.preventDefault();
-			// Stash the event so it can be triggered later.
 			pwaState.setInstallPrompt(e as BeforeInstallPromptEvent);
 		});
 
 		window.addEventListener('appinstalled', () => {
-			// Hubungkan logika jika perlu saat aplikasi berhasil diinstal
 			pwaState.setInstallPrompt(null);
 		});
 
-		// Ambil statistik real-time untuk memperbarui data yang mungkin stale dari prerender
 		(async () => {
 			try {
 				const res = await fetch('/api/stats');
@@ -90,7 +92,7 @@
 					liveStats = await res.json();
 				}
 			} catch {
-				// Fail silently, use data from props
+				// Fail silently
 			}
 		})();
 
@@ -105,13 +107,6 @@
 		}
 	});
 
-	$effect(() => {
-		if (authState.initialized && authState.user && !data.user) {
-			// Session mismatch detected (Server: Logged out, Client: Logged in).
-			// Auto-logout disabled to prevent login loops.
-			// console.warn('Session mismatch detected.');
-		}
-	});
 	let isAdmin = $derived(page.url.pathname.startsWith('/admin'));
 </script>
 
@@ -131,7 +126,6 @@
 	></script>
 </svelte:head>
 
-<!-- 🎉 Confetti layer di luar layout utama -->
 {#if fallingConfetti}
 	<FallingConfetti />
 {/if}
@@ -140,7 +134,6 @@
 <ModeWatcher />
 <Toaster />
 
-<!-- 🧩 Layout utama -->
 <div class="flex min-h-dvh flex-col">
 	{#if !isAdmin}
 		{#await data.resumeUrls}
@@ -168,20 +161,39 @@
 	{/if}
 </div>
 
-<!-- 🌐 Hidden locale links -->
 <div style="display: none">
 	{#each locales as locale (locale)}
-		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 	{/each}
 </div>
 
-<Button
-	bind:ref={scrollBtn}
-	class="shadow-3xl pointer-events-none fixed right-8 bottom-28 z-9999 scale-50 cursor-pointer rounded-full p-2 text-white opacity-0 transition-all dark:bg-teal-400 dark:hover:bg-teal-300"
-	id="scrollToTopBtn"
+<!-- Brutalist Scroll to Top Button -->
+<button
+	bind:this={scrollBtn}
+	class="group scroll-top-origami pointer-events-none fixed right-8 bottom-8 z-[9999] flex size-12 cursor-pointer items-center justify-center border-2 border-foreground bg-primary text-primary-foreground opacity-0 shadow-[4px_4px_0_var(--foreground)] transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:rotate-3 hover:bg-foreground hover:text-primary hover:shadow-[12px_12px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 	aria-label="Scroll to top"
-	onclick={() => scrollToTop()}
+	onclick={scrollToTop}
 >
-	<Icon iconName="BsArrowUpCircleFill" size={18} />
-</Button>
+	<!-- Decorative Shard (Visible on Hover) -->
+	<div
+		class="absolute inset-0 -z-10 translate-x-0 translate-y-0 bg-primary-foreground/20 opacity-0 transition-all duration-300 group-hover:translate-x-3 group-hover:translate-y-3 group-hover:opacity-100"
+		style="clip-path: polygon(20% 0, 100% 40%, 80% 100%, 0 70%);"
+	></div>
+
+	<ArrowUp
+		class="relative z-10 size-6 transition-transform duration-300 group-hover:-translate-y-1"
+		strokeWidth={3}
+	/>
+</button>
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	.scroll-top-origami {
+		clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+	}
+
+	.scroll-top-origami:hover {
+		clip-path: polygon(0 0, 85% 15%, 100% 100%, 15% 85%);
+	}
+</style>

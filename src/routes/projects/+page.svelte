@@ -3,16 +3,23 @@
 	import ProjectSkeleton from '@/lib/components/guest/card/project-skeleton.svelte';
 	import type { PageData } from './$types';
 	import type { Project } from '$lib/types';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { buttonVariants } from '@/lib/components/ui/button';
 	import { getLocale } from '@/lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { m } from '@/lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { Search, SortAsc, SortDesc, BoxSelect } from '@lucide/svelte';
+	import {
+		Search,
+		SortAsc,
+		SortDesc,
+		BoxSelect,
+		Database,
+		Filter,
+		SlidersHorizontal,
+		Plus
+	} from '@lucide/svelte';
 	import type { Tag } from '$lib/types';
 
 	interface FilterTag extends Partial<Tag> {
@@ -96,9 +103,6 @@
 		isLoadingMore = true;
 
 		try {
-			// In a real production app with hundreds of items,
-			// we would pass the last ID or timestamp for cursor-based pagination.
-			// For now, we'll fetch a larger set or use offset if API supports it.
 			const offset = projectsList.length;
 			const response = await fetch(`/api/projects?limit=${pageSize}&offset=${offset}`);
 
@@ -108,7 +112,6 @@
 					if (newData.length < pageSize) {
 						hasMore = false;
 					}
-					// Add only new projects that aren't already in the list
 					const existingIds = new Set(projectsList.map((p) => p.id));
 					const filteredNewData = newData.filter((p) => !existingIds.has(p.id));
 
@@ -139,124 +142,192 @@
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
 
-		// Simulate loading for better UX feel (skeleton demo)
-		setTimeout(() => {
-			isLoading = false;
-			gsap.from('.project-stagger', {
-				y: 30,
-				opacity: 0,
-				duration: 0.6,
-				stagger: 0.1,
-				ease: 'power2.out'
-			});
-		}, 800);
+		isLoading = false;
+
+		const ctx = gsap.context(() => {
+			// Enhanced Brutalist Entrance
+			const tl = gsap.timeline();
+
+			tl.from('.header-origami', {
+				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
+				duration: 1,
+				ease: 'power4.inOut'
+			}).from(
+				'.project-stagger',
+				{
+					y: 30,
+					rotateX: -10,
+					opacity: 0,
+					duration: 0.6,
+					stagger: 0.1,
+					ease: 'expo.out'
+				},
+				'-=0.4'
+			);
+		});
+
+		return () => ctx.revert();
 	});
 </script>
 
-<div class="mt-28 space-y-16 pb-20">
+<div class="relative mt-28 min-h-screen space-y-24 pb-32">
+	<!-- Industrial Background Element -->
+	<div
+		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
+		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
+	></div>
+
 	<!-- Header Section -->
-	<section class="text-center">
-		<h1 class="project-stagger font-poppins text-4xl font-black tracking-tight md:text-6xl">
-			{m.projects_title()}<span class="text-primary">.</span>
-		</h1>
-		<p
-			class="project-stagger mx-auto mt-6 max-w-2xl font-poppins text-lg leading-relaxed text-muted-foreground"
+	<section class="container mx-auto px-4">
+		<div
+			class="header-origami relative border-y-4 border-foreground py-16 text-center md:py-24"
+			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
 		>
-			{m.projects_subtitle()}
-		</p>
+			<div class="absolute inset-0 -z-10 bg-primary/5"></div>
+
+			<div
+				class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase"
+			>
+				[ARCHIVE_COLLECTION_v2.0]
+			</div>
+
+			<h1 class="project-stagger font-poppins text-5xl font-black tracking-tighter md:text-8xl">
+				{m.projects_title()}<span class="text-primary">_</span>
+			</h1>
+
+			<p
+				class="project-stagger mx-auto mt-8 max-w-3xl font-mono text-xs leading-relaxed tracking-wider text-muted-foreground uppercase md:text-sm"
+			>
+				// {m.projects_subtitle()}
+			</p>
+
+			<!-- Decorative Origami Shards -->
+			<div
+				class="absolute -top-10 -right-10 size-40 bg-primary/10 transition-transform duration-500 hover:rotate-45"
+				style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
+			></div>
+			<div
+				class="absolute -bottom-10 -left-10 size-32 bg-foreground/5 transition-transform duration-500 hover:-rotate-12"
+				style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"
+			></div>
+		</div>
 	</section>
 
 	<!-- Controls Section (Search, Sort, Filter) -->
-	<section class="mx-auto max-w-6xl space-y-8 px-4">
-		<div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+	<section class="container mx-auto space-y-12 px-4">
+		<div class="flex flex-col items-stretch justify-between gap-8 lg:flex-row lg:items-end">
 			<!-- Search Bar -->
-			<div class="relative w-full md:max-w-md">
-				<Search class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
-				<input
-					type="text"
-					bind:value={searchQuery}
-					placeholder="Search projects..."
-					class="h-12 w-full rounded-2xl border border-border/50 bg-card/50 pr-4 pl-12 text-sm transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/5"
-				/>
+			<div class="project-stagger relative flex-1">
+				<div
+					class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+				>
+					<Database class="size-3" /> [DATABASE_SEARCH]
+				</div>
+				<div class="group relative">
+					<Search
+						class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
+					/>
+					<input
+						type="text"
+						bind:value={searchQuery}
+						placeholder="QUERY_ENGINE..."
+						class="h-14 w-full border-2 border-foreground bg-card px-4 pl-12 font-mono text-sm tracking-tight transition-all outline-none focus:bg-primary/5 focus:shadow-[4px_4px_0_var(--primary)]"
+					/>
+				</div>
 			</div>
 
-			<!-- Sorting & Additional Filters -->
-			<div class="flex items-center gap-3">
-				<div class="flex items-center rounded-2xl border border-border/50 bg-card/50 p-1">
+			<!-- Sorting -->
+			<div class="project-stagger flex flex-col gap-2">
+				<div
+					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+				>
+					<SlidersHorizontal class="size-3" /> [SORT_ENGINE]
+				</div>
+				<div class="flex items-center border-2 border-foreground bg-card p-1">
 					<button
 						onclick={() => (sortBy = 'date')}
-						class="rounded-xl px-4 py-2 text-xs font-bold transition-all {sortBy === 'date'
-							? 'bg-primary text-white'
+						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy ===
+						'date'
+							? 'bg-foreground text-background'
 							: 'hover:bg-muted'}"
 					>
-						Date
+						[DATE]
 					</button>
 					<button
 						onclick={() => (sortBy = 'title')}
-						class="rounded-xl px-4 py-2 text-xs font-bold transition-all {sortBy === 'title'
-							? 'bg-primary text-white'
+						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy ===
+						'title'
+							? 'bg-foreground text-background'
 							: 'hover:bg-muted'}"
 					>
-						Name
+						[ALPHA]
+					</button>
+					<div class="mx-1 h-6 w-0.5 bg-foreground/20"></div>
+					<button
+						onclick={toggleSortDirection}
+						class="flex size-10 items-center justify-center transition-all hover:bg-primary hover:text-white"
+						title="Toggle Direction"
+					>
+						{#if sortDirection === 'asc'}
+							<SortAsc class="size-4" />
+						{:else}
+							<SortDesc class="size-4" />
+						{/if}
 					</button>
 				</div>
-				<button
-					onclick={toggleSortDirection}
-					class="flex size-11 items-center justify-center rounded-2xl border border-border/50 bg-card/50 transition-all hover:bg-muted"
-					title="Change Sort Direction"
-				>
-					{#if sortDirection === 'asc'}
-						<SortAsc class="size-5" />
-					{:else}
-						<SortDesc class="size-5" />
-					{/if}
-				</button>
 			</div>
 		</div>
 
 		<!-- Tag Filters -->
-		<div class="flex flex-wrap justify-center gap-2">
-			{#each allTags as tag (tag.name)}
-				<Tooltip.Provider>
-					<Tooltip.Root>
-						<Tooltip.Trigger
-							onclick={() => filterProjects(tag.name)}
-							class={`${buttonVariants({ variant: selectedTag === tag.name ? 'default' : 'outline' })}
-									cursor-pointer rounded-full border-0 transition-all hover:scale-105 active:scale-95
-									${tag.color === '#171d26' ? 'dark:text-white!' : ''}
-							`}
-							style={selectedTag !== tag.name
-								? `background-color: ${tag.color}1A; color: ${tag.color};`
-								: ''}
-						>
+		<div class="project-stagger space-y-4">
+			<div
+				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+			>
+				<Filter class="size-3" /> [CATEGORICAL_FILTER]
+			</div>
+			<div class="flex flex-wrap gap-3">
+				{#each allTags as tag (tag.name)}
+					<button
+						onclick={() => filterProjects(tag.name)}
+						class="group relative flex items-center gap-3 border-2 border-foreground px-4 py-2 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedTag ===
+						tag.name
+							? 'bg-foreground text-background'
+							: 'bg-card'}"
+					>
+						<div class="relative z-10 flex items-center gap-2">
 							{#if 'iconName' in tag && tag.iconName}
 								<Icon iconName={tag.iconName as string} size={14} />
 							{:else if 'icon' in tag && tag.icon}
 								<Icon src={tag.icon} size={14} />
 							{/if}
-							{tag.name === 'All' ? m.projects_filter_all() : tag.name}
-						</Tooltip.Trigger>
-						<Tooltip.Content>
-							<p>{m.projects_filter_tooltip()}</p>
-						</Tooltip.Content>
-					</Tooltip.Root>
-				</Tooltip.Provider>
-			{/each}
+							<span class="font-mono text-[10px] font-black tracking-widest uppercase">
+								{tag.name === 'All' ? m.projects_filter_all() : tag.name}
+							</span>
+						</div>
+
+						{#if selectedTag === tag.name}
+							<div class="absolute inset-0 -z-10 translate-x-1 translate-y-1 bg-primary"></div>
+						{/if}
+					</button>
+				{/each}
+			</div>
 		</div>
 	</section>
 
 	<!-- Projects Grid -->
-	<section class="mx-auto max-w-7xl px-4">
+	<section class="container mx-auto px-4">
 		{#if isLoading}
-			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
 				{#each Array(6) as _, i (i)}
-					<ProjectSkeleton />
+					<div class="border-2 border-foreground p-2">
+						<ProjectSkeleton />
+					</div>
 				{/each}
 			</div>
 		{:else if filteredProjects.length > 0}
-			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
 				{#each filteredProjects as project (project.id)}
-					<div class="project-stagger h-full">
+					<div class="project-stagger">
 						<ProjectCard {project} />
 					</div>
 				{/each}
@@ -264,41 +335,71 @@
 
 			<!-- Load More Button -->
 			{#if hasMore && searchQuery === '' && selectedTag === 'All'}
-				<div class="mt-16 flex justify-center">
+				<div class="mt-24 flex justify-center">
 					<button
 						onclick={loadMore}
 						disabled={isLoadingMore}
-						class="group flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-black text-white transition-all hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-50"
+						class="group relative flex h-16 items-center gap-4 border-4 border-foreground bg-primary px-10 font-mono text-sm font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[8px_8px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50"
 					>
+						<div
+							class="absolute inset-0 -z-10 translate-x-2 translate-y-2 bg-foreground/10 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"
+						></div>
+
 						{#if isLoadingMore}
 							<Icon iconName="Loader2" size={20} class="animate-spin" />
-							Loading...
+							[FETCHING_MORE...]
 						{:else}
-							Load More Projects
+							<Plus class="size-5 transition-transform group-hover:rotate-180" />
+							[EXPAND_COLLECTION]
 						{/if}
 					</button>
 				</div>
 			{/if}
 		{:else}
 			<!-- Empty State -->
-			<div class="flex flex-col items-center justify-center space-y-6 py-20 text-center">
-				<div class="rounded-full bg-muted p-8">
-					<BoxSelect class="size-16 text-muted-foreground/50" />
+			<div
+				class="project-stagger mx-auto flex max-w-2xl flex-col items-center justify-center border-4 border-dashed border-foreground/20 py-32 text-center"
+			>
+				<div
+					class="mb-8 border-2 border-foreground bg-muted p-8 shadow-[8px_8px_0_var(--foreground)]"
+				>
+					<BoxSelect class="size-20 text-foreground" />
 				</div>
-				<div class="space-y-2">
-					<h3 class="text-2xl font-black">No Projects Found</h3>
-					<p class="text-muted-foreground">Try adjusting your filters or search query.</p>
+				<div class="space-y-4">
+					<h3 class="font-poppins text-3xl font-black tracking-tighter uppercase">
+						[ZERO_RESULTS_FOUND]
+					</h3>
+					<p class="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+						// THE_REQUESTED_QUERY_RETURNED_NULL_SET
+					</p>
 				</div>
 				<button
 					onclick={() => {
 						selectedTag = 'All';
 						searchQuery = '';
 					}}
-					class={buttonVariants({ variant: 'default' })}
+					class="mt-10 border-2 border-foreground bg-foreground px-8 py-3 font-mono text-[10px] font-black tracking-widest text-background uppercase transition-all hover:bg-primary hover:text-white"
 				>
-					Reset All Filters
+					[RESET_FILTERS]
 				</button>
 			</div>
 		{/if}
 	</section>
 </div>
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	:global(.header-origami) {
+		transform-style: preserve-3d;
+		perspective: 1000px;
+	}
+
+	input::placeholder {
+		color: oklch(from var(--muted-foreground) l c h / 40%);
+	}
+
+	.container {
+		@apply max-w-7xl;
+	}
+</style>

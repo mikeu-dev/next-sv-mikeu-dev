@@ -60,6 +60,7 @@ export interface SocialLink {
 	label: string;
 	href: string;
 	iconName?: string;
+	icon?: IconType;
 	color: string;
 	svg?: string;
 	[key: string]: unknown;

@@ -23,40 +23,53 @@
 	@reference "tailwindcss";
 
 	:global(.prose pre) {
-		@apply my-8 overflow-x-auto rounded-xl p-0 shadow-sm;
-		background-color: oklch(from var(--muted) l c h / 30%);
-		border: 1px solid oklch(from var(--border) l c h / 50%);
+		@apply my-10 overflow-x-auto rounded-none p-0;
+		border-width: 2px;
+		border-color: var(--foreground);
+		background-color: oklch(from var(--foreground) l c h / 5%);
+		box-shadow: 4px 4px 0 var(--foreground);
 	}
 
 	:global(.prose pre code) {
-		@apply block min-w-full p-4 font-mono text-[13px] leading-relaxed whitespace-pre md:text-[14px];
+		@apply block min-w-full p-6 font-mono text-[13px] leading-relaxed whitespace-pre md:text-[14px];
 		background: transparent !important;
 	}
 
 	:global(.prose a) {
-		@apply font-semibold no-underline transition-colors hover:underline;
-		color: var(--primary);
+		@apply font-black underline decoration-2 underline-offset-4 transition-all;
+		text-decoration-color: var(--primary);
+		&:hover {
+			color: var(--primary);
+		}
 	}
 
 	:global(.prose blockquote) {
-		@apply py-1 pr-4 font-normal not-italic;
-		border-left: 4px solid oklch(from var(--primary) l c h / 40%);
+		@apply border-l-4 py-4 pr-6 pl-8 font-mono text-sm tracking-tight italic not-italic;
 		background-color: oklch(from var(--primary) l c h / 5%);
+		border-color: var(--primary);
 		color: oklch(from var(--foreground) l c h / 80%);
 	}
 
 	:global(.prose img) {
-		@apply mx-auto rounded-2xl shadow-xl;
+		@apply mx-auto;
+		border-width: 4px;
+		border-color: var(--foreground);
+		box-shadow: 8px 8px 0 var(--foreground);
 	}
 
 	:global(.prose h2) {
-		@apply mt-12 scroll-mt-24 pb-2 font-bold;
+		@apply mt-16 mb-8 scroll-mt-24 border-l-4 pl-6 text-3xl font-black tracking-tighter uppercase italic;
+		border-color: var(--primary);
 		font-family: var(--font-poppins);
-		border-bottom: 1px solid var(--border);
 	}
 
 	:global(.prose h3) {
-		@apply mt-8 scroll-mt-24 font-bold;
+		@apply mt-12 mb-6 scroll-mt-24 text-xl font-black tracking-tighter uppercase italic;
 		font-family: var(--font-poppins);
+	}
+
+	:global(.prose p) {
+		@apply mb-6 font-mono text-sm leading-relaxed tracking-tight uppercase;
+		color: var(--muted-foreground);
 	}
 </style>
