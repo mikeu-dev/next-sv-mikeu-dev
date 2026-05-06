@@ -271,7 +271,8 @@ export function createFoldedWorldEngine() {
 				uHoveredIntensity: { value: -1.0 },
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity },
-				uWorldMask: { value: worldMask }
+				uWorldMask: { value: worldMask },
+				uNeonColor: { value: new THREE.Color(colors.neon) }
 			},
 			side: THREE.FrontSide
 		});
@@ -570,6 +571,7 @@ export function createFoldedWorldEngine() {
 			mainMaterial.uniforms.uColorCold.value.set(colors.faceCold);
 			mainMaterial.uniforms.uColorHot.value.set(colors.faceHot);
 			mainMaterial.uniforms.uWireColor.value.set(colors.wireframe);
+			mainMaterial.uniforms.uNeonColor.value.set(colors.neon);
 		}
 
 		if (wireframeMaterial) {

@@ -71,6 +71,7 @@ export const fragmentShader = /* glsl */ `
 	uniform sampler2D uWorldMask;
 	uniform vec3 uColorCold;
 	uniform vec3 uColorHot;
+	uniform vec3 uNeonColor;
 	uniform vec3 uAccentColor;
 	uniform float uHoveredIntensity;
 	uniform int uMode;
@@ -87,20 +88,11 @@ export const fragmentShader = /* glsl */ `
 		vec3 nPos = normalize(vLocalPosition);
 		
 		// Improved UV mapping for equirectangular projection
-		// u: maps longitude [-180, 180] to [0, 1]
-		// v: maps latitude [-90, 90] to [0, 1]
 		float u = fract(atan(nPos.z, -nPos.x) / (2.0 * PI));
 		float v = 1.0 - acos(nPos.y) / PI;
 		
 		// Sample world mask (continents)
 		float mask = texture2D(uWorldMask, vec2(u, v)).r;
-
-		// Base color: interpolate between cold and hot with sharper transition
-		float colorT = pow(vIntensity, 1.5);
-		vec3 baseColor = mix(uColorCold, uColorHot, colorT);
-
-		// Subtle continent highlight
-		baseColor += mask * 0.08;
 
 		// Directional lighting (brutalist — harsh, single light)
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.8));
@@ -108,21 +100,45 @@ export const fragmentShader = /* glsl */ `
 		float ambient = 0.25;
 		float lighting = ambient + diffuse * 0.75;
 
-		vec3 finalColor = baseColor * lighting;
+		// Base color initialization
+		vec3 finalColor;
 
-		// HEAT mode — more saturated color range
-		if (uMode == 1) {
-			vec3 heatColor = mix(
-				uColorCold,
-				uAccentColor,
-				pow(vIntensity, 1.2)
-			);
+		if (uMode == 0) {
+			// --- FOLD MODE: Aggressive Neon Style ---
+			// Broaden the data mask so even low intensity shows some neon
+			float dataMask = smoothstep(0.01, 0.4, vIntensity);
+			
+			// Surface background (standard lighting)
+			vec3 surface = uColorCold * lighting;
+			
+			// Neon data color (Self-illuminated / Emissive)
+			// We mix with surface color but keep the neon part bright
+			vec3 neon = uNeonColor * (1.0 + vIntensity * 0.5);
+			
+			// Pulsing emissive glow
+			float pulse = sin(uTime * 4.0 + vIntensity * 8.0) * 0.1 + 0.9;
+			vec3 glow = uNeonColor * pow(vIntensity, 1.5) * 1.5 * pulse;
+			
+			// Sharp "Rim Light" on the edges of the folds
+			vec3 viewDir = normalize(vec3(0.0, 0.0, 1.0));
+			float rim = pow(1.0 - abs(dot(vNormal, viewDir)), 4.0);
+			vec3 edgeHighlight = uNeonColor * rim * (vIntensity + 0.2) * 2.0;
+			
+			// Combine: Base surface + Neon Data + Glow + Edges
+			finalColor = mix(surface, neon, dataMask);
+			finalColor += glow + edgeHighlight;
+			
+			// Add continent highlight
+			finalColor += mask * 0.15;
+		} else if (uMode == 1) {
+			// --- HEAT MODE: Thermal Style ---
+			vec3 heatColor = mix(uColorCold, uAccentColor, pow(vIntensity, 1.2));
 			finalColor = (heatColor + mask * 0.1) * lighting;
-		}
-
-		// TIMELINE mode — pulsing glow
-		if (uMode == 2) {
+		} else {
+			// --- TIMELINE MODE: Pulse Style ---
 			float pulse = sin(uTime * 2.0 + vIntensity * 6.28318) * 0.5 + 0.5;
+			vec3 baseColor = mix(uColorCold, uColorHot, pow(vIntensity, 1.5));
+			finalColor = baseColor * lighting;
 			finalColor += uAccentColor * vIntensity * pulse * 0.3;
 			finalColor += mask * 0.05;
 		}
