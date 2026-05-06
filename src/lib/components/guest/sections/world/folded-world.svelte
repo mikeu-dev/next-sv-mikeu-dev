@@ -109,8 +109,7 @@
 	}
 
 	function formatCount(n: number): string {
-		if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
-		return n.toString();
+		return n.toLocaleString();
 	}
 </script>
 
@@ -150,12 +149,12 @@
 			<div class="hud-divider"></div>
 			<div class="hud-stats">
 				<div class="hud-stat">
-					<span class="hud-stat-label">{m.world_hud_total()}</span>
+					<span class="hud-stat-label">TOTAL</span>
 					<span class="hud-stat-value">{formatCount(totalVisitors)}</span>
 				</div>
 				{#if todayVisitors > 0}
 					<div class="hud-stat">
-						<span class="hud-stat-label">{m.world_hud_today()}</span>
+						<span class="hud-stat-label">TODAY</span>
 						<span class="hud-stat-value">{formatCount(todayVisitors)}</span>
 					</div>
 				{/if}

@@ -36,9 +36,10 @@ export function sphericalDistance(lat1: number, lng1: number, lat2: number, lng2
 	const dPhi = ((lat2 - lat1) * Math.PI) / 180;
 	const dLambda = ((lng2 - lng1) * Math.PI) / 180;
 
-	const a =
+	const a = Math.max(0, Math.min(1,
 		Math.sin(dPhi / 2) * Math.sin(dPhi / 2) +
-		Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLambda / 2) * Math.sin(dLambda / 2);
+		Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLambda / 2) * Math.sin(dLambda / 2)
+	));
 
 	return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
@@ -57,33 +58,47 @@ export function sphericalDistance(lat1: number, lng1: number, lat2: number, lng2
 export function mapNodesToFaces(
 	faceCenters: [number, number][],
 	nodes: GeoNode[],
-	influenceRadius: number = 0.8
+	influenceRadius: number = 1.5
 ): Float32Array {
-	const intensities = new Float32Array(faceCenters.length);
+	const faceCount = faceCenters.length;
+	const intensities = new Float32Array(faceCount);
 
-	if (nodes.length === 0) return intensities;
-
-	// Use log scale for normalization to ensure small counts are visible
+	// Use log scaling for better distribution
 	const getVal = (count: number) => Math.log10(count + 1);
-	const maxVal = getVal(Math.max(...nodes.map((n) => n.count), 1));
+	const rawMax = nodes.length > 0 ? Math.max(...nodes.map((n) => Number(n.count || 0)), 1) : 1;
+	const maxVal = getVal(rawMax) || 1.0; // Prevent division by zero
 
-	for (let i = 0; i < faceCenters.length; i++) {
+	for (let i = 0; i < faceCount; i++) {
 		const [fLat, fLng] = faceCenters[i];
 		let totalIntensity = 0;
 
-		for (const node of nodes) {
-			const dist = sphericalDistance(fLat, fLng, node.latitude, node.longitude);
+		// --- FORCED DEVELOPER SPIKE (Jakarta) ---
+		// Titik ini harus selalu ada jika pipeline visual bekerja
+		const devDist = sphericalDistance(fLat, fLng, -6.2088, 106.8456);
+		if (devDist < influenceRadius) {
+			totalIntensity += Math.pow(1 - devDist / influenceRadius, 2.0);
+		}
 
-			if (dist < influenceRadius) {
-				// Inverse distance weighting with ease-out curve
-				const weight = Math.pow(1 - dist / influenceRadius, 1.5);
-				const normalizedVal = getVal(node.count) / maxVal;
-				totalIntensity += weight * normalizedVal;
+		// Only process nodes if we have them
+		if (nodes.length > 0) {
+			for (const node of nodes) {
+				const nLat = Number(node.latitude);
+				const nLng = Number(node.longitude);
+				
+				if (isNaN(nLat) || isNaN(nLng)) continue;
+
+				const dist = sphericalDistance(fLat, fLng, nLat, nLng);
+
+				if (dist < influenceRadius) {
+					const weight = Math.pow(1 - dist / influenceRadius, 2.0);
+					const normalizedVal = getVal(Number(node.count || 0)) / maxVal;
+					totalIntensity += weight * normalizedVal;
+				}
 			}
 		}
 
-		// Clamp to [0, 1] with a slight boost to ensure visibility
-		intensities[i] = Math.min(totalIntensity * 1.2, 1);
+		// Higher gain to ensure visibility
+		intensities[i] = Math.min(totalIntensity * 5.0, 1.0);
 	}
 
 	return intensities;
@@ -109,15 +124,17 @@ export function faceCenter(
 	const ny = cy / len;
 	const nz = cz / len;
 
-	// Convert back to lat/lng
-	const lat = (Math.acos(ny) * 180) / Math.PI - 90;
-	// Negate x because of our coordinate convention
-	const lng = (Math.atan2(nz, -nx) * 180) / Math.PI - 180;
+	// Inverse of latLngToSphere logic
+	const phi = Math.acos(Math.max(-1, Math.min(1, ny))); // range [0, PI]
+	const theta = Math.atan2(nz, -nx); // range [-PI, PI]
 
-	return [
-		-lat, // flip to match geographic convention
-		lng > 180 ? lng - 360 : lng < -180 ? lng + 360 : lng
-	];
+	const lat = 90 - (phi * 180) / Math.PI;
+	let lng = (theta * 180) / Math.PI - 180;
+
+	// Safe normalization to [-180, 180]
+	lng = ((((lng + 180) % 360) + 360) % 360) - 180;
+
+	return [lat, lng];
 }
 
 /**

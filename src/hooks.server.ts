@@ -7,7 +7,7 @@ import { env } from '$lib/server/config/env';
 import { logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { UAParser } from 'ua-parser-js';
-import { building } from '$app/environment';
+import { building, dev } from '$app/environment';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
@@ -80,7 +80,7 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 	const hasVisited = event.cookies.get(VISITOR_COOKIE);
 
 	if (
-		!hasVisited &&
+		(!hasVisited || dev) &&
 		!event.url.pathname.startsWith('/admin') &&
 		!event.url.pathname.startsWith('/api') &&
 		!event.url.pathname.includes('sitemap.xml') &&

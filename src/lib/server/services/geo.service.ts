@@ -45,8 +45,20 @@ export async function resolveGeo(request: Request, ip: string): Promise<GeoData>
 		return vercelGeo;
 	}
 
-	// 2. Fallback: ip-api.com for development
-	if (ip && ip !== '0.0.0.0' && ip !== '127.0.0.1' && ip !== '::1') {
+	// 2. Special handling for localhost/development
+	if (ip === '127.0.0.1' || ip === '::1' || ip === '0.0.0.0') {
+		// Mock Jakarta coordinates for developer visibility
+		return {
+			country: 'Indonesia',
+			city: 'Jakarta (Dev)',
+			region: 'Special Capital Region of Jakarta',
+			latitude: -6.2088,
+			longitude: 106.8456
+		};
+	}
+
+	// 3. Fallback: ip-api.com for other IPs
+	if (ip) {
 		return await fetchFromIpApi(ip);
 	}
 

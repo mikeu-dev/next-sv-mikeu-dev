@@ -19,7 +19,7 @@
  * - uMode: int — 0=fold, 1=heat, 2=timeline
  */
 export const vertexShader = /* glsl */ `
-	attribute float intensity;
+	attribute float vDataIntensity;
 	attribute float foldOffset;
 
 	uniform float uMaxExtrusion;
@@ -31,26 +31,30 @@ export const vertexShader = /* glsl */ `
 	varying vec3 vLocalPosition;
 
 	void main() {
-		vIntensity = intensity;
+		vIntensity = vDataIntensity;
 		vLocalPosition = position;
 		vNormal = normalize(normalMatrix * normal);
 
 		vec3 pos = position;
 
+		// Mode 0: FOLD
 		if (uMode == 0) {
-			// FOLD mode — extrude vertices outward based on intensity
-			float extrusion = intensity * uMaxExtrusion;
-			// Add paper fold micro-displacement
-			float fold = foldOffset * 0.03 * (1.0 + intensity * 2.0);
+			float extrusion = vDataIntensity * uMaxExtrusion;
+			float fold = foldOffset * 0.03 * (1.0 + vDataIntensity * 2.0);
 			pos += normal * (extrusion + fold);
-		} else if (uMode == 2) {
-			// TIMELINE mode — layer stack effect
-			float wave = sin(uTime * 0.5 + intensity * 6.28318) * 0.05;
-			pos += normal * (intensity * uMaxExtrusion * 0.5 + wave);
+		} 
+		// Mode 2: TIME
+		else if (uMode == 2) {
+			float wave = sin(uTime * 0.5 + vDataIntensity * 6.28318) * 0.05;
+			pos += normal * (vDataIntensity * uMaxExtrusion * 0.5 + wave);
 		}
-		// HEAT mode (1) — no vertex displacement
+		// Mode 1 (HEAT) stays flat but we set intensity
+		else {
+			vIntensity = vDataIntensity;
+		}
 
-
+		// Base bias to prevent z-fighting with wireframe
+		pos += normal * 0.002;
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}
@@ -94,42 +98,35 @@ export const fragmentShader = /* glsl */ `
 		// Sample world mask (continents)
 		float mask = texture2D(uWorldMask, vec2(u, v)).r;
 
-		// Directional lighting (brutalist — harsh, single light)
-		vec3 lightDir = normalize(vec3(0.5, 1.0, 0.8));
+		// Directional lighting (more balanced)
+		vec3 lightDir = normalize(vec3(0.5, 1.0, 1.0));
 		float diffuse = max(dot(vNormal, lightDir), 0.0);
-		float ambient = 0.25;
-		float lighting = ambient + diffuse * 0.75;
+		float ambient = 0.5; // Brighter ambient
+		float lighting = ambient + diffuse * 0.5;
 
 		// Base color initialization
 		vec3 finalColor;
 
 		if (uMode == 0) {
-			// --- FOLD MODE: Aggressive Neon Style ---
-			// Broaden the data mask so even low intensity shows some neon
-			float dataMask = smoothstep(0.01, 0.4, vIntensity);
+			// --- FOLD MODE: High Visibility Neon ---
+			// Very sensitive mask
+			float dataMask = smoothstep(0.0, 0.2, vIntensity);
 			
-			// Surface background (standard lighting)
-			vec3 surface = uColorCold * lighting;
+			// Surface background
+			vec3 surface = mix(uColorCold, uColorHot * 0.2, vIntensity) * lighting;
 			
-			// Neon data color (Self-illuminated / Emissive)
-			// We mix with surface color but keep the neon part bright
-			vec3 neon = uNeonColor * (1.0 + vIntensity * 0.5);
+			// Neon data color (Emissive) — Higher base brightness
+			vec3 neon = uNeonColor * (2.0 + vIntensity * 1.0);
 			
-			// Pulsing emissive glow
-			float pulse = sin(uTime * 4.0 + vIntensity * 8.0) * 0.1 + 0.9;
-			vec3 glow = uNeonColor * pow(vIntensity, 1.5) * 1.5 * pulse;
+			// Pulsing glow (attached to data) — More intense
+			float pulse = sin(uTime * 3.0 + vIntensity * 10.0) * 0.3 + 0.7;
+			vec3 glow = uNeonColor * vIntensity * 3.0 * pulse;
 			
-			// Sharp "Rim Light" on the edges of the folds
-			vec3 viewDir = normalize(vec3(0.0, 0.0, 1.0));
-			float rim = pow(1.0 - abs(dot(vNormal, viewDir)), 4.0);
-			vec3 edgeHighlight = uNeonColor * rim * (vIntensity + 0.2) * 2.0;
+			// Combine
+			finalColor = mix(surface, neon, dataMask) + glow;
 			
-			// Combine: Base surface + Neon Data + Glow + Edges
-			finalColor = mix(surface, neon, dataMask);
-			finalColor += glow + edgeHighlight;
-			
-			// Add continent highlight
-			finalColor += mask * 0.15;
+			// Continent highlight
+			finalColor += mask * 0.2;
 		} else if (uMode == 1) {
 			// --- HEAT MODE: Thermal Style ---
 			vec3 heatColor = mix(uColorCold, uAccentColor, pow(vIntensity, 1.2));
@@ -160,7 +157,7 @@ export const fragmentShader = /* glsl */ `
  * Wireframe vertex shader — simpel pass-through.
  */
 export const wireframeVertexShader = /* glsl */ `
-	attribute float intensity;
+	attribute float vDataIntensity;
 	attribute float foldOffset;
 
 	uniform float uMaxExtrusion;
@@ -171,13 +168,16 @@ export const wireframeVertexShader = /* glsl */ `
 		vec3 pos = position;
 
 		if (uMode == 0) {
-			float extrusion = intensity * uMaxExtrusion;
-			float fold = foldOffset * 0.03 * (1.0 + intensity * 2.0);
+			float extrusion = vDataIntensity * uMaxExtrusion;
+			float fold = foldOffset * 0.03 * (1.0 + vDataIntensity * 2.0);
 			pos += normal * (extrusion + fold);
 		} else if (uMode == 2) {
-			float wave = sin(uTime * 0.5 + intensity * 6.28318) * 0.05;
-			pos += normal * (intensity * uMaxExtrusion * 0.5 + wave);
+			float wave = sin(uTime * 0.5 + vDataIntensity * 6.28318) * 0.05;
+			pos += normal * (vDataIntensity * uMaxExtrusion * 0.5 + wave);
 		}
+
+		// Wireframe slightly behind main mesh
+		pos += normal * 0.001;
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}

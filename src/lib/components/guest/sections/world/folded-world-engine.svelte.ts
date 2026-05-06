@@ -62,7 +62,7 @@ export function createFoldedWorldEngine() {
 	let scene: InstanceType<ThreeModule['Scene']>;
 	let camera: InstanceType<ThreeModule['PerspectiveCamera']>;
 	let mainMesh: InstanceType<ThreeModule['Mesh']>;
-	let wireframeMesh: InstanceType<ThreeModule['LineSegments']>;
+	let wireframeMesh: InstanceType<ThreeModule['Mesh']>;
 	let mainMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let wireframeMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let raycaster: InstanceType<ThreeModule['Raycaster']>;
@@ -249,7 +249,7 @@ export function createFoldedWorldEngine() {
 			foldOffsets[i] = paperFoldDisplacement(x, y, z);
 		}
 
-		nonIndexed.setAttribute('intensity', new THREE.BufferAttribute(intensities, 1));
+		nonIndexed.setAttribute('vDataIntensity', new THREE.BufferAttribute(intensities, 1));
 		nonIndexed.setAttribute('foldOffset', new THREE.BufferAttribute(foldOffsets, 1));
 
 		// Load world mask texture
@@ -280,9 +280,7 @@ export function createFoldedWorldEngine() {
 		mainMesh = new THREE.Mesh(nonIndexed, mainMaterial);
 		scene.add(mainMesh);
 
-		// Wireframe overlay
-		const wireframeGeom = new THREE.WireframeGeometry(nonIndexed);
-
+		// Wireframe overlay (shared geometry to ensure shared attributes like intensity)
 		wireframeMaterial = new THREE.ShaderMaterial({
 			vertexShader: wireframeVertexShader,
 			fragmentShader: wireframeFragmentShader,
@@ -295,10 +293,11 @@ export function createFoldedWorldEngine() {
 			},
 			transparent: true,
 			depthTest: true,
+			wireframe: true,
 			side: THREE.DoubleSide
 		});
 
-		wireframeMesh = new THREE.LineSegments(wireframeGeom, wireframeMaterial);
+		wireframeMesh = new THREE.Mesh(nonIndexed, wireframeMaterial);
 		scene.add(wireframeMesh);
 	}
 
@@ -306,10 +305,10 @@ export function createFoldedWorldEngine() {
 		if (!mainMesh) return;
 
 		const geometry = mainMesh.geometry;
-		const intensityAttr = geometry.getAttribute('intensity');
+		const intensityAttr = geometry.getAttribute('vDataIntensity');
 
 		// Map geo nodes to face intensities
-		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.8);
+		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 1.2);
 
 		// Spread face intensity to all 3 vertices of each face
 		for (let face = 0; face < faceIntensities.length; face++) {
@@ -320,12 +319,6 @@ export function createFoldedWorldEngine() {
 		}
 
 		intensityAttr.needsUpdate = true;
-
-		// Also update wireframe geometry (rebuild it from main mesh)
-		if (wireframeMesh) {
-			wireframeMesh.geometry.dispose();
-			wireframeMesh.geometry = new THREE.WireframeGeometry(geometry);
-		}
 	}
 
 	// --- Animation Loop ---
@@ -497,7 +490,7 @@ export function createFoldedWorldEngine() {
 
 					// Highlight hovered face
 					if (mainMaterial) {
-						const intensityAttr = mainMesh.geometry.getAttribute('intensity');
+						const intensityAttr = mainMesh.geometry.getAttribute('vDataIntensity');
 						mainMaterial.uniforms.uHoveredIntensity.value = intensityAttr.getX(faceIdx * 3);
 					}
 
