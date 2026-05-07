@@ -11,9 +11,10 @@
 		totalVisitors: number;
 		todayVisitors?: number;
 		isDark?: boolean;
+		minimal?: boolean;
 	}
 
-	let { nodes, totalVisitors, todayVisitors = 0, isDark = true }: Props = $props();
+	let { nodes, totalVisitors, todayVisitors = 0, isDark = true, minimal = false }: Props = $props();
 
 	const engine = createFoldedWorldEngine();
 
@@ -31,7 +32,7 @@
 	);
 
 	onMount(() => {
-		engine.init(containerEl, canvasEl, nodes, isDark);
+		engine.init(containerEl, canvasEl, nodes, isDark, minimal);
 
 		return () => {
 			engine.destroy();
@@ -50,7 +51,7 @@
 
 	// --- HUD Entrance Animations ---
 	$effect(() => {
-		if (engine.state.ready) {
+		if (engine.state.ready && !minimal) {
 			const tl = gsap.timeline({ defaults: { ease: 'expo.out', duration: 1.2 } });
 
 			tl.from('.hud-title', {
@@ -113,12 +114,12 @@
 	}
 </script>
 
-<div class="folded-world-container" bind:this={containerEl}>
+<div class="folded-world-container" class:minimal bind:this={containerEl}>
 	<!-- Three.js Canvas -->
 	<canvas bind:this={canvasEl} class="folded-world-canvas"></canvas>
 
 	<!-- Loading State -->
-	{#if engine.state.loading}
+	{#if engine.state.loading && !minimal}
 		<div class="loading-overlay">
 			<div class="loading-shape"></div>
 			<p class="loading-text">{m.world_loading()}</p>
@@ -129,7 +130,7 @@
 	{/if}
 
 	<!-- Error State -->
-	{#if engine.state.error}
+	{#if engine.state.error && !minimal}
 		<div class="error-overlay">
 			<p class="error-code">ERR::WEBGL_FAIL</p>
 			<p class="error-msg">{engine.state.error}</p>
@@ -137,8 +138,8 @@
 		</div>
 	{/if}
 
-	<!-- HUD Overlay -->
-	{#if engine.state.ready}
+	<!-- HUD Overlay (Hidden in minimal mode) -->
+	{#if engine.state.ready && !minimal}
 		<!-- Top-left: Title & Stats -->
 		<div class="hud hud-top-left">
 			<h2 class="hud-title">

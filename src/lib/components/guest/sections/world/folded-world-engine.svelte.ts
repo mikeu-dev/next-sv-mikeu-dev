@@ -85,6 +85,7 @@ export function createFoldedWorldEngine() {
 	let modeTransitionPhase = 0.0;
 	let pendingMode: ViewMode | null = null;
 	let shaderViewMode: ViewMode = 'fold';
+	let isMinimal = false;
 	let canvasEl: HTMLCanvasElement | null = null;
 	let containerEl: HTMLElement | null = null;
 	let geoNodes: GeoNode[] = [];
@@ -101,8 +102,10 @@ export function createFoldedWorldEngine() {
 		container: HTMLElement,
 		canvas: HTMLCanvasElement,
 		nodes: GeoNode[],
-		isDark: boolean = true
+		isDark: boolean = true,
+		minimal: boolean = false
 	): Promise<void> {
+		isMinimal = minimal;
 		containerEl = container;
 		canvasEl = canvas;
 		geoNodes = nodes;
@@ -118,7 +121,10 @@ export function createFoldedWorldEngine() {
 			setupScene(isDark);
 			buildGlobe(isDark);
 			applyDeformations();
-			setupEventListeners();
+			
+			if (!isMinimal) {
+				setupEventListeners();
+			}
 
 			state.ready = true;
 			state.loading = false;
@@ -200,6 +206,13 @@ export function createFoldedWorldEngine() {
 
 		// Camera
 		camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+		
+		// Adjust zoom for minimal teaser mode
+		if (isMinimal) {
+			targetZoom = 4.0; 
+			currentZoom = 4.0;
+		}
+		
 		camera.position.set(0, 0, currentZoom);
 		camera.lookAt(0, 0, 0);
 
@@ -429,7 +442,8 @@ export function createFoldedWorldEngine() {
 		const finalAssemble = Math.max(0.0, easedAssemble - (modePulse * 0.08));
 
 		// Smooth zoom
-		currentZoom += (targetZoom - currentZoom) * 0.08;
+		const lerpSpeed = isMinimal ? 0.02 : 0.08;
+		currentZoom += (targetZoom - currentZoom) * lerpSpeed;
 		camera.position.set(0, 0, currentZoom);
 
 		// Apply rotation

@@ -2,11 +2,13 @@ import type { PageServerLoad } from './$types';
 import { skillsService } from '$lib/server/services/skills.service';
 import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
+import { VisitorService } from '$lib/server/services/visitor.service';
 
 export const prerender = false;
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
+	const visitorService = new VisitorService();
 
 	// Projects fetch is the same for both, but we fetch it once.
 	// Skills and Blog are locale-specific.
@@ -19,11 +21,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.catch(() => []),
 		skills: skillsService
 			.getSkills(locale)
-			.then((skills) => (skills as { items: string[] })?.items || [])
-			.catch(() => []),
+			.then((skills) => (skills as { items: string[] })?.items || []),
 		latestPosts: blogService
 			.getPublishedPostsByLocale(locale)
-			.then((posts) => posts?.posts.slice(0, 3) || [])
+			.then((posts) => posts?.posts.slice(0, 3) || []),
+		worldData: visitorService
+			.getGeoAggregation(100) // Lower resolution for landing teaser
+			.then((nodes) => nodes || [])
 			.catch(() => [])
 	};
 };
