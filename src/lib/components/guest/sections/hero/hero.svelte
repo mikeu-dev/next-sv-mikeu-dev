@@ -208,7 +208,7 @@
 		<div class="relative mx-auto mb-12 inline-block" style="height: 180px;">
 			<h1
 				bind:this={heroTitle}
-				class="flex flex-wrap justify-center font-mono text-5xl leading-none font-black tracking-tighter text-foreground uppercase drop-shadow-2xl sm:text-7xl md:text-8xl lg:text-9xl"
+				class="camelcase flex flex-wrap justify-center font-poppins text-5xl leading-none font-black tracking-tighter text-foreground drop-shadow-2xl sm:text-7xl md:text-8xl lg:text-9xl"
 			>
 				{#each titleChars as char, i (i)}
 					<span bind:this={letterElements[i]} class="inline-block" style="white-space: pre;">
@@ -231,7 +231,7 @@
 			<div bind:this={bulletContainer} class="mt-12 flex flex-wrap justify-center gap-4">
 				{#each skills as skill (skill)}
 					<div
-						class="group flex items-center gap-3 border-2 border-foreground/10 bg-foreground/[0.02] px-6 py-3 transition-all hover:border-primary hover:bg-primary/5"
+						class="group flex items-center gap-3 border-2 border-foreground/10 bg-foreground/2 px-6 py-3 transition-all hover:border-primary hover:bg-primary/5"
 					>
 						<Hash class="size-3 text-primary transition-transform group-hover:rotate-12" />
 						<span class="font-mono text-[11px] font-black tracking-wider text-foreground uppercase">
