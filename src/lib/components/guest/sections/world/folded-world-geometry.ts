@@ -97,8 +97,8 @@ export function mapNodesToFaces(
 			}
 		}
 
-		// Higher gain to ensure visibility
-		intensities[i] = Math.min(totalIntensity * 5.0, 1.0);
+		// Moderate gain to ensure visibility without expanding the radius too much
+		intensities[i] = Math.min(totalIntensity * 2.0, 1.0);
 	}
 
 	return intensities;
