@@ -6,6 +6,8 @@
 	import FoldedWorld from '../lib/components/guest/sections/world/folded-world.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
 
+	import * as m from '$lib/paraglide/messages';
+
 	let { data } = $props();
 </script>
 
