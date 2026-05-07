@@ -55,6 +55,7 @@ export class VisitorService {
 	private readonly summaryCollectionName = 'summaries';
 	private readonly docId = 'visitors';
 	private readonly geoSummaryDocId = 'geo_aggregation';
+	private readonly analyticsSummaryDocId = 'analytics_aggregation';
 	private repository = new VisitorRepository();
 
 	private get db() {
@@ -64,6 +65,7 @@ export class VisitorService {
 	// Simple in-memory cache
 	private static statsCache: { data: VisitorStats; timestamp: number } | null = null;
 	private static geoCache: { data: GeoNode[]; timestamp: number } | null = null;
+	private static analyticsCache: { data: VisitorAnalytics; timestamp: number } | null = null;
 	private readonly STATS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 	private readonly GEO_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
@@ -80,9 +82,11 @@ export class VisitorService {
 		// Invalidate caches on increment
 		VisitorService.statsCache = null;
 		VisitorService.geoCache = null;
+		VisitorService.analyticsCache = null;
 		if (dev) {
 			persistentCache.clear('visitor_stats');
 			persistentCache.clear('geo_aggregation');
+			persistentCache.clear('analytics_aggregation');
 		}
 
 		const ref = currentDb.collection(this.collectionName).doc(this.docId);
@@ -122,6 +126,9 @@ export class VisitorService {
 				if (logData.country && logData.latitude != null && logData.longitude != null) {
 					await this.updateGeoSummary(logData);
 				}
+
+				// 3. Update Analytics Summary (Pre-aggregation)
+				await this.updateAnalyticsSummary(logData);
 			}
 		} catch (error) {
 			console.error('VisitorService: Error during increment', error);
@@ -190,6 +197,65 @@ export class VisitorService {
 		}
 	}
 
+	/**
+	 * Updates the pre-aggregated analytics summary document.
+	 */
+	private async updateAnalyticsSummary(log: VisitorLogData): Promise<void> {
+		const currentDb = this.db;
+		if (!currentDb) return;
+
+		const summaryRef = currentDb
+			.collection(this.summaryCollectionName)
+			.doc(this.analyticsSummaryDocId);
+
+		try {
+			await currentDb.runTransaction(async (t) => {
+				const doc = await t.get(summaryRef);
+				const now = new Date().toISOString();
+
+				// Simplified Referrer
+				let ref = 'Direct';
+				try {
+					if (log.referer) {
+						const url = new URL(log.referer);
+						ref = url.hostname;
+						if (ref.includes('google')) ref = 'Google';
+						if (ref.includes('linkedin')) ref = 'LinkedIn';
+						if (ref.includes('facebook')) ref = 'Facebook';
+						if (ref.includes('twitter') || ref.includes('x.com')) ref = 'Twitter/X';
+					}
+				} catch {
+					ref = 'Other';
+				}
+
+				const pathKey = log.path.replace(/\//g, '_') || 'home';
+				const deviceKey = log.device || 'Desktop';
+				const browserKey = log.browser || 'Unknown';
+				const referrerKey = ref.replace(/\./g, '_');
+
+				if (!doc.exists) {
+					t.set(summaryRef, {
+						topPages: { [pathKey]: 1 },
+						deviceMix: { [deviceKey]: 1 },
+						browserMix: { [browserKey]: 1 },
+						referrers: { [referrerKey]: 1 },
+						updatedAt: now
+					});
+				} else {
+					t.update(summaryRef, {
+						[`topPages.${pathKey}`]: FieldValue.increment(1),
+						[`deviceMix.${deviceKey}`]: FieldValue.increment(1),
+						[`browserMix.${browserKey}`]: FieldValue.increment(1),
+						[`referrers.${referrerKey}`]: FieldValue.increment(1),
+						updatedAt: now
+					});
+				}
+			});
+		} catch (error) {
+			console.error('VisitorService: Failed to update analytics summary', error);
+		}
+	}
+
 	async getStats(): Promise<VisitorStats | null> {
 		const now = Date.now();
 
@@ -250,8 +316,17 @@ export class VisitorService {
 
 	async getRecentLogs(limit: number = 20): Promise<VisitorLogData[]> {
 		try {
-			return await this.repository.getRecent(limit);
-		} catch (error) {
+			// Limit always small for recent logs
+			return await this.repository.getRecent(Math.min(limit, 50));
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				(error as { code: number }).code === 8
+			) {
+				return [];
+			}
 			console.error('VisitorService: Failed to get recent logs', error);
 			return [];
 		}
@@ -259,81 +334,52 @@ export class VisitorService {
 
 	/**
 	 * Get aggregated analytics for the dashboard.
-	 * Optimized with memory and persistent caching.
+	 * Now uses summary document to avoid expensive log queries.
 	 */
-	async getAnalytics(days: number = 30): Promise<VisitorAnalytics> {
-		const cacheKey = `analytics_${days}d`;
+	async getAnalytics(): Promise<VisitorAnalytics> {
+		const now = Date.now();
+		const cacheKey = 'analytics_summary';
 
-		// 1. Persistent File Cache (Dev only)
-		if (dev) {
-			const cached = persistentCache.get<VisitorAnalytics>(cacheKey);
-			if (cached) {
-				console.log(`📂 VisitorService: ${cacheKey} File Cache Hit`);
-				return cached;
-			}
+		if (VisitorService.analyticsCache && now - VisitorService.analyticsCache.timestamp < this.GEO_CACHE_TTL) {
+			return VisitorService.analyticsCache.data;
 		}
 
+		if (dev) {
+			const cached = persistentCache.get<VisitorAnalytics>(cacheKey);
+			if (cached) return cached;
+		}
+
+		const currentDb = this.db;
+		if (!currentDb) return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
+
 		try {
-			// Calculate cutoff date
-			const cutoff = new Date();
-			cutoff.setDate(cutoff.getDate() - days);
+			const doc = await currentDb
+				.collection(this.summaryCollectionName)
+				.doc(this.analyticsSummaryDocId)
+				.get();
 
-			// Fetch logs for aggregation
-			const logs = await this.repository.getRecent(1000);
+			if (!doc.exists) {
+				// SAFE FALLBACK: Only fetch a few logs, never 1000.
+				return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
+			}
 
-			// Filter logs by date
-			const filteredLogs = logs.filter((log) => {
-				if (!log.timestamp) return false;
-				const logDate = log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp);
-				return logDate >= cutoff;
-			});
-
-			const topPages: Record<string, number> = {};
-			const deviceMix: Record<string, number> = {};
-			const browserMix: Record<string, number> = {};
-			const referrers: Record<string, number> = {};
-
-			filteredLogs.forEach((log) => {
-				topPages[log.path] = (topPages[log.path] || 0) + 1;
-				const device = log.device || 'Desktop';
-				deviceMix[device] = (deviceMix[device] || 0) + 1;
-				const browser = log.browser || 'Unknown';
-				browserMix[browser] = (browserMix[browser] || 0) + 1;
-
-				let ref = 'Direct';
-				try {
-					if (log.referer) {
-						const url = new URL(log.referer);
-						ref = url.hostname;
-						if (ref.includes('google')) ref = 'Google';
-						if (ref.includes('linkedin')) ref = 'LinkedIn';
-						if (ref.includes('facebook')) ref = 'Facebook';
-						if (ref.includes('twitter') || ref.includes('x.com')) ref = 'Twitter/X';
-						if (ref === 'localhost') ref = 'Development';
-					}
-				} catch {
-					ref = 'Other';
-				}
-				referrers[ref] = (referrers[ref] || 0) + 1;
-			});
+			const data = doc.data() || {};
+			
+			const format = (obj: Record<string, number> = {}) => 
+				Object.entries(obj).sort((a, b) => b[1] - a[1]);
 
 			const result: VisitorAnalytics = {
-				topPages: Object.entries(topPages)
-					.sort((a, b) => b[1] - a[1])
-					.slice(0, 10),
-				deviceMix: Object.entries(deviceMix).sort((a, b) => b[1] - a[1]),
-				browserMix: Object.entries(browserMix)
-					.sort((a, b) => b[1] - a[1])
-					.slice(0, 5),
-				referrers: Object.entries(referrers)
-					.sort((a, b) => b[1] - a[1])
-					.slice(0, 5)
+				topPages: format(data.topPages).map(([k, v]) => [k.replace(/_/g, '/'), v] as [string, number]).slice(0, 10),
+				deviceMix: format(data.deviceMix),
+				browserMix: format(data.browserMix).slice(0, 5),
+				referrers: format(data.referrers).map(([k, v]) => [k.replace(/_/g, '.'), v] as [string, number]).slice(0, 5)
 			};
 
+			VisitorService.analyticsCache = { data: result, timestamp: now };
 			if (dev) persistentCache.set(cacheKey, result);
 
 			return result;
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('VisitorService: Failed to get analytics', error);
 			return persistentCache.get<VisitorAnalytics>(cacheKey) || { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
 		}
@@ -376,10 +422,9 @@ export class VisitorService {
 				.get();
 
 			if (!summaryDoc.exists) {
-				// Fallback to query logs if summary doesn't exist yet (Migration phase)
-				// But only if we are NOT in quota error
+				// SAFE FALLBACK: Limit to 50 reads max if summary missing.
 				console.log('⚠️ Geo Summary not found, falling back to log aggregation (Expensive!)');
-				return this.fallbackGeoAggregation(limit);
+				return this.fallbackGeoAggregation(Math.min(limit, 50));
 			}
 
 			const data = summaryDoc.data() || {};
@@ -417,11 +462,12 @@ export class VisitorService {
 	}
 
 	/**
-	 * Expensive fallback for initial migration or if summary is missing.
+	 * Limited fallback to avoid quota kill.
 	 */
 	private async fallbackGeoAggregation(limit: number): Promise<GeoNode[]> {
 		try {
-			const logs = await this.repository.getWithGeoData(1000);
+			// Limit drastically reduced from 1000 to 50
+			const logs = await this.repository.getWithGeoData(limit);
 			const geoMap = new Map<string, {
 				country: string;
 				city: string | null;
@@ -462,8 +508,7 @@ export class VisitorService {
 					...data,
 					lastVisit: data.lastVisit.toISOString()
 				}))
-				.sort((a, b) => b.count - a.count)
-				.slice(0, limit);
+				.sort((a, b) => b.count - a.count);
 		} catch {
 			return [];
 		}
