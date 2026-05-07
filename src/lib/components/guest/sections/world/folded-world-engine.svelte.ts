@@ -307,8 +307,8 @@ export function createFoldedWorldEngine() {
 		const geometry = mainMesh.geometry;
 		const intensityAttr = geometry.getAttribute('vDataIntensity');
 
-		// Map geo nodes to face intensities (0.10 radians ~ 5.7 degrees ~ 600km localized radius)
-		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.10);
+		// Map geo nodes to face intensities (0.04 radians ~ 2.3 degrees ~ 250km localized radius)
+		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.04);
 
 		// Spread face intensity to all 3 vertices of each face
 		for (let face = 0; face < faceIntensities.length; face++) {

@@ -91,8 +91,8 @@ export const fragmentShader = /* glsl */ `
 		// Calculate UV using Local Position so it rotates with the mesh
 		vec3 nPos = normalize(vLocalPosition);
 		
-		// Improved UV mapping for equirectangular projection
-		float u = fract(atan(nPos.z, -nPos.x) / (2.0 * PI));
+		// Improved UV mapping for equirectangular projection with 180-degree phase shift to align mask
+		float u = fract(atan(nPos.z, -nPos.x) / (2.0 * PI) + 0.5);
 		float v = 1.0 - acos(nPos.y) / PI;
 		
 		// Sample world mask (continents)

@@ -52,7 +52,7 @@ export interface DetailPanelData {
 
 /** Default configuration */
 export const DEFAULT_WORLD_CONFIG: WorldConfig = {
-	subdivisions: 4,
+	subdivisions: 16,
 	autoRotateSpeed: 0.15,
 	maxExtrusion: 0.6,
 	enableParticles: true,
