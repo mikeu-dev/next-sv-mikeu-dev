@@ -7,7 +7,7 @@ export class JourneyService {
 	private repository = new JourneyRepository();
 
 	// In-memory cache
-	private static cache: Record<string, any> = {};
+	private static cache: Record<string, unknown> = {};
 	private static lastFetch: Record<string, number> = {};
 	private readonly CACHE_TTL = 3600000; // 1 hour
 
@@ -19,11 +19,11 @@ export class JourneyService {
 			JourneyService.cache[cacheKey] &&
 			now - (JourneyService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
 		) {
-			return JourneyService.cache[cacheKey];
+			return JourneyService.cache[cacheKey] as { items: JourneyItem[] };
 		}
 
 		if (dev) {
-			const cached = persistentCache.get<any>(cacheKey);
+			const cached = persistentCache.get<{ items: JourneyItem[] }>(cacheKey);
 			if (cached) {
 				JourneyService.cache[cacheKey] = cached;
 				JourneyService.lastFetch[cacheKey] = now;
@@ -53,7 +53,8 @@ export class JourneyService {
 			) {
 				console.error(`JourneyService: Quota exceeded while fetching journey for ${lang}`);
 				return (
-					persistentCache.get<any>(cacheKey) || JourneyService.cache[cacheKey] || { items: [] }
+					persistentCache.get<{ items: JourneyItem[] }>(cacheKey) ||
+					(JourneyService.cache[cacheKey] as { items: JourneyItem[] }) || { items: [] }
 				);
 			}
 			console.error('Error fetching journey:', error);

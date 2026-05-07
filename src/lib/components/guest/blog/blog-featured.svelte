@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BlogPost } from '$lib/server/services/blog.service';
+	import type { BlogPost } from '$lib/types';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BlogPost } from '$lib/server/services/blog.service';
+	import type { BlogPost } from '$lib/types';
 	import BlogCard from '$lib/components/guest/blog/blog-card.svelte';
 	import { m } from '@/lib/paraglide/messages';
 

@@ -7,7 +7,7 @@ import { env } from '$lib/server/config/env';
 import { logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { UAParser } from 'ua-parser-js';
-import { building, dev } from '$app/environment';
+import { building } from '$app/environment';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();

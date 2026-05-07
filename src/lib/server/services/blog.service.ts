@@ -1,27 +1,14 @@
 import { BlogRepository } from '../repositories/blog.repository';
 import { dev } from '$app/environment';
 import { persistentCache } from '../utils/cache.util';
-
-export interface BlogPost {
-	id?: string;
-	slug: string;
-	locale: string;
-	title: string;
-	description: string;
-	date: string;
-	published: boolean;
-	content: string;
-	thumbnailUrl?: string;
-	tags?: string[];
-	readingTime?: number;
-	updatedAt?: Date;
-}
+import type { BlogPost } from '$lib/types';
+export type { BlogPost };
 
 export class BlogService {
 	private repository = new BlogRepository();
 
 	// In-memory cache
-	private static cache: Record<string, any> = {};
+	private static cache: Record<string, unknown> = {};
 	private static lastFetch: Record<string, number> = {};
 	private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
@@ -33,11 +20,11 @@ export class BlogService {
 			BlogService.cache[cacheKey] &&
 			now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
 		) {
-			return BlogService.cache[cacheKey];
+			return BlogService.cache[cacheKey] as BlogPost[];
 		}
 
 		if (dev) {
-			const cached = persistentCache.get<any[]>(cacheKey);
+			const cached = persistentCache.get<BlogPost[]>(cacheKey);
 			if (cached) {
 				BlogService.cache[cacheKey] = cached;
 				BlogService.lastFetch[cacheKey] = now;
@@ -53,7 +40,7 @@ export class BlogService {
 			return posts;
 		} catch (error: unknown) {
 			console.error('BlogService: Failed to get all posts', error);
-			return persistentCache.get<any[]>(cacheKey) || [];
+			return persistentCache.get<BlogPost[]>(cacheKey) || [];
 		}
 	}
 
@@ -92,7 +79,7 @@ export class BlogService {
 			BlogService.cache[cacheKey] &&
 			now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
 		) {
-			return BlogService.cache[cacheKey];
+			return BlogService.cache[cacheKey] as { posts: BlogPost[]; nextCursor: string | null };
 		}
 
 		try {
@@ -113,7 +100,12 @@ export class BlogService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`BlogService: Quota exceeded while fetching posts for ${locale}`);
-				return persistentCache.get<any>(cacheKey) || { posts: [], total: 0 };
+				return (
+					persistentCache.get<{ posts: BlogPost[]; nextCursor: string | null }>(cacheKey) || {
+						posts: [],
+						nextCursor: null
+					}
+				);
 			}
 			throw error;
 		}
@@ -167,12 +159,16 @@ export class BlogService {
 		const { posts: allPosts } = await this.getPublishedPostsByLocale(locale, { limit: 20 });
 
 		let related = allPosts.filter(
-			(post) => post.slug !== currentSlug && post.tags?.some((tag) => tags.includes(tag))
+			(post: BlogPost) =>
+				post.slug !== currentSlug && post.tags?.some((tag: string) => tags.includes(tag))
 		);
 
 		if (related.length < limit) {
 			const latestFallback = allPosts
-				.filter((post) => post.slug !== currentSlug && !related.some((r) => r.slug === post.slug))
+				.filter(
+					(post: BlogPost) =>
+						post.slug !== currentSlug && !related.some((r: BlogPost) => r.slug === post.slug)
+				)
 				.slice(0, limit - related.length);
 
 			related = [...related, ...latestFallback];

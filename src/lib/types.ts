@@ -91,6 +91,21 @@ export interface JourneyItem {
 	[key: string]: unknown;
 }
 
+export interface BlogPost {
+	id?: string;
+	slug: string;
+	locale: string;
+	title: string;
+	description: string;
+	date: string;
+	published: boolean;
+	content: string;
+	thumbnailUrl?: string;
+	tags?: string[];
+	readingTime?: number;
+	updatedAt?: Date;
+}
+
 export interface DynamicIcon {
 	id: string; // The identifier / iconName
 	svg: string; // Raw path data or SVG string
