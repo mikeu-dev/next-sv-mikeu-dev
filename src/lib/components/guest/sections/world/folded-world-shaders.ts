@@ -21,10 +21,12 @@
 export const vertexShader = /* glsl */ `
 	attribute float vDataIntensity;
 	attribute float foldOffset;
+	attribute vec3 aScatterOffset;
 
 	uniform float uMaxExtrusion;
 	uniform float uTime;
 	uniform int uMode;
+	uniform float uAssembleProgress;
 
 	varying float vIntensity;
 	varying vec3 vNormal;
@@ -55,6 +57,9 @@ export const vertexShader = /* glsl */ `
 
 		// Base bias to prevent z-fighting with wireframe
 		pos += normal * 0.002;
+
+		// Morph assembly transition (Origami compiling effect)
+		pos += aScatterOffset * (1.0 - uAssembleProgress);
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}
@@ -159,10 +164,12 @@ export const fragmentShader = /* glsl */ `
 export const wireframeVertexShader = /* glsl */ `
 	attribute float vDataIntensity;
 	attribute float foldOffset;
+	attribute vec3 aScatterOffset;
 
 	uniform float uMaxExtrusion;
 	uniform int uMode;
 	uniform float uTime;
+	uniform float uAssembleProgress;
 
 	void main() {
 		vec3 pos = position;
@@ -178,6 +185,9 @@ export const wireframeVertexShader = /* glsl */ `
 
 		// Wireframe slightly behind main mesh
 		pos += normal * 0.001;
+
+		// Morph assembly transition
+		pos += aScatterOffset * (1.0 - uAssembleProgress);
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}

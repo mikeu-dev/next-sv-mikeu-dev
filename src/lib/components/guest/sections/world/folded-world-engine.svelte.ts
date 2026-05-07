@@ -81,6 +81,7 @@ export function createFoldedWorldEngine() {
 	let targetZoom = 3.5;
 	let currentZoom = 3.5;
 	let autoRotateAngle = 0;
+	let assembleProgress = 0.0;
 	let canvasEl: HTMLCanvasElement | null = null;
 	let containerEl: HTMLElement | null = null;
 	let geoNodes: GeoNode[] = [];
@@ -241,6 +242,7 @@ export function createFoldedWorldEngine() {
 		// Create per-vertex attributes (same value for all 3 verts in a face)
 		const intensities = new Float32Array(vertexCount);
 		const foldOffsets = new Float32Array(vertexCount);
+		const scatterOffsets = new Float32Array(vertexCount * 3);
 
 		for (let i = 0; i < vertexCount; i++) {
 			const x = posAttr.getX(i);
@@ -249,8 +251,33 @@ export function createFoldedWorldEngine() {
 			foldOffsets[i] = paperFoldDisplacement(x, y, z);
 		}
 
+		// Calculate scatter offsets per face for the assembly animation
+		for (let i = 0; i < faceCountVal; i++) {
+			const i0 = i * 3;
+			const v0x = posAttr.getX(i0), v0y = posAttr.getY(i0), v0z = posAttr.getZ(i0);
+			const v1x = posAttr.getX(i0 + 1), v1y = posAttr.getY(i0 + 1), v1z = posAttr.getZ(i0 + 1);
+			const v2x = posAttr.getX(i0 + 2), v2y = posAttr.getY(i0 + 2), v2z = posAttr.getZ(i0 + 2);
+
+			const cx = (v0x + v1x + v2x) / 3;
+			const cy = (v0y + v1y + v2y) / 3;
+			const cz = (v0z + v1z + v2z) / 3;
+
+			// Push strongly outwards + random tangential drift
+			const dist = 3.0 + Math.random() * 5.0;
+			const rx = cx * dist + (Math.random() - 0.5) * 4.0;
+			const ry = cy * dist + (Math.random() - 0.5) * 4.0;
+			const rz = cz * dist + (Math.random() - 0.5) * 4.0;
+
+			for (let j = 0; j < 3; j++) {
+				scatterOffsets[(i0 + j) * 3] = rx;
+				scatterOffsets[(i0 + j) * 3 + 1] = ry;
+				scatterOffsets[(i0 + j) * 3 + 2] = rz;
+			}
+		}
+
 		nonIndexed.setAttribute('vDataIntensity', new THREE.BufferAttribute(intensities, 1));
 		nonIndexed.setAttribute('foldOffset', new THREE.BufferAttribute(foldOffsets, 1));
+		nonIndexed.setAttribute('aScatterOffset', new THREE.BufferAttribute(scatterOffsets, 3));
 
 		// Load world mask texture
 		const textureLoader = new THREE.TextureLoader();
@@ -272,7 +299,8 @@ export function createFoldedWorldEngine() {
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity },
 				uWorldMask: { value: worldMask },
-				uNeonColor: { value: new THREE.Color(colors.neon) }
+				uNeonColor: { value: new THREE.Color(colors.neon) },
+				uAssembleProgress: { value: 0.0 }
 			},
 			side: THREE.FrontSide
 		});
@@ -289,7 +317,8 @@ export function createFoldedWorldEngine() {
 				uMode: { value: 0 },
 				uTime: { value: 0 },
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
-				uOpacity: { value: config.wireframeOpacity }
+				uOpacity: { value: config.wireframeOpacity },
+				uAssembleProgress: { value: 0.0 }
 			},
 			transparent: true,
 			depthTest: true,
@@ -347,6 +376,14 @@ export function createFoldedWorldEngine() {
 			autoRotateAngle += config.autoRotateSpeed * delta;
 		}
 
+		// Morph assembly animation
+		if (assembleProgress < 1.0) {
+			assembleProgress += delta * 0.4; // Complete in ~2.5 seconds
+			if (assembleProgress > 1.0) assembleProgress = 1.0;
+		}
+		// Smooth step easing out (expo)
+		const easedAssemble = assembleProgress === 1.0 ? 1.0 : 1.0 - Math.pow(2, -10 * assembleProgress);
+
 		// Smooth zoom
 		currentZoom += (targetZoom - currentZoom) * 0.08;
 		camera.position.set(0, 0, currentZoom);
@@ -366,10 +403,12 @@ export function createFoldedWorldEngine() {
 		if (mainMaterial) {
 			mainMaterial.uniforms.uTime.value = elapsed;
 			mainMaterial.uniforms.uMode.value = modeIdx;
+			mainMaterial.uniforms.uAssembleProgress.value = easedAssemble;
 		}
 		if (wireframeMaterial) {
 			wireframeMaterial.uniforms.uTime.value = elapsed;
 			wireframeMaterial.uniforms.uMode.value = modeIdx;
+			wireframeMaterial.uniforms.uAssembleProgress.value = easedAssemble;
 		}
 
 		renderer.render(scene, camera);
