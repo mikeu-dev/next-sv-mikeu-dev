@@ -82,6 +82,9 @@ export function createFoldedWorldEngine() {
 	let currentZoom = 3.5;
 	let autoRotateAngle = 0;
 	let assembleProgress = 0.0;
+	let modeTransitionPhase = 0.0;
+	let pendingMode: ViewMode | null = null;
+	let shaderViewMode: ViewMode = 'fold';
 	let canvasEl: HTMLCanvasElement | null = null;
 	let containerEl: HTMLElement | null = null;
 	let geoNodes: GeoNode[] = [];
@@ -376,13 +379,54 @@ export function createFoldedWorldEngine() {
 			autoRotateAngle += config.autoRotateSpeed * delta;
 		}
 
-		// Morph assembly animation
+		// Morph assembly animation (Initial Load)
 		if (assembleProgress < 1.0) {
 			assembleProgress += delta * 0.4; // Complete in ~2.5 seconds
 			if (assembleProgress > 1.0) assembleProgress = 1.0;
 		}
 		// Smooth step easing out (expo)
 		const easedAssemble = assembleProgress === 1.0 ? 1.0 : 1.0 - Math.pow(2, -10 * assembleProgress);
+
+		// Mode Switch Pulse (Scatter & Reassemble)
+		let modePulse = 0.0;
+		if (modeTransitionPhase > 0) {
+			if (modeTransitionPhase < 1.0) {
+				// Phase 1: Expand with Sine ease-out (0.25s duration)
+				modeTransitionPhase += delta * 4.0;
+				if (modeTransitionPhase >= 1.0) modeTransitionPhase = 1.0;
+				modePulse = Math.sin(modeTransitionPhase * Math.PI / 2.0);
+			} else if (modeTransitionPhase < 2.0) {
+				// Phase 2: Apex Hang / Anti-Gravity Float (0.35s duration)
+				modeTransitionPhase += delta * 2.8;
+				if (modeTransitionPhase >= 2.0) {
+					modeTransitionPhase = 2.0;
+					if (pendingMode) {
+						shaderViewMode = pendingMode; // Change color at the end of the hang
+						pendingMode = null;
+					}
+				}
+				// Float gently at the peak (drifts from 1.0 down to 0.95)
+				modePulse = 1.0 - (modeTransitionPhase - 1.0) * 0.05;
+			} else {
+				// Phase 3: Assemble with Expo ease-out (1.2s duration)
+				modeTransitionPhase += delta * 0.8;
+				if (modeTransitionPhase >= 3.0) {
+					modeTransitionPhase = 0.0;
+					modePulse = 0.0;
+				} else {
+					const t = modeTransitionPhase - 2.0;
+					modePulse = 0.95 * Math.pow(2, -10 * t);
+				}
+			}
+			
+			// Dynamic spin boost during transition
+			if (!isMouseDown) {
+				autoRotateAngle += modePulse * delta * 0.15; 
+			}
+		}
+
+		// Final scatter value applied to shader
+		const finalAssemble = Math.max(0.0, easedAssemble - (modePulse * 0.08));
 
 		// Smooth zoom
 		currentZoom += (targetZoom - currentZoom) * 0.08;
@@ -399,16 +443,16 @@ export function createFoldedWorldEngine() {
 		}
 
 		// Update shader uniforms
-		const modeIdx = viewMode === 'fold' ? 0 : viewMode === 'heat' ? 1 : 2;
+		const modeIdx = shaderViewMode === 'fold' ? 0 : shaderViewMode === 'heat' ? 1 : 2;
 		if (mainMaterial) {
 			mainMaterial.uniforms.uTime.value = elapsed;
 			mainMaterial.uniforms.uMode.value = modeIdx;
-			mainMaterial.uniforms.uAssembleProgress.value = easedAssemble;
+			mainMaterial.uniforms.uAssembleProgress.value = finalAssemble;
 		}
 		if (wireframeMaterial) {
 			wireframeMaterial.uniforms.uTime.value = elapsed;
 			wireframeMaterial.uniforms.uMode.value = modeIdx;
-			wireframeMaterial.uniforms.uAssembleProgress.value = easedAssemble;
+			wireframeMaterial.uniforms.uAssembleProgress.value = finalAssemble;
 		}
 
 		renderer.render(scene, camera);
@@ -614,7 +658,10 @@ export function createFoldedWorldEngine() {
 	// --- Setters ---
 
 	function setViewMode(mode: ViewMode): void {
-		viewMode = mode;
+		if (viewMode === mode) return;
+		viewMode = mode; // Updates UI instantly
+		pendingMode = mode; // Shader handles transition
+		modeTransitionPhase = 0.01; // Trigger animation
 	}
 
 	function closeDetailPanel(): void {
