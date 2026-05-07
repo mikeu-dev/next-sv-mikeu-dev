@@ -48,34 +48,28 @@
 
 <!-- World Teaser Section -->
 <section class="relative h-[60vh] min-h-[400px] w-full overflow-hidden border-y border-foreground/10">
-	{#await data.worldData}
-		<div class="flex h-full w-full items-center justify-center bg-background/50">
-			<Skeleton class="h-64 w-64 rounded-full" />
+	<div class="absolute inset-0 z-0">
+		<FoldedWorld nodes={[]} totalVisitors={0} minimal={true} />
+	</div>
+	
+	<!-- Teaser Content Overlay -->
+	<div class="container relative z-10 flex h-full flex-col items-center justify-center text-center">
+		<div class="max-w-2xl bg-background/80 p-8 backdrop-blur-sm border border-foreground/10">
+			<h2 class="mb-4 text-4xl font-black tracking-tighter md:text-5xl">
+				GLOBAL_PRESENCE
+			</h2>
+			<p class="mb-8 text-muted-foreground font-mono text-sm">
+				[ SYSTEM.METRICS // VISITOR_DISTRIBUTION ]<br/>
+				Eksplorasi jangkauan teknologi kami melalui representasi data visual interaktif.
+			</p>
+			<a 
+				href="/world" 
+				class="inline-block bg-primary px-8 py-4 text-primary-foreground font-bold tracking-widest hover:bg-primary/90 transition-all hover:skew-x-[-10deg]"
+			>
+				EXPLORE DATA ARCHIVE →
+			</a>
 		</div>
-	{:then nodes}
-		<div class="absolute inset-0 z-0">
-			<FoldedWorld {nodes} totalVisitors={0} minimal={true} />
-		</div>
-		
-		<!-- Teaser Content Overlay -->
-		<div class="container relative z-10 flex h-full flex-col items-center justify-center text-center">
-			<div class="max-w-2xl bg-background/80 p-8 backdrop-blur-sm border border-foreground/10">
-				<h2 class="mb-4 text-4xl font-black tracking-tighter md:text-5xl">
-					GLOBAL_PRESENCE
-				</h2>
-				<p class="mb-8 text-muted-foreground font-mono text-sm">
-					[ SYSTEM.METRICS // VISITOR_DISTRIBUTION ]<br/>
-					Eksplorasi jangkauan teknologi kami melalui representasi data visual interaktif.
-				</p>
-				<a 
-					href="/world" 
-					class="inline-block bg-primary px-8 py-4 text-primary-foreground font-bold tracking-widest hover:bg-primary/90 transition-all hover:skew-x-[-10deg]"
-				>
-					EXPLORE DATA ARCHIVE →
-				</a>
-			</div>
-		</div>
-	{/await}
+	</div>
 </section>
 
 <ContactSection />
