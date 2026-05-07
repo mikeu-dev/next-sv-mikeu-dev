@@ -188,12 +188,12 @@ export function createFoldedWorldEngine() {
 		renderer = new THREE.WebGLRenderer({
 			canvas: canvasEl,
 			antialias: true,
-			alpha: false,
+			alpha: true, // Enable transparency for CSS background
 			powerPreference: 'high-performance'
 		});
 		renderer.setSize(width, height);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-		renderer.setClearColor(colors.background, 1);
+		renderer.setClearColor(colors.background, 0); // Set alpha to 0
 
 		// Scene
 		scene = new THREE.Scene();
@@ -639,7 +639,7 @@ export function createFoldedWorldEngine() {
 
 		// Update Renderer
 		if (renderer) {
-			renderer.setClearColor(colors.background, 1);
+			renderer.setClearColor(colors.background, 0); // Keep alpha 0 to allow CSS background
 		}
 
 		// Update Materials
