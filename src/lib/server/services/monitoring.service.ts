@@ -1,3 +1,9 @@
+/**
+ * MonitoringService
+ *
+ * NOTE: Log cleanup (clearOldLogs) is limited to 500 docs per execution to avoid
+ * large read/write spikes that could exhaust the Firestore free tier quota.
+ */
 import { db } from '../firebase/firebase.server';
 import { COLLECTIONS } from '../firebase/collections';
 

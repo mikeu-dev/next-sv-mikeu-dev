@@ -1,3 +1,18 @@
+/**
+ * VisitorService
+ *
+ * CRITICAL QUOTA NOTE (2026-05-07):
+ * Previously, this service triggered "Quota Exceeded" errors because it performed
+ * heavy queries on `visitor_logs` with large limits (1000-2000 docs) on every dashboard load.
+ * Example: 25 dashboard loads x 2000 limit = 50,000 reads (Daily Free Tier Limit).
+ *
+ * RESOLUTION:
+ * We now use the "Summary Document Pattern" (Pre-aggregation).
+ * 1. Analytics and Geo data are updated INCREMENTALLY on every visit via `updateGeoSummary` and `updateAnalyticsSummary`.
+ * 2. The dashboard reads only the summary documents (1 read each) instead of raw logs.
+ * 3. Result: Read operations reduced by 99.8% (from 3000+ per load to ~3 per load).
+ */
+
 import { db } from '$lib/server/firebase/firebase.server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { VisitorRepository } from '../repositories/visitor.repository';
