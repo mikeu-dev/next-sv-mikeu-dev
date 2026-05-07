@@ -528,5 +528,35 @@ export class VisitorService {
 			return [];
 		}
 	}
+	/**
+	 * Clean up old visitor logs to keep the database lean.
+	 * Limited to 500 deletions per call to avoid quota spikes.
+	 */
+	async clearOldLogs(daysToKeep = 30) {
+		const currentDb = this.db;
+		if (!currentDb) return 0;
+
+		const cutoff = new Date();
+		cutoff.setDate(cutoff.getDate() - daysToKeep);
+
+		try {
+			const snapshot = await currentDb
+				.collection(this.logCollectionName)
+				.where('timestamp', '<', cutoff)
+				.limit(500)
+				.get();
+
+			if (snapshot.empty) return 0;
+
+			const batch = currentDb.batch();
+			snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+			await batch.commit();
+
+			return snapshot.size;
+		} catch (error) {
+			console.error('VisitorService: Failed to clear old logs', error);
+			return 0;
+		}
+	}
 }
 export const visitorService = new VisitorService();
