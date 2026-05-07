@@ -1,10 +1,33 @@
 import { JourneyRepository } from '../repositories/journey.repository';
 import type { JourneyItem } from '$lib/types';
+import { dev } from '$app/environment';
+import { persistentCache } from '../utils/cache.util';
 
 export class JourneyService {
 	private repository = new JourneyRepository();
 
+	// In-memory cache
+	private static cache: Record<string, any> = {};
+	private static lastFetch: Record<string, number> = {};
+	private readonly CACHE_TTL = 3600000; // 1 hour
+
 	async getJourney(lang: 'en' | 'id' = 'en') {
+		const now = Date.now();
+		const cacheKey = `journey_${lang}`;
+
+		if (JourneyService.cache[cacheKey] && now - (JourneyService.lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
+			return JourneyService.cache[cacheKey];
+		}
+
+		if (dev) {
+			const cached = persistentCache.get<any>(cacheKey);
+			if (cached) {
+				JourneyService.cache[cacheKey] = cached;
+				JourneyService.lastFetch[cacheKey] = now;
+				return cached;
+			}
+		}
+
 		try {
 			const data = await this.repository.getByLang(lang);
 
@@ -12,8 +35,22 @@ export class JourneyService {
 				return { items: [] };
 			}
 
+			// Update caches
+			JourneyService.cache[cacheKey] = data;
+			JourneyService.lastFetch[cacheKey] = now;
+			if (dev) persistentCache.set(cacheKey, data);
+
 			return data;
-		} catch (error) {
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				(error as { code: number }).code === 8
+			) {
+				console.error(`JourneyService: Quota exceeded while fetching journey for ${lang}`);
+				return persistentCache.get<any>(cacheKey) || JourneyService.cache[cacheKey] || { items: [] };
+			}
 			console.error('Error fetching journey:', error);
 			throw error;
 		}
@@ -21,7 +58,13 @@ export class JourneyService {
 
 	async updateJourney(lang: 'en' | 'id', items: JourneyItem[]) {
 		try {
-			return await this.repository.update(lang, { items, updatedAt: new Date() });
+			const result = await this.repository.update(lang, { items, updatedAt: new Date() });
+			
+			// Invalidate caches
+			delete JourneyService.cache[`journey_${lang}`];
+			if (dev) persistentCache.clear(`journey_${lang}`);
+			
+			return result;
 		} catch (error) {
 			console.error('Error updating journey:', error);
 			throw error;

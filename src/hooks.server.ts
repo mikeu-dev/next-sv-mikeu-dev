@@ -80,7 +80,7 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 	const hasVisited = event.cookies.get(VISITOR_COOKIE);
 
 	if (
-		(!hasVisited || dev) &&
+		!hasVisited &&
 		!event.url.pathname.startsWith('/admin') &&
 		!event.url.pathname.startsWith('/api') &&
 		!event.url.pathname.includes('sitemap.xml') &&

@@ -1,4 +1,6 @@
 import { BlogRepository } from '../repositories/blog.repository';
+import { dev } from '$app/environment';
+import { persistentCache } from '../utils/cache.util';
 
 export interface BlogPost {
 	id?: string;
@@ -18,12 +20,55 @@ export interface BlogPost {
 export class BlogService {
 	private repository = new BlogRepository();
 
+	// In-memory cache
+	private static cache: Record<string, any> = {};
+	private static lastFetch: Record<string, number> = {};
+	private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
 	async getAllPosts() {
-		return this.repository.findAll();
+		const now = Date.now();
+		const cacheKey = 'all_posts';
+
+		if (BlogService.cache[cacheKey] && now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
+			return BlogService.cache[cacheKey];
+		}
+
+		if (dev) {
+			const cached = persistentCache.get<any[]>(cacheKey);
+			if (cached) {
+				BlogService.cache[cacheKey] = cached;
+				BlogService.lastFetch[cacheKey] = now;
+				return cached;
+			}
+		}
+
+		try {
+			const posts = await this.repository.findAll();
+			BlogService.cache[cacheKey] = posts;
+			BlogService.lastFetch[cacheKey] = now;
+			if (dev) persistentCache.set(cacheKey, posts);
+			return posts;
+		} catch (error: unknown) {
+			console.error('BlogService: Failed to get all posts', error);
+			return persistentCache.get<any[]>(cacheKey) || [];
+		}
 	}
 
 	async getPostBySlug(slug: string, locale?: string) {
-		return this.repository.getBySlugIndoEn(slug, locale);
+		try {
+			return await this.repository.getBySlugIndoEn(slug, locale);
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				(error as { code: number }).code === 8
+			) {
+				console.error('BlogService: Quota exceeded while fetching post by slug');
+				return null;
+			}
+			throw error;
+		}
 	}
 
 	async getPostById(id: string) {
@@ -34,18 +79,51 @@ export class BlogService {
 		locale: string,
 		options: { limit?: number; lastDate?: string; search?: string } = {}
 	) {
-		return this.repository.getPublishedByLocale(locale, options);
+		const now = Date.now();
+		const cacheKey = `posts_${locale}_${options.limit || 'all'}`;
+
+		// Simple caching for the main list
+		if (!options.search && !options.lastDate && BlogService.cache[cacheKey] && now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
+			return BlogService.cache[cacheKey];
+		}
+
+		try {
+			const result = await this.repository.getPublishedByLocale(locale, options);
+			
+			if (!options.search && !options.lastDate) {
+				BlogService.cache[cacheKey] = result;
+				BlogService.lastFetch[cacheKey] = now;
+				if (dev) persistentCache.set(cacheKey, result);
+			}
+			
+			return result;
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				(error as { code: number }).code === 8
+			) {
+				console.error(`BlogService: Quota exceeded while fetching posts for ${locale}`);
+				return persistentCache.get<any>(cacheKey) || { posts: [], total: 0 };
+			}
+			throw error;
+		}
 	}
 
 	async createPost(data: BlogPost) {
 		const id = `${data.slug}-${data.locale}`;
 		const readingTime = this.calculateReadingTime(data.content);
-		// We use upsert to ensure document is created if it doesn't exist
 		await this.repository.upsert(id, {
 			...data,
 			readingTime,
 			updatedAt: new Date()
 		} as Partial<BlogPost>);
+
+		// Invalidate caches
+		BlogService.cache = {};
+		if (dev) persistentCache.clear();
+		
 		return { id, ...data, readingTime };
 	}
 
@@ -54,11 +132,20 @@ export class BlogService {
 		if (data.content) {
 			updateData.readingTime = this.calculateReadingTime(data.content);
 		}
-		return this.repository.update(id, updateData);
+		const result = await this.repository.update(id, updateData);
+		
+		// Invalidate caches
+		BlogService.cache = {};
+		if (dev) persistentCache.clear();
+		
+		return result;
 	}
 
 	async deletePost(id: string) {
 		await this.repository.delete(id);
+		// Invalidate caches
+		BlogService.cache = {};
+		if (dev) persistentCache.clear();
 		return true;
 	}
 
@@ -69,20 +156,15 @@ export class BlogService {
 	}
 
 	async getRelatedPosts(currentSlug: string, tags: string[], locale: string, limit = 3) {
-		// For related posts, we still fetch a reasonable amount to filter in memory
-		// or we could optimize this later with a dedicated tag query
 		const { posts: allPosts } = await this.getPublishedPostsByLocale(locale, { limit: 20 });
 
-		// 1. Filter by tags first (same tags as current post)
 		let related = allPosts.filter(
 			(post) => post.slug !== currentSlug && post.tags?.some((tag) => tags.includes(tag))
 		);
 
-		// 2. If not enough related posts, add latest posts as fallback
 		if (related.length < limit) {
 			const latestFallback = allPosts
 				.filter((post) => post.slug !== currentSlug && !related.some((r) => r.slug === post.slug))
-				// allPosts is already sorted by date in repository
 				.slice(0, limit - related.length);
 
 			related = [...related, ...latestFallback];
