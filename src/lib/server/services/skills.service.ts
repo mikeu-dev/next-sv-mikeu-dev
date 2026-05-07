@@ -55,7 +55,10 @@ export class SkillsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`SkillsService: Quota exceeded while fetching skills for ${lang}`);
-				return persistentCache.get<{ items: string[] }>(`skills_${lang}`) || SkillsService.cache[lang] || { items: [] };
+				return (
+					persistentCache.get<{ items: string[] }>(`skills_${lang}`) ||
+					SkillsService.cache[lang] || { items: [] }
+				);
 			}
 			console.error('Error fetching skills:', error);
 			throw error;

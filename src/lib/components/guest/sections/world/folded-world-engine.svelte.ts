@@ -15,7 +15,12 @@ import type {
 	TooltipData,
 	DetailPanelData
 } from './folded-world.types';
-import { mapNodesToFaces, faceCenter, paperFoldDisplacement, findNearestNode } from './folded-world-geometry';
+import {
+	mapNodesToFaces,
+	faceCenter,
+	paperFoldDisplacement,
+	findNearestNode
+} from './folded-world-geometry';
 import { getWorldColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import {
 	vertexShader,
@@ -121,7 +126,7 @@ export function createFoldedWorldEngine() {
 			setupScene(isDark);
 			buildGlobe(isDark);
 			applyDeformations();
-			
+
 			if (!isMinimal) {
 				setupEventListeners();
 			}
@@ -206,13 +211,13 @@ export function createFoldedWorldEngine() {
 
 		// Camera
 		camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-		
+
 		// Adjust zoom for minimal teaser mode
 		if (isMinimal) {
-			targetZoom = 4.0; 
+			targetZoom = 4.0;
 			currentZoom = 4.0;
 		}
-		
+
 		camera.position.set(0, 0, currentZoom);
 		camera.lookAt(0, 0, 0);
 
@@ -270,9 +275,15 @@ export function createFoldedWorldEngine() {
 		// Calculate scatter offsets per face for the assembly animation
 		for (let i = 0; i < faceCountVal; i++) {
 			const i0 = i * 3;
-			const v0x = posAttr.getX(i0), v0y = posAttr.getY(i0), v0z = posAttr.getZ(i0);
-			const v1x = posAttr.getX(i0 + 1), v1y = posAttr.getY(i0 + 1), v1z = posAttr.getZ(i0 + 1);
-			const v2x = posAttr.getX(i0 + 2), v2y = posAttr.getY(i0 + 2), v2z = posAttr.getZ(i0 + 2);
+			const v0x = posAttr.getX(i0),
+				v0y = posAttr.getY(i0),
+				v0z = posAttr.getZ(i0);
+			const v1x = posAttr.getX(i0 + 1),
+				v1y = posAttr.getY(i0 + 1),
+				v1z = posAttr.getZ(i0 + 1);
+			const v2x = posAttr.getX(i0 + 2),
+				v2y = posAttr.getY(i0 + 2),
+				v2z = posAttr.getZ(i0 + 2);
 
 			const cx = (v0x + v1x + v2x) / 3;
 			const cy = (v0y + v1y + v2y) / 3;
@@ -398,7 +409,8 @@ export function createFoldedWorldEngine() {
 			if (assembleProgress > 1.0) assembleProgress = 1.0;
 		}
 		// Smooth step easing out (expo)
-		const easedAssemble = assembleProgress === 1.0 ? 1.0 : 1.0 - Math.pow(2, -10 * assembleProgress);
+		const easedAssemble =
+			assembleProgress === 1.0 ? 1.0 : 1.0 - Math.pow(2, -10 * assembleProgress);
 
 		// Mode Switch Pulse (Scatter & Reassemble)
 		let modePulse = 0.0;
@@ -407,7 +419,7 @@ export function createFoldedWorldEngine() {
 				// Phase 1: Expand with Sine ease-out (0.25s duration)
 				modeTransitionPhase += delta * 4.0;
 				if (modeTransitionPhase >= 1.0) modeTransitionPhase = 1.0;
-				modePulse = Math.sin(modeTransitionPhase * Math.PI / 2.0);
+				modePulse = Math.sin((modeTransitionPhase * Math.PI) / 2.0);
 			} else if (modeTransitionPhase < 2.0) {
 				// Phase 2: Apex Hang / Anti-Gravity Float (0.35s duration)
 				modeTransitionPhase += delta * 2.8;
@@ -431,15 +443,15 @@ export function createFoldedWorldEngine() {
 					modePulse = 0.95 * Math.pow(2, -10 * t);
 				}
 			}
-			
+
 			// Dynamic spin boost during transition
 			if (!isMouseDown) {
-				autoRotateAngle += modePulse * delta * 0.15; 
+				autoRotateAngle += modePulse * delta * 0.15;
 			}
 		}
 
 		// Final scatter value applied to shader
-		const finalAssemble = Math.max(0.0, easedAssemble - (modePulse * 0.08));
+		const finalAssemble = Math.max(0.0, easedAssemble - modePulse * 0.08);
 
 		// Smooth zoom
 		const lerpSpeed = isMinimal ? 0.02 : 0.08;

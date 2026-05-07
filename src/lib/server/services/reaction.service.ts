@@ -14,7 +14,10 @@ export class ReactionService {
 		const now = Date.now();
 		const cacheKey = `reaction_${slug}`;
 
-		if (ReactionService.cache[slug] && now - (ReactionService.lastFetch[slug] || 0) < this.CACHE_TTL) {
+		if (
+			ReactionService.cache[slug] &&
+			now - (ReactionService.lastFetch[slug] || 0) < this.CACHE_TTL
+		) {
 			return ReactionService.cache[slug];
 		}
 
@@ -53,11 +56,11 @@ export class ReactionService {
 	async like(slug: string) {
 		try {
 			await this.repository.incrementLikes(slug);
-			
+
 			// Invalidate caches
 			delete ReactionService.cache[slug];
 			if (dev) persistentCache.clear(`reaction_${slug}`);
-			
+
 			return this.getReactions(slug);
 		} catch (error) {
 			console.error('Error liking post:', error);
@@ -68,11 +71,11 @@ export class ReactionService {
 	async trackView(slug: string) {
 		try {
 			await this.repository.incrementViews(slug);
-			
+
 			// Invalidate caches
 			delete ReactionService.cache[slug];
 			if (dev) persistentCache.clear(`reaction_${slug}`);
-			
+
 			return this.getReactions(slug);
 		} catch (error) {
 			console.error('Error tracking view:', error);

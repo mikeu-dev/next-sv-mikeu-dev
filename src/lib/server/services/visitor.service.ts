@@ -158,9 +158,7 @@ export class VisitorService {
 		const currentDb = this.db;
 		if (!currentDb) return;
 
-		const summaryRef = currentDb
-			.collection(this.summaryCollectionName)
-			.doc(this.geoSummaryDocId);
+		const summaryRef = currentDb.collection(this.summaryCollectionName).doc(this.geoSummaryDocId);
 		const key = `${log.country}::${log.city || 'unknown'}`.replace(/\//g, '_'); // Sanitize key
 
 		try {
@@ -322,7 +320,13 @@ export class VisitorService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('VisitorService: Quota exceeded while fetching stats');
-				return persistentCache.get<VisitorStats>('visitor_stats') || { total: 0, today: 0, lastUpdated: '' };
+				return (
+					persistentCache.get<VisitorStats>('visitor_stats') || {
+						total: 0,
+						today: 0,
+						lastUpdated: ''
+					}
+				);
 			}
 			console.error('VisitorService: Failed to get stats', error);
 			return { total: 0, today: 0, lastUpdated: '' };
@@ -355,7 +359,10 @@ export class VisitorService {
 		const now = Date.now();
 		const cacheKey = 'analytics_summary';
 
-		if (VisitorService.analyticsCache && now - VisitorService.analyticsCache.timestamp < this.GEO_CACHE_TTL) {
+		if (
+			VisitorService.analyticsCache &&
+			now - VisitorService.analyticsCache.timestamp < this.GEO_CACHE_TTL
+		) {
 			return VisitorService.analyticsCache.data;
 		}
 
@@ -379,15 +386,19 @@ export class VisitorService {
 			}
 
 			const data = doc.data() || {};
-			
-			const format = (obj: Record<string, number> = {}) => 
+
+			const format = (obj: Record<string, number> = {}) =>
 				Object.entries(obj).sort((a, b) => b[1] - a[1]);
 
 			const result: VisitorAnalytics = {
-				topPages: format(data.topPages).map(([k, v]) => [k.replace(/_/g, '/'), v] as [string, number]).slice(0, 10),
+				topPages: format(data.topPages)
+					.map(([k, v]) => [k.replace(/_/g, '/'), v] as [string, number])
+					.slice(0, 10),
 				deviceMix: format(data.deviceMix),
 				browserMix: format(data.browserMix).slice(0, 5),
-				referrers: format(data.referrers).map(([k, v]) => [k.replace(/_/g, '.'), v] as [string, number]).slice(0, 5)
+				referrers: format(data.referrers)
+					.map(([k, v]) => [k.replace(/_/g, '.'), v] as [string, number])
+					.slice(0, 5)
 			};
 
 			VisitorService.analyticsCache = { data: result, timestamp: now };
@@ -396,7 +407,14 @@ export class VisitorService {
 			return result;
 		} catch (error: unknown) {
 			console.error('VisitorService: Failed to get analytics', error);
-			return persistentCache.get<VisitorAnalytics>(cacheKey) || { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
+			return (
+				persistentCache.get<VisitorAnalytics>(cacheKey) || {
+					topPages: [],
+					deviceMix: [],
+					browserMix: [],
+					referrers: []
+				}
+			);
 		}
 	}
 
@@ -408,10 +426,7 @@ export class VisitorService {
 		const now = Date.now();
 
 		// 1. Memory Cache
-		if (
-			VisitorService.geoCache &&
-			now - VisitorService.geoCache.timestamp < this.GEO_CACHE_TTL
-		) {
+		if (VisitorService.geoCache && now - VisitorService.geoCache.timestamp < this.GEO_CACHE_TTL) {
 			console.log('⚡ VisitorService: Geo Memory Cache Hit');
 			return VisitorService.geoCache.data;
 		}
@@ -483,16 +498,19 @@ export class VisitorService {
 		try {
 			// Limit drastically reduced from 1000 to 50
 			const logs = await this.repository.getWithGeoData(limit);
-			const geoMap = new Map<string, {
-				country: string;
-				city: string | null;
-				latitude: number;
-				longitude: number;
-				count: number;
-				lastVisit: Date;
-				browsers: string[];
-				devices: string[];
-			}>();
+			const geoMap = new Map<
+				string,
+				{
+					country: string;
+					city: string | null;
+					latitude: number;
+					longitude: number;
+					count: number;
+					lastVisit: Date;
+					browsers: string[];
+					devices: string[];
+				}
+			>();
 
 			for (const log of logs) {
 				if (!log.country || log.latitude == null || log.longitude == null) continue;

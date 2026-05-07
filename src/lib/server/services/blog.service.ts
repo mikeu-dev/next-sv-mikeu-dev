@@ -29,7 +29,10 @@ export class BlogService {
 		const now = Date.now();
 		const cacheKey = 'all_posts';
 
-		if (BlogService.cache[cacheKey] && now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
+		if (
+			BlogService.cache[cacheKey] &&
+			now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
+		) {
 			return BlogService.cache[cacheKey];
 		}
 
@@ -83,19 +86,24 @@ export class BlogService {
 		const cacheKey = `posts_${locale}_${options.limit || 'all'}`;
 
 		// Simple caching for the main list
-		if (!options.search && !options.lastDate && BlogService.cache[cacheKey] && now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
+		if (
+			!options.search &&
+			!options.lastDate &&
+			BlogService.cache[cacheKey] &&
+			now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
+		) {
 			return BlogService.cache[cacheKey];
 		}
 
 		try {
 			const result = await this.repository.getPublishedByLocale(locale, options);
-			
+
 			if (!options.search && !options.lastDate) {
 				BlogService.cache[cacheKey] = result;
 				BlogService.lastFetch[cacheKey] = now;
 				if (dev) persistentCache.set(cacheKey, result);
 			}
-			
+
 			return result;
 		} catch (error: unknown) {
 			if (
@@ -123,7 +131,7 @@ export class BlogService {
 		// Invalidate caches
 		BlogService.cache = {};
 		if (dev) persistentCache.clear();
-		
+
 		return { id, ...data, readingTime };
 	}
 
@@ -133,11 +141,11 @@ export class BlogService {
 			updateData.readingTime = this.calculateReadingTime(data.content);
 		}
 		const result = await this.repository.update(id, updateData);
-		
+
 		// Invalidate caches
 		BlogService.cache = {};
 		if (dev) persistentCache.clear();
-		
+
 		return result;
 	}
 

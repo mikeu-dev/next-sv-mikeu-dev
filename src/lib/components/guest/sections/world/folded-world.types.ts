@@ -64,7 +64,7 @@ export const DEFAULT_WORLD_CONFIG: WorldConfig = {
 export const getWorldColors = (isDark: boolean) => ({
 	background: isDark ? 0x0a0a0a : 0xfafafa,
 	wireframe: isDark ? 0xe0e0e0 : 0x1a1a1a,
-	faceCold: isDark ? 0x121212 : 0xf5f5f5, 
+	faceCold: isDark ? 0x121212 : 0xf5f5f5,
 	faceHot: isDark ? 0xffffff : 0x000000, // High contrast: White on Dark, Black on Light
 	accent: 0xff3333,
 	neon: 0x00f3ff, // Cyan Neon

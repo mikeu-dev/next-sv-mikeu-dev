@@ -17,7 +17,10 @@ export class ProjectReactionService {
 		const now = Date.now();
 		const cacheKey = `project_reaction_${slug}`;
 
-		if (ProjectReactionService.cache[slug] && now - (ProjectReactionService.lastFetch[slug] || 0) < this.CACHE_TTL) {
+		if (
+			ProjectReactionService.cache[slug] &&
+			now - (ProjectReactionService.lastFetch[slug] || 0) < this.CACHE_TTL
+		) {
 			return ProjectReactionService.cache[slug];
 		}
 
@@ -46,7 +49,11 @@ export class ProjectReactionService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`ProjectReactionService: Quota exceeded for ${slug}`);
-				return persistentCache.get<ProjectReaction>(cacheKey) || ProjectReactionService.cache[slug] || null;
+				return (
+					persistentCache.get<ProjectReaction>(cacheKey) ||
+					ProjectReactionService.cache[slug] ||
+					null
+				);
 			}
 			console.error('Error fetching project reactions:', error);
 			return persistentCache.get<ProjectReaction>(cacheKey) || null;
@@ -56,11 +63,11 @@ export class ProjectReactionService {
 	async like(slug: string) {
 		try {
 			await this.repository.incrementLikes(slug);
-			
+
 			// Invalidate caches
 			delete ProjectReactionService.cache[slug];
 			if (dev) persistentCache.clear(`project_reaction_${slug}`);
-			
+
 			return this.getReactions(slug);
 		} catch (error) {
 			console.error('Error liking project:', error);
@@ -71,11 +78,11 @@ export class ProjectReactionService {
 	async trackView(slug: string) {
 		try {
 			await this.repository.incrementViews(slug);
-			
+
 			// Invalidate caches
 			delete ProjectReactionService.cache[slug];
 			if (dev) persistentCache.clear(`project_reaction_${slug}`);
-			
+
 			return this.getReactions(slug);
 		} catch (error) {
 			console.error('Error tracking project view:', error);

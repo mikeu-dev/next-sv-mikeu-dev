@@ -36,10 +36,14 @@ export function sphericalDistance(lat1: number, lng1: number, lat2: number, lng2
 	const dPhi = ((lat2 - lat1) * Math.PI) / 180;
 	const dLambda = ((lng2 - lng1) * Math.PI) / 180;
 
-	const a = Math.max(0, Math.min(1,
-		Math.sin(dPhi / 2) * Math.sin(dPhi / 2) +
-		Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLambda / 2) * Math.sin(dLambda / 2)
-	));
+	const a = Math.max(
+		0,
+		Math.min(
+			1,
+			Math.sin(dPhi / 2) * Math.sin(dPhi / 2) +
+				Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLambda / 2) * Math.sin(dLambda / 2)
+		)
+	);
 
 	return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
@@ -84,7 +88,7 @@ export function mapNodesToFaces(
 			for (const node of nodes) {
 				const nLat = Number(node.latitude);
 				const nLng = Number(node.longitude);
-				
+
 				if (isNaN(nLat) || isNaN(nLng)) continue;
 
 				const dist = sphericalDistance(fLat, fLng, nLat, nLng);

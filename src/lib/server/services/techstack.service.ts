@@ -55,7 +55,10 @@ export class TechStackService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`TechStackService: Quota exceeded while fetching techstack for ${lang}`);
-				return persistentCache.get<TechStackData>(`techstack_${lang}`) || TechStackService.cache[lang] || { categories: [] };
+				return (
+					persistentCache.get<TechStackData>(`techstack_${lang}`) ||
+					TechStackService.cache[lang] || { categories: [] }
+				);
 			}
 			console.error('Error fetching techstack:', error);
 			throw error;

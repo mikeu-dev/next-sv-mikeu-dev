@@ -49,24 +49,26 @@
 {/await}
 
 <!-- World Teaser Section -->
-<section class="relative h-[60vh] min-h-[400px] w-full overflow-hidden border-y border-foreground/10">
+<section
+	class="relative h-[60vh] min-h-[400px] w-full overflow-hidden border-y border-foreground/10"
+>
 	<div class="absolute inset-0 z-0">
 		<FoldedWorld nodes={[]} totalVisitors={0} minimal={true} />
 	</div>
-	
+
 	<!-- Teaser Content Overlay -->
-	<div class="container relative z-10 flex h-full flex-col items-center justify-center text-center">
-		<div class="max-w-2xl bg-background/80 p-8 backdrop-blur-sm border border-foreground/10">
+	<div class="relative z-10 container flex h-full flex-col items-center justify-center text-center">
+		<div class="max-w-2xl border border-foreground/10 bg-background/80 p-8 backdrop-blur-sm">
 			<h2 class="mb-4 text-4xl font-black tracking-tighter md:text-5xl">
 				{m.world_teaser_title()}
 			</h2>
-			<p class="mb-8 text-muted-foreground font-mono text-sm">
-				{m.world_teaser_subtitle()}<br/>
+			<p class="mb-8 font-mono text-sm text-muted-foreground">
+				{m.world_teaser_subtitle()}<br />
 				{m.world_teaser_desc()}
 			</p>
-			<a 
-				href="/world" 
-				class="inline-block bg-primary px-8 py-4 text-primary-foreground font-bold tracking-widest hover:bg-primary/90 transition-all hover:skew-x-[-10deg]"
+			<a
+				href="/world"
+				class="inline-block bg-primary px-8 py-4 font-bold tracking-widest text-primary-foreground transition-all hover:skew-x-[-10deg] hover:bg-primary/90"
 			>
 				{m.world_teaser_button()} →
 			</a>

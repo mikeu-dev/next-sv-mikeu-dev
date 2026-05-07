@@ -29,7 +29,9 @@ export class ContactsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('ContactsService: Quota exceeded while creating contact');
-				throw new Error('Service temporarily unavailable due to high traffic. Please try again later.');
+				throw new Error(
+					'Service temporarily unavailable due to high traffic. Please try again later.'
+				);
 			}
 			throw error;
 		}

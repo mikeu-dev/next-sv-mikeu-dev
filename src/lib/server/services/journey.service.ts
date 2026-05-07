@@ -15,7 +15,10 @@ export class JourneyService {
 		const now = Date.now();
 		const cacheKey = `journey_${lang}`;
 
-		if (JourneyService.cache[cacheKey] && now - (JourneyService.lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
+		if (
+			JourneyService.cache[cacheKey] &&
+			now - (JourneyService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
+		) {
 			return JourneyService.cache[cacheKey];
 		}
 
@@ -49,7 +52,9 @@ export class JourneyService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`JourneyService: Quota exceeded while fetching journey for ${lang}`);
-				return persistentCache.get<any>(cacheKey) || JourneyService.cache[cacheKey] || { items: [] };
+				return (
+					persistentCache.get<any>(cacheKey) || JourneyService.cache[cacheKey] || { items: [] }
+				);
 			}
 			console.error('Error fetching journey:', error);
 			throw error;
@@ -59,11 +64,11 @@ export class JourneyService {
 	async updateJourney(lang: 'en' | 'id', items: JourneyItem[]) {
 		try {
 			const result = await this.repository.update(lang, { items, updatedAt: new Date() });
-			
+
 			// Invalidate caches
 			delete JourneyService.cache[`journey_${lang}`];
 			if (dev) persistentCache.clear(`journey_${lang}`);
-			
+
 			return result;
 		} catch (error) {
 			console.error('Error updating journey:', error);

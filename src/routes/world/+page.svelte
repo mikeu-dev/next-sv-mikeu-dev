@@ -45,7 +45,7 @@
 					FOLDED<br />WORLD
 				</h1>
 				<div class="my-6 h-[3px] w-20 bg-[#ff3333]"></div>
-				<p class="mb-8 text-[12px] text-[#888] tracking-widest">
+				<p class="mb-8 text-[12px] tracking-widest text-[#888]">
 					{data.stats.total} total visitors from {data.geoNodes.length} locations
 				</p>
 				<div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2">

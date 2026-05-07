@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	// Security: Check for CRON_SECRET or Admin Authorization
 	const authHeader = request.headers.get('authorization');
 	const cronSecret = request.headers.get('x-vercel-cron'); // Auto-set by Vercel Cron
-	
+
 	// If not called by Vercel Cron and no secret provided, block it
 	if (!cronSecret && env.CRON_SECRET && authHeader !== `Bearer ${env.CRON_SECRET}`) {
 		return json({ error: 'Unauthorized' }, { status: 401 });

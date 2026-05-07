@@ -76,7 +76,11 @@ export class SettingsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('SettingsService: Quota exceeded while fetching general settings');
-				return persistentCache.get<GeneralSettings>(`settings_${this.DOC_GENERAL}`) || SettingsService.cache.general || (defaultSettings.general as GeneralSettings);
+				return (
+					persistentCache.get<GeneralSettings>(`settings_${this.DOC_GENERAL}`) ||
+					SettingsService.cache.general ||
+					(defaultSettings.general as GeneralSettings)
+				);
 			}
 			console.error('SettingsService: Failed to get general settings', error);
 			return defaultSettings.general as GeneralSettings;
@@ -154,7 +158,11 @@ export class SettingsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('SettingsService: Quota exceeded while fetching profile settings');
-				return persistentCache.get<ProfileSettings>(`settings_${this.DOC_PROFILE}`) || SettingsService.cache.profile || (defaultSettings.profile as ProfileSettings);
+				return (
+					persistentCache.get<ProfileSettings>(`settings_${this.DOC_PROFILE}`) ||
+					SettingsService.cache.profile ||
+					(defaultSettings.profile as ProfileSettings)
+				);
 			}
 			console.error('SettingsService: Failed to get profile settings', error);
 			return defaultSettings.profile as ProfileSettings;
@@ -232,7 +240,11 @@ export class SettingsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('SettingsService: Quota exceeded while fetching resume settings');
-				return persistentCache.get<ResumeSettings>(`settings_${this.DOC_RESUME}`) || SettingsService.cache.resume || (defaultSettings.resume as ResumeSettings);
+				return (
+					persistentCache.get<ResumeSettings>(`settings_${this.DOC_RESUME}`) ||
+					SettingsService.cache.resume ||
+					(defaultSettings.resume as ResumeSettings)
+				);
 			}
 			console.error('SettingsService: Failed to get resume settings', error);
 			return defaultSettings.resume as ResumeSettings;

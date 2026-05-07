@@ -329,11 +329,14 @@
 		overflow: hidden;
 		background-color: #f0f0f0;
 		/* Brutalist Architectural Grid + Vignette */
-		background-image: 
-			radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.15) 100%),
-			linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
-		background-size: 100% 100%, 40px 40px, 40px 40px;
+		background-image:
+			radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.15) 100%),
+			linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+		background-size:
+			100% 100%,
+			40px 40px,
+			40px 40px;
 		background-position: center center;
 		font-family: 'JetBrains Mono', 'Courier New', monospace;
 	}
@@ -347,7 +350,7 @@
 		transform: translate(-50%, -50%) rotate(-5deg);
 		font-size: clamp(4rem, 12vw, 15rem);
 		font-weight: 900;
-		color: rgba(0,0,0,0.02);
+		color: rgba(0, 0, 0, 0.02);
 		white-space: nowrap;
 		pointer-events: none;
 		z-index: 0;
@@ -355,14 +358,14 @@
 
 	:global(.dark) .folded-world-container {
 		background-color: #0a0a0a;
-		background-image: 
-			radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.9) 100%),
-			linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+		background-image:
+			radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.9) 100%),
+			linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 	}
 
 	:global(.dark) .folded-world-container::before {
-		color: rgba(255,255,255,0.015);
+		color: rgba(255, 255, 255, 0.015);
 	}
 
 	.folded-world-canvas {
