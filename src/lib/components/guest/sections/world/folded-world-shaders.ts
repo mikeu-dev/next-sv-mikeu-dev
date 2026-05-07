@@ -58,8 +58,29 @@ export const vertexShader = /* glsl */ `
 		// Base bias to prevent z-fighting with wireframe
 		pos += normal * 0.002;
 
-		// Morph assembly transition (Origami compiling effect)
-		pos += aScatterOffset * (1.0 - uAssembleProgress);
+		// Morph assembly transition (Organic Tornado Physics)
+		float scatterAmount = 1.0 - uAssembleProgress;
+		
+		// 1. Linear scatter
+		vec3 targetPos = pos + aScatterOffset * scatterAmount;
+
+		// 2. Parabolic Arc (Gravity/Wind Resistance simulation)
+		// Height varies per piece based on its random scatter offset
+		float arcHeight = 1.5 + sin(aScatterOffset.x) * 1.0; 
+		targetPos.y += sin(scatterAmount * 3.14159) * arcHeight;
+
+		// 3. Tornado Swirl (Momentum/Coriolis effect)
+		// Swirl angle incorporates original Y position for turbulent chaos
+		float swirlAngle = scatterAmount * (2.0 + pos.y * 0.5);
+		float s = sin(swirlAngle);
+		float c = cos(swirlAngle);
+		
+		float rx = targetPos.x * c - targetPos.z * s;
+		float rz = targetPos.x * s + targetPos.z * c;
+		targetPos.x = rx;
+		targetPos.z = rz;
+
+		pos = targetPos;
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}
@@ -186,8 +207,24 @@ export const wireframeVertexShader = /* glsl */ `
 		// Wireframe slightly behind main mesh
 		pos += normal * 0.001;
 
-		// Morph assembly transition
-		pos += aScatterOffset * (1.0 - uAssembleProgress);
+		// Morph assembly transition (Organic Tornado Physics)
+		float scatterAmount = 1.0 - uAssembleProgress;
+		
+		vec3 targetPos = pos + aScatterOffset * scatterAmount;
+
+		float arcHeight = 1.5 + sin(aScatterOffset.x) * 1.0; 
+		targetPos.y += sin(scatterAmount * 3.14159) * arcHeight;
+
+		float swirlAngle = scatterAmount * (2.0 + pos.y * 0.5);
+		float s = sin(swirlAngle);
+		float c = cos(swirlAngle);
+		
+		float rx = targetPos.x * c - targetPos.z * s;
+		float rz = targetPos.x * s + targetPos.z * c;
+		targetPos.x = rx;
+		targetPos.z = rz;
+
+		pos = targetPos;
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}
