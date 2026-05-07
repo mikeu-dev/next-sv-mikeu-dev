@@ -56,17 +56,17 @@
 	<div class="container relative z-10 flex h-full flex-col items-center justify-center text-center">
 		<div class="max-w-2xl bg-background/80 p-8 backdrop-blur-sm border border-foreground/10">
 			<h2 class="mb-4 text-4xl font-black tracking-tighter md:text-5xl">
-				GLOBAL_PRESENCE
+				{m.world_teaser_title()}
 			</h2>
 			<p class="mb-8 text-muted-foreground font-mono text-sm">
-				[ SYSTEM.METRICS // VISITOR_DISTRIBUTION ]<br/>
-				Eksplorasi jangkauan teknologi kami melalui representasi data visual interaktif.
+				{m.world_teaser_subtitle()}<br/>
+				{m.world_teaser_desc()}
 			</p>
 			<a 
 				href="/world" 
 				class="inline-block bg-primary px-8 py-4 text-primary-foreground font-bold tracking-widest hover:bg-primary/90 transition-all hover:skew-x-[-10deg]"
 			>
-				EXPLORE DATA ARCHIVE →
+				{m.world_teaser_button()} →
 			</a>
 		</div>
 	</div>

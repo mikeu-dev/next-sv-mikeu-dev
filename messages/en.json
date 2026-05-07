@@ -115,5 +115,9 @@
 	"world_detail_last_visit": "LAST VISIT",
 	"world_detail_coords": "COORDS",
 	"world_detail_browsers": "BROWSERS",
-	"world_detail_devices": "DEVICES"
+	"world_detail_devices": "DEVICES",
+	"world_teaser_title": "GLOBAL_PRESENCE",
+	"world_teaser_subtitle": "[ SYSTEM.METRICS // VISITOR_DISTRIBUTION ]",
+	"world_teaser_desc": "Explore our technological reach through an interactive visual data representation.",
+	"world_teaser_button": "EXPLORE DATA ARCHIVE"
 }

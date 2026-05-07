@@ -115,5 +115,9 @@
 	"world_detail_last_visit": "KUNJUNGAN TERAKHIR",
 	"world_detail_coords": "KOORDINAT",
 	"world_detail_browsers": "BROWSER",
-	"world_detail_devices": "PERANGKAT"
+	"world_detail_devices": "PERANGKAT",
+	"world_teaser_title": "KEHADIRAN_GLOBAL",
+	"world_teaser_subtitle": "[ SYSTEM.METRICS // DISTRIBUSI_PENGUNJUNG ]",
+	"world_teaser_desc": "Eksplorasi jangkauan teknologi kami melalui representasi data visual interaktif.",
+	"world_teaser_button": "JELAJAHI ARSIP DATA"
 }
