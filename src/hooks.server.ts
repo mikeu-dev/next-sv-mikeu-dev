@@ -8,6 +8,9 @@ import { logWarning } from '$lib/server/utils/logger';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { UAParser } from 'ua-parser-js';
 import { building } from '$app/environment';
+import { createHandle } from '@vercel/flags/sveltekit';
+import { FLAGS_SECRET } from '$env/static/private';
+import * as flags from '$lib/flags';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
@@ -181,6 +184,7 @@ import { monitoringService } from '$lib/server/services/monitoring.service';
 export const handle: Handle = async ({ event, resolve }) => {
 	console.log(`[Hooks] Start handling request: ${event.url.pathname}`);
 	const response = await sequence(
+		createHandle({ secret: FLAGS_SECRET, flags }),
 		handleSecurityHeaders,
 		handleParaglide,
 		handleVisitor,
