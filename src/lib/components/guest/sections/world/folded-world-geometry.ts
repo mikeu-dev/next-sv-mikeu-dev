@@ -76,13 +76,6 @@ export function mapNodesToFaces(
 		const [fLat, fLng] = faceCenters[i];
 		let totalIntensity = 0;
 
-		// --- FORCED DEVELOPER SPIKE (Jakarta) ---
-		// Titik ini harus selalu ada jika pipeline visual bekerja
-		const devDist = sphericalDistance(fLat, fLng, -6.2088, 106.8456);
-		if (devDist < influenceRadius) {
-			totalIntensity += Math.pow(1 - devDist / influenceRadius, 2.0);
-		}
-
 		// Only process nodes if we have them
 		if (nodes.length > 0) {
 			for (const node of nodes) {
