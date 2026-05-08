@@ -16,12 +16,12 @@ export function latLngToSphere(
 	lng: number,
 	radius: number = 1
 ): [number, number, number] {
-	const phi = ((90 - lat) * Math.PI) / 180;
-	const theta = ((lng + 180) * Math.PI) / 180;
+	const phi = (lat * Math.PI) / 180;
+	const theta = (lng * Math.PI) / 180;
 
-	const x = -(radius * Math.sin(phi) * Math.cos(theta));
-	const y = radius * Math.cos(phi);
-	const z = radius * Math.sin(phi) * Math.sin(theta);
+	const x = radius * Math.cos(phi) * Math.sin(theta);
+	const y = radius * Math.sin(phi);
+	const z = radius * Math.cos(phi) * Math.cos(theta);
 
 	return [x, y, z];
 }
@@ -121,15 +121,9 @@ export function faceCenter(
 	const ny = cy / len;
 	const nz = cz / len;
 
-	// Inverse of latLngToSphere logic
-	const phi = Math.acos(Math.max(-1, Math.min(1, ny))); // range [0, PI]
-	const theta = Math.atan2(nz, -nx); // range [-PI, PI]
-
-	const lat = 90 - (phi * 180) / Math.PI;
-	let lng = (theta * 180) / Math.PI - 180;
-
-	// Safe normalization to [-180, 180]
-	lng = ((((lng + 180) % 360) + 360) % 360) - 180;
+	// Inverse of new standard latLngToSphere logic
+	const lat = Math.asin(Math.max(-1, Math.min(1, ny))) * (180 / Math.PI);
+	const lng = Math.atan2(nx, nz) * (180 / Math.PI);
 
 	return [lat, lng];
 }
