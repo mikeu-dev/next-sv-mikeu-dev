@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { m } from '@/lib/paraglide/messages';
 	import type { PageData } from './$types';
+	import type { BlogPost } from '$lib/types';
 	import BlogCard from '$lib/components/guest/blog/blog-card.svelte';
 	import BlogFeatured from '$lib/components/guest/blog/blog-featured.svelte';
 	import SEO from '$lib/components/seo/seo.svelte';
@@ -13,13 +14,13 @@
 	let { data }: { data: PageData } = $props();
 
 	// Reactive state for posts and pagination
-	let allPosts = $state(data.posts);
+	let allPosts = $state(data.posts as BlogPost[]);
 	let nextCursor = $state(data.nextCursor);
 	let isLoadingMore = $state(false);
 
 	// Sync with server data on initial load or when data changes (e.g. search)
 	$effect(() => {
-		allPosts = data.posts;
+		allPosts = data.posts as BlogPost[];
 		nextCursor = data.nextCursor;
 	});
 
@@ -27,19 +28,24 @@
 	let selectedCategory = $state('All');
 
 	// Get unique categories from currently loaded posts
-	const categories = $derived(['All', ...new Set(allPosts.flatMap((post) => post.tags || []))]);
+	const categories = $derived([
+		'All',
+		...new Set(allPosts.flatMap((post: BlogPost) => post.tags || []))
+	]);
 
 	// Filtered posts
 	const filteredPosts = $derived(
 		selectedCategory === 'All'
 			? allPosts
-			: allPosts.filter((post) => post.tags?.includes(selectedCategory))
+			: allPosts.filter((post: BlogPost) => post.tags?.includes(selectedCategory))
 	);
 
 	// Featured post (only if not searching)
 	const featuredPost = $derived(!data.search && selectedCategory === 'All' ? allPosts[0] : null);
 	const gridPosts = $derived(
-		featuredPost ? filteredPosts.filter((p) => p.slug !== featuredPost.slug) : filteredPosts
+		featuredPost
+			? filteredPosts.filter((p: BlogPost) => p.slug !== featuredPost.slug)
+			: filteredPosts
 	);
 
 	async function loadMore() {

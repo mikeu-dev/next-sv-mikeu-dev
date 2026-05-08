@@ -1,3 +1,9 @@
+/**
+ * MonitoringService
+ *
+ * NOTE: Log cleanup (clearOldLogs) is limited to 500 docs per execution to avoid
+ * large read/write spikes that could exhaust the Firestore free tier quota.
+ */
 import { db } from '../firebase/firebase.server';
 import { COLLECTIONS } from '../firebase/collections';
 
@@ -56,13 +62,27 @@ export class MonitoringService {
 		const col = this.collection;
 		if (!col) return [];
 
-		const snapshot = await col.orderBy('timestamp', 'desc').limit(limit).get();
+		try {
+			const snapshot = await col.orderBy('timestamp', 'desc').limit(limit).get();
 
-		return snapshot.docs.map((doc) => ({
-			id: doc.id,
-			...doc.data(),
-			timestamp: doc.data().timestamp?.toDate?.() || doc.data().timestamp
-		})) as AppErrorLog[];
+			return snapshot.docs.map((doc) => ({
+				id: doc.id,
+				...doc.data(),
+				timestamp: doc.data().timestamp?.toDate?.() || doc.data().timestamp
+			})) as AppErrorLog[];
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				(error as { code: number }).code === 8
+			) {
+				console.error('MonitoringService: Quota exceeded while fetching logs');
+				return [];
+			}
+			console.error('MonitoringService: Failed to get logs', error);
+			return [];
+		}
 	}
 
 	async clearOldLogs(daysToKeep = 7) {

@@ -1,4 +1,6 @@
 import { TechStackRepository, type TechStackData } from '../repositories/techstack.repository';
+import { dev } from '$app/environment';
+import { persistentCache } from '../utils/cache.util';
 
 export class TechStackService {
 	private repository = new TechStackRepository();
@@ -11,11 +13,22 @@ export class TechStackService {
 	async getTechStack(lang: 'en' | 'id' = 'en'): Promise<TechStackData> {
 		const now = Date.now();
 
+		// 1. Memory Cache
 		if (
 			TechStackService.cache[lang] &&
 			now - (TechStackService.lastFetch[lang] || 0) < TechStackService.CACHE_TTL
 		) {
 			return TechStackService.cache[lang];
+		}
+
+		// 2. Persistent File Cache (Dev only)
+		if (dev) {
+			const cached = persistentCache.get<TechStackData>(`techstack_${lang}`);
+			if (cached) {
+				TechStackService.cache[lang] = cached;
+				TechStackService.lastFetch[lang] = now;
+				return cached;
+			}
 		}
 
 		try {
@@ -28,11 +41,25 @@ export class TechStackService {
 				return empty;
 			}
 
+			// Update caches
 			TechStackService.cache[lang] = data;
 			TechStackService.lastFetch[lang] = now;
+			if (dev) persistentCache.set(`techstack_${lang}`, data);
 
 			return data;
-		} catch (error) {
+		} catch (error: unknown) {
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				(error as { code: number }).code === 8
+			) {
+				console.error(`TechStackService: Quota exceeded while fetching techstack for ${lang}`);
+				return (
+					persistentCache.get<TechStackData>(`techstack_${lang}`) ||
+					TechStackService.cache[lang] || { categories: [] }
+				);
+			}
 			console.error('Error fetching techstack:', error);
 			throw error;
 		}
@@ -42,9 +69,10 @@ export class TechStackService {
 		try {
 			const result = await this.repository.update(lang, { ...data, updatedAt: new Date() });
 
-			// Reset cache
+			// Invalidate caches
 			delete TechStackService.cache[lang];
 			delete TechStackService.lastFetch[lang];
+			if (dev) persistentCache.clear(`techstack_${lang}`);
 
 			return result;
 		} catch (error) {

@@ -69,6 +69,8 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
+import { resolveGeo } from '$lib/server/services/geo.service';
+
 /**
  * Visitor tracking middleware
  * Checks for cookie and increments counter if new visitor
@@ -100,6 +102,9 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 				console.warn('Could not get client address:', e);
 			}
 
+			// Resolve geo data from Vercel headers or fallback API
+			const geoData = await resolveGeo(event.request, ip);
+
 			const visitorData = {
 				ip,
 				browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
@@ -107,7 +112,13 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 				device: device.type || 'desktop',
 				referer: event.request.headers.get('referer') || null,
 				language: event.request.headers.get('accept-language') || null,
-				path: event.url.pathname
+				path: event.url.pathname,
+				// Geo fields
+				country: geoData.country,
+				city: geoData.city,
+				region: geoData.region,
+				latitude: geoData.latitude,
+				longitude: geoData.longitude
 			};
 
 			await visitorService.increment(visitorData);

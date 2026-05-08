@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import BlogCard from '../../blog/blog-card.svelte';
-	import type { BlogPost } from '$lib/server/services/blog.service';
+	import type { BlogPost } from '$lib/types';
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';

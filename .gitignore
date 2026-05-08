@@ -41,3 +41,7 @@ src/routes/seed/+server.ts
 src/lib/posts/
 
 *.code-workspace
+
+.cache
+.eslintcache
+.prettiercache

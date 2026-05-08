@@ -3,7 +3,7 @@ import { ProjectsRepository } from '$lib/server/repositories/projects.repository
 import { blogService } from '$lib/server/services/blog.service';
 import { ContactsService } from '$lib/server/services/contacts.service';
 import type { Contact } from '$lib/types';
-import type { BlogPost } from '$lib/server/services/blog.service';
+import type { BlogPost } from '$lib/types';
 import { TechStackService } from '$lib/server/services/techstack.service';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import { SkillsService } from '$lib/server/services/skills.service';

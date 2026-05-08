@@ -1,6 +1,6 @@
 import { db } from '$lib/server/firebase/firebase.server';
 import { COLLECTIONS } from '$lib/server/firebase/collections';
-import type { BlogPost } from '../blog.service';
+import type { BlogPost } from '$lib/types';
 
 const NEW_POSTS: Omit<BlogPost, 'id'>[] = [
 	// --- Post 1: Performance ---

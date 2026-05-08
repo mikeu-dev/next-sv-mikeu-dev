@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BlogPost } from '$lib/server/services/blog.service';
+	import type { BlogPost } from '$lib/types';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
 	import { ArrowUpRight, Calendar, Clock, Sparkles, Hash } from '@lucide/svelte';

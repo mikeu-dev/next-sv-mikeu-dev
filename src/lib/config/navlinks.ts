@@ -3,6 +3,7 @@ export const navLinks = {
 		{ href: '/', label: 'Home' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/blog', label: 'Blog' },
+		{ href: '/world', label: 'World' },
 		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	],
@@ -10,6 +11,7 @@ export const navLinks = {
 		{ href: '/', label: 'Beranda' },
 		{ href: '/projects', label: 'Proyek' },
 		{ href: '/blog', label: 'Blog' },
+		{ href: '/world', label: 'World' },
 		{ href: '/about', label: 'Tentang' },
 		{ href: '/contact', label: 'Kontak' }
 	]

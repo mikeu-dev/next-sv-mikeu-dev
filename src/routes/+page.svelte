@@ -3,7 +3,10 @@
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import WorkSection from '../lib/components/guest/sections/work/work.svelte';
 	import LatestBlogsSection from '../lib/components/guest/sections/blog/latest-blogs.svelte';
+	import FoldedWorld from '../lib/components/guest/sections/world/folded-world.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
+
+	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
 </script>
@@ -44,5 +47,33 @@
 {:then posts}
 	<LatestBlogsSection {posts} />
 {/await}
+
+<!-- World Teaser Section -->
+<section
+	class="relative h-[60vh] min-h-[400px] w-full overflow-hidden border-y border-foreground/10"
+>
+	<div class="absolute inset-0 z-0">
+		<FoldedWorld nodes={[]} totalVisitors={0} minimal={true} />
+	</div>
+
+	<!-- Teaser Content Overlay -->
+	<div class="relative z-10 container flex h-full flex-col items-center justify-center text-center">
+		<div class="max-w-2xl border border-foreground/10 bg-background/80 p-8 backdrop-blur-sm">
+			<h2 class="mb-4 text-4xl font-black tracking-tighter md:text-5xl">
+				{m.world_teaser_title()}
+			</h2>
+			<p class="mb-8 font-mono text-sm text-muted-foreground">
+				{m.world_teaser_subtitle()}<br />
+				{m.world_teaser_desc()}
+			</p>
+			<a
+				href="/world"
+				class="inline-block bg-primary px-8 py-4 font-bold tracking-widest text-primary-foreground transition-all hover:skew-x-[-10deg] hover:bg-primary/90"
+			>
+				{m.world_teaser_button()} →
+			</a>
+		</div>
+	</div>
+</section>
 
 <ContactSection />

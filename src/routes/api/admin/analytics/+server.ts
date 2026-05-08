@@ -2,11 +2,10 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { VisitorService } from '$lib/server/services/visitor.service';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async () => {
 	try {
-		const days = Number(url.searchParams.get('days')) || 30;
 		const visitorService = new VisitorService();
-		const analytics = await visitorService.getAnalytics(days);
+		const analytics = await visitorService.getAnalytics();
 		return json(analytics);
 	} catch (error) {
 		console.error('Failed to fetch analytics:', error);
