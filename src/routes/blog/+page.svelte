@@ -143,7 +143,7 @@
 			</h1>
 
 			<p
-				class="stagger-item mx-auto mt-8 max-w-3xl font-mono text-xs leading-relaxed tracking-wider text-muted-foreground uppercase md:text-sm"
+				class="stagger-item mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider text-muted-foreground break-words uppercase md:text-sm md:px-0"
 			>
 				// {m.blog_subtitle()}
 			</p>
@@ -208,9 +208,9 @@
 				</div>
 				<div class="flex h-14 items-center border-l-2 border-foreground/10 px-4">
 					<span
-						class="font-mono text-[10px] font-black tracking-[0.3em] text-foreground/40 uppercase"
+						class="font-mono text-[10px] font-black tracking-[0.3em] text-foreground uppercase"
 					>
-						FILTER_ACTIVE
+						{selectedCategory === 'All' ? 'FILTER_ACTIVE' : `MOD_${selectedCategory.toUpperCase().replace(/\s+/g, '_')}`}
 					</span>
 				</div>
 			</div>
