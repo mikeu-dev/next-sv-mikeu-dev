@@ -3,6 +3,7 @@ import { socialsService } from '$lib/server/services/socials.service';
 import { visitorService } from '$lib/server/services/visitor.service';
 import { settingsService } from '$lib/server/services/settings.service';
 import type { Config } from '@sveltejs/adapter-vercel';
+import { showExperimentalFeature } from '$lib/flags';
 
 export const config: Config = {
 	runtime: 'nodejs22.x',
@@ -33,6 +34,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			}))
 			.catch(() => ({ en: '', id: '' })),
 		user: locals.user,
-		locale: locals.paraglide?.locale || 'en'
+		locale: locals.paraglide?.locale || 'en',
+		flags: {
+			showExperimentalFeature: await showExperimentalFeature()
+		}
 	};
 };

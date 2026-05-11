@@ -84,12 +84,15 @@ export default defineConfig({
 						if (id.includes('gsap') || id.includes('matter-js')) {
 							return 'animation';
 						}
+						if (id.includes('three')) {
+							return 'three';
+						}
 					}
 				}
 			}
 		}
 	},
 	ssr: {
-		noExternal: ['gsap']
+		noExternal: ['gsap', 'matter-js']
 	}
 });

@@ -46,7 +46,7 @@ export class SkillEngine {
 	}
 
 	// Derived tetriminos
-	get tetriminos(): Tetrimino[] {
+	tetriminos = $derived.by(() => {
 		const all: Tetrimino[] = [];
 		let currentSkillIndex = 0;
 		const shapeKeys = Object.keys(shapes);
@@ -92,7 +92,7 @@ export class SkillEngine {
 			}
 		}
 		return all;
-	}
+	});
 
 	init(container: HTMLElement) {
 		this.container = container;
@@ -271,14 +271,14 @@ export class SkillEngine {
 					brightness: 1
 				}));
 
-				const newPB = $state({
+				const newPB = {
 					piece: { ...piece, skills: reactiveSkills },
 					id: currentPieceId
-				});
+				};
 
 				body.label = `piece-${currentPieceId}`;
 				this.physicsBodies.push(body);
-				this.pieceBodies = [...this.pieceBodies, newPB];
+				this.pieceBodies.push(newPB);
 
 				if (this.engine) {
 					Composite.add(this.engine.world, body);

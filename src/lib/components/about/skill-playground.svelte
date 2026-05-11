@@ -3,7 +3,7 @@
 	import { scale } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { SkillEngine } from './skill-playground-engine.svelte';
+	import { SkillEngine } from './skill-playground-engine.svelte.js';
 	import {
 		categoryColors,
 		defaultUrls,
@@ -145,7 +145,9 @@
 		<div class="relative">
 			<div class="sticky top-24">
 				<!-- Simulation HUD -->
-				<div class="mb-10 flex items-end justify-between border-b-2 border-foreground pb-6">
+				<div
+					class="mb-10 flex flex-col items-start gap-6 border-b-2 border-foreground pb-6 sm:flex-row sm:items-end sm:justify-between"
+				>
 					<div class="flex flex-col gap-2">
 						<span
 							class="font-mono text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
@@ -167,13 +169,13 @@
 						</div>
 					</div>
 
-					<div class="flex flex-col items-end gap-2">
+					<div class="flex flex-col items-start gap-2 sm:items-end">
 						<span
 							class="font-mono text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase dark:text-zinc-500"
 							>[NEXT_MODULE]</span
 						>
 						<div class="relative h-14 w-20 border-2 border-foreground bg-card">
-							<div class="animate-scanline absolute inset-x-0 z-10 h-[1px] bg-primary/40"></div>
+							<div class="animate-scanline absolute inset-x-0 z-10 h-px bg-primary/40"></div>
 							{#key engine.nextPieceIdx}
 								<div
 									in:scale={{ start: 0.9, duration: 300 }}
@@ -203,7 +205,7 @@
 					bind:this={container}
 					bind:clientWidth={engine.canvasWidth}
 					bind:clientHeight={engine.canvasHeight}
-					class="relative h-[650px] w-full cursor-grab overflow-hidden border-4 border-foreground bg-[#0a0a0a] active:cursor-grabbing"
+					class="relative h-[400px] w-full cursor-grab overflow-hidden border-4 border-foreground bg-[#0a0a0a] active:cursor-grabbing sm:h-[650px]"
 				>
 					<!-- Grid Lines -->
 					<div
@@ -293,7 +295,7 @@
 				</div>
 
 				<!-- Simulation Controls -->
-				<div class="mt-8 flex gap-4">
+				<div class="mt-8 flex flex-col gap-4 sm:flex-row">
 					<button
 						onclick={() => engine.resetBoard()}
 						class="flex flex-1 items-center justify-center gap-3 border-2 border-foreground bg-card px-8 py-4 font-mono text-[10px] font-black tracking-widest text-zinc-800 uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-primary hover:text-white hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none dark:text-zinc-300"
