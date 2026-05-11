@@ -143,7 +143,7 @@
 			</h1>
 
 			<p
-				class="stagger-item mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider text-muted-foreground wrap-break-word uppercase md:text-sm md:px-0"
+				class="stagger-item mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider wrap-break-word text-muted-foreground uppercase md:px-0 md:text-sm"
 			>
 				// {m.blog_subtitle()}
 			</p>
@@ -207,10 +207,10 @@
 					<Filter class="size-3" /> [CATEGORY_SORT]
 				</div>
 				<div class="flex h-14 items-center border-l-2 border-foreground/10 px-4">
-					<span
-						class="font-mono text-[10px] font-black tracking-[0.3em] text-foreground uppercase"
-					>
-						{selectedCategory === 'All' ? 'FILTER_ACTIVE' : `MOD_${selectedCategory.toUpperCase().replace(/\s+/g, '_')}`}
+					<span class="font-mono text-[10px] font-black tracking-[0.3em] text-foreground uppercase">
+						{selectedCategory === 'All'
+							? 'FILTER_ACTIVE'
+							: `MOD_${selectedCategory.toUpperCase().replace(/\s+/g, '_')}`}
 					</span>
 				</div>
 			</div>

@@ -196,7 +196,7 @@
 			</h1>
 
 			<p
-				class="project-stagger mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider text-muted-foreground wrap-break-word uppercase md:text-sm md:px-0"
+				class="project-stagger mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider wrap-break-word text-muted-foreground uppercase md:px-0 md:text-sm"
 			>
 				// {m.projects_subtitle()}
 			</p>

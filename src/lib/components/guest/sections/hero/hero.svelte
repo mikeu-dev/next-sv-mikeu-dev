@@ -254,7 +254,9 @@
 						style="clip-path: polygon(0 0, 100% 0, 70% 100%, 0% 100%);"
 					></div>
 
-					<div class="relative z-10 flex items-center gap-3 transition-colors group-hover:text-background">
+					<div
+						class="relative z-10 flex items-center gap-3 transition-colors group-hover:text-background"
+					>
 						<span class="font-poppins text-lg font-black tracking-tighter uppercase">
 							{m.hero_button_text()}
 						</span>
