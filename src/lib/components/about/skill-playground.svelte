@@ -3,7 +3,7 @@
 	import { scale } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { SkillEngine } from './skill-playground-engine.svelte';
+	import { SkillEngine } from './skill-playground-engine.svelte.js';
 	import {
 		categoryColors,
 		defaultUrls,

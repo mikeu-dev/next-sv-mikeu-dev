@@ -93,6 +93,6 @@ export default defineConfig({
 		}
 	},
 	ssr: {
-		noExternal: ['gsap']
+		noExternal: ['gsap', 'matter-js']
 	}
 });
