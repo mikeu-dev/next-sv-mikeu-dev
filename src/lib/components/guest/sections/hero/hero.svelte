@@ -245,10 +245,16 @@
 			<div bind:this={heroButton} class="mt-16 flex flex-wrap justify-center gap-6">
 				<a
 					href="#contact"
-					class="group relative inline-flex h-16 items-center justify-center overflow-hidden bg-primary px-10 text-primary-foreground transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[6px_6px_0_var(--foreground)]"
+					class="group relative inline-flex h-16 items-center justify-center bg-primary px-10 text-primary-foreground transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0_var(--foreground)]"
 					style="clip-path: polygon(0 15%, 100% 0, 95% 100%, 5% 85%);"
 				>
-					<div class="flex items-center gap-3">
+					<!-- Origami Shard -->
+					<div
+						class="absolute inset-0 translate-x-[-110%] bg-foreground transition-transform duration-500 ease-out group-hover:translate-x-0"
+						style="clip-path: polygon(0 0, 100% 0, 70% 100%, 0% 100%);"
+					></div>
+
+					<div class="relative z-10 flex items-center gap-3 transition-colors group-hover:text-background">
 						<span class="font-poppins text-lg font-black tracking-tighter uppercase">
 							{m.hero_button_text()}
 						</span>
@@ -258,10 +264,18 @@
 
 				<a
 					href="#work"
-					class="group relative inline-flex h-16 items-center justify-center overflow-hidden border-2 border-foreground px-10 text-foreground transition-all hover:bg-foreground hover:text-background"
+					class="group relative inline-flex h-16 items-center justify-center border-2 border-foreground bg-background px-10 text-foreground transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0_var(--primary)]"
 					style="clip-path: polygon(5% 0, 95% 15%, 100% 85%, 0 100%);"
 				>
-					<span class="font-poppins text-lg font-black tracking-tighter uppercase">
+					<!-- Origami Shard -->
+					<div
+						class="absolute inset-0 translate-y-[110%] bg-foreground transition-transform duration-500 ease-out group-hover:translate-y-0"
+						style="clip-path: polygon(0 20%, 100% 0, 100% 100%, 20% 100%);"
+					></div>
+
+					<span
+						class="relative z-10 font-poppins text-lg font-black tracking-tighter uppercase transition-colors group-hover:text-background"
+					>
 						{m.hero_button_link()}
 					</span>
 				</a>
