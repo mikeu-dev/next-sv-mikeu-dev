@@ -143,7 +143,7 @@
 			</h1>
 
 			<p
-				class="stagger-item mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider text-muted-foreground break-words uppercase md:text-sm md:px-0"
+				class="stagger-item mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider text-muted-foreground wrap-break-word uppercase md:text-sm md:px-0"
 			>
 				// {m.blog_subtitle()}
 			</p>

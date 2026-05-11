@@ -175,7 +175,7 @@
 							>[NEXT_MODULE]</span
 						>
 						<div class="relative h-14 w-20 border-2 border-foreground bg-card">
-							<div class="animate-scanline absolute inset-x-0 z-10 h-[1px] bg-primary/40"></div>
+							<div class="animate-scanline absolute inset-x-0 z-10 h-px bg-primary/40"></div>
 							{#key engine.nextPieceIdx}
 								<div
 									in:scale={{ start: 0.9, duration: 300 }}
