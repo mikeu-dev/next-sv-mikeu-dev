@@ -1,21 +1,22 @@
 <div align="center">
 
-# 🪄 Next SV Portfolio
+# 🪄 Mikeu Dev Portfolio
 
-### A High-Performance, Animated Portfolio Template
+### A High-Performance, Brutalist Fullstack Portfolio & CRM
 
 [![Svelte](https://img.shields.io/badge/Svelte-5-orange?style=flat-square&logo=svelte)](https://svelte.dev)
-[![SvelteKit](https://img.shields.io/badge/SvelteKit-Latest-FF3E00?style=flat-square&logo=svelte)](https://kit.svelte.dev)
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-2-FF3E00?style=flat-square&logo=svelte)](https://kit.svelte.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
 [![Firebase](https://img.shields.io/badge/Firebase-Integration-FFCA28?style=flat-square&logo=firebase)](https://firebase.google.com)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](./LICENSE)
+[![Three.js](https://img.shields.io/badge/Three.js-Latest-000000?style=flat-square&logo=three.js)](https://threejs.org/)
 
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#getting-started">Getting Started</a> •
+  <a href="#tech-stack">Tech Stack</a> •
   <a href="#project-structure">Structure</a> •
-  <a href="#contributing">Contributing</a>
+  <a href="#scripts">Scripts</a>
 </p>
 
 </div>
@@ -24,133 +25,102 @@
 
 ## 📖 Introduction
 
-**Next SV Portfolio** is a modern, production-ready portfolio template engineered for performance and scalability. Built with **SvelteKit** and **Svelte 5 Runes**, it features a fully functional **Admin CRM**, role-based authentication, and dynamic content management via **Firebase**.
+**Mikeu Dev Portfolio** is a cutting-edge, production-ready fullstack application engineered for extreme performance and scalability. Built with **SvelteKit** and **Svelte 5 Runes**, it features a unique **Brutalist Design** language, an interactive **3D World Visualization**, and a fully-featured **Admin CRM** with role-based authentication.
 
-Designed for developers who demand excellence, it combines blazing-fast load times with rich, interactive animations.
+This isn't just a portfolio; it's a showcase of modern web engineering, combining blazing-fast load times with rich, interactive experiences.
 
 ## ✨ Features
 
-### 🛡️ Core & Admin
+### 🌍 Folded World Visualization
+- **Interactive 3D Globe**: Real-time visitor map powered by **Three.js** and GeoIP data.
+- **Dynamic Node Mapping**: Visualizes global traffic with high-performance instanced rendering.
+- **Minimalist Teaser**: A lightweight version of the globe integrated into the landing page for maximum impact with minimum overhead.
 
-- **Admin Dashboard (CRM)**: Securely manage projects, blogs, skills, and social links.
-- **Role-Based Auth**: Exclusive owner access protection using Firebase Auth.
-- **Dynamic Content**: All portfolio data is fetched in real-time from Firestore.
+### 🛡️ Core & Admin CRM
+- **Unified Admin Dashboard**: Securely manage projects, blogs, skills, and social links in one place.
+- **Role-Based Security**: Exclusive owner access protection using Firebase Auth and custom server-side hooks.
+- **Real-time Data**: Fully reactive content management powered by Firestore and Svelte 5 Runes.
 
 ### ⚡ Performance & DX
-
-- **Svelte 5 Runes**: Utilizes the latest, most efficient reactivity model.
-- **Blazing Fast**: Server-side rendering (SSR) and static generation (SSG) capabilities via SvelteKit.
-- **Type Safety**: End-to-end type safety with **TypeScript** and **Zod** schema validation.
+- **Svelte 5 Runes**: Pure signal-based reactivity for the most efficient UI updates.
+- **Tailwind CSS 4**: Next-gen styling with the latest utility-first framework.
+- **Type Safety**: 100% TypeScript coverage with **Zod** schema validation for all data boundaries.
+- **I18n Ready**: Full multi-language support (English & Indonesian) via **Paraglide-JS**.
 
 ### 🎨 UI & UX
-
-- **Tailwind CSS**: Utility-first styling for rapid, responsive design.
-- **Dark Mode**: Built-in theme switching with `mode-watcher`.
-- **Animations**: Smooth, complex animations powered by **GSAP** and **Matter.js**.
-- **Internationalization**: Full i18n support using `@inlang/paraglide-js`.
+- **Brutalist Aesthetics**: High-contrast, bold typography and raw layouts for a distinct digital identity.
+- **Complex Animations**: Seamless transitions and micro-interactions powered by **GSAP** and **Matter.js**.
+- **PWA Capabilities**: Installable, offline-ready experience with optimized service workers.
+- **AI-Enhanced**: Integration with **Google Gemini** for dynamic content generation and smart features.
 
 ## 🛠️ Tech Stack
 
 <div align="center">
 
-|                                     Core                                     |                                 Styles & UI                                  |                               Data & Backend                               |                                     Tools                                      |
-| :--------------------------------------------------------------------------: | :--------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :----------------------------------------------------------------------------: |
-|     ![Svelte](https://img.shields.io/badge/-Svelte_5-orange?logo=svelte)     | ![Tailwind](https://img.shields.io/badge/-Tailwind-38B2AC?logo=tailwind-css) |  ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase)  |          ![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite)          |
-|   ![SvelteKit](https://img.shields.io/badge/-SvelteKit-FF3E00?logo=svelte)   |    ![Lucide](https://img.shields.io/badge/-Lucide_Icons-pink?logo=lucide)    | ![Firestore](https://img.shields.io/badge/-Firestore-FFCA28?logo=firebase) |       ![Vitest](https://img.shields.io/badge/-Vitest-729B1B?logo=vitest)       |
-| ![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript) |      ![GSAP](https://img.shields.io/badge/-GSAP-88CE02?logo=greensock)       |         ![Zod](https://img.shields.io/badge/-Zod-3E67B1?logo=zod)          | ![Playwright](https://img.shields.io/badge/-Playwright-45BA4B?logo=playwright) |
+| Core | Styles & UI | Data & Backend | Tools |
+| :--- | :--- | :--- | :--- |
+| ![Svelte 5](https://img.shields.io/badge/-Svelte_5-orange?logo=svelte) | ![Tailwind 4](https://img.shields.io/badge/-Tailwind_4-38B2AC?logo=tailwind-css) | ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase) | ![Vite 6](https://img.shields.io/badge/-Vite-646CFF?logo=vite) |
+| ![SvelteKit 2](https://img.shields.io/badge/-SvelteKit_2-FF3E00?logo=svelte) | ![Three.js](https://img.shields.io/badge/-Three.js-000000?logo=three.js) | ![Firestore](https://img.shields.io/badge/-Firestore-FFCA28?logo=firebase) | ![Vitest](https://img.shields.io/badge/-Vitest-729B1B?logo=vitest) |
+| ![TypeScript](https://img.shields.io/badge/-TypeScript_5-blue?logo=typescript) | ![GSAP](https://img.shields.io/badge/-GSAP-88CE02?logo=greensock) | ![Gemini AI](https://img.shields.io/badge/-Gemini_AI-4285F4?logo=google-gemini) | ![Storybook 10](https://img.shields.io/badge/-Storybook_10-FF4785?logo=storybook) |
 
 </div>
 
 ## 📂 Project Structure
 
-A simplified overview of the architecture:
-
-| Directory                 | Description                                                            |
-| :------------------------ | :--------------------------------------------------------------------- |
-| **`src/lib/server`**      | Backend logic, repositories, and Firebase admin services.              |
-| **`src/routes/admin`**    | Protected admin routes for content management (CRM).                   |
-| **`src/routes/api`**      | Server-side API endpoints (`/api/projects`, `/api/auth`, etc.).        |
-| **`src/routes/blog`**     | Blog implementation with dynamic slug routing.                         |
-| **`src/routes/projects`** | Project case study pages.                                              |
-| **`src/lib/components`**  | Atomic, reusable UI components designated by atomic design principles. |
-| **`messages/`**           | Translation files for internationalization (`en`, `id`).               |
+| Directory | Description |
+| :--- | :--- |
+| **`src/routes/world`** | The "Folded World" interactive 3D visualization. |
+| **`src/routes/admin`** | Protected CRM dashboard for content management. |
+| **`src/lib/server`** | Server-side logic, repositories, and Firebase Admin SDK services. |
+| **`src/lib/components`** | Atomic UI components following strict design tokens. |
+| **`messages/`** | Translation source files for i18n support. |
+| **`static/`** | Public assets, including PWA manifest and optimized images. |
 
 ## 🚀 Getting Started
 
-Follow these steps to set up the project locally.
-
 ### Prerequisites
 
-- **Node.js**: v18 or higher
-- **pnpm**: Recommended package manager
+- **Node.js**: v20 or higher
+- **pnpm**: v9 or higher
 
 ### Installation
 
-1.  **Clone the repository**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/next-sv-mikeu-dev.git
+   cd next-sv-mikeu-dev
+   ```
 
-    ```bash
-    git clone https://github.com/yourusername/next-sv-portfolio.git
-    cd next-sv-portfolio
-    ```
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-2.  **Install dependencies**
+3. **Environment Configuration**
+   Copy `.env.example` to `.env` and populate your Firebase and Gemini API keys.
+   ```bash
+   cp .env.example .env
+   ```
 
-    ```bash
-    pnpm install
-    ```
-
-3.  **Environment Configuration**
-    Create a `.env` file in the root directory. You will need a Firebase project.
-
-    ```env
-    # Client-side Firebase
-    PUBLIC_FIREBASE_API_KEY="your_api_key"
-    PUBLIC_FIREBASE_AUTH_DOMAIN="your_project_id.firebaseapp.com"
-    PUBLIC_FIREBASE_PROJECT_ID="your_project_id"
-    PUBLIC_FIREBASE_STORAGE_BUCKET="your_project_id.firebasestorage.app"
-    PUBLIC_FIREBASE_MESSAGING_SENDER_ID="..."
-    PUBLIC_FIREBASE_APP_ID="..."
-
-    # Server-side Firebase Admin
-    GOOGLE_APPLICATION_CREDENTIALS="src/lib/server/firebase/service-account.json"
-    ```
-
-    > **Note**: Place your Firebase Admin SDK `service-account.json` in the specified path or update the variable.
-
-4.  **Start Development Server**
-    ```bash
-    pnpm dev
-    ```
+4. **Start Development**
+   ```bash
+   pnpm dev
+   ```
 
 ## 📜 Scripts
 
-Common commands for development:
-
-| Command        | Description                            |
-| :------------- | :------------------------------------- |
-| `pnpm dev`     | Start the development server           |
-| `pnpm build`   | Build the app for production           |
-| `pnpm preview` | Preview the production build locally   |
-| `pnpm check`   | Run `svelte-check` for type validation |
-| `pnpm lint`    | Lint code with ESLint and Prettier     |
-| `pnpm test`    | Run unit tests with Vitest             |
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1.  Fork the project.
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+| Command | Description |
+| :--- | :--- |
+| `pnpm dev` | Start development server with HMR |
+| `pnpm build` | Production build (optimized for Vercel/Node) |
+| `pnpm preview` | Locally preview production build |
+| `pnpm check` | Type-check Svelte and TypeScript files |
+| `pnpm lint` | Run ESLint and Prettier checks |
+| `pnpm storybook` | Launch Storybook UI workshop |
 
 ---
 
 <div align="center">
-  <p>Built with ❤️ by <b>Mike</b></p>
+  <p>Built with ❤️ by <b>Mikeu</b></p>
+  <p><a href="https://www.mikeudev.my.id">www.mikeudev.my.id</a></p>
 </div>
