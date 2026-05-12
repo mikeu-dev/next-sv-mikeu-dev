@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import Matter, { type IChamferableBodyDefinition } from 'matter-js';
+	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import { m } from '@/lib/paraglide/messages';
 	import { Terminal, Cpu, Activity, Hash, ArrowRight } from '@lucide/svelte';
+	import type Matter from 'matter-js';
+	import type { IChamferableBodyDefinition } from 'matter-js';
 
 	let { skills }: { skills: string[] } = $props();
-
-	const { Engine, Runner, Bodies, Composite } = Matter;
 
 	let heroTitle = $state<HTMLElement>();
 	let heroSubtitle = $state<HTMLElement>();
@@ -25,14 +25,26 @@
 		initialY: number;
 	}
 
-	onMount(() => {
-		if (!heroTitle || !heroSubtitle || !heroButton || !bulletContainer) return;
+	// Physics references for cleanup
+	let engine: Matter.Engine;
+	let runner: Matter.Runner;
+	let rafId: number;
+	let observer: IntersectionObserver;
+	let ctx: gsap.Context;
+
+	onMount(async () => {
+		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer) return;
+
+		// Dynamic import Matter.js to avoid SSR issues
+		const MatterModule = await import('matter-js');
+		const Matter = MatterModule.default || MatterModule;
+		const { Engine, Runner, Bodies, Composite } = Matter;
 
 		const subtitle = heroSubtitle;
 		const button = heroButton;
 		const bullets = bulletContainer;
 
-		const ctx = gsap.context(() => {
+		ctx = gsap.context(() => {
 			if (!subtitle || !button || !bullets) return;
 
 			// Custom Stagger for Brutalist Elements
@@ -57,7 +69,7 @@
 		});
 
 		// --- Matter.js Logic (MAINTAINED) ---
-		const engine = Engine.create();
+		engine = Engine.create();
 		const world: Matter.World = engine.world;
 		engine.gravity.y = 1.0;
 
@@ -117,11 +129,10 @@
 			}, i * 30); // Lebih instan, tanpa delay 1000ms
 		});
 
-		const runner = Runner.create();
-		let rafId: number;
+		runner = Runner.create();
 		let isVisible = true;
 
-		const observer = new IntersectionObserver((entries) => {
+		observer = new IntersectionObserver((entries) => {
 			isVisible = entries[0].isIntersecting;
 			if (isVisible) {
 				Runner.run(runner, engine);
@@ -146,14 +157,19 @@
 
 		heroTitle.style.position = 'relative';
 		heroTitle.style.overflow = 'visible';
+	});
 
-		return () => {
-			ctx.revert();
-			observer.disconnect();
-			Runner.stop(runner);
-			Engine.clear(engine);
-			cancelAnimationFrame(rafId);
-		};
+	onDestroy(() => {
+		if (ctx) ctx.revert();
+		if (observer) observer.disconnect();
+		if (runner) {
+			import('matter-js').then((Matter) => {
+				const M = Matter.default || Matter;
+				M.Runner.stop(runner);
+				M.Engine.clear(engine);
+			});
+		}
+		if (rafId) cancelAnimationFrame(rafId);
 	});
 </script>
 
