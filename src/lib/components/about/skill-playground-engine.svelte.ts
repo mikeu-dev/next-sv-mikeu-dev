@@ -1,4 +1,5 @@
-import Matter from 'matter-js';
+import type Matter from 'matter-js';
+import { browser } from '$app/environment';
 import {
 	shapes,
 	tetrisColors,
@@ -11,7 +12,16 @@ import {
 	type Tetrimino
 } from './skill-playground.types';
 
-const { Engine, Runner, Bodies, Composite, Mouse, MouseConstraint, Body, Events } = Matter;
+// Declare types for Matter components to be assigned later
+let Engine: typeof Matter.Engine;
+let Runner: typeof Matter.Runner;
+let Bodies: typeof Matter.Bodies;
+let Composite: typeof Matter.Composite;
+let Mouse: typeof Matter.Mouse;
+let MouseConstraint: typeof Matter.MouseConstraint;
+let Body: typeof Matter.Body;
+let Events: typeof Matter.Events;
+let Vector: typeof Matter.Vector;
 
 export class SkillEngine {
 	// Reactive State
@@ -94,7 +104,24 @@ export class SkillEngine {
 		return all;
 	});
 
-	init(container: HTMLElement) {
+	async init(container: HTMLElement) {
+		if (!browser) return;
+
+		// Dynamic import Matter.js to avoid SSR issues
+		const MatterModule = await import('matter-js');
+		const Matter = MatterModule.default || MatterModule;
+
+		// Assign Matter components
+		Engine = Matter.Engine;
+		Runner = Matter.Runner;
+		Bodies = Matter.Bodies;
+		Composite = Matter.Composite;
+		Mouse = Matter.Mouse;
+		MouseConstraint = Matter.MouseConstraint;
+		Body = Matter.Body;
+		Events = Matter.Events;
+		Vector = Matter.Vector;
+
 		this.container = container;
 		this.engine = Engine.create();
 		this.engine.world.gravity.y = 1.0;
@@ -304,10 +331,10 @@ export class SkillEngine {
 
 			this.physicsBodies.forEach((other) => {
 				if (other === body || !other.label.startsWith('piece-')) return;
-				const diff = Matter.Vector.sub(other.position, body.position);
-				const dist = Matter.Vector.magnitude(diff);
+				const diff = Vector.sub(other.position, body.position);
+				const dist = Vector.magnitude(diff);
 				if (dist < 120) {
-					const pushForce = Matter.Vector.mult(Matter.Vector.normalise(diff), 0.05 * other.mass);
+					const pushForce = Vector.mult(Vector.normalise(diff), 0.05 * other.mass);
 					Body.applyForce(other, other.position, pushForce);
 				}
 			});
