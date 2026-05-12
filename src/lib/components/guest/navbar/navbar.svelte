@@ -284,7 +284,7 @@
 {#if isMobileMenuOpen}
 	<div
 		transition:fade={{ duration: 300 }}
-		class="fixed inset-0 z-[60] bg-background/95 backdrop-blur-2xl md:hidden"
+		class="fixed inset-0 z-60 bg-background/95 backdrop-blur-2xl md:hidden"
 	>
 		<!-- Background Shards -->
 		<div class="pointer-events-none absolute inset-0 overflow-hidden">

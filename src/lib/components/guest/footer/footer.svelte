@@ -125,7 +125,7 @@
 				<!-- Diagnostic Stats -->
 				<div class="w-full lg:w-auto">
 					<div
-						class="grid grid-cols-2 gap-4 border-2 border-foreground/10 bg-foreground/[0.02] p-4 lg:min-w-64 lg:grid-cols-1"
+						class="grid grid-cols-2 gap-4 border-2 border-foreground/10 bg-foreground/2 p-4 lg:min-w-64 lg:grid-cols-1"
 					>
 						<div class="flex flex-col gap-1">
 							<span

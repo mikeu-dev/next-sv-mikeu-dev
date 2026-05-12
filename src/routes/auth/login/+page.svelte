@@ -86,7 +86,7 @@
 			style="clip-path: polygon(100% 0, 0 0, 100% 100%);"
 		></div>
 		<div
-			class="absolute bottom-0 left-0 h-[40vh] w-[40vw] bg-foreground/[0.02]"
+			class="absolute bottom-0 left-0 h-[40vh] w-[40vw] bg-foreground/2"
 			style="clip-path: polygon(0 0, 0 100%, 100% 100%);"
 		></div>
 	</div>
