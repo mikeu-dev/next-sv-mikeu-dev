@@ -13,9 +13,9 @@
 
 <p align="center">
   <a href="#features">Features</a> •
-  <a href="#getting-started">Getting Started</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#project-structure">Structure</a> •
+  <a href="#getting-started">Getting Started</a> •
   <a href="#scripts">Scripts</a>
 </p>
 
@@ -27,41 +27,50 @@
 
 **Mikeu Dev Portfolio** is a cutting-edge, production-ready fullstack application engineered for extreme performance and scalability. Built with **SvelteKit** and **Svelte 5 Runes**, it features a unique **Brutalist Design** language, an interactive **3D World Visualization**, and a fully-featured **Admin CRM** with role-based authentication.
 
-This isn't just a portfolio; it's a showcase of modern web engineering, combining blazing-fast load times with rich, interactive experiences.
+This isn't just a portfolio; it's a showcase of modern web engineering, combining blazing-fast load times with rich, interactive experiences across multiple specialized pages.
 
 ## ✨ Features
 
-### 🌍 Folded World Visualization
-- **Interactive 3D Globe**: Real-time visitor map powered by **Three.js** and GeoIP data.
-- **Dynamic Node Mapping**: Visualizes global traffic with high-performance instanced rendering.
-- **Minimalist Teaser**: A lightweight version of the globe integrated into the landing page for maximum impact with minimum overhead.
+### 🏢 Guest Experience & Portfolio
+A collection of high-performance pages designed to showcase skills and experience.
+- **Projects Showcase**: Interactive grid of work with detailed case studies and tech stacks.
+- **Dynamic Blog**: High-performance reading experience with syntax highlighting and deep linking.
+- **Professional Journey**: A curated timeline of experience, education, and key milestones.
+- **Interactive About**: Immersive storytelling page with GSAP animations and Brutalist layouts.
+- **3D Visitor Map**: The "Folded World" interactive globe showing real-time global visitors.
+- **Contact Interface**: Type-safe form for guest inquiries with instant validation.
 
-### 🛡️ Core & Admin CRM
-- **Unified Admin Dashboard**: Securely manage projects, blogs, skills, and social links in one place.
-- **Role-Based Security**: Exclusive owner access protection using Firebase Auth and custom server-side hooks.
-- **Real-time Data**: Fully reactive content management powered by Firestore and Svelte 5 Runes.
+### 🛡️ Professional Admin CRM
+A powerful, secure dashboard to manage every aspect of the platform in real-time.
+- **Unified Management**: Centralized hub for managing Projects, Blog posts, and Journey entries.
+- **Real-time Analytics**: Detailed visitor statistics and geolocation mapping.
+- **System Monitoring**: Live health checks and system status tracking.
+- **Communication Hub**: Integrated inbox for managing and responding to contact messages.
+- **Tech Stack Editor**: Dynamic management of tools and skills displayed across the site.
 
-### ⚡ Performance & DX
+### ⚡ Technical Excellence
 - **Svelte 5 Runes**: Pure signal-based reactivity for the most efficient UI updates.
-- **Tailwind CSS 4**: Next-gen styling with the latest utility-first framework.
-- **Type Safety**: 100% TypeScript coverage with **Zod** schema validation for all data boundaries.
-- **I18n Ready**: Full multi-language support (English & Indonesian) via **Paraglide-JS**.
+- **Native i18n**: Full multi-language support (English & Indonesian) via **Paraglide-JS**.
+- **Type Safety**: 100% TypeScript coverage with **Zod** schema validation.
+- **Repository Pattern**: Clean, abstracted data layer separating business logic from infrastructure.
+- **PWA & SEO**: Installable, offline-capable, and fully optimized for search engines.
 
 ### 🎨 UI & UX
 - **Brutalist Aesthetics**: High-contrast, bold typography and raw layouts for a distinct digital identity.
-- **Complex Animations**: Seamless transitions and micro-interactions powered by **GSAP** and **Matter.js**.
-- **PWA Capabilities**: Installable, offline-ready experience with optimized service workers.
-- **AI-Enhanced**: Integration with **Google Gemini** for dynamic content generation and smart features.
+- **Motion System**: Seamless transitions powered by **GSAP** and physics-based interactions with **Matter.js**.
+- **View Transitions**: Fluid page navigations using the native browser API.
+- **AI-Enhanced**: Integration with **Google Gemini** for dynamic content generation.
 
 ## 🛠️ Tech Stack
 
 <div align="center">
 
-| Core | Styles & UI | Data & Backend | Tools |
+| Core | Styles & UI | Data & Backend | Tools & Quality |
 | :--- | :--- | :--- | :--- |
-| ![Svelte 5](https://img.shields.io/badge/-Svelte_5-orange?logo=svelte) | ![Tailwind 4](https://img.shields.io/badge/-Tailwind_4-38B2AC?logo=tailwind-css) | ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase) | ![Vite 6](https://img.shields.io/badge/-Vite-646CFF?logo=vite) |
-| ![SvelteKit 2](https://img.shields.io/badge/-SvelteKit_2-FF3E00?logo=svelte) | ![Three.js](https://img.shields.io/badge/-Three.js-000000?logo=three.js) | ![Firestore](https://img.shields.io/badge/-Firestore-FFCA28?logo=firebase) | ![Vitest](https://img.shields.io/badge/-Vitest-729B1B?logo=vitest) |
-| ![TypeScript](https://img.shields.io/badge/-TypeScript_5-blue?logo=typescript) | ![GSAP](https://img.shields.io/badge/-GSAP-88CE02?logo=greensock) | ![Gemini AI](https://img.shields.io/badge/-Gemini_AI-4285F4?logo=google-gemini) | ![Storybook 10](https://img.shields.io/badge/-Storybook_10-FF4785?logo=storybook) |
+| ![Svelte 5](https://img.shields.io/badge/-Svelte_5-orange?logo=svelte) | ![Tailwind 4](https://img.shields.io/badge/-Tailwind_4-38B2AC?logo=tailwind-css) | ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase) | ![Vite 7](https://img.shields.io/badge/-Vite-646CFF?logo=vite) |
+| ![SvelteKit 2](https://img.shields.io/badge/-SvelteKit_2-FF3E00?logo=svelte) | ![Three.js](https://img.shields.io/badge/-Three.js-000000?logo=three.js) | ![Firestore](https://img.shields.io/badge/-Firestore-FFCA28?logo=firebase) | ![Storybook 10](https://img.shields.io/badge/-Storybook_10-FF4785?logo=storybook) |
+| ![TypeScript](https://img.shields.io/badge/-TypeScript_5-blue?logo=typescript) | ![GSAP](https://img.shields.io/badge/-GSAP-88CE02?logo=greensock) | ![Gemini AI](https://img.shields.io/badge/-Gemini_AI-4285F4?logo=google-gemini) | ![Vitest](https://img.shields.io/badge/-Vitest-729B1B?logo=vitest) |
+| ![Paraglide](https://img.shields.io/badge/-Paraglide_JS-E10098?logo=i18next) | ![Matter.js](https://img.shields.io/badge/-Matter.js-4B0082?logo=physics) | ![Vercel Analytics](https://img.shields.io/badge/-Analytics-000000?logo=vercel) | ![Playwright](https://img.shields.io/badge/-Playwright-45BA4B?logo=playwright) |
 
 </div>
 
@@ -69,12 +78,13 @@ This isn't just a portfolio; it's a showcase of modern web engineering, combinin
 
 | Directory | Description |
 | :--- | :--- |
-| **`src/routes/world`** | The "Folded World" interactive 3D visualization. |
-| **`src/routes/admin`** | Protected CRM dashboard for content management. |
-| **`src/lib/server`** | Server-side logic, repositories, and Firebase Admin SDK services. |
-| **`src/lib/components`** | Atomic UI components following strict design tokens. |
-| **`messages/`** | Translation source files for i18n support. |
-| **`static/`** | Public assets, including PWA manifest and optimized images. |
+| **`src/routes/admin`** | Protected CRM dashboard and management modules. |
+| **`src/routes/world`** | Interactive 3D "Folded World" visitor visualization. |
+| **`src/lib/server`** | Domain logic, repositories, and Firebase Admin SDK services. |
+| **`src/lib/components`** | Atomic UI components and feature-specific blocks. |
+| **`src/lib/paraglide`** | Generated i18n runtime and translation utilities. |
+| **`messages/`** | Source translation files (JSON) for multi-language support. |
+| **`static/`** | Public assets, PWA manifest, and optimized media. |
 
 ## 🚀 Getting Started
 
@@ -117,6 +127,7 @@ This isn't just a portfolio; it's a showcase of modern web engineering, combinin
 | `pnpm check` | Type-check Svelte and TypeScript files |
 | `pnpm lint` | Run ESLint and Prettier checks |
 | `pnpm storybook` | Launch Storybook UI workshop |
+| `pnpm test` | Run unit and E2E tests |
 
 ---
 
