@@ -256,6 +256,8 @@
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
 			return;
 
+		let isVisible = true;
+
 		// Dynamic import Matter.js to avoid SSR issues
 		const MatterModule = await import('matter-js');
 		const Matter = MatterModule.default || MatterModule;
@@ -306,24 +308,64 @@
 			const xSetter = gsap.quickSetter(section, '--mouse-x', 'px');
 			const ySetter = gsap.quickSetter(section, '--mouse-y', 'px');
 
+			let ticking = false;
 			const handleMouseMove = (e: MouseEvent) => {
-				const rect = section.getBoundingClientRect();
-				const x = Math.round(e.clientX - rect.left);
-				const y = Math.round(e.clientY - rect.top);
+				if (!ticking) {
+					requestAnimationFrame(() => {
+						const rect = section.getBoundingClientRect();
+						const x = Math.round(e.clientX - rect.left);
+						const y = Math.round(e.clientY - rect.top);
 
-				xSetter(x);
-				ySetter(y);
+						xSetter(x);
+						ySetter(y);
 
-				// Update coordinates via CSS variables to avoid re-renders and direct DOM manipulation
-				section.style.setProperty('--coord-x', x.toString());
-				section.style.setProperty('--coord-y', y.toString());
+						// Update coordinates via CSS variables
+						section.style.setProperty('--coord-x', x.toString());
+						section.style.setProperty('--coord-y', y.toString());
+						ticking = false;
+					});
+					ticking = true;
+				}
+			};
+
+			const handleTouchMove = (e: TouchEvent) => {
+				if (e.touches[0]) {
+					const touch = e.touches[0];
+					if (!ticking) {
+						requestAnimationFrame(() => {
+							const rect = section.getBoundingClientRect();
+							const x = Math.round(touch.clientX - rect.left);
+							const y = Math.round(touch.clientY - rect.top);
+
+							xSetter(x);
+							ySetter(y);
+
+							section.style.setProperty('--coord-x', x.toString());
+							section.style.setProperty('--coord-y', y.toString());
+							ticking = false;
+						});
+						ticking = true;
+					}
+				}
 			};
 
 			section.addEventListener('mousemove', handleMouseMove);
+			section.addEventListener('touchmove', handleTouchMove, { passive: true });
+			section.addEventListener('touchstart', handleTouchMove, { passive: true });
 		});
 
-		// --- Matter.js Logic (MAINTAINED) ---
-		engine = Engine.create();
+		// --- Matter.js Logic (OPTIMIZED) ---
+		// Check for reduced motion preference
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (prefersReducedMotion) {
+			console.log('Reduced motion enabled: Skipping physics engine.');
+			isVisible = false; // Prevents RAF update
+			return;
+		}
+
+		engine = Engine.create({
+			enableSleeping: true // Stop calculating for settled bodies
+		});
 		const world: Matter.World = engine.world;
 		engine.gravity.y = 1.0;
 
@@ -370,7 +412,8 @@
 						restitution: 0.5,
 						friction: 0.5,
 						frictionAir: 0.02,
-						chamfer: { radius: 2 }
+						chamfer: { radius: 2 },
+						sleepThreshold: 30 // Make bodies sleep faster
 					}
 				);
 				return { body, element: el, initialX, initialY };
@@ -442,14 +485,19 @@
 		});
 
 		runner = Runner.create();
-		let isVisible = true;
 
 		observer = new IntersectionObserver((entries) => {
-			isVisible = entries[0].isIntersecting;
-			if (isVisible) {
+			const nowVisible = entries[0].isIntersecting;
+			if (nowVisible && !isVisible) {
+				// Resuming
+				isVisible = true;
 				Runner.run(runner, engine);
-			} else {
+				rafId = requestAnimationFrame(update);
+			} else if (!nowVisible && isVisible) {
+				// Pausing
+				isVisible = false;
 				Runner.stop(runner);
+				if (rafId) cancelAnimationFrame(rafId);
 			}
 		});
 
@@ -458,11 +506,13 @@
 		function update() {
 			if (isVisible) {
 				for (const { body, element, initialX, initialY } of letters) {
-					const { x, y } = body.position;
-					element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(${body.angle}rad)`;
+					if (!body.isSleeping) {
+						const { x, y } = body.position;
+						element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(${body.angle}rad)`;
+					}
 				}
+				rafId = requestAnimationFrame(update);
 			}
-			rafId = requestAnimationFrame(update);
 		}
 		rafId = requestAnimationFrame(update);
 
@@ -507,8 +557,8 @@
 		<!-- Scanning Beam -->
 		<div class="scanning-beam absolute left-0 w-full opacity-20"></div>
 
-		<!-- Ambient Shards (Floating) -->
-		{#each Array(6) as _, _i (_i)}
+		<!-- Ambient Shards (Floating) - Reduced for mobile -->
+		{#each Array(browser && window.innerWidth < 768 ? 3 : 6) as _, _i (_i)}
 			<div
 				class="ambient-shard absolute size-16 bg-primary/5 dark:bg-primary/10"
 				style="
@@ -699,6 +749,7 @@
 	/* Title characters need clean baseline for physics */
 	span {
 		user-select: none;
+		will-change: transform;
 	}
 
 	/* â”€â”€ Origami Impact Shard Styling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -755,7 +806,7 @@
 
 	.ambient-shard {
 		pointer-events: none;
-		will-change: transform;
+		will-change: transform, opacity;
 	}
 
 	/* â”€â”€ Coordinate HUD with CSS Counters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
