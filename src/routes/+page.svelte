@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ContactSection from '../lib/components/guest/sections/contact/contact.svelte';
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
 	import SectionLoader from '$lib/components/ui/section-loader.svelte';
@@ -91,4 +90,11 @@
 	</div>
 </section>
 
-<ContactSection />
+<SectionLoader rootMargin="200px">
+	{#snippet fallback()}
+		<div class="h-64 w-full animate-pulse bg-muted/5"></div>
+	{/snippet}
+	{#await import('../lib/components/guest/sections/contact/contact.svelte') then mod}
+		<mod.default />
+	{/await}
+</SectionLoader>

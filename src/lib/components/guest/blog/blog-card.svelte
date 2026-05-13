@@ -122,6 +122,7 @@
 		border: 2px solid var(--foreground);
 		clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
 		transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+		will-change: transform, border-color;
 	}
 
 	.group:hover .blog-card-container {
