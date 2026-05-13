@@ -56,7 +56,7 @@
 		}
 		const cleanPath = '/' + pathSegments.join('/');
 
-		const list = locales.map((locale) => {
+		const list = locales.map((locale: string) => {
 			const isBase = locale === baseLocale;
 			const localizedPath = isBase ? cleanPath : `/${locale}${cleanPath.replace(/\/$/, '')}`;
 			const cleanLocPath = localizedPath.replace(/\/$/, '');

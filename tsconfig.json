@@ -22,17 +22,7 @@
 		"src/**/*.svelte",
 		"src/routes/.well-known/**/*.ts"
 	],
-	"exclude": [
-		"node_modules",
-		".vercel",
-		"build",
-		"dist",
-		"static",
-		"messages",
-		"src/lib/paraglide",
-		"src/paraglide",
-		"src/lib/server/scripts/**"
-	]
+	"exclude": ["node_modules", ".vercel", "build", "dist", "static", "src/lib/server/scripts/**"]
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
 	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
 	//

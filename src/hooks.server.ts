@@ -63,14 +63,17 @@ const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
 };
 
 const handleParaglide: Handle = ({ event, resolve }) =>
-	paraglideMiddleware(event.request, ({ request, locale }) => {
-		event.request = request;
-		event.locals.paraglide = { locale };
+	paraglideMiddleware(
+		event.request,
+		({ request, locale }: { request: Request; locale: string }) => {
+			event.request = request;
+			event.locals.paraglide = { locale };
 
-		return resolve(event, {
-			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
-		});
-	});
+			return resolve(event, {
+				transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
+			});
+		}
+	);
 
 import { resolveGeo } from '$lib/server/services/geo.service';
 
