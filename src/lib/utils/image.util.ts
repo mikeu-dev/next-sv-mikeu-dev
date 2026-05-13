@@ -43,6 +43,7 @@ export function optimizeImage(
 		return `${cdnUrl.replace(/\/$/, '')}/${transformString}${url}`;
 	}
 
-	// For relative paths (static assets)
-	return `${cdnUrl.replace(/\/$/, '')}/${transformString}${url.replace(/^\//, '')}`;
+	// For relative paths (static assets), return the original URL
+	// These assets are already optimized or don't need CDN proxying on localhost
+	return url;
 }
