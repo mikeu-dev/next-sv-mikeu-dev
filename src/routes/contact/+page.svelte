@@ -135,7 +135,7 @@
 		class="brutalist-title pointer-events-none fixed top-0 left-0 hidden h-full w-24 items-center justify-center border-r-2 border-foreground/10 lg:flex"
 	>
 		<h1
-			class="rotate-[-90deg] font-poppins text-8xl font-black tracking-[-0.1em] whitespace-nowrap text-foreground/15 uppercase italic"
+			class="-rotate-90 font-poppins text-8xl font-black -tracking-widest whitespace-nowrap text-foreground/15 uppercase italic"
 		>
 			Mikeu // Dev_Archive
 		</h1>
@@ -150,7 +150,7 @@
 				<div
 					class="archive-detail flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase"
 				>
-					<Hash class="size-3" /> [STATUS: READY_FOR_COLLABORATION]
+					<Hash class="size-3" /> [IDENTITY: {m.common_author_name()}]
 				</div>
 				<h2 class="font-poppins text-5xl font-black tracking-tighter text-foreground sm:text-7xl">
 					Mikeu<span class="text-primary">.</span>Dev
