@@ -32,14 +32,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Paraglide
+        run: npx paraglide-js compile --project ./project.inlang
+
       - name: Lint
         run: pnpm lint
 
       - name: Check
         run: pnpm check
+        env:
+          FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'dummy_secret' }}
+          PUBLIC_CONTACT_EMAIL: ${{ secrets.PUBLIC_CONTACT_EMAIL || 'dummy@example.com' }}
 
       - name: Unit Tests
         run: pnpm test:unit
 
       - name: Build
         run: pnpm build
+        env:
+          FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'dummy_secret' }}
+          PUBLIC_CONTACT_EMAIL: ${{ secrets.PUBLIC_CONTACT_EMAIL || 'dummy@example.com' }}
