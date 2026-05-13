@@ -1,4 +1,4 @@
-﻿import type { LayoutServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 import { socialsService } from '$lib/server/services/socials.service';
 import { visitorService } from '$lib/server/services/visitor.service';
 import { settingsService } from '$lib/server/services/settings.service';
@@ -11,7 +11,12 @@ export const config: Config = {
 	regions: ['sin1']
 };
 
-export const load: LayoutServerLoad = async ({ locals }) => {
+export const load: LayoutServerLoad = async ({ locals, setHeaders }) => {
+	// Enable Edge Caching for layout data (Socials, Visitor Stats, etc.)
+	setHeaders({
+		'cache-control': 'public, s-maxage=300, stale-while-revalidate=1800'
+	});
+
 	// Melakukan fetch secara paralel untuk efisiensi.
 	// Kita tidak melakukan 'await' langsung pada return untuk mengaktifkan streaming di SvelteKit.
 	return {

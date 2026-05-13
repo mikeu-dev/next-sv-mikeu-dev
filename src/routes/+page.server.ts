@@ -1,11 +1,16 @@
-﻿import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { skillsService } from '$lib/server/services/skills.service';
 import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
 
 export const prerender = false;
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }) => {
+	// Enable Edge Caching with SWR
+	setHeaders({
+		'cache-control': 'public, s-maxage=600, stale-while-revalidate=3600'
+	});
+
 	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
 
 	// Projects fetch is the same for both, but we fetch it once.

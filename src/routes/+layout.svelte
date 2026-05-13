@@ -115,6 +115,9 @@
 	<link rel="icon" href={favicon} />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+	<link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
 	<!-- Preload Critical Fonts -->
 	<link
