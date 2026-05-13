@@ -41,7 +41,7 @@ jobs:
       - name: Type Check
         run: pnpm check
         env:
-          FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'nPx9A8sR3vY6zB2kL5mN1qJ4wH7tG9uP' }}
+          FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=' }}
           PUBLIC_CONTACT_EMAIL: ${{ secrets.PUBLIC_CONTACT_EMAIL || 'dummy@example.com' }}
 
       - name: Get Playwright version
@@ -71,5 +71,5 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'nPx9A8sR3vY6zB2kL5mN1qJ4wH7tG9uP' }}
+          FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=' }}
           PUBLIC_CONTACT_EMAIL: ${{ secrets.PUBLIC_CONTACT_EMAIL || 'dummy@example.com' }}
