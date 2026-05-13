@@ -21,13 +21,9 @@ import {
 	paperFoldDisplacement,
 	findNearestNode
 } from './folded-world-geometry';
-import { getWorldColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
-import {
-	vertexShader,
-	fragmentShader,
-	wireframeVertexShader,
-	wireframeFragmentShader
-} from './folded-world-shaders';
+import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
+import type { PlanetStyle } from './folded-world.types';
+import { vertexShader, fragmentShader } from './folded-world-shaders';
 
 // Three.js types — imported dynamically at runtime
 type ThreeModule = typeof import('three');
@@ -57,8 +53,10 @@ export function createFoldedWorldEngine() {
 	});
 
 	let viewMode = $state<ViewMode>('fold');
+	let planetStyle = $state<PlanetStyle>('earth');
 	let tooltip = $state<TooltipData>({ visible: false, x: 0, y: 0, node: null });
 	let detailPanel = $state<DetailPanelData>({ visible: false, node: null });
+	let isFocusMode = $state(false);
 	const config = $state<WorldConfig>({ ...DEFAULT_WORLD_CONFIG });
 
 	// --- Internal State (non-reactive) ---
@@ -67,9 +65,10 @@ export function createFoldedWorldEngine() {
 	let scene: InstanceType<ThreeModule['Scene']>;
 	let camera: InstanceType<ThreeModule['PerspectiveCamera']>;
 	let mainMesh: InstanceType<ThreeModule['Mesh']>;
-	let wireframeMesh: InstanceType<ThreeModule['Mesh']>;
+	let ringMesh: InstanceType<ThreeModule['Mesh']>;
+	let particlesMesh: InstanceType<ThreeModule['Points']> | null = null;
 	let mainMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
-	let wireframeMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
+	let ringMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let raycaster: InstanceType<ThreeModule['Raycaster']>;
 	let mouseVec: InstanceType<ThreeModule['Vector2']>;
 
@@ -125,6 +124,13 @@ export function createFoldedWorldEngine() {
 
 			setupScene(isDark);
 			buildGlobe(isDark);
+			if (config.enableParticles) {
+				try {
+					buildParticles(isDark);
+				} catch (e) {
+					console.error('Failed to build particles:', e);
+				}
+			}
 			applyDeformations();
 
 			if (!isMinimal) {
@@ -134,6 +140,8 @@ export function createFoldedWorldEngine() {
 			state.ready = true;
 			state.loading = false;
 			state.nodeCount = nodes.length;
+
+			console.log('Folded World Engine: Initialization successful');
 
 			// Start render loop
 			startTime = performance.now();
@@ -172,11 +180,11 @@ export function createFoldedWorldEngine() {
 		if (mainMesh) {
 			mainMesh.geometry.dispose();
 		}
-		if (wireframeMesh) {
-			wireframeMesh.geometry.dispose();
+		if (ringMesh) {
+			ringMesh.geometry.dispose();
 		}
 		if (mainMaterial) mainMaterial.dispose();
-		if (wireframeMaterial) wireframeMaterial.dispose();
+		if (ringMaterial) ringMaterial.dispose();
 		if (renderer) {
 			renderer.dispose();
 			renderer.forceContextLoss();
@@ -190,7 +198,7 @@ export function createFoldedWorldEngine() {
 	function setupScene(isDark: boolean): void {
 		if (!canvasEl || !containerEl) return;
 
-		const colors = getWorldColors(isDark);
+		const colors = getPlanetColors(planetStyle, isDark);
 
 		const width = containerEl.clientWidth;
 		const height = containerEl.clientHeight;
@@ -227,7 +235,7 @@ export function createFoldedWorldEngine() {
 	}
 
 	function buildGlobe(isDark: boolean): void {
-		const colors = getWorldColors(isDark);
+		const colors = getPlanetColors(planetStyle, isDark);
 		// Icosahedron geometry — subdivided for more faces
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
@@ -263,6 +271,7 @@ export function createFoldedWorldEngine() {
 		// Create per-vertex attributes (same value for all 3 verts in a face)
 		const intensities = new Float32Array(vertexCount);
 		const foldOffsets = new Float32Array(vertexCount);
+		const barycentrics = new Float32Array(vertexCount * 3);
 		const scatterOffsets = new Float32Array(vertexCount * 3);
 
 		for (let i = 0; i < vertexCount; i++) {
@@ -296,15 +305,32 @@ export function createFoldedWorldEngine() {
 			const rz = cz * dist + (Math.random() - 0.5) * 4.0;
 
 			for (let j = 0; j < 3; j++) {
-				scatterOffsets[(i0 + j) * 3] = rx;
-				scatterOffsets[(i0 + j) * 3 + 1] = ry;
-				scatterOffsets[(i0 + j) * 3 + 2] = rz;
+				const vIndex = i0 + j;
+				scatterOffsets[vIndex * 3] = rx;
+				scatterOffsets[vIndex * 3 + 1] = ry;
+				scatterOffsets[vIndex * 3 + 2] = rz;
+
+				// Barycentric coordinates for edge detection (strokes)
+				if (j === 0) {
+					barycentrics[vIndex * 3] = 1.0;
+					barycentrics[vIndex * 3 + 1] = 0.0;
+					barycentrics[vIndex * 3 + 2] = 0.0;
+				} else if (j === 1) {
+					barycentrics[vIndex * 3] = 0.0;
+					barycentrics[vIndex * 3 + 1] = 1.0;
+					barycentrics[vIndex * 3 + 2] = 0.0;
+				} else {
+					barycentrics[vIndex * 3] = 0.0;
+					barycentrics[vIndex * 3 + 1] = 0.0;
+					barycentrics[vIndex * 3 + 2] = 1.0;
+				}
 			}
 		}
 
 		nonIndexed.setAttribute('vDataIntensity', new THREE.BufferAttribute(intensities, 1));
 		nonIndexed.setAttribute('foldOffset', new THREE.BufferAttribute(foldOffsets, 1));
 		nonIndexed.setAttribute('aScatterOffset', new THREE.BufferAttribute(scatterOffsets, 3));
+		nonIndexed.setAttribute('aBarycentric', new THREE.BufferAttribute(barycentrics, 3));
 
 		// Load world mask texture
 		const textureLoader = new THREE.TextureLoader();
@@ -323,11 +349,17 @@ export function createFoldedWorldEngine() {
 				uColorHot: { value: new THREE.Color(colors.faceHot) },
 				uAccentColor: { value: new THREE.Color(colors.accent) },
 				uHoveredIntensity: { value: -1.0 },
+				uHoverPos: { value: new THREE.Vector3(0, 0, 0) },
+				uHoverRadius: { value: 0.15 },
+				uFocusMode: { value: 0.0 },
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity },
 				uWorldMask: { value: worldMask },
 				uNeonColor: { value: new THREE.Color(colors.neon) },
-				uAssembleProgress: { value: 0.0 }
+				uTimeColor: { value: new THREE.Color(0xbb66ff) },
+				uAssembleProgress: { value: 0.0 },
+				uPlanetStyle: { value: 0.0 },
+				uHoverActive: { value: 0.0 }
 			},
 			side: THREE.FrontSide
 		});
@@ -335,26 +367,76 @@ export function createFoldedWorldEngine() {
 		mainMesh = new THREE.Mesh(nonIndexed, mainMaterial);
 		scene.add(mainMesh);
 
-		// Wireframe overlay (shared geometry to ensure shared attributes like intensity)
-		wireframeMaterial = new THREE.ShaderMaterial({
-			vertexShader: wireframeVertexShader,
-			fragmentShader: wireframeFragmentShader,
+		// --- Saturn Rings ---
+		const ringGeom = new THREE.RingGeometry(1.4, 2.2, 64);
+		ringMaterial = new THREE.ShaderMaterial({
+			vertexShader: `
+				varying vec2 vUv;
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+				}
+			`,
+			fragmentShader: `
+				varying vec2 vUv;
+				uniform float uTime;
+				uniform vec3 uColor;
+				void main() {
+					// In RingGeometry, vUv.y is the radial coordinate (0=inner, 1=outer)
+					float d = vUv.y;
+					// Create multiple rings based on radius
+					float rings = sin(d * 40.0) * 0.5 + 0.5;
+					// Smooth edges
+					float alpha = smoothstep(0.0, 0.1, d) * (1.0 - smoothstep(0.9, 1.0, d));
+					alpha *= (0.2 + rings * 0.8);
+					gl_FragColor = vec4(uColor, alpha * 0.7);
+				}
+			`,
 			uniforms: {
-				uMaxExtrusion: { value: config.maxExtrusion },
-				uMode: { value: 0 },
 				uTime: { value: 0 },
-				uWireColor: { value: new THREE.Color(colors.wireframe) },
-				uOpacity: { value: config.wireframeOpacity },
-				uAssembleProgress: { value: 0.0 }
+				uColor: { value: new THREE.Color(colors.wireframe) }
 			},
 			transparent: true,
-			depthTest: true,
-			wireframe: true,
 			side: THREE.DoubleSide
 		});
+		ringMesh = new THREE.Mesh(ringGeom, ringMaterial);
+		ringMesh.rotation.x = Math.PI / 2.5; // Tilted rings
+		ringMesh.visible = false;
+		scene.add(ringMesh);
+	}
 
-		wireframeMesh = new THREE.Mesh(nonIndexed, wireframeMaterial);
-		scene.add(wireframeMesh);
+	function buildParticles(isDark: boolean): void {
+		if (!THREE) return;
+
+		const count = 1000;
+		const geometry = new THREE.BufferGeometry();
+		const positions = new Float32Array(count * 3);
+		const sizes = new Float32Array(count);
+
+		for (let i = 0; i < count; i++) {
+			const r = 5 + Math.random() * 10;
+			const theta = Math.random() * Math.PI * 2;
+			const phi = Math.random() * Math.PI;
+
+			positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+			positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+			positions[i * 3 + 2] = r * Math.cos(phi);
+			sizes[i] = Math.random() * 2;
+		}
+
+		geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+		geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+		const material = new THREE.PointsMaterial({
+			color: isDark ? 0xffffff : 0x000000,
+			size: 0.05,
+			transparent: true,
+			opacity: 0.4,
+			sizeAttenuation: true
+		});
+
+		particlesMesh = new THREE.Points(geometry, material);
+		scene.add(particlesMesh);
 	}
 
 	function applyDeformations(): void {
@@ -363,8 +445,9 @@ export function createFoldedWorldEngine() {
 		const geometry = mainMesh.geometry;
 		const intensityAttr = geometry.getAttribute('vDataIntensity');
 
-		// Map geo nodes to face intensities (0.04 radians ~ 2.3 degrees ~ 250km localized radius)
-		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.04);
+		// Map geo nodes to face intensities (0.15 radians ~ 8.5 degrees ~ 1000km localized radius)
+		// Increased from 0.04 to 0.15 to ensure visibility of visitor data "peaks".
+		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.15);
 
 		// Spread face intensity to all 3 vertices of each face
 		for (let face = 0; face < faceIntensities.length; face++) {
@@ -463,22 +546,41 @@ export function createFoldedWorldEngine() {
 			mainMesh.rotation.y = autoRotateAngle + rotationY;
 			mainMesh.rotation.x = rotationX;
 		}
-		if (wireframeMesh) {
-			wireframeMesh.rotation.y = autoRotateAngle + rotationY;
-			wireframeMesh.rotation.x = rotationX;
+		if (ringMesh) {
+			ringMesh.rotation.y = autoRotateAngle + rotationY;
+			// Rings rotate with the planet but keep their tilt
+			ringMesh.visible = planetStyle === 'saturn' && assembleProgress === 1.0;
 		}
 
 		// Update shader uniforms
 		const modeIdx = shaderViewMode === 'fold' ? 0 : shaderViewMode === 'heat' ? 1 : 2;
+		const planetIdx =
+			planetStyle === 'earth'
+				? 0
+				: planetStyle === 'mercury'
+					? 1
+					: planetStyle === 'venus'
+						? 2
+						: planetStyle === 'mars'
+							? 3
+							: planetStyle === 'jupiter'
+								? 4
+								: planetStyle === 'saturn'
+									? 5
+									: planetStyle === 'uranus'
+										? 6
+										: 7;
+
 		if (mainMaterial) {
 			mainMaterial.uniforms.uTime.value = elapsed;
 			mainMaterial.uniforms.uMode.value = modeIdx;
 			mainMaterial.uniforms.uAssembleProgress.value = finalAssemble;
+			mainMaterial.uniforms.uPlanetStyle.value = planetIdx;
 		}
-		if (wireframeMaterial) {
-			wireframeMaterial.uniforms.uTime.value = elapsed;
-			wireframeMaterial.uniforms.uMode.value = modeIdx;
-			wireframeMaterial.uniforms.uAssembleProgress.value = finalAssemble;
+
+		if (particlesMesh) {
+			particlesMesh.rotation.y = elapsed * 0.02;
+			particlesMesh.rotation.x = elapsed * 0.01;
 		}
 
 		renderer.render(scene, camera);
@@ -597,8 +699,14 @@ export function createFoldedWorldEngine() {
 						node
 					};
 
-					// Highlight hovered face
+					// Highlight hovered area precisely
 					if (mainMaterial) {
+						// Convert world hit point to local mesh space
+						const localPoint = intersects[0].point.clone();
+						mainMesh.worldToLocal(localPoint);
+						mainMaterial.uniforms.uHoverPos.value.copy(localPoint);
+						mainMaterial.uniforms.uHoverActive.value = 1.0;
+
 						const intensityAttr = mainMesh.geometry.getAttribute('vDataIntensity');
 						mainMaterial.uniforms.uHoveredIntensity.value = intensityAttr.getX(faceIdx * 3);
 					}
@@ -613,6 +721,8 @@ export function createFoldedWorldEngine() {
 		tooltip = { visible: false, x: 0, y: 0, node: null };
 		if (mainMaterial) {
 			mainMaterial.uniforms.uHoveredIntensity.value = -1.0;
+			mainMaterial.uniforms.uHoverPos.value.set(0, 0, 0);
+			mainMaterial.uniforms.uHoverActive.value = 0.0;
 		}
 		if (canvasEl) canvasEl.style.cursor = 'grab';
 	}
@@ -661,7 +771,7 @@ export function createFoldedWorldEngine() {
 	function updateTheme(isDark: boolean): void {
 		if (!state.ready) return;
 
-		const colors = getWorldColors(isDark);
+		const colors = getPlanetColors(planetStyle, isDark);
 
 		// Update Renderer
 		if (renderer) {
@@ -674,10 +784,17 @@ export function createFoldedWorldEngine() {
 			mainMaterial.uniforms.uColorHot.value.set(colors.faceHot);
 			mainMaterial.uniforms.uWireColor.value.set(colors.wireframe);
 			mainMaterial.uniforms.uNeonColor.value.set(colors.neon);
+			mainMaterial.uniforms.uAccentColor.value.set(colors.accent);
+			mainMaterial.uniforms.uTimeColor.value.set(0xbb66ff); // Standard violet for Time mode
 		}
 
-		if (wireframeMaterial) {
-			wireframeMaterial.uniforms.uWireColor.value.set(colors.wireframe);
+		if (ringMaterial) {
+			ringMaterial.uniforms.uColor.value.set(colors.wireframe);
+		}
+
+		if (particlesMesh) {
+			const pMaterial = particlesMesh.material as InstanceType<ThreeModule['PointsMaterial']>;
+			pMaterial.color.set(isDark ? 0xffffff : 0x000000);
 		}
 	}
 
@@ -690,8 +807,23 @@ export function createFoldedWorldEngine() {
 		modeTransitionPhase = 0.01; // Trigger animation
 	}
 
+	function setPlanetStyle(style: PlanetStyle): void {
+		if (planetStyle === style) return;
+		planetStyle = style;
+		if (state.ready) {
+			updateTheme(containerEl?.classList.contains('dark') ?? true);
+		}
+	}
+
 	function closeDetailPanel(): void {
 		detailPanel = { visible: false, node: null };
+	}
+
+	function toggleFocusMode(): void {
+		isFocusMode = !isFocusMode;
+		if (mainMaterial) {
+			mainMaterial.uniforms.uFocusMode.value = isFocusMode ? 1.0 : 0.0;
+		}
 	}
 
 	// --- Return public API ---
@@ -703,6 +835,9 @@ export function createFoldedWorldEngine() {
 		get viewMode() {
 			return viewMode;
 		},
+		get planetStyle() {
+			return planetStyle;
+		},
 		get tooltip() {
 			return tooltip;
 		},
@@ -712,14 +847,19 @@ export function createFoldedWorldEngine() {
 		get config() {
 			return config;
 		},
+		get isFocusMode() {
+			return isFocusMode;
+		},
 
 		// Methods
 		init,
 		destroy,
 		updateNodes,
 		setViewMode,
+		setPlanetStyle,
 		updateTheme,
-		closeDetailPanel
+		closeDetailPanel,
+		toggleFocusMode
 	};
 }
 

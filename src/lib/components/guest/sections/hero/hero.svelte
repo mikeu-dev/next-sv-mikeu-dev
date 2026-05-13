@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { SvelteSet, SvelteMap } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import { m } from '@/lib/paraglide/messages';
@@ -13,6 +14,8 @@
 	let heroSubtitle = $state<HTMLElement>();
 	let heroButton = $state<HTMLElement>();
 	let bulletContainer = $state<HTMLElement>();
+	let impactLayer = $state<HTMLElement>();
+	let crackLayer = $state<SVGSVGElement>();
 	let letterElements = $state<HTMLElement[]>([]);
 
 	const titleText = $state<string>(m.hero_title());
@@ -32,13 +35,228 @@
 	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
 
+	// ── Impact FX Utilities ──────────────────────────────────────────
+
+	/** Track which bodies already triggered their impact (one-shot per letter) */
+	const impactedBodies = new SvelteSet<number>();
+
+	/** Spawn geometric dust particles at impact point */
+	function spawnDustParticles(
+		x: number,
+		y: number,
+		velocity: number,
+		container: HTMLElement
+	): void {
+		const count = Math.min(Math.floor(velocity * 1.5) + 3, 12);
+		const shapes = ['▪', '◆', '▫', '◇', '▸', '▹'];
+
+		for (let i = 0; i < count; i++) {
+			const particle = document.createElement('span');
+			particle.className = 'impact-particle';
+			particle.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+			particle.style.left = `${x}px`;
+			particle.style.top = `${y}px`;
+			particle.style.fontSize = `${6 + Math.random() * 8}px`;
+			container.appendChild(particle);
+
+			const angle = -Math.PI * (0.1 + Math.random() * 0.8); // mostly upward spread
+			const force = (30 + Math.random() * 60) * Math.min(velocity / 6, 1.5);
+
+			gsap.fromTo(
+				particle,
+				{ opacity: 1, scale: 1 },
+				{
+					x: Math.cos(angle) * force,
+					y: Math.sin(angle) * force,
+					opacity: 0,
+					scale: 0.2,
+					rotation: (Math.random() - 0.5) * 360,
+					duration: 0.4 + Math.random() * 0.4,
+					ease: 'power3.out',
+					onComplete: () => particle.remove()
+				}
+			);
+		}
+	}
+
+	/** Micro screen-shake on the title container, intensity ∝ velocity */
+	function triggerScreenShake(container: HTMLElement, velocity: number): void {
+		const intensity = Math.min(velocity * 0.4, 4);
+		gsap.to(container, {
+			x: `+=${(Math.random() - 0.5) * intensity}`,
+			y: `+=${Math.random() * intensity * 0.5}`,
+			duration: 0.06,
+			ease: 'power2.out',
+			yoyo: true,
+			repeat: 3,
+			onComplete: () => {
+				gsap.set(container, { x: 0, y: 0 });
+			}
+		});
+	}
+
+	/** Brief flash / scale pulse on the letter element */
+	function triggerImpactFlash(element: HTMLElement, velocity: number): void {
+		const pulseScale = 1 + Math.min(velocity * 0.02, 0.15);
+		gsap.fromTo(
+			element,
+			{ filter: 'brightness(2.5)', scale: pulseScale },
+			{
+				filter: 'brightness(1)',
+				scale: 1,
+				duration: 0.3,
+				ease: 'power2.out'
+			}
+		);
+	}
+
+	/** Create a random geometric shard (triangle or quad) */
+	function createOrigamiShard(
+		x: number,
+		y: number,
+		velocity: number,
+		container: HTMLElement
+	): void {
+		const shard = document.createElement('div');
+		const size = 8 + Math.random() * 12;
+		const color = Math.random() > 0.5 ? 'var(--primary)' : 'var(--foreground)';
+
+		shard.className = 'origami-impact-shard';
+		shard.style.width = `${size}px`;
+		shard.style.height = `${size}px`;
+		shard.style.left = `${x}px`;
+		shard.style.top = `${y}px`;
+		shard.style.backgroundColor = color;
+
+		// Random polygonal shape via clip-path
+		const p1 = `${Math.random() * 100}% ${Math.random() * 100}%`;
+		const p2 = `${Math.random() * 100}% ${Math.random() * 100}%`;
+		const p3 = `${Math.random() * 100}% ${Math.random() * 100}%`;
+		shard.style.clipPath = `polygon(${p1}, ${p2}, ${p3})`;
+
+		container.appendChild(shard);
+
+		const angle = -Math.PI * (0.2 + Math.random() * 0.6);
+		const force = (40 + Math.random() * 80) * Math.min(velocity / 5, 2);
+
+		gsap.to(shard, {
+			x: Math.cos(angle) * force,
+			y: Math.sin(angle) * force,
+			rotation: (Math.random() - 0.5) * 720,
+			opacity: 0,
+			scale: 0.2,
+			duration: 0.6 + Math.random() * 0.4,
+			ease: 'power2.out',
+			onComplete: () => shard.remove()
+		});
+	}
+
+	/** Draw a sharp geometric "crease" line */
+	function drawOrigamiCrease(
+		ns: string,
+		group: SVGGElement,
+		x: number,
+		y: number,
+		angle: number,
+		length: number,
+		delay: number
+	): void {
+		const line = document.createElementNS(ns, 'line') as SVGLineElement;
+		const ex = x + Math.cos(angle) * length;
+		const ey = y + Math.sin(angle) * length;
+
+		line.setAttribute('x1', `${x}`);
+		line.setAttribute('y1', `${y}`);
+		line.setAttribute('x2', `${ex}`);
+		line.setAttribute('y2', `${ey}`);
+		line.setAttribute('stroke', 'var(--primary)');
+		line.setAttribute('stroke-width', '1.5');
+		line.setAttribute('stroke-linecap', 'square');
+		line.setAttribute('opacity', '0');
+
+		group.appendChild(line);
+
+		const len = Math.sqrt(Math.pow(ex - x, 2) + Math.pow(ey - y, 2));
+		line.style.strokeDasharray = `${len}`;
+		line.style.strokeDashoffset = `${len}`;
+
+		gsap.to(line, {
+			opacity: 0.8,
+			strokeDashoffset: 0,
+			duration: 0.15,
+			delay: delay,
+			ease: 'expo.out'
+		});
+
+		gsap.to(line, {
+			opacity: 0,
+			duration: 1,
+			delay: delay + 0.8,
+			ease: 'power2.in'
+		});
+	}
+
+	/** Draw "Origami Shatter" impact effects */
+	function drawFloorCrack(svg: SVGSVGElement, x: number, y: number, velocity: number): void {
+		const ns = 'http://www.w3.org/2000/svg';
+		const group = document.createElementNS(ns, 'g') as SVGGElement;
+		const intensity = Math.min(velocity / 5, 2.0);
+
+		// 1. Sharp Crease Lines (Diagonal & Bold)
+		const creaseCount = 3 + Math.floor(Math.random() * 2);
+		for (let i = 0; i < creaseCount; i++) {
+			const angle = i * (Math.PI / creaseCount) - Math.PI * 0.8;
+			const len = (30 + Math.random() * 40) * intensity;
+			drawOrigamiCrease(ns, group, x, y, angle, len, i * 0.03);
+		}
+
+		// 2. Polygonal Shards (Instead of Dust)
+		const shardCount = 5 + Math.floor(intensity * 4);
+		const container = svg.parentElement;
+		if (container) {
+			for (let i = 0; i < shardCount; i++) {
+				createOrigamiShard(x, y, velocity, container);
+			}
+		}
+
+		// 3. Central Geometric "Impact Facet" (Briefly appearing polygon)
+		const facet = document.createElementNS(ns, 'polygon') as SVGPolygonElement;
+		const fSize = 15 * intensity;
+		const pts = [
+			`${x},${y}`,
+			`${x + fSize},${y - fSize / 2}`,
+			`${x + fSize / 2},${y + fSize / 2}`,
+			`${x - fSize / 2},${y + fSize}`
+		].join(' ');
+
+		facet.setAttribute('points', pts);
+		facet.setAttribute('fill', 'var(--primary)');
+		facet.setAttribute('fill-opacity', '0.2');
+		facet.setAttribute('stroke', 'var(--primary)');
+		facet.setAttribute('stroke-width', '0.5');
+		facet.setAttribute('opacity', '0');
+
+		group.appendChild(facet);
+
+		gsap.fromTo(
+			facet,
+			{ scale: 0, opacity: 0.6 },
+			{ scale: 1.5, opacity: 0, duration: 0.4, ease: 'power4.out' }
+		);
+
+		svg.appendChild(group);
+		gsap.delayedCall(2.0, () => group.remove());
+	}
+
+	// ── Mount ────────────────────────────────────────────────────────
+
 	onMount(async () => {
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer) return;
 
 		// Dynamic import Matter.js to avoid SSR issues
 		const MatterModule = await import('matter-js');
 		const Matter = MatterModule.default || MatterModule;
-		const { Engine, Runner, Bodies, Composite } = Matter;
+		const { Engine, Runner, Bodies, Composite, Events } = Matter;
 
 		const subtitle = heroSubtitle;
 		const button = heroButton;
@@ -123,10 +341,68 @@
 			})
 			.filter((v): v is LetterData => v !== null);
 
+		// Map body IDs → LetterData for collision lookup
+		const bodyToLetter = new SvelteMap<number, LetterData>();
+		letters.forEach((letter) => {
+			bodyToLetter.set(letter.body.id, letter);
+		});
+
 		letters.forEach((letter, i) => {
 			setTimeout(() => {
 				if (world) Composite.add(world, letter.body);
 			}, i * 30); // Lebih instan, tanpa delay 1000ms
+		});
+
+		// ── Collision Impact Handler ──────────────────────────────────
+		Events.on(engine, 'collisionStart', (event: Matter.IEventCollision<Matter.Engine>) => {
+			for (const pair of event.pairs) {
+				const { bodyA, bodyB } = pair;
+
+				// Determine which is the letter body (non-static) hitting the floor (static)
+				let letterBody: Matter.Body | null = null;
+				if (bodyA.isStatic && !bodyB.isStatic) letterBody = bodyB;
+				else if (bodyB.isStatic && !bodyA.isStatic) letterBody = bodyA;
+				if (!letterBody) continue;
+
+				// One-shot: only trigger once per letter
+				if (impactedBodies.has(letterBody.id)) continue;
+				impactedBodies.add(letterBody.id);
+
+				const letterData = bodyToLetter.get(letterBody.id);
+				if (!letterData) continue;
+
+				// Impact velocity magnitude
+				const vx = letterBody.velocity.x;
+				const vy = letterBody.velocity.y;
+				const velocity = Math.sqrt(vx * vx + vy * vy);
+
+				// Skip very gentle collisions
+				if (velocity < 1.5) continue;
+
+				const impactX = letterBody.position.x;
+				const impactY = floorY;
+
+				// Layer 1: Dust particles
+				if (impactLayer) {
+					spawnDustParticles(impactX, impactY, velocity, impactLayer);
+				}
+
+				// Layer 2: Screen shake (only for higher-velocity impacts)
+				if (velocity > 3 && heroTitle) {
+					const titleContainer = heroTitle.closest('.relative') as HTMLElement | null;
+					if (titleContainer) {
+						triggerScreenShake(titleContainer, velocity);
+					}
+				}
+
+				// Layer 3: Impact flash on the letter element
+				triggerImpactFlash(letterData.element, velocity);
+
+				// Layer 4: Floor crack SVG
+				if (crackLayer && velocity > 2.5) {
+					drawFloorCrack(crackLayer, impactX, impactY, velocity);
+				}
+			}
 		});
 
 		runner = Runner.create();
@@ -232,6 +508,19 @@
 					</span>
 				{/each}
 			</h1>
+
+			<!-- Impact FX Layers (positioned relative to title container) -->
+			<div
+				bind:this={impactLayer}
+				class="pointer-events-none absolute inset-0 overflow-visible"
+				aria-hidden="true"
+			></div>
+			<svg
+				bind:this={crackLayer}
+				class="pointer-events-none absolute inset-0 overflow-visible"
+				aria-hidden="true"
+				style="width: 100%; height: 100%;"
+			></svg>
 		</div>
 
 		<!-- Subtitle & Content -->
@@ -329,5 +618,14 @@
 	/* Title characters need clean baseline for physics */
 	span {
 		user-select: none;
+	}
+
+	/* ── Origami Impact Shard Styling ─────────────────────────── */
+	:global(.origami-impact-shard) {
+		position: absolute;
+		pointer-events: none;
+		z-index: 20;
+		filter: drop-shadow(0 0 2px var(--primary-foreground));
+		will-change: transform, opacity;
 	}
 </style>

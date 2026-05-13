@@ -131,7 +131,7 @@
 {/if}
 
 <SEO />
-<ModeWatcher />
+<ModeWatcher defaultMode="light" />
 <Toaster />
 
 <div class="flex min-h-dvh flex-col">
@@ -170,7 +170,7 @@
 <!-- Brutalist Scroll to Top Button -->
 <button
 	bind:this={scrollBtn}
-	class="group scroll-top-origami pointer-events-none fixed right-8 bottom-8 z-[9999] flex size-12 cursor-pointer items-center justify-center border-2 border-foreground bg-primary text-primary-foreground opacity-0 shadow-[4px_4px_0_var(--foreground)] transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:rotate-3 hover:bg-foreground hover:text-primary hover:shadow-[12px_12px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+	class="group scroll-top-origami pointer-events-none fixed right-8 bottom-8 z-9999 flex size-12 cursor-pointer items-center justify-center border-2 border-foreground bg-primary text-primary-foreground opacity-0 shadow-[4px_4px_0_var(--foreground)] transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:rotate-3 hover:bg-foreground hover:text-primary hover:shadow-[12px_12px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 	aria-label="Scroll to top"
 	onclick={scrollToTop}
 >

@@ -159,7 +159,7 @@ export function findNearestNode(
  */
 export function paperFoldDisplacement(x: number, y: number, z: number, seed: number = 42): number {
 	// Simple hash-based pseudo-noise
-	const n = Math.sin(x * 12.9898 + y * 78.233 + z * 45.164 + seed) * 43758.5453;
+	const n = Math.sin(x * 20.0 + y * 50.0 + z * 40.0 + seed) * 43758.5453;
 	return (n - Math.floor(n)) * 2 - 1; // Range [-1, 1]
 }
 

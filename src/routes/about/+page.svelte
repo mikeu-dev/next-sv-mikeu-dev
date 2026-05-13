@@ -39,9 +39,9 @@
 			const tl = gsap.timeline();
 
 			tl.from('.hero-origami', {
-				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-				duration: 1,
-				ease: 'power4.inOut'
+				clipPath: 'polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%, 50% 100%, 50% 100%)',
+				duration: 1.2,
+				ease: 'expo.inOut'
 			})
 				.from(
 					'.stagger-item',
@@ -170,8 +170,16 @@
 	<section class="container mx-auto px-4">
 		<div
 			class="hero-origami relative border-y-4 border-foreground bg-card/50 py-16 md:py-24"
-			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
+			style="clip-path: polygon(0% 0%, 100% 0%, 98% 92%, 80% 100%, 20% 95%, 0% 100%);"
 		>
+			<!-- Paper Creases -->
+			<div class="pointer-events-none absolute inset-0 overflow-hidden opacity-20">
+				<div class="absolute -top-1/2 -left-1/4 h-[200%] w-px rotate-35 bg-foreground/30"></div>
+				<div
+					class="absolute -top-1/2 left-3/4 h-[200%] w-px rotate-[-15deg] bg-foreground/30"
+				></div>
+			</div>
+
 			<div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-12">
 				<!-- Text Content -->
 				<div class="z-10 space-y-10 lg:col-span-8 lg:pl-16">
@@ -232,9 +240,15 @@
 				<!-- Portrait -->
 				<div class="hero-portrait-origami relative lg:col-span-4 lg:pr-16">
 					<div
-						class="relative aspect-4/5 border-4 border-foreground bg-muted p-2"
-						style="clip-path: polygon(10% 0%, 100% 5%, 90% 100%, 0% 95%);"
+						class="relative aspect-4/5 border-4 border-foreground bg-muted p-2 shadow-[20px_20px_0_rgba(0,0,0,0.1)] transition-all duration-500 hover:shadow-[10px_10px_0_rgba(0,0,0,0.2)] dark:shadow-[20px_20px_0_rgba(255,255,255,0.05)]"
+						style="clip-path: polygon(0% 15%, 15% 0%, 100% 8%, 92% 85%, 100% 100%, 8% 92%);"
 					>
+						<!-- Folded Corner Flap -->
+						<div
+							class="absolute top-0 left-0 size-12 bg-foreground/10"
+							style="clip-path: polygon(0% 0%, 100% 0%, 0% 100%);"
+						></div>
+
 						<img
 							src="https://github.com/mikeu-dev.png"
 							alt="Mikeu"
@@ -537,5 +551,25 @@
 
 	button {
 		@apply cursor-pointer;
+	}
+
+	.hero-origami {
+		background-image:
+			url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3C%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+			linear-gradient(
+				135deg,
+				rgba(255, 255, 255, 0.05) 0%,
+				transparent 50%,
+				rgba(0, 0, 0, 0.05) 100%
+			);
+		background-blend-mode: overlay;
+	}
+
+	.hero-portrait-origami::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(225deg, transparent 80%, rgba(0, 0, 0, 0.05) 100%);
 	}
 </style>

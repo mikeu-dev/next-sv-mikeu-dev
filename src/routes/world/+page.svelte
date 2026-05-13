@@ -1,10 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { m } from '$lib/paraglide/messages';
-	import { mode } from 'mode-watcher';
 
 	let { data }: { data: PageData } = $props();
-	let isDark = $derived(mode.current === 'dark');
 </script>
 
 <svelte:head>
@@ -19,10 +17,10 @@
 	/>
 </svelte:head>
 
-<div class="fixed inset-0 z-40 bg-[#0a0a0a] font-mono">
+<div class="fixed inset-0 z-40 bg-background font-mono transition-colors duration-500">
 	{#await import('$lib/components/guest/sections/world/folded-world.svelte')}
 		<!-- Loading fallback while Three.js component loads -->
-		<div class="flex h-dvh flex-col items-center justify-center bg-[#0a0a0a]">
+		<div class="flex h-dvh flex-col items-center justify-center bg-background">
 			<div
 				class="animate-shape-pulse size-[100px] border-2 border-[#e0e0e0]"
 				style="clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);"
@@ -35,11 +33,10 @@
 			nodes={data.geoNodes}
 			totalVisitors={data.stats.total}
 			todayVisitors={data.stats.today}
-			{isDark}
 		/>
 	{:catch}
 		<!-- Fallback for devices that can't load Three.js -->
-		<div class="flex h-dvh items-center justify-center bg-[#0a0a0a] p-6">
+		<div class="flex h-dvh items-center justify-center bg-background p-6">
 			<div class="w-full max-w-[600px]">
 				<h1 class="text-[48px] leading-none font-black tracking-[0.2em] text-[#fafafa] uppercase">
 					FOLDED<br />WORLD

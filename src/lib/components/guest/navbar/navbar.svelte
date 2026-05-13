@@ -7,7 +7,6 @@
 	import { page } from '$app/state';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
-	import { base } from '$app/paths';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import Id from 'svelte-flags/Id.svelte';
@@ -17,7 +16,7 @@
 	import { authState } from '$lib/stores/auth.svelte';
 	import InstallButton from '../pwa/InstallButton.svelte';
 	import { fade } from 'svelte/transition';
-	import { getLocale, setLocale } from '../../../paraglide/runtime';
+	import { getLocale, setLocale, localizeHref } from '../../../paraglide/runtime';
 	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
@@ -144,7 +143,11 @@
 
 		<div class="mx-auto flex max-w-screen-2xl items-center justify-between">
 			<!-- Branding (Pendulum Maintained) -->
-			<a href="{base}/" bind:this={anchorElement} class="group relative flex items-center gap-3">
+			<a
+				href={localizeHref('/')}
+				bind:this={anchorElement}
+				class="group relative flex items-center gap-3"
+			>
 				<div
 					class="relative size-10 overflow-hidden border-2 border-foreground"
 					style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);"
@@ -178,7 +181,7 @@
 			<div class="hidden items-center gap-8 md:flex">
 				{#each navLinksData as link (link.href)}
 					<a
-						href={`${base}${link.href}`}
+						href={localizeHref(link.href)}
 						class="group relative font-mono text-[10px] font-black tracking-[0.2em] uppercase transition-colors hover:text-primary"
 						class:text-primary={currentPath === link.href}
 						class:text-foreground={currentPath !== link.href}
@@ -316,7 +319,7 @@
 			<nav class="mt-12 flex flex-col gap-6">
 				{#each navLinksData as link (link.href)}
 					<a
-						href={`${base}${link.href}`}
+						href={localizeHref(link.href)}
 						onclick={toggleMobileMenu}
 						class="flex items-center justify-between border-b border-foreground/10 py-4 font-poppins text-4xl font-black tracking-tighter uppercase transition-all hover:translate-x-4 hover:text-primary"
 					>

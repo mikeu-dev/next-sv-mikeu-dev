@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import { localizeHref } from '$lib/paraglide/runtime';
 	const lastUpdated = '7 April 2026';
 
 	onMount(() => {
@@ -121,7 +122,7 @@
 		<ul class="mt-4 list-none italic">
 			<li>By email: <a href="mailto:rikiruswandi28@gmail.com">rikiruswandi28@gmail.com</a></li>
 			<li>
-				By visiting this page on our website: <a href="/contact"
+				By visiting this page on our website: <a href={localizeHref('/contact')}
 					>https://www.mikeudev.my.id/contact</a
 				>
 			</li>

@@ -2,24 +2,31 @@
 	import { onMount } from 'svelte';
 	import { createFoldedWorldEngine } from './folded-world-engine.svelte';
 	import { formatRelativeTime } from './folded-world-geometry';
-	import type { GeoNode, ViewMode } from './folded-world.types';
+	import {
+		getPlanetColors,
+		type GeoNode,
+		type ViewMode,
+		type PlanetStyle
+	} from './folded-world.types';
 	import { m } from '$lib/paraglide/messages';
+	import { mode } from 'mode-watcher';
 	import gsap from 'gsap';
 
 	interface Props {
 		nodes: GeoNode[];
 		totalVisitors: number;
 		todayVisitors?: number;
-		isDark?: boolean;
 		minimal?: boolean;
 	}
 
-	let { nodes, totalVisitors, todayVisitors = 0, isDark = true, minimal = false }: Props = $props();
+	let { nodes, totalVisitors, todayVisitors = 0, minimal = false }: Props = $props();
+	let isDark = $derived(mode.current === 'dark');
 
 	const engine = createFoldedWorldEngine();
 
 	let containerEl: HTMLElement;
 	let canvasEl: HTMLCanvasElement;
+	let isPlanetDropdownOpen = $state(false);
 
 	const VIEW_MODES: { id: ViewMode; label: string }[] = [
 		{ id: 'fold', label: 'FOLD' },
@@ -27,9 +34,26 @@
 		{ id: 'timeline', label: 'TIME' }
 	];
 
+	const PLANET_STYLES: { id: PlanetStyle; label: string }[] = [
+		{ id: 'mercury', label: 'MERCURY' },
+		{ id: 'venus', label: 'VENUS' },
+		{ id: 'earth', label: 'EARTH' },
+		{ id: 'mars', label: 'MARS' },
+		{ id: 'jupiter', label: 'JUPITER' },
+		{ id: 'saturn', label: 'SATURN' },
+		{ id: 'uranus', label: 'URANUS' },
+		{ id: 'neptune', label: 'NEPTUNE' }
+	];
+
 	let currentModeLabel = $derived(
 		VIEW_MODES.find((m) => m.id === engine.viewMode)?.label ?? 'FOLD'
 	);
+
+	let currentPlanetLabel = $derived(
+		PLANET_STYLES.find((p) => p.id === engine.planetStyle)?.label ?? 'EARTH'
+	);
+
+	let currentColors = $derived(getPlanetColors(engine.planetStyle, isDark));
 
 	onMount(() => {
 		engine.init(containerEl, canvasEl, nodes, isDark, minimal);
@@ -109,6 +133,17 @@
 		);
 	}
 
+	function handlePlanetSwitch(style: PlanetStyle) {
+		engine.setPlanetStyle(style);
+
+		// GSAP flash effect on canvas for style change feedback
+		gsap.fromTo(
+			'.folded-world-canvas',
+			{ filter: 'brightness(2) contrast(1.2)' },
+			{ filter: 'brightness(1) contrast(1)', duration: 0.8, ease: 'expo.out' }
+		);
+	}
+
 	function formatCount(n: number): string {
 		return n.toLocaleString();
 	}
@@ -148,6 +183,15 @@
 				{/each}
 			</h2>
 			<div class="hud-divider"></div>
+			<button
+				class="hud-mode-btn isolation-btn"
+				class:active={engine.isFocusMode}
+				onclick={() => engine.toggleFocusMode()}
+			>
+				<span class="btn-glitch-layer"
+					>{engine.isFocusMode ? 'ISOLATION: ON' : 'ISOLATION: OFF'}</span
+				>
+			</button>
 			<div class="hud-stats">
 				<div class="hud-stat">
 					<span class="hud-stat-label">TOTAL</span>
@@ -188,19 +232,57 @@
 			</div>
 		</div>
 
-		<!-- Top-right: Mode Toggle -->
-		<div class="hud hud-top-right">
-			<span class="hud-mode-label">{m.world_hud_mode()}: {currentModeLabel}</span>
-			<div class="hud-mode-buttons">
-				{#each VIEW_MODES as mode (mode.id)}
+		<!-- Top-right: Mode & Planet Toggle -->
+		<div class="hud hud-top-right flex flex-col gap-6">
+			<div class="hud-mode-group">
+				<span class="hud-mode-label">{m.world_hud_mode()}: {currentModeLabel}</span>
+				<div class="hud-mode-buttons">
+					{#each VIEW_MODES as mode (mode.id)}
+						<button
+							class="hud-mode-btn"
+							class:active={engine.viewMode === mode.id}
+							onclick={() => handleModeSwitch(mode.id)}
+						>
+							{mode.label}
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="hud-mode-group">
+				<span class="hud-mode-label">PLANET: {currentPlanetLabel}</span>
+				<div class="relative w-full min-w-[180px]">
 					<button
-						class="hud-mode-btn"
-						class:active={engine.viewMode === mode.id}
-						onclick={() => handleModeSwitch(mode.id)}
+						class="hud-planet-dropdown-btn flex w-full items-center justify-between"
+						onclick={() => (isPlanetDropdownOpen = !isPlanetDropdownOpen)}
 					>
-						{mode.label}
+						<span>{currentPlanetLabel}</span>
+						<span
+							class="text-[8px] transition-transform"
+							style:transform={isPlanetDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
+						>
+							▼
+						</span>
 					</button>
-				{/each}
+
+					{#if isPlanetDropdownOpen}
+						<div class="hud-planet-dropdown-options">
+							{#each PLANET_STYLES as planet (planet.id)}
+								<button
+									class="hud-planet-option"
+									class:active={engine.planetStyle === planet.id}
+									onclick={() => {
+										handlePlanetSwitch(planet.id);
+										isPlanetDropdownOpen = false;
+									}}
+								>
+									<span class="option-index">0{PLANET_STYLES.indexOf(planet) + 1}</span>
+									{planet.label}
+								</button>
+							{/each}
+						</div>
+					{/if}
+				</div>
 			</div>
 		</div>
 
@@ -215,7 +297,14 @@
 		</div>
 
 		<!-- Bottom-center: Legend -->
-		<div class="hud hud-legend">
+		<div
+			class="hud hud-legend"
+			style="
+				--neon-color: #{currentColors.neon.toString(16).padStart(6, '0')};
+				--heat-color: #{currentColors.accent.toString(16).padStart(6, '0')};
+				--cold-color: #{currentColors.faceCold.toString(16).padStart(6, '0')};
+			"
+		>
 			<div class="legend-content">
 				<div class="legend-header">
 					<span class="legend-label">{m.world_hud_mode()} :: {currentModeLabel}</span>
@@ -234,6 +323,7 @@
 							<span>HOTSPOT</span>
 						</div>
 					{:else}
+						<div class="legend-bar violet-gradient"></div>
 						<div class="legend-pulse-container">
 							<div class="legend-pulse-dot"></div>
 							<span class="legend-pulse-text">ACTIVE VISITOR FREQUENCY</span>
@@ -327,7 +417,7 @@
 		height: 100%;
 		min-height: 100dvh;
 		overflow: hidden;
-		background-color: #f0f0f0;
+		background-color: transparent;
 		/* Brutalist Architectural Grid + Vignette */
 		background-image:
 			radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.15) 100%),
@@ -350,7 +440,7 @@
 		transform: translate(-50%, -50%) rotate(-5deg);
 		font-size: clamp(4rem, 12vw, 15rem);
 		font-weight: 900;
-		color: rgba(0, 0, 0, 0.02);
+		color: rgba(0, 0, 0, 0.04);
 		white-space: nowrap;
 		pointer-events: none;
 		z-index: 0;
@@ -488,13 +578,14 @@
 
 	.hud {
 		position: absolute;
-		z-index: 10;
+		z-index: 50;
 		pointer-events: none;
 	}
 
 	.hud-top-left {
 		top: 112px;
 		left: 24px;
+		pointer-events: auto;
 	}
 
 	.hud-top-right {
@@ -527,6 +618,18 @@
 
 	:global(.dark) .hud-title {
 		color: #fafafa;
+	}
+
+	:global(.dark) .hud-divider {
+		background-color: #fafafa;
+	}
+
+	:global(.dark) .hud-stat-value {
+		color: #fafafa;
+	}
+
+	:global(.dark) .hud-mode-label {
+		color: #aaa;
 	}
 
 	.hud-divider {
@@ -669,11 +772,24 @@
 	}
 
 	.neon-gradient {
-		background: linear-gradient(90deg, #121212 0%, #00f3ff 100%);
+		background: linear-gradient(
+			90deg,
+			var(--cold-color, #121212) 0%,
+			var(--neon-color, #00f3ff) 100%
+		);
 	}
 
 	.heat-gradient {
-		background: linear-gradient(90deg, #121212 0%, #ff3333 100%);
+		background: linear-gradient(
+			90deg,
+			var(--cold-color, #121212) 0%,
+			var(--heat-color, #ff3333) 100%
+		);
+	}
+
+	.violet-gradient {
+		background: linear-gradient(90deg, var(--cold-color, #121212) 0%, #bb66ff 100%);
+		margin-bottom: 4px;
 	}
 
 	.legend-scale {
@@ -695,7 +811,7 @@
 	.legend-pulse-dot {
 		width: 6px;
 		height: 6px;
-		background: #ff3333;
+		background: #bb66ff;
 		border-radius: 50%;
 		animation: legend-pulse 1.5s ease-out infinite;
 	}
@@ -777,13 +893,117 @@
 		margin: 2px 0 0;
 	}
 
-	/* --- Detail Panel --- */
+	.hud-planet-dropdown-btn {
+		background: transparent;
+		border: 2px solid #333;
+		padding: 8px 16px;
+		font-size: 11px;
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		color: #888;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+		clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.hud-mode-btn.isolation-btn {
+		margin-bottom: 20px;
+		border-color: #555;
+		color: #666;
+		width: auto;
+		padding: 6px 12px;
+	}
+
+	.hud-mode-btn.isolation-btn.active {
+		border-color: #ff3333;
+		color: #ff3333;
+		background: rgba(255, 51, 51, 0.1);
+		box-shadow: 4px 4px 0px rgba(255, 51, 51, 0.2);
+	}
+
+	.hud-planet-dropdown-btn:hover {
+		border-color: #ff3333;
+		color: #fafafa;
+		background: rgba(255, 51, 51, 0.1);
+	}
+
+	.hud-planet-dropdown-options {
+		position: absolute;
+		top: calc(100% + 4px);
+		right: 0;
+		width: 100%;
+		background: rgba(15, 15, 15, 0.95);
+		border: 1.5px solid #333;
+		display: flex;
+		flex-direction: column;
+		z-index: 50;
+		padding: 4px;
+		clip-path: polygon(0 0, 96% 0, 100% 10%, 100% 100%, 4% 100%, 0 90%);
+		box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8);
+		animation: dropdown-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	}
+
+	@keyframes dropdown-in {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.hud-planet-option {
+		width: 100%;
+		text-align: left;
+		padding: 10px 14px;
+		font-size: 10px;
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
+		font-weight: 700;
+		color: #666;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		transition: all 0.15s ease;
+		text-transform: uppercase;
+	}
+
+	.option-index {
+		font-size: 8px;
+		color: #444;
+		font-weight: 400;
+	}
+
+	.hud-planet-option:hover {
+		background: #ff3333;
+		color: #fafafa;
+		clip-path: polygon(2% 0, 100% 0, 98% 100%, 0 100%);
+	}
+
+	.hud-planet-option.active {
+		color: #ff3333;
+	}
+
+	.hud-planet-option.active .option-index {
+		color: #ff3333;
+	}
+
+	.hud-planet-option:hover .option-index {
+		color: rgba(255, 255, 255, 0.6);
+	}
 
 	.detail-panel {
 		position: absolute;
 		right: 24px;
-		top: 50%;
-		transform: translateY(-50%);
+		bottom: 100px; /* Moved to bottom to clear the Top-Right HUD switcher */
 		width: 280px;
 		background: rgba(255, 255, 255, 0.95);
 		border: 1.5px solid #ddd;
@@ -801,11 +1021,11 @@
 	@keyframes panel-in {
 		from {
 			opacity: 0;
-			transform: translateY(-50%) translateX(20px);
+			transform: translateY(20px);
 		}
 		to {
 			opacity: 1;
-			transform: translateY(-50%) translateX(0);
+			transform: translateY(0);
 		}
 	}
 
