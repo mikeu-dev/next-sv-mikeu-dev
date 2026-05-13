@@ -175,6 +175,13 @@
 				{/each}
 			</h2>
 			<div class="hud-divider"></div>
+			<button 
+				class="hud-mode-btn isolation-btn" 
+				class:active={engine.isFocusMode}
+				onclick={() => engine.toggleFocusMode()}
+			>
+				<span class="btn-glitch-layer">{engine.isFocusMode ? 'ISOLATION: ON' : 'ISOLATION: OFF'}</span>
+			</button>
 			<div class="hud-stats">
 				<div class="hud-stat">
 					<span class="hud-stat-label">TOTAL</span>
@@ -558,6 +565,7 @@
 	.hud-top-left {
 		top: 112px;
 		left: 24px;
+		pointer-events: auto;
 	}
 
 	.hud-top-right {
@@ -860,6 +868,21 @@
 		clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
 		position: relative;
 		overflow: hidden;
+	}
+
+	.hud-mode-btn.isolation-btn {
+		margin-bottom: 20px;
+		border-color: #555;
+		color: #666;
+		width: auto;
+		padding: 6px 12px;
+	}
+
+	.hud-mode-btn.isolation-btn.active {
+		border-color: #ff3333;
+		color: #ff3333;
+		background: rgba(255, 51, 51, 0.1);
+		box-shadow: 4px 4px 0px rgba(255, 51, 51, 0.2);
 	}
 
 	.hud-planet-dropdown-btn:hover {

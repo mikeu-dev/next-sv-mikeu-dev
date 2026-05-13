@@ -11,10 +11,12 @@ export const vertexShader = /* glsl */ `
 	attribute float vDataIntensity;
 	attribute vec3 aScatterOffset;
 	attribute float foldOffset;
+	attribute vec3 aBarycentric;
 
 	varying float vIntensity;
 	varying vec3 vNormal;
 	varying vec3 vLocalPosition;
+	varying vec3 vBarycentric;
 
 	void main() {
 		vIntensity = vDataIntensity;
@@ -27,7 +29,7 @@ export const vertexShader = /* glsl */ `
 		
 		// 1. Add Origami Texture (Static brutalist folds)
 		// We use foldOffset which is pre-calculated per vertex
-		float origamiEffect = foldOffset * 0.04; // Set to 25% of original for a much softer look
+		float origamiEffect = foldOffset * 0.06; // Origami feel: sharp but controlled
 		
 		// 2. Add Data Extrusion (Folded World effect based on visitor intensity)
 		float dataExtrusion = vDataIntensity * uMaxExtrusion;
@@ -42,6 +44,7 @@ export const vertexShader = /* glsl */ `
 		float c = cos(swirl);
 		pos.xz = mat2(c, -s, s, c) * pos.xz;
 
+		vBarycentric = aBarycentric;
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 	}
 `;
@@ -56,13 +59,17 @@ export const fragmentShader = /* glsl */ `
 	uniform float uHoveredIntensity;
 	uniform vec3 uHoverPos;
 	uniform float uHoverRadius;
+	uniform float uFocusMode;
+	uniform float uHoverActive;
 	uniform int uMode;
 	uniform float uTime;
 	uniform float uPlanetStyle; // 0=earth, 1=mercury, 2=venus, 3=mars, 4=jupiter, 5=saturn, 6=uranus, 7=neptune
+	uniform vec3 uWireColor;
 
 	varying float vIntensity;
 	varying vec3 vNormal;
 	varying vec3 vLocalPosition;
+	varying vec3 vBarycentric;
 
 	#define PI 3.14159265359
 
@@ -120,8 +127,12 @@ export const fragmentShader = /* glsl */ `
 
 		vec3 lightDir = normalize(vec3(0.5, 1.0, 1.0));
 		float diffuse = max(dot(vNormal, lightDir), 0.0);
-		float ambient = 0.4;
-		float lighting = ambient + diffuse * 0.6;
+		float ambient = 0.3;
+		// Stepped lighting to emphasize origami facets (sharp transitions)
+		float lighting = ambient + 
+			smoothstep(0.2, 0.22, diffuse) * 0.3 + 
+			smoothstep(0.5, 0.52, diffuse) * 0.3 + 
+			smoothstep(0.8, 0.82, diffuse) * 0.2;
 
 		vec3 finalColor;
 		vec3 planetBase;
@@ -183,62 +194,80 @@ export const fragmentShader = /* glsl */ `
 			float maskStrength = uPlanetStyle == 0.0 ? 0.25 : 0.05;
 			finalColor += mask * maskStrength;
 		} else if (uMode == 1) { // HEAT MODE (Thermal Visualization)
-			// Create a 3-way thermal ramp: Cold -> Hot -> Accent (Extreme)
-			vec3 thermal = mix(uColorCold, uColorHot, smoothstep(0.0, 0.5, vIntensity));
-			thermal = mix(thermal, uAccentColor, smoothstep(0.5, 1.0, vIntensity));
+			// Boosted thermal ramp for better visibility
+			float thermalIntensity = smoothstep(0.0, 0.8, vIntensity);
+			vec3 thermal = mix(uColorCold, uColorHot, thermalIntensity);
 			
-			// Add a slight "thermal glow" to high intensity areas
-			float glow = pow(vIntensity, 3.0) * 0.5;
-			finalColor = thermal * lighting + (uAccentColor * glow);
+			// Add a second ramp for extreme hotspots
+			float hotspot = smoothstep(0.7, 1.0, vIntensity);
+			thermal = mix(thermal, vec3(1.0, 0.9, 0.5), hotspot); // White-yellow for extreme peaks
+			
+			// Add a persistent thermal glow to data areas
+			float glow = pow(vIntensity, 2.0) * 0.8;
+			finalColor = thermal * (lighting + 0.5) + (uColorHot * glow);
 			
 			// Subtle planetary context
-			finalColor = mix(finalColor, planetBase * lighting, 0.15);
-			finalColor += mask * 0.15;
-		} else { // TIME MODE (Temporal Pulse / Radar)
-			// Moving radar-like wave based on time
-			float wave = fract(vIntensity * 5.0 - uTime * 0.5);
-			float scanline = smoothstep(0.0, 0.1, wave) * (1.0 - smoothstep(0.1, 0.2, wave));
-			
-			// Pulse intensity
-			float pulse = sin(uTime * 2.5 + vIntensity * 10.0) * 0.5 + 0.5;
-			
-			// Use uTimeColor (Violet) for this mode
-			vec3 timeColor = mix(uColorCold, uTimeColor, vIntensity);
-			timeColor = mix(timeColor, uTimeColor, scanline * vIntensity);
-			
-			finalColor = timeColor * lighting;
-			finalColor += uTimeColor * scanline * vIntensity * 2.5; // Sharp scanline
-			finalColor += uTimeColor * vIntensity * pulse * 0.6; // Soft pulse
-			
-			// Very faint planetary context
 			finalColor = mix(finalColor, planetBase * lighting, 0.1);
 			finalColor += mask * 0.1;
+		} else { // TIME MODE (Temporal Pulse / Radar)
+			// Higher frequency wave
+			float wave = fract(vIntensity * 8.0 - uTime * 0.4);
+			float scanline = smoothstep(0.0, 0.05, wave) * (1.0 - smoothstep(0.05, 0.15, wave));
+			
+			// Stronger pulse intensity
+			float pulse = sin(uTime * 4.0 + vIntensity * 12.0) * 0.5 + 0.5;
+			
+			// Vibrant violet ramp
+			vec3 timeColor = mix(uColorCold * 0.5, uTimeColor, vIntensity);
+			timeColor = mix(timeColor, uTimeColor * 1.5, scanline * vIntensity);
+			
+			finalColor = timeColor * lighting;
+			finalColor += uTimeColor * scanline * vIntensity * 3.5; // Brighter scanline
+			finalColor += uTimeColor * vIntensity * pulse * 1.2; // Stronger soft pulse
+			
+			// Very faint planetary context
+			finalColor = mix(finalColor, planetBase * lighting, 0.05);
+			finalColor += mask * 0.05;
 		}
 
 		// Position-based hover highlight (Precise selection)
 		float hoverDist = distance(vLocalPosition, uHoverPos);
 		float hoverGlow = 1.0 - smoothstep(0.0, uHoverRadius, hoverDist);
-		if (uHoverPos != vec3(0.0)) {
+		
+		// Data Isolation Mode: Discard fragments with no data
+		if (uFocusMode > 0.5 && vIntensity < 0.05 && hoverGlow < 0.1) {
+			discard;
+		}
+
+		if (uHoverActive > 0.5) {
 			finalColor = mix(finalColor, uAccentColor, hoverGlow * 0.8);
 		}
 
 		float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
 		finalColor += (grain - 0.5) * 0.04;
 
+		// --- Global Origami Stroke (Garis Tepi Seluruh Planet) ---
+		// Use barycentric coordinates for sharp constant-width edges
+		vec3 d = fwidth(vBarycentric);
+		vec3 a3 = smoothstep(vec3(0.0), d * 0.5, vBarycentric); // Very sharp edge
+		float edge = min(min(a3.x, a3.y), a3.z);
+		
+		// Adaptive stroke color: 
+		// Background uses theme wireframe color, nodes use sharp black/white
+		vec3 strokeBase = uWireColor;
+		vec3 nodeStroke = vec3(0.0); // Black for data
+		
+		vec3 strokeColor = mix(strokeBase, nodeStroke, smoothstep(0.0, 0.1, vIntensity));
+		
+		// Hover effect: Bright white stroke
+		if (uHoverActive > 0.5) {
+			float hoverDist = distance(vLocalPosition, uHoverPos);
+			float hoverGlow = 1.0 - smoothstep(0.0, uHoverRadius, hoverDist);
+			strokeColor = mix(strokeColor, vec3(1.0), hoverGlow);
+		}
+		
+		finalColor = mix(strokeColor, finalColor, edge);
+
 		gl_FragColor = vec4(finalColor, 1.0);
-	}
-`;
-
-export const wireframeVertexShader = vertexShader;
-
-/**
- * Wireframe fragment shader — constant color dengan opacity.
- */
-export const wireframeFragmentShader = /* glsl */ `
-	uniform vec3 uWireColor;
-	uniform float uOpacity;
-
-	void main() {
-		gl_FragColor = vec4(uWireColor, uOpacity);
 	}
 `;

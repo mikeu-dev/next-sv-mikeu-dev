@@ -25,9 +25,7 @@ import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import type { PlanetStyle } from './folded-world.types';
 import {
 	vertexShader,
-	fragmentShader,
-	wireframeVertexShader,
-	wireframeFragmentShader
+	fragmentShader
 } from './folded-world-shaders';
 
 // Three.js types — imported dynamically at runtime
@@ -61,6 +59,7 @@ export function createFoldedWorldEngine() {
 	let planetStyle = $state<PlanetStyle>('earth');
 	let tooltip = $state<TooltipData>({ visible: false, x: 0, y: 0, node: null });
 	let detailPanel = $state<DetailPanelData>({ visible: false, node: null });
+	let isFocusMode = $state(false);
 	const config = $state<WorldConfig>({ ...DEFAULT_WORLD_CONFIG });
 
 	// --- Internal State (non-reactive) ---
@@ -69,10 +68,8 @@ export function createFoldedWorldEngine() {
 	let scene: InstanceType<ThreeModule['Scene']>;
 	let camera: InstanceType<ThreeModule['PerspectiveCamera']>;
 	let mainMesh: InstanceType<ThreeModule['Mesh']>;
-	let wireframeMesh: InstanceType<ThreeModule['Mesh']>;
 	let ringMesh: InstanceType<ThreeModule['Mesh']>;
 	let mainMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
-	let wireframeMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let ringMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let raycaster: InstanceType<ThreeModule['Raycaster']>;
 	let mouseVec: InstanceType<ThreeModule['Vector2']>;
@@ -176,14 +173,10 @@ export function createFoldedWorldEngine() {
 		if (mainMesh) {
 			mainMesh.geometry.dispose();
 		}
-		if (wireframeMesh) {
-			wireframeMesh.geometry.dispose();
-		}
 		if (ringMesh) {
 			ringMesh.geometry.dispose();
 		}
 		if (mainMaterial) mainMaterial.dispose();
-		if (wireframeMaterial) wireframeMaterial.dispose();
 		if (ringMaterial) ringMaterial.dispose();
 		if (renderer) {
 			renderer.dispose();
@@ -271,6 +264,7 @@ export function createFoldedWorldEngine() {
 		// Create per-vertex attributes (same value for all 3 verts in a face)
 		const intensities = new Float32Array(vertexCount);
 		const foldOffsets = new Float32Array(vertexCount);
+		const barycentrics = new Float32Array(vertexCount * 3);
 		const scatterOffsets = new Float32Array(vertexCount * 3);
 
 		for (let i = 0; i < vertexCount; i++) {
@@ -304,15 +298,32 @@ export function createFoldedWorldEngine() {
 			const rz = cz * dist + (Math.random() - 0.5) * 4.0;
 
 			for (let j = 0; j < 3; j++) {
-				scatterOffsets[(i0 + j) * 3] = rx;
-				scatterOffsets[(i0 + j) * 3 + 1] = ry;
-				scatterOffsets[(i0 + j) * 3 + 2] = rz;
+				const vIndex = i0 + j;
+				scatterOffsets[vIndex * 3] = rx;
+				scatterOffsets[vIndex * 3 + 1] = ry;
+				scatterOffsets[vIndex * 3 + 2] = rz;
+
+				// Barycentric coordinates for edge detection (strokes)
+				if (j === 0) {
+					barycentrics[vIndex * 3] = 1.0;
+					barycentrics[vIndex * 3 + 1] = 0.0;
+					barycentrics[vIndex * 3 + 2] = 0.0;
+				} else if (j === 1) {
+					barycentrics[vIndex * 3] = 0.0;
+					barycentrics[vIndex * 3 + 1] = 1.0;
+					barycentrics[vIndex * 3 + 2] = 0.0;
+				} else {
+					barycentrics[vIndex * 3] = 0.0;
+					barycentrics[vIndex * 3 + 1] = 0.0;
+					barycentrics[vIndex * 3 + 2] = 1.0;
+				}
 			}
 		}
 
 		nonIndexed.setAttribute('vDataIntensity', new THREE.BufferAttribute(intensities, 1));
 		nonIndexed.setAttribute('foldOffset', new THREE.BufferAttribute(foldOffsets, 1));
 		nonIndexed.setAttribute('aScatterOffset', new THREE.BufferAttribute(scatterOffsets, 3));
+		nonIndexed.setAttribute('aBarycentric', new THREE.BufferAttribute(barycentrics, 3));
 
 		// Load world mask texture
 		const textureLoader = new THREE.TextureLoader();
@@ -333,40 +344,21 @@ export function createFoldedWorldEngine() {
 				uHoveredIntensity: { value: -1.0 },
 				uHoverPos: { value: new THREE.Vector3(0, 0, 0) },
 				uHoverRadius: { value: 0.15 },
+				uFocusMode: { value: 0.0 },
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity },
 				uWorldMask: { value: worldMask },
 				uNeonColor: { value: new THREE.Color(colors.neon) },
 				uTimeColor: { value: new THREE.Color(0xbb66ff) },
 				uAssembleProgress: { value: 0.0 },
-				uPlanetStyle: { value: 0.0 }
+				uPlanetStyle: { value: 0.0 },
+				uHoverActive: { value: 0.0 }
 			},
 			side: THREE.FrontSide
 		});
 
 		mainMesh = new THREE.Mesh(nonIndexed, mainMaterial);
 		scene.add(mainMesh);
-
-		// Wireframe overlay (shared geometry to ensure shared attributes like intensity)
-		wireframeMaterial = new THREE.ShaderMaterial({
-			vertexShader: wireframeVertexShader,
-			fragmentShader: wireframeFragmentShader,
-			uniforms: {
-				uMaxExtrusion: { value: config.maxExtrusion },
-				uMode: { value: 0 },
-				uTime: { value: 0 },
-				uWireColor: { value: new THREE.Color(colors.wireframe) },
-				uOpacity: { value: config.wireframeOpacity },
-				uAssembleProgress: { value: 0.0 }
-			},
-			transparent: true,
-			depthTest: true,
-			wireframe: true,
-			side: THREE.DoubleSide
-		});
-
-		wireframeMesh = new THREE.Mesh(nonIndexed, wireframeMaterial);
-		scene.add(wireframeMesh);
 
 		// --- Saturn Rings ---
 		const ringGeom = new THREE.RingGeometry(1.4, 2.2, 64);
@@ -512,10 +504,6 @@ export function createFoldedWorldEngine() {
 			mainMesh.rotation.y = autoRotateAngle + rotationY;
 			mainMesh.rotation.x = rotationX;
 		}
-		if (wireframeMesh) {
-			wireframeMesh.rotation.y = autoRotateAngle + rotationY;
-			wireframeMesh.rotation.x = rotationX;
-		}
 		if (ringMesh) {
 			ringMesh.rotation.y = autoRotateAngle + rotationY;
 			// Rings rotate with the planet but keep their tilt
@@ -546,11 +534,6 @@ export function createFoldedWorldEngine() {
 			mainMaterial.uniforms.uMode.value = modeIdx;
 			mainMaterial.uniforms.uAssembleProgress.value = finalAssemble;
 			mainMaterial.uniforms.uPlanetStyle.value = planetIdx;
-		}
-		if (wireframeMaterial) {
-			wireframeMaterial.uniforms.uTime.value = elapsed;
-			wireframeMaterial.uniforms.uMode.value = modeIdx;
-			wireframeMaterial.uniforms.uAssembleProgress.value = finalAssemble;
 		}
 
 		renderer.render(scene, camera);
@@ -675,6 +658,7 @@ export function createFoldedWorldEngine() {
 						const localPoint = intersects[0].point.clone();
 						mainMesh.worldToLocal(localPoint);
 						mainMaterial.uniforms.uHoverPos.value.copy(localPoint);
+						mainMaterial.uniforms.uHoverActive.value = 1.0;
 						
 						const intensityAttr = mainMesh.geometry.getAttribute('vDataIntensity');
 						mainMaterial.uniforms.uHoveredIntensity.value = intensityAttr.getX(faceIdx * 3);
@@ -691,6 +675,7 @@ export function createFoldedWorldEngine() {
 		if (mainMaterial) {
 			mainMaterial.uniforms.uHoveredIntensity.value = -1.0;
 			mainMaterial.uniforms.uHoverPos.value.set(0, 0, 0);
+			mainMaterial.uniforms.uHoverActive.value = 0.0;
 		}
 		if (canvasEl) canvasEl.style.cursor = 'grab';
 	}
@@ -752,10 +737,8 @@ export function createFoldedWorldEngine() {
 			mainMaterial.uniforms.uColorHot.value.set(colors.faceHot);
 			mainMaterial.uniforms.uWireColor.value.set(colors.wireframe);
 			mainMaterial.uniforms.uNeonColor.value.set(colors.neon);
-		}
-
-		if (wireframeMaterial) {
-			wireframeMaterial.uniforms.uWireColor.value.set(colors.wireframe);
+			mainMaterial.uniforms.uAccentColor.value.set(colors.accent);
+			mainMaterial.uniforms.uTimeColor.value.set(0xbb66ff); // Standard violet for Time mode
 		}
 
 		if (ringMaterial) {
@@ -784,6 +767,13 @@ export function createFoldedWorldEngine() {
 		detailPanel = { visible: false, node: null };
 	}
 
+	function toggleFocusMode(): void {
+		isFocusMode = !isFocusMode;
+		if (mainMaterial) {
+			mainMaterial.uniforms.uFocusMode.value = isFocusMode ? 1.0 : 0.0;
+		}
+	}
+
 	// --- Return public API ---
 	return {
 		// State (readonly access via getters)
@@ -805,6 +795,9 @@ export function createFoldedWorldEngine() {
 		get config() {
 			return config;
 		},
+		get isFocusMode() {
+			return isFocusMode;
+		},
 
 		// Methods
 		init,
@@ -813,7 +806,8 @@ export function createFoldedWorldEngine() {
 		setViewMode,
 		setPlanetStyle,
 		updateTheme,
-		closeDetailPanel
+		closeDetailPanel,
+		toggleFocusMode
 	};
 }
 

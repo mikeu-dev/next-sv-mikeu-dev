@@ -65,7 +65,7 @@ export interface DetailPanelData {
 export const DEFAULT_WORLD_CONFIG: WorldConfig = {
 	subdivisions: 60,
 	autoRotateSpeed: 0.15,
-	maxExtrusion: 0.6,
+	maxExtrusion: 0.45,
 	enableParticles: true,
 	wireframeOpacity: 0.6,
 	backgroundColor: '#0a0a0a'
