@@ -20,6 +20,7 @@
 
 	let containerEl: HTMLElement;
 	let canvasEl: HTMLCanvasElement;
+	let isPlanetDropdownOpen = $state(false);
 
 	const VIEW_MODES: { id: ViewMode; label: string }[] = [
 		{ id: 'fold', label: 'FOLD' },
@@ -233,19 +234,34 @@
 
 			<div class="hud-mode-group">
 				<span class="hud-mode-label">PLANET: {currentPlanetLabel}</span>
-				<div class="relative w-full min-w-[160px]">
-					<select
-						class="hud-select w-full"
-						value={engine.planetStyle}
-						onchange={(e) => handlePlanetSwitch(e.currentTarget.value as PlanetStyle)}
+				<div class="relative w-full min-w-[180px]">
+					<button 
+						class="hud-planet-dropdown-btn w-full flex justify-between items-center"
+						onclick={() => isPlanetDropdownOpen = !isPlanetDropdownOpen}
 					>
-						{#each PLANET_STYLES as planet (planet.id)}
-							<option value={planet.id}>{planet.label}</option>
-						{/each}
-					</select>
-					<div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[8px] text-current opacity-50">
-						▼
-					</div>
+						<span>{currentPlanetLabel}</span>
+						<span class="text-[8px] transition-transform" style:transform={isPlanetDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}>
+							▼
+						</span>
+					</button>
+					
+					{#if isPlanetDropdownOpen}
+						<div class="hud-planet-dropdown-options">
+							{#each PLANET_STYLES as planet (planet.id)}
+								<button
+									class="hud-planet-option"
+									class:active={engine.planetStyle === planet.id}
+									onclick={() => {
+										handlePlanetSwitch(planet.id);
+										isPlanetDropdownOpen = false;
+									}}
+								>
+									<span class="option-index">0{PLANET_STYLES.indexOf(planet) + 1}</span>
+									{planet.label}
+								</button>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -823,31 +839,96 @@
 		margin: 2px 0 0;
 	}
 
-	.hud-select {
-		appearance: none;
+	.hud-planet-dropdown-btn {
 		background: transparent;
-		border: 1.5px solid #333;
+		border: 2px solid #333;
+		padding: 8px 16px;
+		font-size: 11px;
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
+		font-weight: 800;
+		letter-spacing: 0.1em;
 		color: #888;
-		padding: 6px 30px 6px 14px;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+		clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.hud-planet-dropdown-btn:hover {
+		border-color: #ff3333;
+		color: #fafafa;
+		background: rgba(255, 51, 51, 0.1);
+	}
+
+	.hud-planet-dropdown-options {
+		position: absolute;
+		top: calc(100% + 4px);
+		right: 0;
+		width: 100%;
+		background: rgba(15, 15, 15, 0.95);
+		border: 1.5px solid #333;
+		display: flex;
+		flex-direction: column;
+		z-index: 50;
+		padding: 4px;
+		clip-path: polygon(0 0, 96% 0, 100% 10%, 100% 100%, 4% 100%, 0 90%);
+		box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8);
+		animation: dropdown-in 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	}
+
+	@keyframes dropdown-in {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.hud-planet-option {
+		width: 100%;
+		text-align: left;
+		padding: 10px 14px;
 		font-size: 10px;
 		font-family: 'JetBrains Mono', 'Courier New', monospace;
 		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		color: #666;
+		background: transparent;
+		border: none;
 		cursor: pointer;
-		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		transition: all 0.15s ease;
-		clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+		text-transform: uppercase;
 	}
 
-	.hud-select:hover {
-		border-color: #e0e0e0;
-		color: #e0e0e0;
+	.option-index {
+		font-size: 8px;
+		color: #444;
+		font-weight: 400;
 	}
 
-	.hud-select option {
-		background: #121212;
+	.hud-planet-option:hover {
+		background: #ff3333;
 		color: #fafafa;
+		clip-path: polygon(2% 0, 100% 0, 98% 100%, 0 100%);
+	}
+
+	.hud-planet-option.active {
+		color: #ff3333;
+	}
+
+	.hud-planet-option.active .option-index {
+		color: #ff3333;
+	}
+
+	.hud-planet-option:hover .option-index {
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.detail-panel {
