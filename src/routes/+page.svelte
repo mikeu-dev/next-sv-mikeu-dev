@@ -31,7 +31,7 @@
 			<Skeleton class="h-64 w-full" />
 		</div>
 	{/snippet}
-	{#await Promise.all([data.projects, import('../lib/components/guest/sections/work/work.svelte')]) then [projects, mod]}
+	{#await Promise.all([data.projects, import('$lib/components/guest/sections/work/work.svelte')]) then [projects, mod]}
 		<mod.default {projects} />
 	{/await}
 </SectionLoader>
@@ -47,7 +47,7 @@
 			</div>
 		</div>
 	{/snippet}
-	{#await Promise.all([data.latestPosts, import('../lib/components/guest/sections/blog/latest-blogs.svelte')]) then [posts, mod]}
+	{#await Promise.all([data.latestPosts, import('$lib/components/guest/sections/blog/latest-blogs.svelte')]) then [posts, mod]}
 		<mod.default {posts} />
 	{/await}
 </SectionLoader>
@@ -63,7 +63,7 @@
 					<div class="h-1.5 w-1.5 animate-pulse bg-primary"></div>
 				</div>
 			{/snippet}
-			{#await import('../lib/components/guest/sections/world/folded-world.svelte') then mod}
+			{#await import('$lib/components/guest/sections/world/folded-world.svelte') then mod}
 				<mod.default nodes={[]} totalVisitors={0} minimal={true} />
 			{/await}
 		</SectionLoader>
@@ -94,7 +94,7 @@
 	{#snippet fallback()}
 		<div class="h-64 w-full animate-pulse bg-muted/5"></div>
 	{/snippet}
-	{#await import('../lib/components/guest/sections/contact/contact.svelte') then mod}
+	{#await import('$lib/components/guest/sections/contact/contact.svelte') then mod}
 		<mod.default />
 	{/await}
 </SectionLoader>
