@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	// Add dynamic blog posts from DB
 	for (const post of dbPosts) {
-		if (post.status === 'published' && post.slug) {
+		if (post.published && post.slug) {
 			pathsSet.add(`/blog/${post.slug}`);
 		}
 	}
