@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { GitHubStorageService } from '$lib/server/services/github-storage.service';
 import { settingsService } from '$lib/server/services/settings.service';

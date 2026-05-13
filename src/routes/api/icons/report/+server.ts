@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { IconService } from '$lib/server/services/icon.service';
 import { logError } from '$lib/server/utils/logger';
 

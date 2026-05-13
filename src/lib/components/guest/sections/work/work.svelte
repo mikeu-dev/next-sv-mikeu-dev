@@ -1,10 +1,10 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import * as Tooltip from '@/lib/components/ui/tooltip';
 	import type { Project } from '$lib/types';
 	import { useWorkSection } from './work.svelte.js';
-	import { getLocale, localizeHref } from '@/lib/paraglide/runtime.js';
-	import { m } from '@/lib/paraglide/messages.js';
+	import { getLocale, localizeHref } from '$lib/paraglide/runtime.js';
+	import { m } from '$lib/paraglide/messages.js';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';

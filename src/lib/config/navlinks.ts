@@ -1,4 +1,4 @@
-export const navLinks = {
+﻿export const navLinks = {
 	en: [
 		{ href: '/', label: 'Home' },
 		{ href: '/projects', label: 'Projects' },

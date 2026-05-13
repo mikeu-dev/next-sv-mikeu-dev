@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import AIAssist from '$lib/components/admin/ai-assist.svelte';
@@ -311,7 +311,7 @@
 						class="rounded-r-lg border border-l-0 border-gray-300 bg-gray-50 px-3 text-sm hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800"
 						title="Regenerate slug from current title"
 					>
-						🔄
+						ðŸ”„
 					</button>
 				</div>
 				<p class="mt-1 text-xs text-muted-foreground">Shared between languages</p>
@@ -341,7 +341,7 @@
 				? 'border-b-2 border-blue-600 text-blue-600'
 				: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
 		>
-			🇬🇧 English
+			ðŸ‡¬ðŸ‡§ English
 		</button>
 		<button
 			type="button"
@@ -350,7 +350,7 @@
 				? 'border-b-2 border-blue-600 text-blue-600'
 				: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
 		>
-			🇮🇩 Indonesia
+			ðŸ‡®ðŸ‡© Indonesia
 		</button>
 	</div>
 

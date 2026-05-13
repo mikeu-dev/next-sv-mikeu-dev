@@ -5,6 +5,8 @@
 	import { m } from '$lib/paraglide/messages';
 	import { page } from '$app/state';
 
+	import { optimizeImage } from '$lib/utils/image.util';
+
 	let { post } = $props<{ post: BlogPost }>();
 
 	const formattedDate = $derived(
@@ -28,7 +30,10 @@
 			style="clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);"
 		>
 			<img
-				src={post.thumbnailUrl || '/images/placeholder-blog.jpg'}
+				src={optimizeImage(post.thumbnailUrl || '/images/placeholder-blog.jpg', {
+					width: 1200,
+					quality: 80
+				})}
 				alt={post.title}
 				class="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
 			/>

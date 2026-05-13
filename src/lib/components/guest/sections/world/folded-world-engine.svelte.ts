@@ -1,5 +1,5 @@
 /**
- * Folded World — Three.js Reactive Engine
+ * Folded World â€” Three.js Reactive Engine
  *
  * Svelte 5 reactive module yang mengelola Three.js scene,
  * icosahedron mesh, deformasi, dan interaksi.
@@ -25,7 +25,7 @@ import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import type { PlanetStyle } from './folded-world.types';
 import { vertexShader, fragmentShader } from './folded-world-shaders';
 
-// Three.js types — imported dynamically at runtime
+// Three.js types â€” imported dynamically at runtime
 type ThreeModule = typeof import('three');
 
 interface EngineState {
@@ -90,11 +90,13 @@ export function createFoldedWorldEngine() {
 	let pendingMode: ViewMode | null = null;
 	let shaderViewMode: ViewMode = 'fold';
 	let isMinimal = false;
+	let isVisible = true;
 	let canvasEl: HTMLCanvasElement | null = null;
 	let containerEl: HTMLElement | null = null;
 	let geoNodes: GeoNode[] = [];
 	let faceCentersCache: [number, number][] = [];
 	let isDestroyed = false;
+	let intersectionObserver: IntersectionObserver | null = null;
 
 	// --- Public Methods ---
 
@@ -119,7 +121,7 @@ export function createFoldedWorldEngine() {
 		state.error = null;
 
 		try {
-			// Dynamic import Three.js — keeps it out of main bundle
+			// Dynamic import Three.js â€” keeps it out of main bundle
 			THREE = await import('three');
 
 			setupScene(isDark);
@@ -135,6 +137,7 @@ export function createFoldedWorldEngine() {
 
 			if (!isMinimal) {
 				setupEventListeners();
+				setupVisibilityObserver(container);
 			}
 
 			state.ready = true;
@@ -176,6 +179,10 @@ export function createFoldedWorldEngine() {
 		}
 
 		removeEventListeners();
+		if (intersectionObserver) {
+			intersectionObserver.disconnect();
+			intersectionObserver = null;
+		}
 
 		if (mainMesh) {
 			mainMesh.geometry.dispose();
@@ -204,10 +211,11 @@ export function createFoldedWorldEngine() {
 		const height = containerEl.clientHeight;
 
 		// Renderer
+		const isMobile = window.innerWidth < 768;
 		renderer = new THREE.WebGLRenderer({
 			canvas: canvasEl,
-			antialias: true,
-			alpha: true, // Enable transparency for CSS background
+			antialias: !isMobile, // Disable antialias on mobile for better FPS
+			alpha: true,
 			powerPreference: 'high-performance'
 		});
 		renderer.setSize(width, height);
@@ -234,9 +242,29 @@ export function createFoldedWorldEngine() {
 		mouseVec = new THREE.Vector2();
 	}
 
+	function setupVisibilityObserver(element: HTMLElement): void {
+		intersectionObserver = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0];
+				if (entry) {
+					const wasVisible = isVisible;
+					isVisible = entry.isIntersecting;
+
+					// Resume loop if it was hidden and now is visible
+					if (isVisible && !wasVisible && state.ready) {
+						lastFrameTime = performance.now();
+						animate();
+					}
+				}
+			},
+			{ threshold: 0.1 }
+		);
+		intersectionObserver.observe(element);
+	}
+
 	function buildGlobe(isDark: boolean): void {
 		const colors = getPlanetColors(planetStyle, isDark);
-		// Icosahedron geometry — subdivided for more faces
+		// Icosahedron geometry â€” subdivided for more faces
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
 
@@ -463,7 +491,7 @@ export function createFoldedWorldEngine() {
 	// --- Animation Loop ---
 
 	function animate(): void {
-		if (isDestroyed) return;
+		if (isDestroyed || !isVisible) return;
 
 		animationId = requestAnimationFrame(animate);
 

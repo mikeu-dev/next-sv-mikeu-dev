@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 
 import type { Project } from '$lib/types';
 
-export const prerender = false;
+export const prerender = true;
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	let projectsResult: Record<string, Project[]> = { en: [], id: [] };

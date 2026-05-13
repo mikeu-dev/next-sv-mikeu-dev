@@ -1,4 +1,4 @@
-/// <reference types="@sveltejs/kit" />
+﻿/// <reference types="@sveltejs/kit" />
 /// <reference lib="webworker" />
 
 import { build, files, version } from '$service-worker';
@@ -40,7 +40,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
 	const url = new URL(event.request.url);
 
-	// Only handle http(s) requests — skip chrome-extension://, etc.
+	// Only handle http(s) requests â€” skip chrome-extension://, etc.
 	if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
 	async function respond() {

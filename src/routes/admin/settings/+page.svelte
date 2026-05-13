@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
 	import GeneralSettings from '$lib/components/admin/settings/GeneralSettings.svelte';
 	import ProfileSettings from '$lib/components/admin/settings/ProfileSettings.svelte';

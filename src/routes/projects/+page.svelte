@@ -1,12 +1,12 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import ProjectSkeleton from '@/lib/components/guest/card/project-skeleton.svelte';
 	import type { PageData } from './$types';
 	import type { Project } from '$lib/types';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { getLocale } from '@/lib/paraglide/runtime';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';

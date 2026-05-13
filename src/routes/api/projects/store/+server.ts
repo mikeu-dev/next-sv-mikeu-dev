@@ -1,4 +1,4 @@
-export const prerender = false;
+﻿export const prerender = false;
 
 import { HttpException, ValidationError } from '@/lib/server/exceptions/http.exception.js';
 import { ProjectsRepository } from '@/lib/server/repositories/projects.repository';

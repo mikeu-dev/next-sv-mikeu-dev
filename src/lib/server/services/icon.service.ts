@@ -1,4 +1,4 @@
-import { IconRepository } from '../repositories/icon.repository';
+﻿import { IconRepository } from '../repositories/icon.repository';
 import type { DynamicIcon } from '$lib/types';
 import { dev } from '$app/environment';
 import { persistentCache } from '../utils/cache.util';

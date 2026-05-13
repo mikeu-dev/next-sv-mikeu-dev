@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { Sparkles, Languages, Wand2, Tag, Loader2 } from '@lucide/svelte';
 	import { fade, scale } from 'svelte/transition';

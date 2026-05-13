@@ -22,6 +22,7 @@
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
+	import AdsenseLoader from '@/lib/components/ui/adsense-loader.svelte';
 
 	let { data, children } = $props();
 
@@ -114,17 +115,25 @@
 	<link rel="icon" href={favicon} />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+	<link rel="preconnect" href="https://googleads.g.doubleclick.net" />
+	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+	<!-- Preload Critical Fonts -->
+	<link
+		rel="preload"
+		as="style"
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+	/>
 	<link
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 		rel="stylesheet"
 	/>
+
 	<meta name="google-adsense-account" content="ca-pub-6698556269439251" />
-	<script
-		async
-		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6698556269439251"
-		crossorigin="anonymous"
-	></script>
 </svelte:head>
+
+<AdsenseLoader clientId="ca-pub-6698556269439251" />
 
 {#if fallingConfetti}
 	<FallingConfetti />
@@ -142,7 +151,9 @@
 			<Navbar {resolvedResumeUrls} />
 		{/await}
 	{/if}
-	<main class="container mx-auto flex-1 px-4 py-8">
+	<main
+		class={page.url.pathname === '/' || isAdmin ? 'flex-1' : 'container mx-auto flex-1 px-4 py-8'}
+	>
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}

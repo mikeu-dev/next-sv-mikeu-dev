@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+﻿import type { RequestHandler } from './$types';
 import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
 import { monitoringService } from '$lib/server/services/monitoring.service';
@@ -90,7 +90,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			// Generate Alternate Language Links (SEO Best Practice)
 			const alternates = locales
-				.map((altLocale) => {
+				.map((altLocale: string) => {
 					const altIsBase = altLocale === baseLocale;
 					const altHref = altIsBase ? `${siteUrl}${path || '/'}` : `${siteUrl}/${altLocale}${path}`;
 					const cleanedAltHref = altHref === `${siteUrl}/` ? altHref : altHref.replace(/\/$/, '');

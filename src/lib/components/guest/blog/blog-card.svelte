@@ -3,6 +3,7 @@
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
 	import { ArrowUpRight, Calendar, Clock, Sparkles, Hash } from '@lucide/svelte';
+	import { optimizeImage } from '$lib/utils/image.util';
 
 	let { post } = $props<{ post: BlogPost }>();
 
@@ -30,7 +31,10 @@
 			style="clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);"
 		>
 			<img
-				src={post.thumbnailUrl || '/images/placeholder-blog.jpg'}
+				src={optimizeImage(post.thumbnailUrl || '/images/placeholder-blog.jpg', {
+					width: 600,
+					quality: 75
+				})}
 				alt={post.title}
 				class="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
 				loading="lazy"
@@ -118,6 +122,7 @@
 		border: 2px solid var(--foreground);
 		clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
 		transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+		will-change: transform, border-color;
 	}
 
 	.group:hover .blog-card-container {

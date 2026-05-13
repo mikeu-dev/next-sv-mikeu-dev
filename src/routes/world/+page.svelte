@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import type { PageData } from './$types';
 	import { m } from '$lib/paraglide/messages';
 
@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>{m.world_title()} — Interactive Visitor Map | mikeu.dev</title>
+	<title>{m.world_title()} â€” Interactive Visitor Map | mikeu.dev</title>
 	<meta name="description" content={m.world_description()} />
 	<meta property="og:title" content={m.world_title()} />
 	<meta property="og:description" content={m.world_description()} />

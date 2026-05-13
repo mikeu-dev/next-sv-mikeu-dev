@@ -17,7 +17,6 @@ import { db } from '$lib/server/firebase/firebase.server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { VisitorRepository } from '../repositories/visitor.repository';
 import { persistentCache } from '../utils/cache.util';
-import { dev } from '$app/environment';
 
 export interface VisitorStats {
 	total: number;
@@ -34,7 +33,7 @@ export interface VisitorLogData {
 	language: string | null;
 	path: string;
 	timestamp?: Date | null;
-	// Geo fields — populated via GeoIP service
+	// Geo fields â€” populated via GeoIP service
 	country?: string | null;
 	city?: string | null;
 	region?: string | null;
@@ -77,32 +76,20 @@ export class VisitorService {
 		return db;
 	}
 
-	// Simple in-memory cache
-	private static statsCache: { data: VisitorStats; timestamp: number } | null = null;
-	private static geoCache: { data: GeoNode[]; timestamp: number } | null = null;
-	private static analyticsCache: { data: VisitorAnalytics; timestamp: number } | null = null;
-	private readonly STATS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-	private readonly GEO_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
-
 	/**
 	 * Increment visitor count and log details.
 	 */
 	async increment(logData?: VisitorLogData): Promise<void> {
 		const currentDb = this.db;
 		if (!currentDb) {
-			console.warn('⚠️ VisitorService: Database not initialized, skipping increment.');
+			console.warn('VisitorService: Database not initialized, skipping increment.');
 			return;
 		}
 
 		// Invalidate caches on increment
-		VisitorService.statsCache = null;
-		VisitorService.geoCache = null;
-		VisitorService.analyticsCache = null;
-		if (dev) {
-			persistentCache.clear('visitor_stats');
-			persistentCache.clear('geo_aggregation');
-			persistentCache.clear('analytics_aggregation');
-		}
+		persistentCache.clear('visitor_stats');
+		persistentCache.clear('geo_aggregation');
+		persistentCache.clear('analytics_summary');
 
 		const ref = currentDb.collection(this.collectionName).doc(this.docId);
 		const todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' }); // YYYY-MM-DD
@@ -270,67 +257,40 @@ export class VisitorService {
 	}
 
 	async getStats(): Promise<VisitorStats | null> {
-		const now = Date.now();
+		return persistentCache.getWithFetch(
+			'visitor_stats',
+			async () => {
+				const currentDb = this.db;
+				if (!currentDb) return null;
 
-		// 1. Memory Cache
-		if (
-			VisitorService.statsCache &&
-			now - VisitorService.statsCache.timestamp < this.STATS_CACHE_TTL
-		) {
-			console.log('⚡ VisitorService: Stats Memory Cache Hit');
-			return VisitorService.statsCache.data;
-		}
+				try {
+					const doc = await currentDb.collection(this.collectionName).doc(this.docId).get();
+					if (!doc.exists) return null;
+					const data = doc.data() as VisitorStats;
+					const todayDate = new Date().toLocaleDateString('en-CA', {
+						timeZone: 'Asia/Jakarta'
+					});
 
-		// 2. Persistent File Cache (Dev only)
-		if (dev) {
-			const cached = persistentCache.get<VisitorStats>('visitor_stats');
-			if (cached) {
-				console.log('📂 VisitorService: Stats File Cache Hit');
-				VisitorService.statsCache = { data: cached, timestamp: now };
-				return cached;
-			}
-		}
-
-		const currentDb = this.db;
-		if (!currentDb) return null;
-
-		try {
-			const doc = await currentDb.collection(this.collectionName).doc(this.docId).get();
-			if (!doc.exists) return null;
-			const data = doc.data() as VisitorStats;
-			const todayDate = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
-
-			let result: VisitorStats;
-			if (data.lastUpdated !== todayDate) {
-				result = { ...data, today: 0 };
-			} else {
-				result = data;
-			}
-
-			// Update caches
-			VisitorService.statsCache = { data: result, timestamp: now };
-			if (dev) persistentCache.set('visitor_stats', result);
-
-			return result;
-		} catch (error: unknown) {
-			if (
-				error &&
-				typeof error === 'object' &&
-				'code' in error &&
-				(error as { code: number }).code === 8
-			) {
-				console.error('VisitorService: Quota exceeded while fetching stats');
-				return (
-					persistentCache.get<VisitorStats>('visitor_stats') || {
-						total: 0,
-						today: 0,
-						lastUpdated: ''
+					if (data.lastUpdated !== todayDate) {
+						return { ...data, today: 0 };
 					}
-				);
-			}
-			console.error('VisitorService: Failed to get stats', error);
-			return { total: 0, today: 0, lastUpdated: '' };
-		}
+					return data;
+				} catch (error: unknown) {
+					if (
+						error &&
+						typeof error === 'object' &&
+						'code' in error &&
+						(error as { code: number }).code === 8
+					) {
+						console.error('VisitorService: Quota exceeded while fetching stats');
+						return persistentCache.get<VisitorStats>('visitor_stats');
+					}
+					console.error('VisitorService: Failed to get stats', error);
+					return { total: 0, today: 0, lastUpdated: '' };
+				}
+			},
+			5 * 60 * 1000 // 5 minutes
+		);
 	}
 
 	async getRecentLogs(limit: number = 20): Promise<VisitorLogData[]> {
@@ -356,66 +316,53 @@ export class VisitorService {
 	 * Now uses summary document to avoid expensive log queries.
 	 */
 	async getAnalytics(): Promise<VisitorAnalytics> {
-		const now = Date.now();
 		const cacheKey = 'analytics_summary';
 
-		if (
-			VisitorService.analyticsCache &&
-			now - VisitorService.analyticsCache.timestamp < this.GEO_CACHE_TTL
-		) {
-			return VisitorService.analyticsCache.data;
-		}
+		return persistentCache.getWithFetch(
+			cacheKey,
+			async () => {
+				const currentDb = this.db;
+				if (!currentDb) return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
 
-		if (dev) {
-			const cached = persistentCache.get<VisitorAnalytics>(cacheKey);
-			if (cached) return cached;
-		}
+				try {
+					const doc = await currentDb
+						.collection(this.summaryCollectionName)
+						.doc(this.analyticsSummaryDocId)
+						.get();
 
-		const currentDb = this.db;
-		if (!currentDb) return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
+					if (!doc.exists) {
+						return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
+					}
 
-		try {
-			const doc = await currentDb
-				.collection(this.summaryCollectionName)
-				.doc(this.analyticsSummaryDocId)
-				.get();
+					const data = doc.data() || {};
 
-			if (!doc.exists) {
-				// SAFE FALLBACK: Only fetch a few logs, never 1000.
-				return { topPages: [], deviceMix: [], browserMix: [], referrers: [] };
-			}
+					const format = (obj: Record<string, number> = {}) =>
+						Object.entries(obj).sort((a, b) => b[1] - a[1]);
 
-			const data = doc.data() || {};
-
-			const format = (obj: Record<string, number> = {}) =>
-				Object.entries(obj).sort((a, b) => b[1] - a[1]);
-
-			const result: VisitorAnalytics = {
-				topPages: format(data.topPages)
-					.map(([k, v]) => [k.replace(/_/g, '/'), v] as [string, number])
-					.slice(0, 10),
-				deviceMix: format(data.deviceMix),
-				browserMix: format(data.browserMix).slice(0, 5),
-				referrers: format(data.referrers)
-					.map(([k, v]) => [k.replace(/_/g, '.'), v] as [string, number])
-					.slice(0, 5)
-			};
-
-			VisitorService.analyticsCache = { data: result, timestamp: now };
-			if (dev) persistentCache.set(cacheKey, result);
-
-			return result;
-		} catch (error: unknown) {
-			console.error('VisitorService: Failed to get analytics', error);
-			return (
-				persistentCache.get<VisitorAnalytics>(cacheKey) || {
-					topPages: [],
-					deviceMix: [],
-					browserMix: [],
-					referrers: []
+					return {
+						topPages: format(data.topPages)
+							.map(([k, v]) => [k.replace(/_/g, '/'), v] as [string, number])
+							.slice(0, 10),
+						deviceMix: format(data.deviceMix),
+						browserMix: format(data.browserMix).slice(0, 5),
+						referrers: format(data.referrers)
+							.map(([k, v]) => [k.replace(/_/g, '.'), v] as [string, number])
+							.slice(0, 5)
+					};
+				} catch (error: unknown) {
+					console.error('VisitorService: Failed to get analytics', error);
+					return (
+						persistentCache.get<VisitorAnalytics>(cacheKey) || {
+							topPages: [],
+							deviceMix: [],
+							browserMix: [],
+							referrers: []
+						}
+					);
 				}
-			);
-		}
+			},
+			30 * 60 * 1000 // 30 minutes
+		);
 	}
 
 	/**
@@ -423,72 +370,55 @@ export class VisitorService {
 	 * Now uses the Pre-aggregated Summary document (1 Read) instead of querying thousands of logs.
 	 */
 	async getGeoAggregation(limit: number = 500): Promise<GeoNode[]> {
-		const now = Date.now();
+		const cacheKey = 'geo_aggregation';
 
-		// 1. Memory Cache
-		if (VisitorService.geoCache && now - VisitorService.geoCache.timestamp < this.GEO_CACHE_TTL) {
-			console.log('⚡ VisitorService: Geo Memory Cache Hit');
-			return VisitorService.geoCache.data;
-		}
+		return persistentCache.getWithFetch(
+			cacheKey,
+			async () => {
+				const currentDb = this.db;
+				if (!currentDb) return [];
 
-		// 2. Persistent File Cache (Dev only)
-		if (dev) {
-			const cached = persistentCache.get<GeoNode[]>('geo_aggregation');
-			if (cached) {
-				console.log('📂 VisitorService: Geo File Cache Hit');
-				VisitorService.geoCache = { data: cached, timestamp: now };
-				return cached;
-			}
-		}
+				try {
+					// Read from the pre-aggregated summary document (ONLY 1 READ!)
+					const summaryDoc = await currentDb
+						.collection(this.summaryCollectionName)
+						.doc(this.geoSummaryDocId)
+						.get();
 
-		const currentDb = this.db;
-		if (!currentDb) return [];
+					if (!summaryDoc.exists) {
+						console.log('Geo Summary not found, falling back to log aggregation');
+						return this.fallbackGeoAggregation(Math.min(limit, 50));
+					}
 
-		try {
-			// Read from the pre-aggregated summary document (ONLY 1 READ!)
-			const summaryDoc = await currentDb
-				.collection(this.summaryCollectionName)
-				.doc(this.geoSummaryDocId)
-				.get();
+					const data = summaryDoc.data() || {};
+					delete data.updatedAt;
 
-			if (!summaryDoc.exists) {
-				// SAFE FALLBACK: Limit to 50 reads max if summary missing.
-				console.log('⚠️ Geo Summary not found, falling back to log aggregation (Expensive!)');
-				return this.fallbackGeoAggregation(Math.min(limit, 50));
-			}
-
-			const data = summaryDoc.data() || {};
-			delete data.updatedAt;
-
-			const nodes: GeoNode[] = Object.entries(data)
-				.map(([id, node]: [string, unknown]) => {
-					const nodeData = node as Omit<GeoNode, 'id'>;
-					return {
-						id,
-						...nodeData
-					};
-				})
-				.sort((a, b) => b.count - a.count)
-				.slice(0, limit);
-
-			// Update caches
-			VisitorService.geoCache = { data: nodes, timestamp: now };
-			if (dev) persistentCache.set('geo_aggregation', nodes);
-
-			return nodes;
-		} catch (error: unknown) {
-			if (
-				error &&
-				typeof error === 'object' &&
-				'code' in error &&
-				(error as { code: number }).code === 8
-			) {
-				console.error('VisitorService: Quota exceeded while fetching geo aggregation');
-				return persistentCache.get<GeoNode[]>('geo_aggregation') || [];
-			}
-			console.error('VisitorService: Failed to get geo aggregation', error);
-			return [];
-		}
+					return Object.entries(data)
+						.map(([id, node]: [string, unknown]) => {
+							const nodeData = node as Omit<GeoNode, 'id'>;
+							return {
+								id,
+								...nodeData
+							};
+						})
+						.sort((a, b) => b.count - a.count)
+						.slice(0, limit);
+				} catch (error: unknown) {
+					if (
+						error &&
+						typeof error === 'object' &&
+						'code' in error &&
+						(error as { code: number }).code === 8
+					) {
+						console.error('VisitorService: Quota exceeded while fetching geo aggregation');
+						return persistentCache.get<GeoNode[]>(cacheKey) || [];
+					}
+					console.error('VisitorService: Failed to get geo aggregation', error);
+					return [];
+				}
+			},
+			30 * 60 * 1000 // 30 minutes
+		);
 	}
 
 	/**

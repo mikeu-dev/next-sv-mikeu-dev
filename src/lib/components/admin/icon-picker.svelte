@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import iconsData from 'simple-icons/icons.json';
 	import { Linkedin } from '@lucide/svelte';
 	import Icon from '$lib/components/ui/icon.svelte';

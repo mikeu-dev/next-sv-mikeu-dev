@@ -1,4 +1,4 @@
-import type { Project, Tag, SerializedTag } from '$lib/types';
+﻿import type { Project, Tag, SerializedTag } from '$lib/types';
 import { getIconByName } from '$lib/icons/registry';
 
 // We no longer build a manual map here to allow tree-shaking

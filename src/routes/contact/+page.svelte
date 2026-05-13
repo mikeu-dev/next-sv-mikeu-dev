@@ -1,8 +1,8 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
@@ -135,7 +135,7 @@
 		class="brutalist-title pointer-events-none fixed top-0 left-0 hidden h-full w-24 items-center justify-center border-r-2 border-foreground/10 lg:flex"
 	>
 		<h1
-			class="rotate-[-90deg] font-poppins text-8xl font-black tracking-[-0.1em] whitespace-nowrap text-foreground/15 uppercase italic"
+			class="-rotate-90 font-poppins text-8xl font-black -tracking-widest whitespace-nowrap text-foreground/15 uppercase italic"
 		>
 			Mikeu // Dev_Archive
 		</h1>
@@ -150,7 +150,7 @@
 				<div
 					class="archive-detail flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase"
 				>
-					<Hash class="size-3" /> [STATUS: READY_FOR_COLLABORATION]
+					<Hash class="size-3" /> [IDENTITY: {m.common_author_name()}]
 				</div>
 				<h2 class="font-poppins text-5xl font-black tracking-tighter text-foreground sm:text-7xl">
 					Mikeu<span class="text-primary">.</span>Dev
@@ -161,7 +161,7 @@
 					SECTOR: <span class="text-foreground">FULLSTACK_WEB_DEVELOPER</span>
 				</p>
 				<p class="text-foreground/80">
-					BASE_LOC: <span class="text-foreground">IDN // 7.79°S 110.37°E</span>
+					BASE_LOC: <span class="text-foreground">IDN // 7.79Â°S 110.37Â°E</span>
 				</p>
 			</div>
 		</header>
@@ -367,7 +367,7 @@
 		<footer
 			class="mt-12 flex items-center justify-between border-t-2 border-foreground/10 pt-8 font-mono text-[10px] font-black tracking-widest text-foreground/80 uppercase"
 		>
-			<p>© MIKEU_DEV_PROTOCOL_2026</p>
+			<p>Â© MIKEU_DEV_PROTOCOL_2026</p>
 			<p>STACK: SVELTEKIT_VITE_TS</p>
 		</footer>
 	</div>

@@ -1,4 +1,4 @@
-import { db } from '$lib/server/firebase/firebase.server';
+﻿import { db } from '$lib/server/firebase/firebase.server';
 import type { GeneralSettings, ProfileSettings, ResumeSettings } from '../schemas/settings.schema';
 import { defaultSettings } from '../schemas/settings.schema';
 import { sanitizeForFirestore } from '../utils/firestore';

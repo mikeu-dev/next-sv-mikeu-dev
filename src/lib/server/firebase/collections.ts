@@ -1,4 +1,4 @@
-export const COLLECTIONS = {
+﻿export const COLLECTIONS = {
 	USERS: 'users',
 	PROJECTS: 'projects',
 	CATEGORIES: 'categories',

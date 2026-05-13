@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Interface for the BeforeInstallPromptEvent which is not yet
  * part of the standard TypeScript DOM library.
  */

@@ -1,4 +1,4 @@
-import { flag } from '@vercel/flags/sveltekit';
+﻿import { flag } from '@vercel/flags/sveltekit';
 
 export const showExperimentalFeature = flag<boolean>({
 	key: 'showExperimentalFeature',

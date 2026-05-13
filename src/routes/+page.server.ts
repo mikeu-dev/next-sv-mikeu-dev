@@ -3,7 +3,7 @@ import { skillsService } from '$lib/server/services/skills.service';
 import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
 
-export const prerender = false;
+export const prerender = true;
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
@@ -19,9 +19,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.catch(() => []),
 		skills: skillsService
 			.getSkills(locale)
-			.then((skills) => (skills as { items: string[] })?.items || []),
+			.then((skills) => (skills as { items: string[] })?.items || [])
+			.catch(() => []),
 		latestPosts: blogService
 			.getPublishedPostsByLocale(locale)
 			.then((posts) => posts?.posts.slice(0, 3) || [])
+			.catch(() => [])
 	};
 };

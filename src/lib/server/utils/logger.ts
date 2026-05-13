@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Safe error logging utility
  * Prevents sensitive data exposure in logs
  */

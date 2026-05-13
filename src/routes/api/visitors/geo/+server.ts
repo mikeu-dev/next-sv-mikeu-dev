@@ -1,10 +1,10 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { VisitorService } from '$lib/server/services/visitor.service';
 import type { GeoVisitorResponse } from '$lib/components/guest/sections/world/folded-world.types';
 
 /**
  * GET /api/visitors/geo
- * Public endpoint — returns aggregated geo data for Folded World visualization.
+ * Public endpoint â€” returns aggregated geo data for Folded World visualization.
  * Does NOT expose IP addresses or sensitive data.
  */
 export async function GET() {

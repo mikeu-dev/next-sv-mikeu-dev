@@ -1,4 +1,4 @@
-// src/lib/components/guest/navbar/navbar.svelte.ts
+﻿// src/lib/components/guest/navbar/navbar.svelte.ts
 import { gsap } from 'gsap';
 
 export function setupGsapPendulum(
@@ -9,7 +9,7 @@ export function setupGsapPendulum(
 	// Atur titik poros
 	devSpan.style.transformOrigin = 'calc(100% - 0.375rem) calc(100% - 0.375rem)';
 
-	// 🔽 Efek jatuh awal (seperti papan dilepas satu baut)
+	// ðŸ”½ Efek jatuh awal (seperti papan dilepas satu baut)
 	gsap.fromTo(
 		devSpan,
 		{ rotate: 0, transformOrigin: 'calc(100% - 0.375rem) calc(100% - 0.375rem)' },
@@ -20,7 +20,7 @@ export function setupGsapPendulum(
 		}
 	);
 
-	// 🪶 Efek hover (angkat sedikit)
+	// ðŸª¶ Efek hover (angkat sedikit)
 	const hoverIn = () => {
 		gsap.to(devSpan, {
 			rotate: 0,

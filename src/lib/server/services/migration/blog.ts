@@ -1,4 +1,4 @@
-import { db } from '$lib/server/firebase/firebase.server';
+﻿import { db } from '$lib/server/firebase/firebase.server';
 import { COLLECTIONS } from '$lib/server/firebase/collections';
 
 // We need to use import.meta.glob to get the files
@@ -9,7 +9,7 @@ const allPostsModules = import.meta.glob('/src/lib/posts/**/*.svx', {
 
 export async function migrateBlogPosts() {
 	if (!db) {
-		console.warn('⚠️ migrateBlogPosts: Database not initialized.');
+		console.warn('migrateBlogPosts: Database not initialized.');
 		return { success: false, message: 'Database not initialized' };
 	}
 

@@ -51,6 +51,23 @@ export default defineConfig({
 						provider: 'playwright',
 						instances: [{ browser: 'chromium' }]
 					},
+					alias: {
+						'$lib/components/guest/sections/hero/hero.svelte': require.resolve(
+							'./src/lib/mocks/HeroMock.svelte'
+						),
+						'$lib/components/guest/sections/work/work.svelte': require.resolve(
+							'./src/lib/mocks/EmptyMock.svelte'
+						),
+						'$lib/components/guest/sections/blog/latest-blogs.svelte': require.resolve(
+							'./src/lib/mocks/EmptyMock.svelte'
+						),
+						'$lib/components/guest/sections/world/folded-world.svelte': require.resolve(
+							'./src/lib/mocks/EmptyMock.svelte'
+						),
+						'$lib/components/guest/sections/contact/contact.svelte': require.resolve(
+							'./src/lib/mocks/EmptyMock.svelte'
+						)
+					},
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
 					exclude: ['src/lib/server/**'],
 					setupFiles: ['./vitest-setup-client.ts']

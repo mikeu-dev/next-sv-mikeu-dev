@@ -1,4 +1,4 @@
-import { HttpException } from '../exceptions/http.exception';
+﻿import { HttpException } from '../exceptions/http.exception';
 import { db } from '../firebase/firebase.server';
 
 interface UserData {

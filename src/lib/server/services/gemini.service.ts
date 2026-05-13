@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai';
+﻿import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai';
 import { Octokit } from 'octokit';
 import { env } from '../config/env';
 
@@ -33,7 +33,7 @@ export class GeminiService {
 	constructor() {
 		const apiKey = env.GOOGLE_GEMINI_API_KEY;
 		if (!apiKey) {
-			console.warn('⚠️  GOOGLE_GEMINI_API_KEY is not set. Gemini AI features will be disabled.');
+			console.warn('GOOGLE_GEMINI_API_KEY is not set. Gemini AI features will be disabled.');
 		}
 		this.genAI = new GoogleGenerativeAI(apiKey || '');
 		this.model = this.genAI.getGenerativeModel({

@@ -8,6 +8,8 @@
 	import { m } from '$lib/paraglide/messages';
 	import { localizeHref } from '$lib/paraglide/runtime';
 
+	import { optimizeImage } from '$lib/utils/image.util';
+
 	let { project }: { project: LocalizedProject } = $props();
 
 	let cardElement = $state<HTMLElement>();
@@ -37,9 +39,11 @@
 			});
 		}
 
-		// Mouse interaction (Tilt)
+		// Mouse interaction (Tilt) - Only on devices with a mouse
+		const isHoverable = window.matchMedia('(pointer: fine)').matches;
+
 		const handleMouseMove = (e: MouseEvent) => {
-			if (!cardElement) return;
+			if (!cardElement || !isHoverable) return;
 			const rect = cardElement.getBoundingClientRect();
 			const x = (e.clientX - rect.left) / rect.width - 0.5;
 			const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -53,6 +57,7 @@
 		};
 
 		const handleMouseLeave = () => {
+			if (!isHoverable) return;
 			const inner = cardElement?.querySelector('.project-card-inner');
 			if (inner) {
 				gsap.to(inner, {
@@ -64,12 +69,16 @@
 			}
 		};
 
-		cardElement?.addEventListener('mousemove', handleMouseMove);
-		cardElement?.addEventListener('mouseleave', handleMouseLeave);
+		if (isHoverable) {
+			cardElement?.addEventListener('mousemove', handleMouseMove);
+			cardElement?.addEventListener('mouseleave', handleMouseLeave);
+		}
 
 		return () => {
-			cardElement?.removeEventListener('mousemove', handleMouseMove);
-			cardElement?.removeEventListener('mouseleave', handleMouseLeave);
+			if (isHoverable) {
+				cardElement?.removeEventListener('mousemove', handleMouseMove);
+				cardElement?.removeEventListener('mouseleave', handleMouseLeave);
+			}
 		};
 	});
 </script>
@@ -85,7 +94,7 @@
 		>
 			{#if project.thumbnailUrl}
 				<img
-					src={project.thumbnailUrl}
+					src={optimizeImage(project.thumbnailUrl, { width: 800, quality: 75 })}
 					alt={project.title}
 					class="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
 					loading="lazy"
@@ -128,7 +137,7 @@
 						href={project.demoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white backdrop-blur-md transition-all hover:border-primary hover:bg-primary"
+						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white transition-all hover:border-primary hover:bg-primary lg:backdrop-blur-md"
 						title={m.project_button_demo()}
 					>
 						<ExternalLink class="size-5" />
@@ -139,7 +148,7 @@
 						href={project.repoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white backdrop-blur-md transition-all hover:border-primary hover:bg-primary"
+						class="flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white transition-all hover:border-primary hover:bg-primary lg:backdrop-blur-md"
 						title={m.project_button_view_code()}
 					>
 						<Github class="size-5" />
@@ -217,6 +226,7 @@
 		border: 2px solid var(--foreground);
 		clip-path: polygon(0 0, 97% 0, 100% 100%, 3% 100%);
 		transition: border-color 0.3s ease;
+		will-change: transform, border-color;
 	}
 
 	.group:hover .project-card-inner {

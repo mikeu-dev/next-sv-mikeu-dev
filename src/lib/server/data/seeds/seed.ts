@@ -1,4 +1,4 @@
-import { env } from '$lib/server/config/env';
+﻿import { env } from '$lib/server/config/env';
 import { db, auth } from '@/lib/server/firebase/firebase.server';
 
 if (!env.OWNER_EMAIL) {
@@ -21,10 +21,10 @@ const usersToSeed = [
 
 export async function seedUsers() {
 	if (!db || !auth) {
-		console.warn('⚠️ seedUsers: Database or Auth not initialized. Skipping.');
+		console.warn('seedUsers: Database or Auth not initialized. Skipping.');
 		return;
 	}
-	console.log('🚀 Starting user seeder...');
+	console.log('Starting user seeder...');
 
 	for (const userData of usersToSeed) {
 		const { email, password, username } = userData;
@@ -34,7 +34,7 @@ export async function seedUsers() {
 			// Cek apakah pengguna sudah ada di Auth
 			const existingAuthUser = await auth.getUserByEmail(email).catch(() => null);
 			if (existingAuthUser) {
-				console.log(`⏩ User with email ${email} already exists in Auth. Skipping.`);
+				console.log(`â© User with email ${email} already exists in Auth. Skipping.`);
 				continue;
 			}
 
@@ -44,7 +44,7 @@ export async function seedUsers() {
 				.where('username', '==', normalizedUsername)
 				.get();
 			if (!usernameQuery.empty) {
-				console.log(`⏩ User with username ${username} already exists in Firestore. Skipping.`);
+				console.log(`â© User with username ${username} already exists in Firestore. Skipping.`);
 				continue;
 			}
 
@@ -63,18 +63,18 @@ export async function seedUsers() {
 				createdAt: new Date()
 			});
 
-			console.log(`✅ Successfully created user: ${email} (${username})`);
+			console.log(`âœ… Successfully created user: ${email} (${username})`);
 		} catch (error: unknown) {
 			let message = 'An unknown error occurred';
 			if (error instanceof Error) {
 				// Firebase errors often have more specific messages
 				message = error.message;
 			}
-			console.error(`❌ Error creating user ${email}:`, message);
+			console.error(`âŒ Error creating user ${email}:`, message);
 		}
 	}
 
-	console.log('🌱 Seeding complete!');
+	console.log('Seeding complete!');
 }
 
 // Hanya jalankan jika di lingkungan yang tepat (opsional, bisa dihapus jika ingin manual)

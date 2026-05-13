@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { onMount } from 'svelte';
@@ -47,7 +47,7 @@
 			<div class="footer-stagger flex flex-col gap-8">
 				<div class="flex items-center gap-3">
 					<div
-						class="flex size-10 items-center justify-center bg-primary text-xl font-black text-black"
+						class="flex size-10 items-center justify-center bg-primary text-xl font-black text-primary-foreground"
 						style="clip-path: polygon(10% 0, 100% 15%, 90% 100%, 0 85%);"
 					>
 						M

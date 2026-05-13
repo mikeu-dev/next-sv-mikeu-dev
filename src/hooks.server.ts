@@ -63,14 +63,17 @@ const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
 };
 
 const handleParaglide: Handle = ({ event, resolve }) =>
-	paraglideMiddleware(event.request, ({ request, locale }) => {
-		event.request = request;
-		event.locals.paraglide = { locale };
+	paraglideMiddleware(
+		event.request,
+		({ request, locale }: { request: Request; locale: string }) => {
+			event.request = request;
+			event.locals.paraglide = { locale };
 
-		return resolve(event, {
-			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
-		});
-	});
+			return resolve(event, {
+				transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
+			});
+		}
+	);
 
 import { resolveGeo } from '$lib/server/services/geo.service';
 
@@ -161,7 +164,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	// Admin route protection
 	if (event.url.pathname.startsWith('/admin') || event.url.pathname.startsWith('/api/admin')) {
 		if (!event.locals.user) {
-			console.log('🔴 No valid session found for admin route, redirecting to login');
+			console.log('[AUTH] No valid session found for admin route, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 
@@ -171,7 +174,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 				email: (event.locals.user as { email: string }).email,
 				path: event.url.pathname
 			});
-			console.log('🔴 Email mismatch, redirecting to login');
+			console.log('[AUTH] Email mismatch, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 	}
@@ -203,6 +206,8 @@ export const handleError: import('@sveltejs/kit').HandleServerError = async ({
 	message
 }) => {
 	const errorId = crypto.randomUUID();
+	// Log to console for CI/CD debugging
+	console.error(`[handleError] Error at ${event.url.pathname}:`, error);
 
 	// Log the error to Firestore
 	await monitoringService.logError({

@@ -1,4 +1,4 @@
-import type { BaseRepository } from './base.repository';
+﻿import type { BaseRepository } from './base.repository';
 
 export abstract class BaseService<T, R extends BaseRepository<T>> {
 	protected constructor(protected readonly repository: R) {}

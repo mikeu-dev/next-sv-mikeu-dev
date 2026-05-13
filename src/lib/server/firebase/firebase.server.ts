@@ -1,4 +1,4 @@
-import admin from 'firebase-admin';
+﻿import admin from 'firebase-admin';
 import { getApps } from 'firebase-admin/app';
 import { env } from '$env/dynamic/private';
 
@@ -17,10 +17,10 @@ if (!getApps().length) {
 			});
 			admin.firestore().settings({ ignoreUndefinedProperties: true });
 		} catch (error) {
-			console.error('❌ Failed to initialize Firebase Admin:', error);
+			console.error('Failed to initialize Firebase Admin:', error);
 		}
 	} else {
-		console.error('❌ Missing required Firebase environment variables.');
+		console.error('Missing required Firebase environment variables.');
 	}
 }
 

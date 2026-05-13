@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { marked } from 'marked';
 
 	let { content = '', isRendered = false } = $props<{ content: string; isRendered?: boolean }>();

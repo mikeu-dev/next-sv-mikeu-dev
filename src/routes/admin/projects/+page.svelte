@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
@@ -155,7 +155,7 @@
 						? 'bg-blue-600 text-white'
 						: 'border border-gray-300 dark:border-gray-700'}"
 				>
-					🇬🇧 EN
+					ðŸ‡¬ðŸ‡§ EN
 				</button>
 				<button
 					onclick={() => switchLang('id')}
@@ -163,7 +163,7 @@
 						? 'bg-blue-600 text-white'
 						: 'border border-gray-300 dark:border-gray-700'}"
 				>
-					🇮🇩 ID
+					ðŸ‡®ðŸ‡© ID
 				</button>
 			</div>
 		</div>
@@ -217,7 +217,7 @@
 						? 'bg-yellow-600 text-white'
 						: 'border border-gray-300 dark:border-gray-700'}"
 				>
-					⭐ Pinned
+					â­ Pinned
 				</button>
 				<button
 					onclick={() => (filterPinned = 'unpinned')}
@@ -290,7 +290,7 @@
 						<div class="mb-2 flex items-start justify-between gap-2">
 							<h3 class="flex-1 text-lg font-semibold">
 								{#if project.pinned}
-									<span class="mr-1 text-yellow-500">⭐</span>
+									<span class="mr-1 text-yellow-500">â­</span>
 								{/if}
 								{getTitle(project, displayLang)}
 							</h3>

@@ -1,9 +1,9 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowRight, Hash, Command, Mail } from '@lucide/svelte';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { localizeHref } from '$lib/paraglide/runtime';
 
 	let contactSection = $state<HTMLElement>();
@@ -156,7 +156,7 @@
 				<div
 					class="flex justify-between font-mono text-[8px] font-black tracking-[0.2em] text-foreground/40 uppercase"
 				>
-					<span>© MIKEU_DEV // 2026</span>
+					<span>Â© MIKEU_DEV // 2026</span>
 					<span class="hidden sm:block">ENCRYPTED_COMMS // SECURED</span>
 					<span>STATUS: ACTIVE</span>
 				</div>

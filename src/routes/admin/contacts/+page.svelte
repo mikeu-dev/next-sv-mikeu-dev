@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Contact } from '$lib/types';
 	import { Input } from '$lib/components/ui/input';
