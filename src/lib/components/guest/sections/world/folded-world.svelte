@@ -215,7 +215,7 @@
 		</div>
 
 		<!-- Top-right: Mode & Planet Toggle -->
-		<div class="hud hud-top-right flex flex-col gap-8">
+		<div class="hud hud-top-right flex flex-col gap-6">
 			<div class="hud-mode-group">
 				<span class="hud-mode-label">{m.world_hud_mode()}: {currentModeLabel}</span>
 				<div class="hud-mode-buttons">
@@ -233,16 +233,19 @@
 
 			<div class="hud-mode-group">
 				<span class="hud-mode-label">PLANET: {currentPlanetLabel}</span>
-				<div class="hud-mode-buttons flex-wrap justify-end">
-					{#each PLANET_STYLES as planet (planet.id)}
-						<button
-							class="hud-mode-btn"
-							class:active={engine.planetStyle === planet.id}
-							onclick={() => handlePlanetSwitch(planet.id)}
-						>
-							{planet.label}
-						</button>
-					{/each}
+				<div class="relative w-full min-w-[160px]">
+					<select
+						class="hud-select w-full"
+						value={engine.planetStyle}
+						onchange={(e) => handlePlanetSwitch(e.currentTarget.value as PlanetStyle)}
+					>
+						{#each PLANET_STYLES as planet (planet.id)}
+							<option value={planet.id}>{planet.label}</option>
+						{/each}
+					</select>
+					<div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[8px] text-current opacity-50">
+						▼
+					</div>
 				</div>
 			</div>
 		</div>
@@ -820,13 +823,37 @@
 		margin: 2px 0 0;
 	}
 
-	/* --- Detail Panel --- */
+	.hud-select {
+		appearance: none;
+		background: transparent;
+		border: 1.5px solid #333;
+		color: #888;
+		padding: 6px 30px 6px 14px;
+		font-size: 10px;
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		cursor: pointer;
+		width: 100%;
+		transition: all 0.15s ease;
+		clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+	}
+
+	.hud-select:hover {
+		border-color: #e0e0e0;
+		color: #e0e0e0;
+	}
+
+	.hud-select option {
+		background: #121212;
+		color: #fafafa;
+	}
 
 	.detail-panel {
 		position: absolute;
 		right: 24px;
-		top: 50%;
-		transform: translateY(-50%);
+		bottom: 100px; /* Moved to bottom to clear the Top-Right HUD switcher */
 		width: 280px;
 		background: rgba(255, 255, 255, 0.95);
 		border: 1.5px solid #ddd;
@@ -844,11 +871,11 @@
 	@keyframes panel-in {
 		from {
 			opacity: 0;
-			transform: translateY(-50%) translateX(20px);
+			transform: translateY(20px);
 		}
 		to {
 			opacity: 1;
-			transform: translateY(-50%) translateX(0);
+			transform: translateY(0);
 		}
 	}
 
