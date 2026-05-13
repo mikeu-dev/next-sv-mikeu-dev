@@ -53,6 +53,8 @@ export const fragmentShader = /* glsl */ `
 	uniform vec3 uNeonColor;
 	uniform vec3 uAccentColor;
 	uniform float uHoveredIntensity;
+	uniform vec3 uHoverPos;
+	uniform float uHoverRadius;
 	uniform int uMode;
 	uniform float uTime;
 	uniform float uPlanetStyle; // 0=earth, 1=mercury, 2=venus, 3=mars, 4=jupiter, 5=saturn, 6=uranus, 7=neptune
@@ -191,8 +193,11 @@ export const fragmentShader = /* glsl */ `
 			finalColor += mask * 0.05;
 		}
 
-		if (uHoveredIntensity >= 0.0 && abs(vIntensity - uHoveredIntensity) < 0.01) {
-			finalColor = mix(finalColor, uAccentColor, 0.6);
+		// Position-based hover highlight (Precise selection)
+		float hoverDist = distance(vLocalPosition, uHoverPos);
+		float hoverGlow = 1.0 - smoothstep(0.0, uHoverRadius, hoverDist);
+		if (uHoverPos != vec3(0.0)) {
+			finalColor = mix(finalColor, uAccentColor, hoverGlow * 0.8);
 		}
 
 		float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);

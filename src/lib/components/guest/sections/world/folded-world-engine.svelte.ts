@@ -331,6 +331,8 @@ export function createFoldedWorldEngine() {
 				uColorHot: { value: new THREE.Color(colors.faceHot) },
 				uAccentColor: { value: new THREE.Color(colors.accent) },
 				uHoveredIntensity: { value: -1.0 },
+				uHoverPos: { value: new THREE.Vector3(0, 0, 0) },
+				uHoverRadius: { value: 0.15 },
 				uWireColor: { value: new THREE.Color(colors.wireframe) },
 				uOpacity: { value: config.wireframeOpacity },
 				uWorldMask: { value: worldMask },
@@ -666,8 +668,13 @@ export function createFoldedWorldEngine() {
 						node
 					};
 
-					// Highlight hovered face
+					// Highlight hovered area precisely
 					if (mainMaterial) {
+						// Convert world hit point to local mesh space
+						const localPoint = intersects[0].point.clone();
+						mainMesh.worldToLocal(localPoint);
+						mainMaterial.uniforms.uHoverPos.value.copy(localPoint);
+						
 						const intensityAttr = mainMesh.geometry.getAttribute('vDataIntensity');
 						mainMaterial.uniforms.uHoveredIntensity.value = intensityAttr.getX(faceIdx * 3);
 					}
@@ -682,6 +689,7 @@ export function createFoldedWorldEngine() {
 		tooltip = { visible: false, x: 0, y: 0, node: null };
 		if (mainMaterial) {
 			mainMaterial.uniforms.uHoveredIntensity.value = -1.0;
+			mainMaterial.uniforms.uHoverPos.value.set(0, 0, 0);
 		}
 		if (canvasEl) canvasEl.style.cursor = 'grab';
 	}
