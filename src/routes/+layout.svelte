@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.png';
 	import { onMount } from 'svelte';
@@ -22,6 +22,7 @@
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
+	import AdsenseLoader from '@/lib/components/ui/adsense-loader.svelte';
 
 	let { data, children } = $props();
 
@@ -114,17 +115,22 @@
 	<link rel="icon" href={favicon} />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+
+	<!-- Preload Critical Fonts -->
+	<link
+		rel="preload"
+		as="style"
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+	/>
 	<link
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 		rel="stylesheet"
 	/>
+
 	<meta name="google-adsense-account" content="ca-pub-6698556269439251" />
-	<script
-		async
-		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6698556269439251"
-		crossorigin="anonymous"
-	></script>
 </svelte:head>
+
+<AdsenseLoader clientId="ca-pub-6698556269439251" />
 
 {#if fallingConfetti}
 	<FallingConfetti />
