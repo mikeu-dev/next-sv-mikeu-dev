@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Plays the confetti celebration sound effect.
  * Handles browser autoplay policy by queuing playback
  * until the first user interaction if autoplay is blocked.
@@ -31,7 +31,7 @@ export function playConfettiSound() {
 		const playPromise = audio.play();
 		if (playPromise) {
 			playPromise.catch(() => {
-				// Autoplay blocked by browser policy —
+				// Autoplay blocked by browser policy â€”
 				// queue to play on first user interaction
 				pendingAudio = audio;
 				interactionController = new AbortController();

@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+﻿import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = ({ url }) => {
 	const title = url.searchParams.get('title') || 'Mikeu Dev';

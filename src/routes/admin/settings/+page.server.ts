@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+﻿import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { settingsService } from '$lib/server/services/settings.service';
 import { generalSettingsSchema, profileSettingsSchema } from '$lib/server/schemas/settings.schema';

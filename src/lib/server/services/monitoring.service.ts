@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MonitoringService
  *
  * NOTE: Log cleanup (clearOldLogs) is limited to 500 docs per execution to avoid
@@ -32,7 +32,7 @@ export class MonitoringService {
 	async logError(log: Omit<AppErrorLog, 'timestamp'>) {
 		const col = this.collection;
 		if (!col) {
-			console.warn('⚠️ MonitoringService: Database not initialized, skipping log.');
+			console.warn('âš ï¸ MonitoringService: Database not initialized, skipping log.');
 			return null;
 		}
 

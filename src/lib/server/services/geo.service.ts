@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GeoIP Resolution Service
  *
  * Production (Vercel): Uses x-vercel-ip-* headers (zero-cost, zero-dependency)
@@ -89,7 +89,7 @@ function extractVercelHeaders(request: Request): GeoData {
 
 /**
  * Fallback GeoIP lookup via ip-api.com (free tier).
- * Rate limit: 45 requests/minute — hanya untuk development.
+ * Rate limit: 45 requests/minute â€” hanya untuk development.
  */
 async function fetchFromIpApi(ip: string): Promise<GeoData> {
 	try {
@@ -119,7 +119,7 @@ async function fetchFromIpApi(ip: string): Promise<GeoData> {
 			longitude: data.lon ?? null
 		};
 	} catch {
-		// Timeout or network error — silently return empty
+		// Timeout or network error â€” silently return empty
 		return EMPTY_GEO;
 	}
 }

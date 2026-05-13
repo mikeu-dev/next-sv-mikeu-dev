@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import './page.css';
 	import Header from './Header.svelte';
 

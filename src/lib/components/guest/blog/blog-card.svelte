@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import type { BlogPost } from '$lib/types';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';

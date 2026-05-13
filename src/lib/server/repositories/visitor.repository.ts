@@ -1,4 +1,4 @@
-import { BaseRepository } from '../core/base.repository';
+﻿import { BaseRepository } from '../core/base.repository';
 import type { VisitorLogData } from '../services/visitor.service';
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 

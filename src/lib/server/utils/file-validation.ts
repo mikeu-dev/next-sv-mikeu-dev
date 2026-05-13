@@ -1,4 +1,4 @@
-/**
+﻿/**
  * File signature validation utilities
  * Validates files by checking magic bytes (file signatures) to prevent MIME type spoofing
  */

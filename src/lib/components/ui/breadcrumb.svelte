@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { page } from '$app/state';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import Icon from './icon.svelte';

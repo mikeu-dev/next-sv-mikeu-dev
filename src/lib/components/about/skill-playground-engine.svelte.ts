@@ -1,4 +1,4 @@
-import type Matter from 'matter-js';
+﻿import type Matter from 'matter-js';
 import { browser } from '$app/environment';
 import {
 	shapes,

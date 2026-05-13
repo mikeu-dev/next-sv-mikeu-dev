@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import BlogCard from '../../blog/blog-card.svelte';
 	import type { BlogPost } from '$lib/types';

@@ -1,4 +1,4 @@
-<div class="flex h-full flex-col overflow-hidden rounded-3xl border border-border/50 bg-card">
+﻿<div class="flex h-full flex-col overflow-hidden rounded-3xl border border-border/50 bg-card">
 	<!-- Image Skeleton -->
 	<div class="aspect-video w-full animate-pulse bg-muted"></div>
 

@@ -1,5 +1,5 @@
-/**
- * Folded World — Three.js Reactive Engine
+﻿/**
+ * Folded World â€” Three.js Reactive Engine
  *
  * Svelte 5 reactive module yang mengelola Three.js scene,
  * icosahedron mesh, deformasi, dan interaksi.
@@ -25,7 +25,7 @@ import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import type { PlanetStyle } from './folded-world.types';
 import { vertexShader, fragmentShader } from './folded-world-shaders';
 
-// Three.js types — imported dynamically at runtime
+// Three.js types â€” imported dynamically at runtime
 type ThreeModule = typeof import('three');
 
 interface EngineState {
@@ -119,7 +119,7 @@ export function createFoldedWorldEngine() {
 		state.error = null;
 
 		try {
-			// Dynamic import Three.js — keeps it out of main bundle
+			// Dynamic import Three.js â€” keeps it out of main bundle
 			THREE = await import('three');
 
 			setupScene(isDark);
@@ -236,7 +236,7 @@ export function createFoldedWorldEngine() {
 
 	function buildGlobe(isDark: boolean): void {
 		const colors = getPlanetColors(planetStyle, isDark);
-		// Icosahedron geometry — subdivided for more faces
+		// Icosahedron geometry â€” subdivided for more faces
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
 

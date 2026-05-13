@@ -1,6 +1,6 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { pwaState } from '$lib/stores/pwa.svelte';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { Download, Smartphone } from '@lucide/svelte';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';

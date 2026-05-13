@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import type { BlogPost } from '$lib/types';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';

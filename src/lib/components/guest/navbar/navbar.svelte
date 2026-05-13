@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Select from '$lib/components/ui/select';
@@ -16,13 +16,13 @@
 	import { authState } from '$lib/stores/auth.svelte';
 	import InstallButton from '../pwa/InstallButton.svelte';
 	import { fade } from 'svelte/transition';
-	import { getLocale, setLocale, localizeHref } from '../../../paraglide/runtime';
+	import { getLocale, setLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { Terminal, Command, Hash, Menu, X, ArrowUpRight } from '@lucide/svelte';
 
 	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{

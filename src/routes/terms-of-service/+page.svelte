@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import SEO from '$lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';

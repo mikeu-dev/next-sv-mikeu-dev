@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import MarkdownRenderer from '../ui/markdown-renderer.svelte';
 
 	let { value = $bindable(''), placeholder = 'Write your content...', id = '' } = $props();
@@ -147,7 +147,7 @@
 			class="rounded px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
 			title="Bullet List"
 		>
-			• List
+			â€¢ List
 		</button>
 		<button
 			type="button"
@@ -167,7 +167,7 @@
 			class="rounded px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
 			title="Link"
 		>
-			🔗 Link
+			ðŸ”— Link
 		</button>
 		<button
 			type="button"
@@ -186,7 +186,7 @@
 					? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200'
 					: 'hover:bg-gray-200 dark:hover:bg-gray-700'}"
 			>
-				{showPreview ? '📝 Edit' : '👁️ Preview'}
+				{showPreview ? 'ðŸ“ Edit' : 'ðŸ‘ï¸ Preview'}
 			</button>
 		</div>
 	</div>
@@ -215,6 +215,6 @@
 	<div
 		class="border-t border-gray-300 bg-gray-50 px-4 py-2 text-xs text-muted-foreground dark:border-gray-700 dark:bg-gray-800"
 	>
-		💡 Tip: Use the toolbar buttons for quick formatting or write markdown directly
+		ðŸ’¡ Tip: Use the toolbar buttons for quick formatting or write markdown directly
 	</div>
 </div>

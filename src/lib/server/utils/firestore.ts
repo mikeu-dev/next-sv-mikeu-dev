@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Utility to prepare data for Firestore by removing undefined values
  * which are not supported by the Firebase SDK.
  */

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import {
 		FolderKanban,
 		FileText,
@@ -151,7 +151,7 @@
 											</p>
 											<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
 												<span>{msg.email}</span>
-												<span>•</span>
+												<span>â€¢</span>
 												<span>
 													{msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'N/A'}
 												</span>
@@ -218,7 +218,7 @@
 															>{visitor.ip || 'Unknown'}</span
 														>
 														<span class="text-xs text-muted-foreground"
-															>{visitor.browser} • {visitor.os}</span
+															>{visitor.browser} â€¢ {visitor.os}</span
 														>
 													</div>
 												</div>

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { toast } from 'svelte-sonner';
 
 	interface MigrationResult {
@@ -51,34 +51,34 @@
 		<h2 class="mb-4 text-xl font-semibold">Migrate Local Data to Firestore</h2>
 		<ul class="mb-6 space-y-2">
 			<li class="flex items-center gap-2">
-				<span class="text-2xl">📚</span>
+				<span class="text-2xl">ðŸ“š</span>
 				<span>TechStack (EN & ID)</span>
 			</li>
 			<li class="flex items-center gap-2">
-				<span class="text-2xl">🚀</span>
+				<span class="text-2xl">ðŸš€</span>
 				<span>Journey (EN & ID)</span>
 			</li>
 			<li class="flex items-center gap-2">
-				<span class="text-2xl">💪</span>
+				<span class="text-2xl">ðŸ’ª</span>
 				<span>Skills (EN & ID)</span>
 			</li>
 			<li class="flex items-center gap-2">
-				<span class="text-2xl">🔗</span>
+				<span class="text-2xl">ðŸ”—</span>
 				<span>Social Links</span>
 			</li>
 			<li class="flex items-center gap-2">
-				<span class="text-2xl">📁</span>
+				<span class="text-2xl">ðŸ“</span>
 				<span>Projects (EN & ID) - Bilingual Format</span>
 			</li>
 			<li class="flex items-center gap-2">
-				<span class="text-2xl">📝</span>
+				<span class="text-2xl">ðŸ“</span>
 				<span>Blog Posts (.svx files)</span>
 			</li>
 		</ul>
 
 		<div class="mb-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
 			<p class="text-sm font-medium text-blue-800 dark:text-blue-200">
-				ℹ️ Projects will be migrated directly to bilingual format (title_id, title_en, etc.)
+				â„¹ï¸ Projects will be migrated directly to bilingual format (title_id, title_en, etc.)
 			</p>
 		</div>
 
@@ -105,7 +105,7 @@
 							<span
 								class="text-sm {result.status === 'success' ? 'text-green-600' : 'text-red-600'}"
 							>
-								{result.status === 'success' ? '✅ Success' : '❌ ' + result.message}
+								{result.status === 'success' ? 'âœ… Success' : 'âŒ ' + result.message}
 							</span>
 						</div>
 					{/each}

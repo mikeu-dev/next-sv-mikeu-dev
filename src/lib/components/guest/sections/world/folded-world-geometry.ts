@@ -1,5 +1,5 @@
-/**
- * Folded World — Geometry Utilities
+﻿/**
+ * Folded World â€” Geometry Utilities
  *
  * Pure utility functions untuk membuat dan memanipulasi
  * icosahedron mesh yang di-deformasi berdasarkan data visitor.
@@ -155,7 +155,7 @@ export function findNearestNode(
 
 /**
  * Generate noise-based micro displacement untuk paper fold effect.
- * Simplex-like noise tanpa dependency — uses seeded random.
+ * Simplex-like noise tanpa dependency â€” uses seeded random.
  */
 export function paperFoldDisplacement(x: number, y: number, z: number, seed: number = 42): number {
 	// Simple hash-based pseudo-noise

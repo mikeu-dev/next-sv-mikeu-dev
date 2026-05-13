@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { TechStackService } from '$lib/server/services/techstack.service';
 import { logError } from '$lib/server/utils/logger';
 

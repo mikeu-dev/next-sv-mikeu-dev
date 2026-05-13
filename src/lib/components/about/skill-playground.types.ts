@@ -1,4 +1,4 @@
-import type { Tag } from '$lib/types';
+﻿import type { Tag } from '$lib/types';
 
 export interface LocalizedCategory {
 	category: string;

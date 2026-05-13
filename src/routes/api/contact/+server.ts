@@ -1,4 +1,4 @@
-export const prerender = false;
+﻿export const prerender = false;
 
 import { json } from '@sveltejs/kit';
 import { ContactsService } from '@/lib/server/services/contacts.service';

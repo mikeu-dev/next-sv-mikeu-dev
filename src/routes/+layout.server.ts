@@ -1,4 +1,4 @@
-import type { LayoutServerLoad } from './$types';
+﻿import type { LayoutServerLoad } from './$types';
 import { socialsService } from '$lib/server/services/socials.service';
 import { visitorService } from '$lib/server/services/visitor.service';
 import { settingsService } from '$lib/server/services/settings.service';

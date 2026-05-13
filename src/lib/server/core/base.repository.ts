@@ -1,4 +1,4 @@
-import { db } from '../firebase/firebase.server';
+﻿import { db } from '../firebase/firebase.server';
 
 export abstract class BaseRepository<T> {
 	protected constructor(private readonly collectionName: string) {}

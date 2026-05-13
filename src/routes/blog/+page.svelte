@@ -1,5 +1,5 @@
-<script lang="ts">
-	import { m } from '@/lib/paraglide/messages';
+﻿<script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import type { PageData } from './$types';
 	import type { BlogPost } from '$lib/types';
 	import BlogCard from '$lib/components/guest/blog/blog-card.svelte';

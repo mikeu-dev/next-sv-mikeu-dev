@@ -1,9 +1,9 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { SvelteSet, SvelteMap } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { Terminal, Cpu, Activity, Hash, ArrowRight } from '@lucide/svelte';
 	import BrutalistGlyph from '@/lib/components/ui/BrutalistGlyph.svelte';
 	import type Matter from 'matter-js';
@@ -37,7 +37,7 @@
 	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
 
-	// ── Impact FX Utilities ──────────────────────────────────────────
+	// â”€â”€ Impact FX Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	/** Track which bodies already triggered their impact (one-shot per letter) */
 	const impactedBodies = new SvelteSet<number>();
@@ -50,7 +50,7 @@
 		container: HTMLElement
 	): void {
 		const count = Math.min(Math.floor(velocity * 1.5) + 3, 12);
-		const shapes = ['▪', '◆', '▫', '◇', '▸', '▹'];
+		const shapes = ['â–ª', 'â—†', 'â–«', 'â—‡', 'â–¸', 'â–¹'];
 
 		for (let i = 0; i < count; i++) {
 			const particle = document.createElement('span');
@@ -81,7 +81,7 @@
 		}
 	}
 
-	/** Micro screen-shake on the title container, intensity ∝ velocity */
+	/** Micro screen-shake on the title container, intensity âˆ velocity */
 	function triggerScreenShake(container: HTMLElement, velocity: number): void {
 		const intensity = Math.min(velocity * 0.4, 4);
 		gsap.to(container, {
@@ -250,7 +250,7 @@
 		gsap.delayedCall(2.0, () => group.remove());
 	}
 
-	// ── Mount ────────────────────────────────────────────────────────
+	// â”€â”€ Mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	onMount(async () => {
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
@@ -377,7 +377,7 @@
 			})
 			.filter((v): v is LetterData => v !== null);
 
-		// Map body IDs → LetterData for collision lookup
+		// Map body IDs â†’ LetterData for collision lookup
 		const bodyToLetter = new SvelteMap<number, LetterData>();
 		letters.forEach((letter) => {
 			bodyToLetter.set(letter.body.id, letter);
@@ -389,7 +389,7 @@
 			}, i * 30); // Lebih instan, tanpa delay 1000ms
 		});
 
-		// ── Collision Impact Handler ──────────────────────────────────
+		// â”€â”€ Collision Impact Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 		Events.on(engine, 'collisionStart', (event: Matter.IEventCollision<Matter.Engine>) => {
 			for (const pair of event.pairs) {
 				const { bodyA, bodyB } = pair;
@@ -701,7 +701,7 @@
 		user-select: none;
 	}
 
-	/* ── Origami Impact Shard Styling ─────────────────────────── */
+	/* â”€â”€ Origami Impact Shard Styling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 	:global(.origami-impact-shard) {
 		position: absolute;
 		pointer-events: none;
@@ -710,7 +710,7 @@
 		will-change: transform, opacity;
 	}
 
-	/* ── Background Aesthetics ────────────────────────────────── */
+	/* â”€â”€ Background Aesthetics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 	.blueprint-grid {
 		background-image: radial-gradient(var(--foreground) 0.5px, transparent 0.5px);
 		background-size: 40px 40px;
@@ -758,7 +758,7 @@
 		will-change: transform;
 	}
 
-	/* ── Coordinate HUD with CSS Counters ────────────────────── */
+	/* â”€â”€ Coordinate HUD with CSS Counters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 	.coord-display {
 		counter-reset: x var(--coord-x) y var(--coord-y);
 	}

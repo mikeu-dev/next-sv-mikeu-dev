@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { VisitorService } from '$lib/server/services/visitor.service';
 
 export async function GET() {

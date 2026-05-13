@@ -1,4 +1,4 @@
-import { createHighlighter, type Highlighter } from 'shiki';
+﻿import { createHighlighter, type Highlighter } from 'shiki';
 import { marked } from 'marked';
 
 let highlighter: Highlighter;

@@ -1,4 +1,4 @@
-import { SocialsRepository } from '../repositories/socials.repository';
+﻿import { SocialsRepository } from '../repositories/socials.repository';
 import type { Socials } from '$lib/types';
 import { sanitizeForFirestore } from '../utils/firestore';
 import { dev } from '$app/environment';
@@ -25,7 +25,7 @@ export class SocialsService {
 		if (dev) {
 			const cached = persistentCache.get<Socials>(cacheKey);
 			if (cached) {
-				console.log('📂 SocialsService: File Cache Hit');
+				console.log('ðŸ“‚ SocialsService: File Cache Hit');
 				SocialsService.cache = cached;
 				SocialsService.lastFetch = now;
 				return cached;

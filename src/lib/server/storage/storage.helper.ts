@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/private';
+﻿import { env } from '$env/dynamic/private';
 import fs from 'fs';
 import path from 'path';
 

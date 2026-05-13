@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { page } from '$app/state';
 	import { locales, baseLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';

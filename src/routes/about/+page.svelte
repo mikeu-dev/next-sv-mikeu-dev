@@ -1,10 +1,10 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import type { PageData } from './$types';
 	import type { TechStackCategory, JourneyItem } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { getLocale } from '@/lib/paraglide/runtime';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import { getLocalizedTag } from '$lib/utils/project-mapper';
 	import { Mail, Coffee, Gamepad2, Music, CheckCircle2, ArrowRight, Hash } from '@lucide/svelte';
@@ -190,7 +190,7 @@
 							[USER_IDENTITY_STAMP]
 						</div>
 						<h1 class="font-poppins text-6xl font-black tracking-tighter md:text-9xl">
-							{m.about_begin_first_part()} 👋<br />
+							{m.about_begin_first_part()} ðŸ‘‹<br />
 							I'm
 							<span class="text-primary underline decoration-4 underline-offset-8"
 								>{m.common_author_name()}</span

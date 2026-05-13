@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
 	import { toast } from 'svelte-sonner';
 	import { Upload, FileText, ExternalLink, CheckCircle, Loader2 } from '@lucide/svelte';

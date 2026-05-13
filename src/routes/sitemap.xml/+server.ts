@@ -1,4 +1,4 @@
-import type { RequestHandler } from './$types';
+﻿import type { RequestHandler } from './$types';
 import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
 import { monitoringService } from '$lib/server/services/monitoring.service';

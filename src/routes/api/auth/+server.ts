@@ -1,4 +1,4 @@
-export const prerender = false;
+﻿export const prerender = false;
 
 import { json } from '@sveltejs/kit';
 import { AuthService } from '../../../lib/server/services/auth.service';

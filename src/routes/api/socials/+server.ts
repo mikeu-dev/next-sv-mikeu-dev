@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { SocialsService } from '$lib/server/services/socials.service';
 import { logError } from '$lib/server/utils/logger';

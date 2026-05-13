@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 export const generalSettingsSchema = z.object({
 	siteName: z.string().min(1, 'Site name is required').max(100),

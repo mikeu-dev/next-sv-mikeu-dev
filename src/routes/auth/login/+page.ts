@@ -1,4 +1,4 @@
-// import type { PageLoad } from './$types'; // Skip until sync
+﻿// import type { PageLoad } from './$types'; // Skip until sync
 
 export const prerender = false;
 

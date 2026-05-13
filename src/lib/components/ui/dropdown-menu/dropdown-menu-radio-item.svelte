@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import { cn, type WithoutChild } from '$lib/utils.js';

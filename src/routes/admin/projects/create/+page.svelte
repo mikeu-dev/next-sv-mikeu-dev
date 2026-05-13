@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { toast } from 'svelte-sonner';
@@ -211,7 +211,7 @@
 						? 'border-b-2 border-blue-600 text-blue-600'
 						: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
 				>
-					🇮🇩 Indonesia
+					ðŸ‡®ðŸ‡© Indonesia
 				</button>
 				<button
 					type="button"
@@ -220,7 +220,7 @@
 						? 'border-b-2 border-blue-600 text-blue-600'
 						: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
 				>
-					🇬🇧 English
+					ðŸ‡¬ðŸ‡§ English
 				</button>
 			</div>
 		</div>

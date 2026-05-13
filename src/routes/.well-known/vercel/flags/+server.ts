@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { getProviderData } from '@vercel/flags/sveltekit';
 import * as flags from '$lib/flags';
 import type { RequestHandler } from './$types';

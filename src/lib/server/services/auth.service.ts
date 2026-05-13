@@ -1,4 +1,4 @@
-import { auth } from '../firebase/firebase.server';
+﻿import { auth } from '../firebase/firebase.server';
 import { env } from '$env/dynamic/private';
 
 export class AuthService {

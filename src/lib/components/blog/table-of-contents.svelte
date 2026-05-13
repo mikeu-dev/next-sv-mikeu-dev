@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import type { BlogHeading } from '$lib/server/utils/markdown';
 	import { onMount } from 'svelte';
 

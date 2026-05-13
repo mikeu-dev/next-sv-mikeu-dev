@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	/**
 	 * BrutalistGlyph.svelte
 	 * Renders a custom geometric SVG representing a character.

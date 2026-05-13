@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VisitorService
  *
  * CRITICAL QUOTA NOTE (2026-05-07):
@@ -34,7 +34,7 @@ export interface VisitorLogData {
 	language: string | null;
 	path: string;
 	timestamp?: Date | null;
-	// Geo fields — populated via GeoIP service
+	// Geo fields â€” populated via GeoIP service
 	country?: string | null;
 	city?: string | null;
 	region?: string | null;
@@ -90,7 +90,7 @@ export class VisitorService {
 	async increment(logData?: VisitorLogData): Promise<void> {
 		const currentDb = this.db;
 		if (!currentDb) {
-			console.warn('⚠️ VisitorService: Database not initialized, skipping increment.');
+			console.warn('âš ï¸ VisitorService: Database not initialized, skipping increment.');
 			return;
 		}
 
@@ -277,7 +277,7 @@ export class VisitorService {
 			VisitorService.statsCache &&
 			now - VisitorService.statsCache.timestamp < this.STATS_CACHE_TTL
 		) {
-			console.log('⚡ VisitorService: Stats Memory Cache Hit');
+			console.log('âš¡ VisitorService: Stats Memory Cache Hit');
 			return VisitorService.statsCache.data;
 		}
 
@@ -285,7 +285,7 @@ export class VisitorService {
 		if (dev) {
 			const cached = persistentCache.get<VisitorStats>('visitor_stats');
 			if (cached) {
-				console.log('📂 VisitorService: Stats File Cache Hit');
+				console.log('ðŸ“‚ VisitorService: Stats File Cache Hit');
 				VisitorService.statsCache = { data: cached, timestamp: now };
 				return cached;
 			}
@@ -427,7 +427,7 @@ export class VisitorService {
 
 		// 1. Memory Cache
 		if (VisitorService.geoCache && now - VisitorService.geoCache.timestamp < this.GEO_CACHE_TTL) {
-			console.log('⚡ VisitorService: Geo Memory Cache Hit');
+			console.log('âš¡ VisitorService: Geo Memory Cache Hit');
 			return VisitorService.geoCache.data;
 		}
 
@@ -435,7 +435,7 @@ export class VisitorService {
 		if (dev) {
 			const cached = persistentCache.get<GeoNode[]>('geo_aggregation');
 			if (cached) {
-				console.log('📂 VisitorService: Geo File Cache Hit');
+				console.log('ðŸ“‚ VisitorService: Geo File Cache Hit');
 				VisitorService.geoCache = { data: cached, timestamp: now };
 				return cached;
 			}
@@ -453,7 +453,7 @@ export class VisitorService {
 
 			if (!summaryDoc.exists) {
 				// SAFE FALLBACK: Limit to 50 reads max if summary missing.
-				console.log('⚠️ Geo Summary not found, falling back to log aggregation (Expensive!)');
+				console.log('âš ï¸ Geo Summary not found, falling back to log aggregation (Expensive!)');
 				return this.fallbackGeoAggregation(Math.min(limit, 50));
 			}
 

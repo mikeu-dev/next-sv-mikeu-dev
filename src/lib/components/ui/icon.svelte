@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { Icon as SvelteIconPack } from 'svelte-icons-pack';
 	import { iconRegistry } from '$lib/icons/registry';
 	import type { IconType } from 'svelte-icons-pack';

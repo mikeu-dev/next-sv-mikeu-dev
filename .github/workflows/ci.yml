@@ -33,12 +33,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Paraglide
-        run: npx paraglide-js compile --project ./project.inlang
+        run: npx paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
 
       - name: Lint
         run: pnpm lint
 
-      - name: Check
+      - name: Type Check
         run: pnpm check
         env:
           FLAGS_SECRET: ${{ secrets.FLAGS_SECRET || 'dummy_secret' }}

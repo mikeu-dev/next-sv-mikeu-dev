@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import ContactSection from '../lib/components/guest/sections/contact/contact.svelte';
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import WorkSection from '../lib/components/guest/sections/work/work.svelte';
@@ -70,7 +70,7 @@
 				href="/world"
 				class="inline-block bg-primary px-8 py-4 font-bold tracking-widest text-primary-foreground transition-all hover:skew-x-[-10deg] hover:bg-primary/90"
 			>
-				{m.world_teaser_button()} →
+				{m.world_teaser_button()} â†’
 			</a>
 		</div>
 	</div>

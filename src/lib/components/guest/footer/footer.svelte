@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { onMount } from 'svelte';

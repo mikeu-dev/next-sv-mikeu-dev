@@ -1,4 +1,4 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+﻿import { json, type RequestHandler } from '@sveltejs/kit';
 import { geminiService } from '$lib/server/services/gemini.service';
 
 export const POST: RequestHandler = async ({ request }) => {

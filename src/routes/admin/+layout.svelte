@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { authState } from '@/lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';

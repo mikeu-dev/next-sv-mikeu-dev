@@ -1,7 +1,7 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { Share2, Linkedin, Link, MessageCircle, Twitter } from '@lucide/svelte';
 	import { page } from '$app/state';
-	import { m } from '@/lib/paraglide/messages';
+	import { m } from '$lib/paraglide/messages';
 	import { toast } from 'svelte-sonner';
 
 	let { title = '' } = $props<{ title: string }>();

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import type { SerializedTag } from '$lib/types';
 	import IconPicker from './icon-picker.svelte';
 	import Icon from '$lib/components/ui/icon.svelte';

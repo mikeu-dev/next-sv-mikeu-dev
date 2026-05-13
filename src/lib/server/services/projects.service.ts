@@ -1,4 +1,4 @@
-import { BaseService } from '../core/base.service';
+﻿import { BaseService } from '../core/base.service';
 import { ProjectsRepository } from '../repositories/projects.repository';
 import type { Project } from '../../types';
 import { projectSchema } from '../schemas/project.schema';
@@ -85,14 +85,14 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
 
 		if (isMainList) {
 			if (ProjectsService.cache && now - ProjectsService.lastFetch < ProjectsService.CACHE_TTL) {
-				console.log('⚡ ProjectsService: Memory Cache Hit');
+				console.log('âš¡ ProjectsService: Memory Cache Hit');
 				return ProjectsService.cache;
 			}
 
 			if (dev) {
 				const cached = persistentCache.get<Project[]>('projects_list');
 				if (cached) {
-					console.log('📂 ProjectsService: File Cache Hit');
+					console.log('ðŸ“‚ ProjectsService: File Cache Hit');
 					ProjectsService.cache = cached;
 					ProjectsService.lastFetch = now;
 					return cached;

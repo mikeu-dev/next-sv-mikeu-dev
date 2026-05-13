@@ -1,4 +1,4 @@
-import { auth } from '$lib/firebase/firebase.client';
+﻿import { auth } from '$lib/firebase/firebase.client';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 
 /**
