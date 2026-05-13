@@ -337,6 +337,7 @@ export function createFoldedWorldEngine() {
 				uOpacity: { value: config.wireframeOpacity },
 				uWorldMask: { value: worldMask },
 				uNeonColor: { value: new THREE.Color(colors.neon) },
+				uTimeColor: { value: new THREE.Color(0xbb66ff) },
 				uAssembleProgress: { value: 0.0 },
 				uPlanetStyle: { value: 0.0 }
 			},

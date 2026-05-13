@@ -52,6 +52,7 @@ export const fragmentShader = /* glsl */ `
 	uniform vec3 uColorHot;
 	uniform vec3 uNeonColor;
 	uniform vec3 uAccentColor;
+	uniform vec3 uTimeColor;
 	uniform float uHoveredIntensity;
 	uniform vec3 uHoverPos;
 	uniform float uHoverRadius;
@@ -181,16 +182,37 @@ export const fragmentShader = /* glsl */ `
 			// Continental silhouette (very subtle for non-earth)
 			float maskStrength = uPlanetStyle == 0.0 ? 0.25 : 0.05;
 			finalColor += mask * maskStrength;
-		} else if (uMode == 1) {
-			vec3 heatColor = mix(uColorCold, uAccentColor, pow(vIntensity, 1.2));
-			finalColor = (heatColor + mask * 0.1) * lighting;
-			finalColor = mix(finalColor, planetBase * lighting, 0.3);
-		} else {
-			float pulse = sin(uTime * 2.0 + vIntensity * 6.28318) * 0.5 + 0.5;
-			vec3 baseColor = mix(uColorCold, uColorHot, pow(vIntensity, 1.5));
-			finalColor = mix(baseColor * lighting, planetBase * lighting, 0.4);
-			finalColor += uAccentColor * vIntensity * pulse * 0.3;
-			finalColor += mask * 0.05;
+		} else if (uMode == 1) { // HEAT MODE (Thermal Visualization)
+			// Create a 3-way thermal ramp: Cold -> Hot -> Accent (Extreme)
+			vec3 thermal = mix(uColorCold, uColorHot, smoothstep(0.0, 0.5, vIntensity));
+			thermal = mix(thermal, uAccentColor, smoothstep(0.5, 1.0, vIntensity));
+			
+			// Add a slight "thermal glow" to high intensity areas
+			float glow = pow(vIntensity, 3.0) * 0.5;
+			finalColor = thermal * lighting + (uAccentColor * glow);
+			
+			// Subtle planetary context
+			finalColor = mix(finalColor, planetBase * lighting, 0.15);
+			finalColor += mask * 0.15;
+		} else { // TIME MODE (Temporal Pulse / Radar)
+			// Moving radar-like wave based on time
+			float wave = fract(vIntensity * 5.0 - uTime * 0.5);
+			float scanline = smoothstep(0.0, 0.1, wave) * (1.0 - smoothstep(0.1, 0.2, wave));
+			
+			// Pulse intensity
+			float pulse = sin(uTime * 2.5 + vIntensity * 10.0) * 0.5 + 0.5;
+			
+			// Use uTimeColor (Violet) for this mode
+			vec3 timeColor = mix(uColorCold, uTimeColor, vIntensity);
+			timeColor = mix(timeColor, uTimeColor, scanline * vIntensity);
+			
+			finalColor = timeColor * lighting;
+			finalColor += uTimeColor * scanline * vIntensity * 2.5; // Sharp scanline
+			finalColor += uTimeColor * vIntensity * pulse * 0.6; // Soft pulse
+			
+			// Very faint planetary context
+			finalColor = mix(finalColor, planetBase * lighting, 0.1);
+			finalColor += mask * 0.1;
 		}
 
 		// Position-based hover highlight (Precise selection)

@@ -296,6 +296,7 @@
 							<span>HOTSPOT</span>
 						</div>
 					{:else}
+						<div class="legend-bar violet-gradient"></div>
 						<div class="legend-pulse-container">
 							<div class="legend-pulse-dot"></div>
 							<span class="legend-pulse-text">ACTIVE VISITOR FREQUENCY</span>
@@ -738,6 +739,11 @@
 		background: linear-gradient(90deg, #121212 0%, #ff3333 100%);
 	}
 
+	.violet-gradient {
+		background: linear-gradient(90deg, #121212 0%, #bb66ff 100%);
+		margin-bottom: 4px;
+	}
+
 	.legend-scale {
 		display: flex;
 		justify-content: space-between;
@@ -757,7 +763,7 @@
 	.legend-pulse-dot {
 		width: 6px;
 		height: 6px;
-		background: #ff3333;
+		background: #bb66ff;
 		border-radius: 50%;
 		animation: legend-pulse 1.5s ease-out infinite;
 	}
