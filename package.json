@@ -96,5 +96,15 @@
 		"three": "^0.184.0",
 		"ua-parser-js": "^2.0.8",
 		"zod": "^4.1.12"
+	},
+	"pnpm": {
+		"ignoredBuiltDependencies": [
+			"@firebase/util",
+			"protobufjs"
+		],
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"@tailwindcss/oxide"
+		]
 	}
 }
