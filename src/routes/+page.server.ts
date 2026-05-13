@@ -19,9 +19,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.catch(() => []),
 		skills: skillsService
 			.getSkills(locale)
-			.then((skills) => (skills as { items: string[] })?.items || []),
+			.then((skills) => (skills as { items: string[] })?.items || [])
+			.catch(() => []),
 		latestPosts: blogService
 			.getPublishedPostsByLocale(locale)
 			.then((posts) => posts?.posts.slice(0, 3) || [])
+			.catch(() => [])
 	};
 };
