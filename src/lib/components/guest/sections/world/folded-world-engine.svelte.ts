@@ -69,6 +69,7 @@ export function createFoldedWorldEngine() {
 	let camera: InstanceType<ThreeModule['PerspectiveCamera']>;
 	let mainMesh: InstanceType<ThreeModule['Mesh']>;
 	let ringMesh: InstanceType<ThreeModule['Mesh']>;
+	let particlesMesh: InstanceType<ThreeModule['Points']> | null = null;
 	let mainMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let ringMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let raycaster: InstanceType<ThreeModule['Raycaster']>;
@@ -126,6 +127,13 @@ export function createFoldedWorldEngine() {
 
 			setupScene(isDark);
 			buildGlobe(isDark);
+			if (config.enableParticles) {
+				try {
+					buildParticles(isDark);
+				} catch (e) {
+					console.error('Failed to build particles:', e);
+				}
+			}
 			applyDeformations();
 
 			if (!isMinimal) {
@@ -135,6 +143,8 @@ export function createFoldedWorldEngine() {
 			state.ready = true;
 			state.loading = false;
 			state.nodeCount = nodes.length;
+
+			console.log('Folded World Engine: Initialization successful');
 
 			// Start render loop
 			startTime = performance.now();
@@ -398,14 +408,49 @@ export function createFoldedWorldEngine() {
 		scene.add(ringMesh);
 	}
 
+	function buildParticles(isDark: boolean): void {
+		if (!THREE) return;
+
+		const count = 1000;
+		const geometry = new THREE.BufferGeometry();
+		const positions = new Float32Array(count * 3);
+		const sizes = new Float32Array(count);
+
+		for (let i = 0; i < count; i++) {
+			const r = 5 + Math.random() * 10;
+			const theta = Math.random() * Math.PI * 2;
+			const phi = Math.random() * Math.PI;
+
+			positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+			positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+			positions[i * 3 + 2] = r * Math.cos(phi);
+			sizes[i] = Math.random() * 2;
+		}
+
+		geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+		geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+		const material = new THREE.PointsMaterial({
+			color: isDark ? 0xffffff : 0x000000,
+			size: 0.05,
+			transparent: true,
+			opacity: 0.4,
+			sizeAttenuation: true
+		});
+
+		particlesMesh = new THREE.Points(geometry, material);
+		scene.add(particlesMesh);
+	}
+
 	function applyDeformations(): void {
 		if (!mainMesh) return;
 
 		const geometry = mainMesh.geometry;
 		const intensityAttr = geometry.getAttribute('vDataIntensity');
 
-		// Map geo nodes to face intensities (0.04 radians ~ 2.3 degrees ~ 250km localized radius)
-		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.04);
+		// Map geo nodes to face intensities (0.15 radians ~ 8.5 degrees ~ 1000km localized radius)
+		// Increased from 0.04 to 0.15 to ensure visibility of visitor data "peaks".
+		const faceIntensities = mapNodesToFaces(faceCentersCache, geoNodes, 0.15);
 
 		// Spread face intensity to all 3 vertices of each face
 		for (let face = 0; face < faceIntensities.length; face++) {
@@ -534,6 +579,11 @@ export function createFoldedWorldEngine() {
 			mainMaterial.uniforms.uMode.value = modeIdx;
 			mainMaterial.uniforms.uAssembleProgress.value = finalAssemble;
 			mainMaterial.uniforms.uPlanetStyle.value = planetIdx;
+		}
+
+		if (particlesMesh) {
+			particlesMesh.rotation.y = elapsed * 0.02;
+			particlesMesh.rotation.x = elapsed * 0.01;
 		}
 
 		renderer.render(scene, camera);
@@ -743,6 +793,11 @@ export function createFoldedWorldEngine() {
 
 		if (ringMaterial) {
 			ringMaterial.uniforms.uColor.value.set(colors.wireframe);
+		}
+
+		if (particlesMesh) {
+			const pMaterial = particlesMesh.material as InstanceType<ThreeModule['PointsMaterial']>;
+			pMaterial.color.set(isDark ? 0xffffff : 0x000000);
 		}
 	}
 

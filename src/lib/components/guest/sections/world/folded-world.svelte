@@ -2,19 +2,20 @@
 	import { onMount } from 'svelte';
 	import { createFoldedWorldEngine } from './folded-world-engine.svelte';
 	import { formatRelativeTime } from './folded-world-geometry';
-	import type { GeoNode, ViewMode, PlanetStyle } from './folded-world.types';
+	import { getPlanetColors, type GeoNode, type ViewMode, type PlanetStyle } from './folded-world.types';
 	import { m } from '$lib/paraglide/messages';
+	import { mode } from 'mode-watcher';
 	import gsap from 'gsap';
 
 	interface Props {
 		nodes: GeoNode[];
 		totalVisitors: number;
 		todayVisitors?: number;
-		isDark?: boolean;
 		minimal?: boolean;
 	}
 
-	let { nodes, totalVisitors, todayVisitors = 0, isDark = true, minimal = false }: Props = $props();
+	let { nodes, totalVisitors, todayVisitors = 0, minimal = false }: Props = $props();
+	let isDark = $derived(mode.current === 'dark');
 
 	const engine = createFoldedWorldEngine();
 
@@ -46,6 +47,8 @@
 	let currentPlanetLabel = $derived(
 		PLANET_STYLES.find((p) => p.id === engine.planetStyle)?.label ?? 'EARTH'
 	);
+ 
+	let currentColors = $derived(getPlanetColors(engine.planetStyle, isDark));
 
 	onMount(() => {
 		engine.init(containerEl, canvasEl, nodes, isDark, minimal);
@@ -284,7 +287,14 @@
 		</div>
 
 		<!-- Bottom-center: Legend -->
-		<div class="hud hud-legend">
+		<div 
+			class="hud hud-legend"
+			style="
+				--neon-color: #{currentColors.neon.toString(16).padStart(6, '0')};
+				--heat-color: #{currentColors.accent.toString(16).padStart(6, '0')};
+				--cold-color: #{currentColors.faceCold.toString(16).padStart(6, '0')};
+			"
+		>
 			<div class="legend-content">
 				<div class="legend-header">
 					<span class="legend-label">{m.world_hud_mode()} :: {currentModeLabel}</span>
@@ -397,7 +407,7 @@
 		height: 100%;
 		min-height: 100dvh;
 		overflow: hidden;
-		background-color: #f0f0f0;
+		background-color: transparent;
 		/* Brutalist Architectural Grid + Vignette */
 		background-image:
 			radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.15) 100%),
@@ -420,7 +430,7 @@
 		transform: translate(-50%, -50%) rotate(-5deg);
 		font-size: clamp(4rem, 12vw, 15rem);
 		font-weight: 900;
-		color: rgba(0, 0, 0, 0.02);
+		color: rgba(0, 0, 0, 0.04);
 		white-space: nowrap;
 		pointer-events: none;
 		z-index: 0;
@@ -558,7 +568,7 @@
 
 	.hud {
 		position: absolute;
-		z-index: 10;
+		z-index: 50;
 		pointer-events: none;
 	}
 
@@ -598,6 +608,18 @@
 
 	:global(.dark) .hud-title {
 		color: #fafafa;
+	}
+
+	:global(.dark) .hud-divider {
+		background-color: #fafafa;
+	}
+
+	:global(.dark) .hud-stat-value {
+		color: #fafafa;
+	}
+
+	:global(.dark) .hud-mode-label {
+		color: #aaa;
 	}
 
 	.hud-divider {
@@ -740,15 +762,15 @@
 	}
 
 	.neon-gradient {
-		background: linear-gradient(90deg, #121212 0%, #00f3ff 100%);
+		background: linear-gradient(90deg, var(--cold-color, #121212) 0%, var(--neon-color, #00f3ff) 100%);
 	}
 
 	.heat-gradient {
-		background: linear-gradient(90deg, #121212 0%, #ff3333 100%);
+		background: linear-gradient(90deg, var(--cold-color, #121212) 0%, var(--heat-color, #ff3333) 100%);
 	}
 
 	.violet-gradient {
-		background: linear-gradient(90deg, #121212 0%, #bb66ff 100%);
+		background: linear-gradient(90deg, var(--cold-color, #121212) 0%, #bb66ff 100%);
 		margin-bottom: 4px;
 	}
 
