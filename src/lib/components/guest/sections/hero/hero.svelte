@@ -486,6 +486,11 @@
 				<Terminal class="size-3" /> CORE_IDENTIFIER: MIKEU_DEV_V5
 			</div>
 			<div
+				class="hidden items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase md:flex"
+			>
+				<Hash class="size-3" /> ORIGIN_ID: RIKI_RUSWANDI
+			</div>
+			<div
 				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase"
 			>
 				<Cpu class="size-3" /> ARCH_TYPE: FULLSTACK_ARCHIVE

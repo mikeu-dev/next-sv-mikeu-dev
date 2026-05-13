@@ -1,6 +1,8 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"hero_title": "Mikeu Dev",
+	"common_author_name": "Riki Ruswandi",
+	"common_alias_name": "Mikeu",
 	"hero_subtitle": "Fullstack Web Developer yang bersemangat dari Indonesia. Saya senang mempelajari hal-hal baru — terutama dalam pemrograman, pengembangan web, dan teknologi geospasial.",
 	"hero_button_text": "Hubungi Saya",
 	"hero_button_link": "Lihat Proyek Saya",

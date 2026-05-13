@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { locales, baseLocale } from '$lib/paraglide/runtime';
+	import * as m from '$lib/paraglide/messages';
 
 	type Props = {
 		title?: string;
@@ -95,7 +96,27 @@
 				'@type': 'WebSite',
 				name: 'Mikeu Dev',
 				url: canonicalBase,
-				description: defaultDescription
+				description: defaultDescription,
+				publisher: {
+					'@id': `${canonicalBase}/#person`
+				}
+			},
+			{
+				'@type': 'Person',
+				'@id': `${canonicalBase}/#person`,
+				name: m.common_author_name(),
+				alternateName: [m.common_alias_name(), 'Mikeu Dev'],
+				description: m.hero_subtitle(),
+				url: canonicalBase,
+				image: {
+					'@type': 'ImageObject',
+					url: `${siteUrl}/images/og-default.png`
+				},
+				sameAs: [
+					'https://github.com/riki-ruswandi',
+					'https://linkedin.com/in/riki-ruswandi',
+					'https://twitter.com/mikeu_dev'
+				]
 			}
 		];
 
@@ -115,8 +136,10 @@
 				datePublished: article?.publishedTime,
 				dateModified: article?.modifiedTime || article?.publishedTime,
 				author: {
-					'@type': 'Person',
-					name: (article?.author || 'Mikeu').trim()
+					'@id': `${canonicalBase}/#person`
+				},
+				publisher: {
+					'@id': `${canonicalBase}/#person`
 				}
 			});
 		}
@@ -130,11 +153,18 @@
 	const jsonLdScript = $derived(
 		'<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>'
 	);
+
+	const authorString = `${m.common_author_name()} (${m.common_alias_name()})`;
 </script>
 
 <svelte:head>
 	<title>{finalTitle}</title>
 	<meta name="description" content={finalDescription} />
+	<meta name="author" content={authorString} />
+	<meta
+		name="keywords"
+		content="Riki Ruswandi, Riki, Mikeu, Mikeu Dev, Fullstack Developer, Web Developer Indonesia, GIS, SvelteKit"
+	/>
 	<link rel="canonical" href={canonicalUrl} />
 	{#if noindex}
 		<meta name="robots" content="noindex, nofollow" />
