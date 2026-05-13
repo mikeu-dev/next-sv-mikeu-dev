@@ -142,7 +142,9 @@
 			<Navbar {resolvedResumeUrls} />
 		{/await}
 	{/if}
-	<main class={page.url.pathname === '/' || isAdmin ? "flex-1" : "container mx-auto flex-1 px-4 py-8"}>
+	<main
+		class={page.url.pathname === '/' || isAdmin ? 'flex-1' : 'container mx-auto flex-1 px-4 py-8'}
+	>
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}

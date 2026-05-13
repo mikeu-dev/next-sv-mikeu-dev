@@ -196,7 +196,9 @@
 								>{m.common_author_name()}</span
 							><span class="text-primary">_</span>
 						</h1>
-						<div class="mt-2 flex items-center gap-2 font-mono text-xs font-black text-foreground/40 uppercase">
+						<div
+							class="mt-2 flex items-center gap-2 font-mono text-xs font-black text-foreground/40 uppercase"
+						>
 							<Hash class="size-3" /> ALIAS: {m.common_alias_name()}
 						</div>
 					</div>
