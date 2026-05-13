@@ -326,7 +326,7 @@ Sangat mudah untuk mengintegrasikan Paraglide ke dalam proyek SvelteKit Anda. Mu
 
 export async function seedBlogPosts() {
 	if (!db) {
-		console.warn('âš ï¸ seedBlogPosts: Database not initialized.');
+		console.warn('seedBlogPosts: Database not initialized.');
 		return { success: false, message: 'Database not initialized' };
 	}
 

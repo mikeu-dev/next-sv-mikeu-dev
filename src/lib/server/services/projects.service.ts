@@ -85,14 +85,14 @@ export class ProjectsService extends BaseService<Project, ProjectsRepository> {
 
 		if (isMainList) {
 			if (ProjectsService.cache && now - ProjectsService.lastFetch < ProjectsService.CACHE_TTL) {
-				console.log('âš¡ ProjectsService: Memory Cache Hit');
+				console.log('[CACHE] ProjectsService: Memory Cache Hit');
 				return ProjectsService.cache;
 			}
 
 			if (dev) {
 				const cached = persistentCache.get<Project[]>('projects_list');
 				if (cached) {
-					console.log('ðŸ“‚ ProjectsService: File Cache Hit');
+					console.log('[STORAGE] ProjectsService: File Cache Hit');
 					ProjectsService.cache = cached;
 					ProjectsService.lastFetch = now;
 					return cached;

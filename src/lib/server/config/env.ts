@@ -35,14 +35,14 @@ let parsedEnv: z.infer<typeof envSchema>;
 try {
 	parsedEnv = envSchema.parse(dynamicPrivateEnv);
 } catch (error) {
-	console.error('âŒ Environment variable validation failed:');
+	console.error('Environment variable validation failed:');
 	if (error instanceof z.ZodError) {
 		error.issues.forEach((issue) => {
 			console.error(`  - ${issue.path.join('.')}: ${issue.message}`);
 		});
 	}
-	console.error('\nâš ï¸  Please check your .env file and ensure all required variables are set.');
-	console.error('ðŸ“ See .env.example for reference.\n');
+	console.error('\n  Please check your .env file and ensure all required variables are set.');
+	console.error('See .env.example for reference.\n');
 
 	parsedEnv = {} as z.infer<typeof envSchema>;
 }
@@ -69,7 +69,7 @@ export function checkRequiredEnvVars(): boolean {
 	const missing = required.filter((key) => !dynamicPrivateEnv[key]);
 
 	if (missing.length > 0) {
-		console.warn('âš ï¸  Missing required environment variables:');
+		console.warn('Missing required environment variables:');
 		missing.forEach((key) => console.warn(`  - ${key}`));
 		console.warn('Some features may not work correctly.\n');
 		return false;

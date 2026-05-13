@@ -25,7 +25,7 @@ export class SocialsService {
 		if (dev) {
 			const cached = persistentCache.get<Socials>(cacheKey);
 			if (cached) {
-				console.log('ðŸ“‚ SocialsService: File Cache Hit');
+				console.log('[STORAGE] SocialsService: File Cache Hit');
 				SocialsService.cache = cached;
 				SocialsService.lastFetch = now;
 				return cached;

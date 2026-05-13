@@ -1,4 +1,4 @@
-﻿import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { AuthService } from '$lib/server/services/auth.service';
@@ -164,7 +164,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	// Admin route protection
 	if (event.url.pathname.startsWith('/admin') || event.url.pathname.startsWith('/api/admin')) {
 		if (!event.locals.user) {
-			console.log('ðŸ”´ No valid session found for admin route, redirecting to login');
+			console.log('[AUTH] No valid session found for admin route, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 
@@ -174,7 +174,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 				email: (event.locals.user as { email: string }).email,
 				path: event.url.pathname
 			});
-			console.log('ðŸ”´ Email mismatch, redirecting to login');
+			console.log('[AUTH] Email mismatch, redirecting to login');
 			throw redirect(303, '/auth/login');
 		}
 	}

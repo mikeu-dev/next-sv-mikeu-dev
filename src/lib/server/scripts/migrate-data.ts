@@ -74,7 +74,7 @@ import { skills } from '../../data/skills';
 import { socialLinks } from '../../data/socials';
 
 async function migrateTechStack() {
-	console.log('ðŸš€ Migrating TechStack data...');
+	console.log('Migrating TechStack data...');
 
 	try {
 		// Simpan data EN
@@ -95,15 +95,15 @@ async function migrateTechStack() {
 				updatedAt: new Date()
 			});
 
-		console.log('âœ… TechStack migrated successfully');
+		console.log('TechStack migrated successfully');
 	} catch (error) {
-		console.error('âŒ Error migrating TechStack:', error);
+		console.error('Error migrating TechStack:', error);
 		throw error;
 	}
 }
 
 async function migrateJourney() {
-	console.log('ðŸš€ Migrating Journey data...');
+	console.log('Migrating Journey data...');
 
 	try {
 		// Simpan data EN
@@ -124,15 +124,15 @@ async function migrateJourney() {
 				updatedAt: new Date()
 			});
 
-		console.log('âœ… Journey migrated successfully');
+		console.log('Journey migrated successfully');
 	} catch (error) {
-		console.error('âŒ Error migrating Journey:', error);
+		console.error('Error migrating Journey:', error);
 		throw error;
 	}
 }
 
 async function migrateSkills() {
-	console.log('ðŸš€ Migrating Skills data...');
+	console.log('Migrating Skills data...');
 
 	try {
 		// Simpan data EN
@@ -153,15 +153,15 @@ async function migrateSkills() {
 				updatedAt: new Date()
 			});
 
-		console.log('âœ… Skills migrated successfully');
+		console.log('Skills migrated successfully');
 	} catch (error) {
-		console.error('âŒ Error migrating Skills:', error);
+		console.error('Error migrating Skills:', error);
 		throw error;
 	}
 }
 
 async function migrateSocials() {
-	console.log('ðŸš€ Migrating Socials data...');
+	console.log('Migrating Socials data...');
 
 	try {
 		// Social links tidak perlu multi-language
@@ -173,15 +173,15 @@ async function migrateSocials() {
 				updatedAt: new Date()
 			});
 
-		console.log('âœ… Socials migrated successfully');
+		console.log('Socials migrated successfully');
 	} catch (error) {
-		console.error('âŒ Error migrating Socials:', error);
+		console.error('Error migrating Socials:', error);
 		throw error;
 	}
 }
 
 async function main() {
-	console.log('ðŸ“¦ Starting data migration to Firestore...\n');
+	console.log('Starting data migration to Firestore...\n');
 
 	try {
 		await migrateTechStack();
@@ -189,10 +189,10 @@ async function main() {
 		await migrateSkills();
 		await migrateSocials();
 
-		console.log('\nâœ¨ All data migrated successfully!');
+		console.log('\n All data migrated successfully!');
 		process.exit(0);
 	} catch (error) {
-		console.error('\nðŸ’¥ Migration failed:', error);
+		console.error('\n Migration failed:', error);
 		process.exit(1);
 	}
 }

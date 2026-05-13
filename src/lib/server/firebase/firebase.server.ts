@@ -17,10 +17,10 @@ if (!getApps().length) {
 			});
 			admin.firestore().settings({ ignoreUndefinedProperties: true });
 		} catch (error) {
-			console.error('âŒ Failed to initialize Firebase Admin:', error);
+			console.error('Failed to initialize Firebase Admin:', error);
 		}
 	} else {
-		console.error('âŒ Missing required Firebase environment variables.');
+		console.error('Missing required Firebase environment variables.');
 	}
 }
 
