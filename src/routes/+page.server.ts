@@ -5,12 +5,7 @@ import { blogService } from '$lib/server/services/blog.service';
 
 export const prerender = true;
 
-export const load: PageServerLoad = async ({ locals, setHeaders }) => {
-	// Enable Edge Caching with SWR
-	setHeaders({
-		'cache-control': 'public, s-maxage=600, stale-while-revalidate=3600'
-	});
-
+export const load: PageServerLoad = async ({ locals }) => {
 	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
 
 	// Projects fetch is the same for both, but we fetch it once.

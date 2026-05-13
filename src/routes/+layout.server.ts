@@ -5,6 +5,8 @@ import { settingsService } from '$lib/server/services/settings.service';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { showExperimentalFeature } from '$lib/flags';
 
+import { building } from '$app/environment';
+
 export const config: Config = {
 	runtime: 'nodejs22.x',
 	memory: 1024,
@@ -13,9 +15,12 @@ export const config: Config = {
 
 export const load: LayoutServerLoad = async ({ locals, setHeaders }) => {
 	// Enable Edge Caching for layout data (Socials, Visitor Stats, etc.)
-	setHeaders({
-		'cache-control': 'public, s-maxage=300, stale-while-revalidate=1800'
-	});
+	// Only set headers when not building (prerendering) to avoid conflicts
+	if (!building) {
+		setHeaders({
+			'cache-control': 'public, s-maxage=300, stale-while-revalidate=1800'
+		});
+	}
 
 	// Melakukan fetch secara paralel untuk efisiensi.
 	// Kita tidak melakukan 'await' langsung pada return untuk mengaktifkan streaming di SvelteKit.
