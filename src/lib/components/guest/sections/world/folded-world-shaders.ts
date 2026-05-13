@@ -27,7 +27,7 @@ export const vertexShader = /* glsl */ `
 		
 		// 1. Add Origami Texture (Static brutalist folds)
 		// We use foldOffset which is pre-calculated per vertex
-		float origamiEffect = foldOffset * 0.15; // Constant origami texture
+		float origamiEffect = foldOffset * 0.04; // Set to 25% of original for a much softer look
 		
 		// 2. Add Data Extrusion (Folded World effect based on visitor intensity)
 		float dataExtrusion = vDataIntensity * uMaxExtrusion;
