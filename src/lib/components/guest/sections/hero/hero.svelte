@@ -256,7 +256,7 @@
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
 			return;
 
-		let isVisible = true;
+		let isVisible = false;
 
 		// Dynamic import Matter.js to avoid SSR issues
 		const MatterModule = await import('matter-js');
@@ -514,8 +514,6 @@
 				rafId = requestAnimationFrame(update);
 			}
 		}
-		rafId = requestAnimationFrame(update);
-
 		heroTitle.style.position = 'relative';
 		heroTitle.style.overflow = 'visible';
 	});
