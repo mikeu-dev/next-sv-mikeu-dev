@@ -68,19 +68,28 @@
 					<nav
 						class="flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] font-black tracking-[0.2em] uppercase"
 					>
-						<a href={localizeHref('/privacy-policy')} class="group relative transition-colors hover:text-primary">
+						<a
+							href={localizeHref('/privacy-policy')}
+							class="group relative transition-colors hover:text-primary"
+						>
 							Privacy_Policy
 							<span
 								class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"
 							></span>
 						</a>
-						<a href={localizeHref('/terms-of-service')} class="group relative transition-colors hover:text-primary">
+						<a
+							href={localizeHref('/terms-of-service')}
+							class="group relative transition-colors hover:text-primary"
+						>
 							Terms_Of_Service
 							<span
 								class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"
 							></span>
 						</a>
-						<a href={localizeHref('/disclaimer')} class="group relative transition-colors hover:text-primary">
+						<a
+							href={localizeHref('/disclaimer')}
+							class="group relative transition-colors hover:text-primary"
+						>
 							Disclaimer
 							<span
 								class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"

@@ -23,10 +23,7 @@ import {
 } from './folded-world-geometry';
 import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import type { PlanetStyle } from './folded-world.types';
-import {
-	vertexShader,
-	fragmentShader
-} from './folded-world-shaders';
+import { vertexShader, fragmentShader } from './folded-world-shaders';
 
 // Three.js types — imported dynamically at runtime
 type ThreeModule = typeof import('three');
@@ -200,7 +197,7 @@ export function createFoldedWorldEngine() {
 
 	function setupScene(isDark: boolean): void {
 		if (!canvasEl || !containerEl) return;
- 
+
 		const colors = getPlanetColors(planetStyle, isDark);
 
 		const width = containerEl.clientWidth;
@@ -709,7 +706,7 @@ export function createFoldedWorldEngine() {
 						mainMesh.worldToLocal(localPoint);
 						mainMaterial.uniforms.uHoverPos.value.copy(localPoint);
 						mainMaterial.uniforms.uHoverActive.value = 1.0;
-						
+
 						const intensityAttr = mainMesh.geometry.getAttribute('vDataIntensity');
 						mainMaterial.uniforms.uHoveredIntensity.value = intensityAttr.getX(faceIdx * 3);
 					}

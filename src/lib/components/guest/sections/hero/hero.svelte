@@ -89,7 +89,9 @@
 			ease: 'power2.out',
 			yoyo: true,
 			repeat: 3,
-			onComplete: () => { gsap.set(container, { x: 0, y: 0 }); }
+			onComplete: () => {
+				gsap.set(container, { x: 0, y: 0 });
+			}
 		});
 	}
 
@@ -109,24 +111,29 @@
 	}
 
 	/** Create a random geometric shard (triangle or quad) */
-	function createOrigamiShard(x: number, y: number, velocity: number, container: HTMLElement): void {
+	function createOrigamiShard(
+		x: number,
+		y: number,
+		velocity: number,
+		container: HTMLElement
+	): void {
 		const shard = document.createElement('div');
 		const size = 8 + Math.random() * 12;
 		const color = Math.random() > 0.5 ? 'var(--primary)' : 'var(--foreground)';
-		
+
 		shard.className = 'origami-impact-shard';
 		shard.style.width = `${size}px`;
 		shard.style.height = `${size}px`;
 		shard.style.left = `${x}px`;
 		shard.style.top = `${y}px`;
 		shard.style.backgroundColor = color;
-		
+
 		// Random polygonal shape via clip-path
 		const p1 = `${Math.random() * 100}% ${Math.random() * 100}%`;
 		const p2 = `${Math.random() * 100}% ${Math.random() * 100}%`;
 		const p3 = `${Math.random() * 100}% ${Math.random() * 100}%`;
 		shard.style.clipPath = `polygon(${p1}, ${p2}, ${p3})`;
-		
+
 		container.appendChild(shard);
 
 		const angle = -Math.PI * (0.2 + Math.random() * 0.6);
@@ -166,7 +173,7 @@
 		line.setAttribute('stroke-width', '1.5');
 		line.setAttribute('stroke-linecap', 'square');
 		line.setAttribute('opacity', '0');
-		
+
 		group.appendChild(line);
 
 		const len = Math.sqrt(Math.pow(ex - x, 2) + Math.pow(ey - y, 2));
@@ -190,12 +197,7 @@
 	}
 
 	/** Draw "Origami Shatter" impact effects */
-	function drawFloorCrack(
-		svg: SVGSVGElement,
-		x: number,
-		y: number,
-		velocity: number
-	): void {
+	function drawFloorCrack(svg: SVGSVGElement, x: number, y: number, velocity: number): void {
 		const ns = 'http://www.w3.org/2000/svg';
 		const group = document.createElementNS(ns, 'g') as SVGGElement;
 		const intensity = Math.min(velocity / 5, 2.0);
@@ -203,7 +205,7 @@
 		// 1. Sharp Crease Lines (Diagonal & Bold)
 		const creaseCount = 3 + Math.floor(Math.random() * 2);
 		for (let i = 0; i < creaseCount; i++) {
-			const angle = (i * (Math.PI / creaseCount)) - (Math.PI * 0.8);
+			const angle = i * (Math.PI / creaseCount) - Math.PI * 0.8;
 			const len = (30 + Math.random() * 40) * intensity;
 			drawOrigamiCrease(ns, group, x, y, angle, len, i * 0.03);
 		}
@@ -222,22 +224,23 @@
 		const fSize = 15 * intensity;
 		const pts = [
 			`${x},${y}`,
-			`${x + fSize},${y - fSize/2}`,
-			`${x + fSize/2},${y + fSize/2}`,
-			`${x - fSize/2},${y + fSize}`
+			`${x + fSize},${y - fSize / 2}`,
+			`${x + fSize / 2},${y + fSize / 2}`,
+			`${x - fSize / 2},${y + fSize}`
 		].join(' ');
-		
+
 		facet.setAttribute('points', pts);
 		facet.setAttribute('fill', 'var(--primary)');
 		facet.setAttribute('fill-opacity', '0.2');
 		facet.setAttribute('stroke', 'var(--primary)');
 		facet.setAttribute('stroke-width', '0.5');
 		facet.setAttribute('opacity', '0');
-		
+
 		group.appendChild(facet);
-		
-		gsap.fromTo(facet, 
-			{ scale: 0, opacity: 0.6 }, 
+
+		gsap.fromTo(
+			facet,
+			{ scale: 0, opacity: 0.6 },
 			{ scale: 1.5, opacity: 0, duration: 0.4, ease: 'power4.out' }
 		);
 

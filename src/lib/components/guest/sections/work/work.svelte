@@ -146,7 +146,9 @@
 								<span class="font-poppins text-xl font-black tracking-tighter uppercase">
 									{m.projects_title()}
 								</span>
-								<ArrowRight class="size-6 transition-transform duration-300 group-hover:translate-x-2" />
+								<ArrowRight
+									class="size-6 transition-transform duration-300 group-hover:translate-x-2"
+								/>
 							</div>
 						</a>
 					</div>

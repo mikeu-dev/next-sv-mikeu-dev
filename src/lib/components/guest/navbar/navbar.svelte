@@ -143,7 +143,11 @@
 
 		<div class="mx-auto flex max-w-screen-2xl items-center justify-between">
 			<!-- Branding (Pendulum Maintained) -->
-			<a href={localizeHref('/')} bind:this={anchorElement} class="group relative flex items-center gap-3">
+			<a
+				href={localizeHref('/')}
+				bind:this={anchorElement}
+				class="group relative flex items-center gap-3"
+			>
 				<div
 					class="relative size-10 overflow-hidden border-2 border-foreground"
 					style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);"

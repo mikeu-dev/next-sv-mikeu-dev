@@ -2,7 +2,12 @@
 	import { onMount } from 'svelte';
 	import { createFoldedWorldEngine } from './folded-world-engine.svelte';
 	import { formatRelativeTime } from './folded-world-geometry';
-	import { getPlanetColors, type GeoNode, type ViewMode, type PlanetStyle } from './folded-world.types';
+	import {
+		getPlanetColors,
+		type GeoNode,
+		type ViewMode,
+		type PlanetStyle
+	} from './folded-world.types';
 	import { m } from '$lib/paraglide/messages';
 	import { mode } from 'mode-watcher';
 	import gsap from 'gsap';
@@ -47,7 +52,7 @@
 	let currentPlanetLabel = $derived(
 		PLANET_STYLES.find((p) => p.id === engine.planetStyle)?.label ?? 'EARTH'
 	);
- 
+
 	let currentColors = $derived(getPlanetColors(engine.planetStyle, isDark));
 
 	onMount(() => {
@@ -178,12 +183,14 @@
 				{/each}
 			</h2>
 			<div class="hud-divider"></div>
-			<button 
-				class="hud-mode-btn isolation-btn" 
+			<button
+				class="hud-mode-btn isolation-btn"
 				class:active={engine.isFocusMode}
 				onclick={() => engine.toggleFocusMode()}
 			>
-				<span class="btn-glitch-layer">{engine.isFocusMode ? 'ISOLATION: ON' : 'ISOLATION: OFF'}</span>
+				<span class="btn-glitch-layer"
+					>{engine.isFocusMode ? 'ISOLATION: ON' : 'ISOLATION: OFF'}</span
+				>
 			</button>
 			<div class="hud-stats">
 				<div class="hud-stat">
@@ -245,16 +252,19 @@
 			<div class="hud-mode-group">
 				<span class="hud-mode-label">PLANET: {currentPlanetLabel}</span>
 				<div class="relative w-full min-w-[180px]">
-					<button 
-						class="hud-planet-dropdown-btn w-full flex justify-between items-center"
-						onclick={() => isPlanetDropdownOpen = !isPlanetDropdownOpen}
+					<button
+						class="hud-planet-dropdown-btn flex w-full items-center justify-between"
+						onclick={() => (isPlanetDropdownOpen = !isPlanetDropdownOpen)}
 					>
 						<span>{currentPlanetLabel}</span>
-						<span class="text-[8px] transition-transform" style:transform={isPlanetDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}>
+						<span
+							class="text-[8px] transition-transform"
+							style:transform={isPlanetDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
+						>
 							▼
 						</span>
 					</button>
-					
+
 					{#if isPlanetDropdownOpen}
 						<div class="hud-planet-dropdown-options">
 							{#each PLANET_STYLES as planet (planet.id)}
@@ -287,7 +297,7 @@
 		</div>
 
 		<!-- Bottom-center: Legend -->
-		<div 
+		<div
 			class="hud hud-legend"
 			style="
 				--neon-color: #{currentColors.neon.toString(16).padStart(6, '0')};
@@ -762,11 +772,19 @@
 	}
 
 	.neon-gradient {
-		background: linear-gradient(90deg, var(--cold-color, #121212) 0%, var(--neon-color, #00f3ff) 100%);
+		background: linear-gradient(
+			90deg,
+			var(--cold-color, #121212) 0%,
+			var(--neon-color, #00f3ff) 100%
+		);
 	}
 
 	.heat-gradient {
-		background: linear-gradient(90deg, var(--cold-color, #121212) 0%, var(--heat-color, #ff3333) 100%);
+		background: linear-gradient(
+			90deg,
+			var(--cold-color, #121212) 0%,
+			var(--heat-color, #ff3333) 100%
+		);
 	}
 
 	.violet-gradient {
