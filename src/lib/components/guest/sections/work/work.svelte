@@ -3,13 +3,13 @@
 	import * as Tooltip from '@/lib/components/ui/tooltip';
 	import type { Project } from '$lib/types';
 	import { useWorkSection } from './work.svelte.js';
-	import { getLocale } from '@/lib/paraglide/runtime.js';
+	import { getLocale, localizeHref } from '@/lib/paraglide/runtime.js';
 	import { m } from '@/lib/paraglide/messages.js';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { Terminal, Command, Hash } from '@lucide/svelte';
+	import { Terminal, Command, Hash, ArrowRight } from '@lucide/svelte';
 
 	let { projects }: { projects: Project[] } = $props();
 	let currentLocale = $derived(getLocale());
@@ -133,6 +133,22 @@
 								<ProjectCard {project} />
 							</div>
 						{/each}
+					</div>
+
+					<!-- CTA -->
+					<div class="work-stagger mt-24 text-center">
+						<a
+							href={localizeHref('/projects')}
+							class="group relative inline-flex h-20 items-center justify-center overflow-hidden bg-foreground px-12 text-background transition-all hover:bg-primary hover:text-primary-foreground sm:w-80"
+							style="clip-path: polygon(0% 15%, 100% 0%, 95% 100%, 5% 85%);"
+						>
+							<div class="flex items-center gap-4">
+								<span class="font-poppins text-xl font-black tracking-tighter uppercase">
+									{m.projects_title()}
+								</span>
+								<ArrowRight class="size-6 transition-transform duration-300 group-hover:translate-x-2" />
+							</div>
+						</a>
 					</div>
 
 					<!-- Footer Technicality -->
