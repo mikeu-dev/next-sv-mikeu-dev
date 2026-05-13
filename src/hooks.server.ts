@@ -206,6 +206,8 @@ export const handleError: import('@sveltejs/kit').HandleServerError = async ({
 	message
 }) => {
 	const errorId = crypto.randomUUID();
+	// Log to console for CI/CD debugging
+	console.error(`[handleError] Error at ${event.url.pathname}:`, error);
 
 	// Log the error to Firestore
 	await monitoringService.logError({
