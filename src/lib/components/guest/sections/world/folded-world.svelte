@@ -376,7 +376,8 @@
 				</div>
 				<div class="detail-item">
 					<span class="detail-label">{m.world_detail_coords()}</span>
-					<span class="detail-value">{node.latitude.toFixed(2)}Â°, {node.longitude.toFixed(2)}Â°</span
+					<span class="detail-value"
+						>{node.latitude.toFixed(2)}Â°, {node.longitude.toFixed(2)}Â°</span
 					>
 				</div>
 			</div>
