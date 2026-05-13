@@ -3,7 +3,7 @@ import { skillsService } from '$lib/server/services/skills.service';
 import { projectsService } from '$lib/server/services/projects.service';
 import { blogService } from '$lib/server/services/blog.service';
 
-export const prerender = false;
+export const prerender = true;
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	// Enable Edge Caching with SWR
