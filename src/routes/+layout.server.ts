@@ -13,7 +13,8 @@ export const config: Config = {
 	regions: ['sin1']
 };
 
-export const load: LayoutServerLoad = async ({ locals, setHeaders }) => {
+export const load: LayoutServerLoad = async (event) => {
+	const { locals, setHeaders } = event;
 	// Enable Edge Caching for layout data (Socials, Visitor Stats, etc.)
 	// Only set headers when not building (prerendering) to avoid conflicts
 	if (!building) {
