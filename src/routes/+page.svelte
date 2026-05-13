@@ -3,6 +3,7 @@
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
 	import SectionLoader from '$lib/components/ui/section-loader.svelte';
+	import { ArrowRight } from '@lucide/svelte';
 
 	import * as m from '$lib/paraglide/messages';
 
@@ -81,9 +82,10 @@
 			</p>
 			<a
 				href="/world"
-				class="inline-block bg-primary px-8 py-4 font-bold tracking-widest text-primary-foreground transition-all hover:skew-x-[-10deg] hover:bg-primary/90"
+				class="group inline-flex items-center gap-2 bg-primary px-8 py-4 font-bold tracking-widest text-primary-foreground transition-all hover:skew-x-[-10deg] hover:bg-primary/90"
 			>
-				{m.world_teaser_button()} â†’
+				{m.world_teaser_button()}
+				<ArrowRight class="size-8 transition-transform duration-300 group-hover:translate-x-2" />
 			</a>
 		</div>
 	</div>

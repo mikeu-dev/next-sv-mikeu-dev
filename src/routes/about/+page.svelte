@@ -190,7 +190,7 @@
 							[USER_IDENTITY_STAMP]
 						</div>
 						<h1 class="font-poppins text-6xl font-black tracking-tighter md:text-9xl">
-							{m.about_begin_first_part()} ðŸ‘‹<br />
+							{m.about_begin_first_part()} 👋<br />
 							I'm
 							<span class="text-primary underline decoration-4 underline-offset-8"
 								>{m.common_author_name()}</span
