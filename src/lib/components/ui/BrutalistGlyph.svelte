@@ -60,7 +60,7 @@
 			<polygon points="40,70 60,70 50,95" fill="var(--primary)" />
 		</svg>
 	{:else if key === ' '}
-		<div class="w-12"></div>
+		<div class="w-6"></div>
 	{:else}
 		<span class="text-4xl font-black">{char}</span>
 	{/if}

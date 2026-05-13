@@ -583,7 +583,7 @@
 				{#each titleChars as char, i (i)}
 					<span
 						bind:this={letterElements[i]}
-						class="inline-block size-12 sm:size-20 md:size-28 lg:size-36"
+						class="inline-block h-12 w-8 -mx-0.5 sm:h-20 sm:w-14 sm:-mx-1 md:h-28 md:w-18 md:-mx-1.5 lg:h-36 lg:w-24 lg:-mx-2"
 					>
 						<BrutalistGlyph {char} />
 					</span>
