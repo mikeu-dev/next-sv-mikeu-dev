@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/public';
 
 /**
  * Image Optimization Utility
- * 
+ *
  * Uses ImageKit or similar proxy to transform raw URLs into optimized assets.
  * Usage: optimizeImage(project.thumbnailUrl, { width: 800, quality: 80 })
  */
@@ -14,21 +14,18 @@ interface OptimizeOptions {
 	blur?: number;
 }
 
-export function optimizeImage(url: string | undefined | null, options: OptimizeOptions = {}): string {
+export function optimizeImage(
+	url: string | undefined | null,
+	options: OptimizeOptions = {}
+): string {
 	if (!url) return '';
-	
+
 	const cdnUrl = env.PUBLIC_IMAGE_CDN_URL;
-	
+
 	// If no CDN is configured, return the original URL
 	if (!cdnUrl) return url;
 
-	const {
-		width,
-		height,
-		quality = 80,
-		format = 'auto',
-		blur
-	} = options;
+	const { width, height, quality = 80, format = 'auto', blur } = options;
 
 	// ImageKit Transformation Mapping
 	const transforms: string[] = [];
