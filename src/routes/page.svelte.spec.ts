@@ -17,20 +17,23 @@ vi.mock('$env/dynamic/public', () => ({
 
 // Mock heavy components to ensure stability and focus on unit testing +page.svelte
 vi.mock('../lib/components/guest/sections/hero/hero.svelte', () => ({
-	default: class {
-		constructor(options: any) {
-			const h1 = document.createElement('h1');
-			h1.textContent = 'Mock Hero Title';
-			options.target.appendChild(h1);
-		}
-		$destroy() {}
+	default: () => {
+		// Svelte 5 functional component mock
+		// We use an effect-like approach to inject the h1 for the test
+		const h1 = document.createElement('h1');
+		h1.textContent = 'Mock Hero Title';
+		document.body.appendChild(h1);
+		// Return a cleanup function if needed, but for a mock this is fine
+		return () => {
+			if (h1.parentNode) h1.parentNode.removeChild(h1);
+		};
 	}
 }));
 
 vi.mock('../lib/components/guest/sections/world/folded-world.svelte', () => ({
-	default: class {
-		constructor() {}
-		$destroy() {}
+	default: () => {
+		// Simple functional mock
+		return () => {};
 	}
 }));
 
