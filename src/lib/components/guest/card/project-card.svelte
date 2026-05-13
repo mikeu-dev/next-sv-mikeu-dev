@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -7,6 +7,8 @@
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { localizeHref } from '$lib/paraglide/runtime';
+
+	import { optimizeImage } from '$lib/utils/image.util';
 
 	let { project }: { project: LocalizedProject } = $props();
 
@@ -85,7 +87,7 @@
 		>
 			{#if project.thumbnailUrl}
 				<img
-					src={project.thumbnailUrl}
+					src={optimizeImage(project.thumbnailUrl, { width: 800, quality: 75 })}
 					alt={project.title}
 					class="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
 					loading="lazy"
