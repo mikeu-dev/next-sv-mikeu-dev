@@ -5,6 +5,7 @@
 	import { gsap } from 'gsap';
 	import { m } from '@/lib/paraglide/messages';
 	import { Terminal, Cpu, Activity, Hash, ArrowRight } from '@lucide/svelte';
+	import BrutalistGlyph from '@/lib/components/ui/BrutalistGlyph.svelte';
 	import type Matter from 'matter-js';
 	import type { IChamferableBodyDefinition } from 'matter-js';
 
@@ -18,7 +19,7 @@
 	let crackLayer = $state<SVGSVGElement>();
 	let letterElements = $state<HTMLElement[]>([]);
 
-	const titleText = $state<string>(m.hero_title());
+	const titleText = $state<string>(m.hero_title().replace(/\s/g, ''));
 	const titleChars: string[] = titleText.split('');
 
 	interface LetterData {
@@ -500,11 +501,15 @@
 		<div class="relative mx-auto mb-12 inline-block" style="height: 180px;">
 			<h1
 				bind:this={heroTitle}
-				class="camelcase flex flex-wrap justify-center font-poppins text-5xl leading-none font-black tracking-tighter text-foreground drop-shadow-2xl sm:text-7xl md:text-8xl lg:text-9xl"
+				class="flex flex-wrap justify-center text-foreground drop-shadow-2xl"
+				aria-label="Mikeu Dev"
 			>
 				{#each titleChars as char, i (i)}
-					<span bind:this={letterElements[i]} class="inline-block" style="white-space: pre;">
-						{char}
+					<span
+						bind:this={letterElements[i]}
+						class="inline-block size-12 sm:size-20 md:size-28 lg:size-36"
+					>
+						<BrutalistGlyph {char} />
 					</span>
 				{/each}
 			</h1>
