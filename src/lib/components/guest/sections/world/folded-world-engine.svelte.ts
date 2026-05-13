@@ -21,7 +21,8 @@ import {
 	paperFoldDisplacement,
 	findNearestNode
 } from './folded-world-geometry';
-import { getWorldColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
+import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
+import type { PlanetStyle } from './folded-world.types';
 import {
 	vertexShader,
 	fragmentShader,
@@ -57,6 +58,7 @@ export function createFoldedWorldEngine() {
 	});
 
 	let viewMode = $state<ViewMode>('fold');
+	let planetStyle = $state<PlanetStyle>('earth');
 	let tooltip = $state<TooltipData>({ visible: false, x: 0, y: 0, node: null });
 	let detailPanel = $state<DetailPanelData>({ visible: false, node: null });
 	const config = $state<WorldConfig>({ ...DEFAULT_WORLD_CONFIG });
@@ -68,8 +70,10 @@ export function createFoldedWorldEngine() {
 	let camera: InstanceType<ThreeModule['PerspectiveCamera']>;
 	let mainMesh: InstanceType<ThreeModule['Mesh']>;
 	let wireframeMesh: InstanceType<ThreeModule['Mesh']>;
+	let ringMesh: InstanceType<ThreeModule['Mesh']>;
 	let mainMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let wireframeMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
+	let ringMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let raycaster: InstanceType<ThreeModule['Raycaster']>;
 	let mouseVec: InstanceType<ThreeModule['Vector2']>;
 
@@ -175,8 +179,12 @@ export function createFoldedWorldEngine() {
 		if (wireframeMesh) {
 			wireframeMesh.geometry.dispose();
 		}
+		if (ringMesh) {
+			ringMesh.geometry.dispose();
+		}
 		if (mainMaterial) mainMaterial.dispose();
 		if (wireframeMaterial) wireframeMaterial.dispose();
+		if (ringMaterial) ringMaterial.dispose();
 		if (renderer) {
 			renderer.dispose();
 			renderer.forceContextLoss();
@@ -189,8 +197,8 @@ export function createFoldedWorldEngine() {
 
 	function setupScene(isDark: boolean): void {
 		if (!canvasEl || !containerEl) return;
-
-		const colors = getWorldColors(isDark);
+ 
+		const colors = getPlanetColors(planetStyle, isDark);
 
 		const width = containerEl.clientWidth;
 		const height = containerEl.clientHeight;
@@ -227,7 +235,7 @@ export function createFoldedWorldEngine() {
 	}
 
 	function buildGlobe(isDark: boolean): void {
-		const colors = getWorldColors(isDark);
+		const colors = getPlanetColors(planetStyle, isDark);
 		// Icosahedron geometry — subdivided for more faces
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
@@ -327,7 +335,8 @@ export function createFoldedWorldEngine() {
 				uOpacity: { value: config.wireframeOpacity },
 				uWorldMask: { value: worldMask },
 				uNeonColor: { value: new THREE.Color(colors.neon) },
-				uAssembleProgress: { value: 0.0 }
+				uAssembleProgress: { value: 0.0 },
+				uPlanetStyle: { value: 0.0 }
 			},
 			side: THREE.FrontSide
 		});
@@ -355,6 +364,43 @@ export function createFoldedWorldEngine() {
 
 		wireframeMesh = new THREE.Mesh(nonIndexed, wireframeMaterial);
 		scene.add(wireframeMesh);
+
+		// --- Saturn Rings ---
+		const ringGeom = new THREE.RingGeometry(1.4, 2.2, 64);
+		ringMaterial = new THREE.ShaderMaterial({
+			vertexShader: `
+				varying vec2 vUv;
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+				}
+			`,
+			fragmentShader: `
+				varying vec2 vUv;
+				uniform float uTime;
+				uniform vec3 uColor;
+				void main() {
+					// In RingGeometry, vUv.y is the radial coordinate (0=inner, 1=outer)
+					float d = vUv.y;
+					// Create multiple rings based on radius
+					float rings = sin(d * 40.0) * 0.5 + 0.5;
+					// Smooth edges
+					float alpha = smoothstep(0.0, 0.1, d) * (1.0 - smoothstep(0.9, 1.0, d));
+					alpha *= (0.2 + rings * 0.8);
+					gl_FragColor = vec4(uColor, alpha * 0.7);
+				}
+			`,
+			uniforms: {
+				uTime: { value: 0 },
+				uColor: { value: new THREE.Color(colors.wireframe) }
+			},
+			transparent: true,
+			side: THREE.DoubleSide
+		});
+		ringMesh = new THREE.Mesh(ringGeom, ringMaterial);
+		ringMesh.rotation.x = Math.PI / 2.5; // Tilted rings
+		ringMesh.visible = false;
+		scene.add(ringMesh);
 	}
 
 	function applyDeformations(): void {
@@ -467,13 +513,36 @@ export function createFoldedWorldEngine() {
 			wireframeMesh.rotation.y = autoRotateAngle + rotationY;
 			wireframeMesh.rotation.x = rotationX;
 		}
+		if (ringMesh) {
+			ringMesh.rotation.y = autoRotateAngle + rotationY;
+			// Rings rotate with the planet but keep their tilt
+			ringMesh.visible = planetStyle === 'saturn' && assembleProgress === 1.0;
+		}
 
 		// Update shader uniforms
 		const modeIdx = shaderViewMode === 'fold' ? 0 : shaderViewMode === 'heat' ? 1 : 2;
+		const planetIdx =
+			planetStyle === 'earth'
+				? 0
+				: planetStyle === 'mercury'
+					? 1
+					: planetStyle === 'venus'
+						? 2
+						: planetStyle === 'mars'
+							? 3
+							: planetStyle === 'jupiter'
+								? 4
+								: planetStyle === 'saturn'
+									? 5
+									: planetStyle === 'uranus'
+										? 6
+										: 7;
+
 		if (mainMaterial) {
 			mainMaterial.uniforms.uTime.value = elapsed;
 			mainMaterial.uniforms.uMode.value = modeIdx;
 			mainMaterial.uniforms.uAssembleProgress.value = finalAssemble;
+			mainMaterial.uniforms.uPlanetStyle.value = planetIdx;
 		}
 		if (wireframeMaterial) {
 			wireframeMaterial.uniforms.uTime.value = elapsed;
@@ -661,7 +730,7 @@ export function createFoldedWorldEngine() {
 	function updateTheme(isDark: boolean): void {
 		if (!state.ready) return;
 
-		const colors = getWorldColors(isDark);
+		const colors = getPlanetColors(planetStyle, isDark);
 
 		// Update Renderer
 		if (renderer) {
@@ -679,6 +748,10 @@ export function createFoldedWorldEngine() {
 		if (wireframeMaterial) {
 			wireframeMaterial.uniforms.uWireColor.value.set(colors.wireframe);
 		}
+
+		if (ringMaterial) {
+			ringMaterial.uniforms.uColor.value.set(colors.wireframe);
+		}
 	}
 
 	// --- Setters ---
@@ -688,6 +761,14 @@ export function createFoldedWorldEngine() {
 		viewMode = mode; // Updates UI instantly
 		pendingMode = mode; // Shader handles transition
 		modeTransitionPhase = 0.01; // Trigger animation
+	}
+
+	function setPlanetStyle(style: PlanetStyle): void {
+		if (planetStyle === style) return;
+		planetStyle = style;
+		if (state.ready) {
+			updateTheme(containerEl?.classList.contains('dark') ?? true);
+		}
 	}
 
 	function closeDetailPanel(): void {
@@ -702,6 +783,9 @@ export function createFoldedWorldEngine() {
 		},
 		get viewMode() {
 			return viewMode;
+		},
+		get planetStyle() {
+			return planetStyle;
 		},
 		get tooltip() {
 			return tooltip;
@@ -718,6 +802,7 @@ export function createFoldedWorldEngine() {
 		destroy,
 		updateNodes,
 		setViewMode,
+		setPlanetStyle,
 		updateTheme,
 		closeDetailPanel
 	};

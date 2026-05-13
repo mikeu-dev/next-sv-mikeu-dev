@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { createFoldedWorldEngine } from './folded-world-engine.svelte';
 	import { formatRelativeTime } from './folded-world-geometry';
-	import type { GeoNode, ViewMode } from './folded-world.types';
+	import type { GeoNode, ViewMode, PlanetStyle } from './folded-world.types';
 	import { m } from '$lib/paraglide/messages';
 	import gsap from 'gsap';
 
@@ -27,8 +27,23 @@
 		{ id: 'timeline', label: 'TIME' }
 	];
 
+	const PLANET_STYLES: { id: PlanetStyle; label: string }[] = [
+		{ id: 'mercury', label: 'MERCURY' },
+		{ id: 'venus', label: 'VENUS' },
+		{ id: 'earth', label: 'EARTH' },
+		{ id: 'mars', label: 'MARS' },
+		{ id: 'jupiter', label: 'JUPITER' },
+		{ id: 'saturn', label: 'SATURN' },
+		{ id: 'uranus', label: 'URANUS' },
+		{ id: 'neptune', label: 'NEPTUNE' }
+	];
+
 	let currentModeLabel = $derived(
 		VIEW_MODES.find((m) => m.id === engine.viewMode)?.label ?? 'FOLD'
+	);
+
+	let currentPlanetLabel = $derived(
+		PLANET_STYLES.find((p) => p.id === engine.planetStyle)?.label ?? 'EARTH'
 	);
 
 	onMount(() => {
@@ -106,6 +121,17 @@
 			'.hud-mode-label',
 			{ opacity: 0.5, x: -5 },
 			{ opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' }
+		);
+	}
+
+	function handlePlanetSwitch(style: PlanetStyle) {
+		engine.setPlanetStyle(style);
+
+		// GSAP flash effect on canvas for style change feedback
+		gsap.fromTo(
+			'.folded-world-canvas',
+			{ filter: 'brightness(2) contrast(1.2)' },
+			{ filter: 'brightness(1) contrast(1)', duration: 0.8, ease: 'expo.out' }
 		);
 	}
 
@@ -188,19 +214,36 @@
 			</div>
 		</div>
 
-		<!-- Top-right: Mode Toggle -->
-		<div class="hud hud-top-right">
-			<span class="hud-mode-label">{m.world_hud_mode()}: {currentModeLabel}</span>
-			<div class="hud-mode-buttons">
-				{#each VIEW_MODES as mode (mode.id)}
-					<button
-						class="hud-mode-btn"
-						class:active={engine.viewMode === mode.id}
-						onclick={() => handleModeSwitch(mode.id)}
-					>
-						{mode.label}
-					</button>
-				{/each}
+		<!-- Top-right: Mode & Planet Toggle -->
+		<div class="hud hud-top-right flex flex-col gap-8">
+			<div class="hud-mode-group">
+				<span class="hud-mode-label">{m.world_hud_mode()}: {currentModeLabel}</span>
+				<div class="hud-mode-buttons">
+					{#each VIEW_MODES as mode (mode.id)}
+						<button
+							class="hud-mode-btn"
+							class:active={engine.viewMode === mode.id}
+							onclick={() => handleModeSwitch(mode.id)}
+						>
+							{mode.label}
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="hud-mode-group">
+				<span class="hud-mode-label">PLANET: {currentPlanetLabel}</span>
+				<div class="hud-mode-buttons flex-wrap justify-end">
+					{#each PLANET_STYLES as planet (planet.id)}
+						<button
+							class="hud-mode-btn"
+							class:active={engine.planetStyle === planet.id}
+							onclick={() => handlePlanetSwitch(planet.id)}
+						>
+							{planet.label}
+						</button>
+					{/each}
+				</div>
 			</div>
 		</div>
 
