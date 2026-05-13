@@ -3,18 +3,35 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from './+page.svelte';
 
+// Mock SvelteKit environment
+vi.mock('$app/environment', () => ({
+	browser: true,
+	dev: true,
+	building: false,
+	version: 'test'
+}));
+
+vi.mock('$env/dynamic/public', () => ({
+	env: {}
+}));
+
 // Mock heavy components to ensure stability and focus on unit testing +page.svelte
 vi.mock('../lib/components/guest/sections/hero/hero.svelte', () => ({
-	default: () => {
-		// Return a simple div with h1 to satisfy the test
-		return {
-			render: () => '<h1>Mock Hero Title</h1>'
-		};
+	default: class {
+		constructor(options: any) {
+			const h1 = document.createElement('h1');
+			h1.textContent = 'Mock Hero Title';
+			options.target.appendChild(h1);
+		}
+		$destroy() {}
 	}
 }));
 
 vi.mock('../lib/components/guest/sections/world/folded-world.svelte', () => ({
-	default: () => {}
+	default: class {
+		constructor() {}
+		$destroy() {}
+	}
 }));
 
 describe('/+page.svelte', () => {
