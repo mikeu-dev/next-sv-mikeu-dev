@@ -191,6 +191,11 @@ These are the available documentation sections that `list-sections` will return,
 
 Every time you write a Svelte component or a Svelte module you MUST invoke the `svelte-autofixer` tool providing the code. The tool will return a list of issues or suggestions. If there are any issues or suggestions you MUST fix them and call the tool again with the updated code. You MUST keep doing this until the tool returns no issues or suggestions. Only then you can return the code to the user.
 
+### Code Formatting (Pre-commit Scheme)
+
+This project enforces a pre-commit formatting scheme using `prettier` via `husky` and `lint-staged`.
+As an AI Agent, BEFORE concluding any coding task, you MUST ensure that the code is formatted properly or remind the user that code will be automatically formatted via the pre-commit hook when they commit their changes.
+
 This is the task you will work on:
 
 <task>
