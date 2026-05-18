@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { ArrowRight, Hash, Command, Mail } from '@lucide/svelte';
+	import { ArrowRight, Hash, Command, MessageSquare } from '@lucide/svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { localizeHref } from '$lib/paraglide/runtime';
 
@@ -112,8 +112,8 @@
 				<div
 					class="mb-6 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 font-mono text-[10px] font-bold tracking-widest text-foreground/80 uppercase"
 				>
-					<Mail class="size-3 text-primary" />
-					{m.contact_field_email()}
+					<MessageSquare class="size-3 text-primary" />
+					{m.contact_page_title()}
 				</div>
 
 				<h2 class="mb-8 font-poppins text-5xl font-black tracking-tighter sm:text-7xl lg:text-8xl">
