@@ -679,6 +679,10 @@
 			<div bind:this={heroButton} class="mt-10 flex flex-wrap justify-center gap-6">
 				<a
 					href="#contact"
+					onclick={(e) => {
+						e.preventDefault();
+						document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+					}}
 					class="group relative inline-flex h-16 items-center justify-center bg-primary px-10 text-primary-foreground transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0_var(--foreground)]"
 					style="clip-path: polygon(0 15%, 100% 0, 95% 100%, 5% 85%);"
 				>
@@ -700,6 +704,10 @@
 
 				<a
 					href="#work"
+					onclick={(e) => {
+						e.preventDefault();
+						document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
+					}}
 					class="group relative inline-flex h-16 items-center justify-center border-2 border-foreground bg-background px-10 text-foreground transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0_var(--primary)]"
 					style="clip-path: polygon(5% 0, 95% 15%, 100% 85%, 0 100%);"
 				>

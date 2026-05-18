@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -71,8 +71,7 @@
 
 <section
 	bind:this={contactSection}
-	id="contact"
-	class="relative z-10 overflow-hidden bg-background py-24 md:py-32"
+	class="contact-section relative z-10 overflow-hidden bg-background py-24 md:py-32"
 >
 	<!-- Grain Texture Overlay -->
 	<div
@@ -168,7 +167,7 @@
 <style lang="postcss">
 	@reference "tailwindcss";
 
-	#contact {
+	.contact-section {
 		perspective: 1000px;
 	}
 
