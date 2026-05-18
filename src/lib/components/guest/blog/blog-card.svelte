@@ -1,14 +1,13 @@
 <script lang="ts">
 	import type { BlogPost } from '$lib/types';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-	import { page } from '$app/state';
 	import { ArrowUpRight, Calendar, Clock, Sparkles, Hash } from '@lucide/svelte';
 	import { optimizeImage } from '$lib/utils/image.util';
 
 	let { post } = $props<{ post: BlogPost }>();
 
 	const formattedDate = $derived(
-		new Date(post.date).toLocaleDateString(page.data.locale || getLocale(), {
+		new Date(post.date).toLocaleDateString(getLocale(), {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric'
