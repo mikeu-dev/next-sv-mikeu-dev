@@ -23,18 +23,20 @@
 	<HeroSection {skills} />
 {/await}
 
-<SectionLoader rootMargin="400px">
-	{#snippet fallback()}
-		<div class="container grid grid-cols-1 gap-6 py-20 md:grid-cols-2 lg:grid-cols-3">
-			<Skeleton class="h-64 w-full" />
-			<Skeleton class="h-64 w-full" />
-			<Skeleton class="h-64 w-full" />
-		</div>
-	{/snippet}
-	{#await Promise.all([data.projects, import('$lib/components/guest/sections/work/work.svelte')]) then [projects, mod]}
-		<mod.default {projects} />
-	{/await}
-</SectionLoader>
+<div id="work">
+	<SectionLoader rootMargin="400px">
+		{#snippet fallback()}
+			<div class="container grid grid-cols-1 gap-6 py-20 md:grid-cols-2 lg:grid-cols-3">
+				<Skeleton class="h-64 w-full" />
+				<Skeleton class="h-64 w-full" />
+				<Skeleton class="h-64 w-full" />
+			</div>
+		{/snippet}
+		{#await Promise.all([data.projects, import('$lib/components/guest/sections/work/work.svelte')]) then [projects, mod]}
+			<mod.default {projects} />
+		{/await}
+	</SectionLoader>
+</div>
 
 <SectionLoader rootMargin="400px">
 	{#snippet fallback()}
@@ -90,11 +92,13 @@
 	</div>
 </section>
 
-<SectionLoader rootMargin="200px">
-	{#snippet fallback()}
-		<div class="h-64 w-full animate-pulse bg-muted/5"></div>
-	{/snippet}
-	{#await import('$lib/components/guest/sections/contact/contact.svelte') then mod}
-		<mod.default />
-	{/await}
-</SectionLoader>
+<div id="contact">
+	<SectionLoader rootMargin="200px">
+		{#snippet fallback()}
+			<div class="h-64 w-full animate-pulse bg-muted/5"></div>
+		{/snippet}
+		{#await import('$lib/components/guest/sections/contact/contact.svelte') then mod}
+			<mod.default />
+		{/await}
+	</SectionLoader>
+</div>

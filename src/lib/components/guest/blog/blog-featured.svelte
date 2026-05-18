@@ -3,14 +3,13 @@
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
-	import { page } from '$app/state';
 
 	import { optimizeImage } from '$lib/utils/image.util';
 
 	let { post } = $props<{ post: BlogPost }>();
 
 	const formattedDate = $derived(
-		new Date(post.date).toLocaleDateString(page.data.locale || getLocale(), {
+		new Date(post.date).toLocaleDateString(getLocale(), {
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric'

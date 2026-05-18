@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import * as Tooltip from '@/lib/components/ui/tooltip';
 	import type { Project } from '$lib/types';
@@ -77,8 +77,7 @@
 	<Tooltip.Root bind:open={$tooltipOpen}>
 		<section
 			bind:this={$workSection}
-			id="work"
-			class="relative overflow-hidden bg-background py-24 md:py-32"
+			class="work-section relative overflow-hidden bg-background py-24 md:py-32"
 		>
 			<!-- Grain Texture Overlay -->
 			<div
@@ -179,7 +178,7 @@
 <style lang="postcss">
 	@reference "tailwindcss";
 
-	#work {
+	.work-section {
 		perspective: 1200px;
 	}
 
