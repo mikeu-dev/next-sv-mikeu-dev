@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { TechStackService } from '$lib/server/services/techstack.service';
 import { JourneyService } from '$lib/server/services/journey.service';
 
-export const prerender = true;
+export const prerender = false;
 
 export const load: PageServerLoad = async () => {
 	const techStackService = new TechStackService();
