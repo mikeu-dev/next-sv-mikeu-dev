@@ -30,26 +30,48 @@
 		const tl = gsap.timeline({
 			scrollTrigger: {
 				trigger: sectionEl,
-				start: 'top 80%',
+				start: 'top 75%',
 				toggleActions: 'play none none none'
 			}
 		});
 
-		// Origami Reveal
+		// 1. Origami background shards swing & fold into position
 		tl.from('.origami-shard', {
-			rotateX: -90,
+			rotateX: -120,
+			rotateY: 45,
+			scale: 0.3,
 			opacity: 0,
-			duration: 1.2,
-			stagger: 0.1,
-			ease: 'power4.out'
-		}).from(
-			'.work-stagger',
+			duration: 1.4,
+			stagger: 0.15,
+			ease: 'power3.out'
+		});
+
+		// 2. Section Header Unfolds
+		tl.from(
+			'.work-header-stagger',
 			{
-				y: 50,
+				rotateX: -90,
+				transformOrigin: 'top center',
+				y: 30,
 				opacity: 0,
-				duration: 1,
-				stagger: 0.15,
-				ease: 'expo.out'
+				duration: 1.2,
+				stagger: 0.1,
+				ease: 'power4.out'
+			},
+			'-=1.0'
+		);
+
+		// 3. Staggered 3D Paper-Drop Unfold of the Project Cards
+		tl.from(
+			'.projects-grid .work-stagger',
+			{
+				rotateX: -105,
+				transformOrigin: 'top center',
+				y: -40,
+				opacity: 0,
+				duration: 1.6,
+				stagger: 0.22,
+				ease: 'elastic.out(0.85, 0.7)'
 			},
 			'-=0.8'
 		);
@@ -98,7 +120,7 @@
 					></div>
 
 					<!-- Header -->
-					<div class="work-stagger mb-16 border-b-2 border-foreground pb-12">
+					<div class="work-header-stagger mb-16 border-b-2 border-foreground pb-12">
 						<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
 							<div
 								class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
@@ -129,7 +151,7 @@
 								bind:this={$projectCardElements[i]}
 								class="work-stagger h-full will-change-transform"
 							>
-								<ProjectCard {project} />
+								<ProjectCard {project} animateOnScroll={false} />
 							</div>
 						{/each}
 					</div>
