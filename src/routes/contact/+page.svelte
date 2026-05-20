@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
@@ -404,7 +404,6 @@
 
 	@media (max-width: 1024px) {
 		.origami-shard {
-			clip-path: none !important;
 			border-radius: 4px;
 		}
 	}

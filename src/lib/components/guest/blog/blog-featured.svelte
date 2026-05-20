@@ -498,11 +498,6 @@
 	}
 
 	@media (max-width: 1024px) {
-		.featured-card-inner,
-		.featured-card-shadow,
-		.featured-image-wrapper {
-			clip-path: none !important;
-		}
 		.featured-card-shadow {
 			transform: translate(8px, 8px) !important;
 			background-color: var(--primary) !important;

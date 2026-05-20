@@ -444,10 +444,6 @@
 	}
 
 	@media (max-width: 1024px) {
-		.teaser-card-inner,
-		.teaser-card-shadow {
-			clip-path: none !important;
-		}
 		.teaser-card-shadow {
 			transform: translate(8px, 8px) !important;
 			background-color: var(--primary) !important;

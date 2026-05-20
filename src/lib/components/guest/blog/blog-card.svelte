@@ -503,11 +503,6 @@
 	}
 
 	@media (max-width: 1024px) {
-		.blog-card-inner,
-		.blog-card-shadow,
-		.blog-card-image-wrapper {
-			clip-path: none !important;
-		}
 		.blog-card-shadow {
 			transform: translate(6px, 6px) !important;
 			background-color: var(--primary) !important;

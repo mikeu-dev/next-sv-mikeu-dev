@@ -537,11 +537,6 @@
 	}
 
 	@media (max-width: 1024px) {
-		.project-card-inner,
-		.project-card-shadow,
-		.project-card-image-wrapper {
-			clip-path: none !important;
-		}
 		.project-card-shadow {
 			transform: translate(6px, 6px) !important;
 			background-color: var(--primary) !important;
