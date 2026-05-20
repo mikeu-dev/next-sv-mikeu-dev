@@ -86,13 +86,14 @@
 
 			hoverTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-			// Elevate card, shift & scale neo-brutalist backing shadow
+			// Elevate card, shift & scale neo-brutalist backing shadow, and morph clip-paths
 			hoverTl.to(
 				inner,
 				{
 					z: 40,
 					scale: 1.02,
 					borderColor: 'var(--primary)',
+					clipPath: 'polygon(2% 2%, 98% 0%, 100% 100%, 0% 98%)',
 					duration: 0.5
 				},
 				0
@@ -105,6 +106,7 @@
 					y: 20,
 					rotate: -2,
 					backgroundColor: 'var(--primary)',
+					clipPath: 'polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%)',
 					duration: 0.5
 				},
 				0
@@ -150,6 +152,7 @@
 					z: 0,
 					scale: 1,
 					borderColor: 'var(--foreground)',
+					clipPath: 'polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%)',
 					duration: 0.5
 				},
 				0
@@ -162,6 +165,7 @@
 					y: 8,
 					rotate: 0,
 					backgroundColor: 'transparent',
+					clipPath: 'polygon(2% 2%, 98% 0%, 100% 100%, 0% 98%)',
 					duration: 0.5
 				},
 				0
@@ -346,10 +350,8 @@
 	/* Double Layer Asymmetric Origami Geometry for Main Container */
 	.contact-card-inner {
 		transform-style: preserve-3d;
-		clip-path: polygon(0 0, 100% 2%, 98% 98%, 2% 100%);
-		transition:
-			border-color 0.4s ease,
-			clip-path 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+		clip-path: polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%);
+		transition: border-color 0.4s ease;
 		will-change: transform, border-color, clip-path;
 	}
 
@@ -358,17 +360,8 @@
 		transform: translate(8px, 8px);
 		transition:
 			transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-			clip-path 0.6s cubic-bezier(0.25, 1, 0.5, 1),
 			background-color 0.4s ease;
 		will-change: transform, clip-path, background-color;
-	}
-
-	.group:hover .contact-card-inner {
-		clip-path: polygon(2% 2%, 98% 0%, 100% 100%, 0% 98%);
-	}
-
-	.group:hover .contact-card-shadow {
-		clip-path: polygon(0 0, 100% 2%, 98% 98%, 2% 100%);
 	}
 
 	/* Crease and Flap styling */

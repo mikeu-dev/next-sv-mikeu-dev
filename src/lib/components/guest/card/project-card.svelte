@@ -68,13 +68,14 @@
 
 			hoverTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-			// 1. Elevate card inner, shear/skew background shadow
+			// 1. Elevate card inner, shear/skew background shadow, and morph clip-paths
 			hoverTl.to(
 				inner,
 				{
 					z: 40,
 					scale: 1.03,
 					borderColor: 'var(--primary)',
+					clipPath: 'polygon(4% 4%, 96% 0%, 100% 100%, 0% 96%)',
 					duration: 0.5
 				},
 				0
@@ -87,6 +88,7 @@
 					y: 18,
 					rotate: -3,
 					backgroundColor: 'var(--primary)',
+					clipPath: 'polygon(0% 0%, 100% 4%, 96% 96%, 4% 100%)',
 					duration: 0.5
 				},
 				0
@@ -238,7 +240,8 @@
 					scale: 1,
 					rotateX: 0,
 					rotateY: 0,
-					borderColor: 'var(--foreground)'
+					borderColor: 'var(--foreground)',
+					clipPath: 'polygon(0% 0%, 100% 4%, 96% 96%, 4% 100%)'
 				},
 				0
 			);
@@ -249,7 +252,8 @@
 					x: 6,
 					y: 6,
 					rotate: 0,
-					backgroundColor: 'transparent'
+					backgroundColor: 'transparent',
+					clipPath: 'polygon(4% 4%, 96% 0%, 100% 100%, 0% 96%)'
 				},
 				0
 			);
@@ -478,10 +482,8 @@
 	/* Double Layer Asymmetric Origami Geometry */
 	.project-card-inner {
 		transform-style: preserve-3d;
-		clip-path: polygon(0 0, 100% 4%, 96% 96%, 4% 100%);
-		transition:
-			border-color 0.4s ease,
-			clip-path 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+		clip-path: polygon(0% 0%, 100% 4%, 96% 96%, 4% 100%);
+		transition: border-color 0.4s ease;
 		will-change: transform, border-color, clip-path;
 	}
 
@@ -490,17 +492,8 @@
 		transform: translate(6px, 6px);
 		transition:
 			transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-			clip-path 0.6s cubic-bezier(0.25, 1, 0.5, 1),
 			background-color 0.4s ease;
 		will-change: transform, clip-path, background-color;
-	}
-
-	.group:hover .project-card-inner {
-		clip-path: polygon(4% 4%, 96% 0%, 100% 100%, 0% 96%);
-	}
-
-	.group:hover .project-card-shadow {
-		clip-path: polygon(0 0, 100% 4%, 96% 96%, 4% 100%);
 	}
 
 	/* Image Wrapper clip path shifting */
