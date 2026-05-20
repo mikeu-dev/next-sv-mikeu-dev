@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import type { PageData } from './$types';
 	import type { BlogPost } from '$lib/types';
@@ -248,7 +248,7 @@
 	<!-- Featured Post Section -->
 	{#if featuredPost}
 		<section class="stagger-item container mx-auto px-4">
-			<BlogFeatured post={featuredPost} />
+			<BlogFeatured post={featuredPost} animateOnScroll={false} />
 		</section>
 	{/if}
 
