@@ -2,9 +2,6 @@
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
 	import SectionLoader from '$lib/components/ui/section-loader.svelte';
-	import { ArrowRight } from '@lucide/svelte';
-
-	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
 </script>

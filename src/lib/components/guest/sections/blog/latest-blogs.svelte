@@ -288,7 +288,7 @@
 									posts.length
 								).padStart(2, '0')}
 							</span>
-							<div class="flex h-3 w-32 border border-foreground bg-background/50 p-[1px]">
+							<div class="flex h-3 w-32 border border-foreground bg-background/50 p-px">
 								<div
 									class="h-full bg-primary transition-all duration-300"
 									style="width: {((activeIndex + 1) / posts.length) * 100}%"

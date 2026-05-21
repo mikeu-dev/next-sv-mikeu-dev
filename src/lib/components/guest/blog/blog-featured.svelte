@@ -4,7 +4,6 @@
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import type { BlogPost } from '$lib/types';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-	import { m } from '$lib/paraglide/messages';
 	import { Calendar, Clock, Sparkles, Hash, ArrowUpRight } from '@lucide/svelte';
 	import { optimizeImage } from '$lib/utils/image.util';
 

@@ -3,7 +3,7 @@
 	import * as Tooltip from '@/lib/components/ui/tooltip';
 	import type { Project } from '$lib/types';
 	import { useWorkSection } from './work.svelte.js';
-	import { getLocale, localizeHref } from '$lib/paraglide/runtime.js';
+	import { getLocale } from '$lib/paraglide/runtime.js';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { onMount } from 'svelte';
@@ -18,7 +18,7 @@
 	);
 
 	let activeIndex = $state(0);
-	let triggerInstance = $state<any>(null);
+	let triggerInstance = $state<ScrollTrigger | null>(null);
 
 	const { workSection, tooltipOpen, virtualAnchor, tooltipText } = useWorkSection();
 
@@ -139,7 +139,7 @@
 					}
 				});
 
-				triggerInstance = pinTl.scrollTrigger;
+				triggerInstance = pinTl.scrollTrigger || null;
 
 				// Generate transitions between card layers
 				cards.forEach((card, idx) => {
@@ -293,7 +293,7 @@
 										localizedProjects.length
 									).padStart(2, '0')}
 								</span>
-								<div class="flex h-3 w-32 border border-foreground bg-background/50 p-[1px]">
+								<div class="flex h-3 w-32 border border-foreground bg-background/50 p-px">
 									<div
 										class="h-full bg-primary transition-all duration-300"
 										style="width: {((activeIndex + 1) / localizedProjects.length) * 100}%"
@@ -303,7 +303,7 @@
 
 							<!-- Clickable Segment Tabs (Brutalist Mini-Origami button tabs) -->
 							<div class="hidden flex-wrap gap-2 md:flex">
-								{#each localizedProjects as proj, idx}
+								{#each localizedProjects as proj, idx (proj.id)}
 									<button
 										onclick={() => navigateToCard(idx)}
 										class="relative flex h-8 cursor-pointer items-center justify-center border-2 border-foreground px-4 font-mono text-[9px] font-black tracking-widest uppercase transition-all duration-200 {activeIndex ===
