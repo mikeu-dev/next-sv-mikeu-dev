@@ -27,21 +27,12 @@
 		const targetCard = cards[idx];
 		if (!targetCard) return;
 
-		const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-		if (isDesktop && triggerInstance) {
+		if (triggerInstance) {
 			const start = triggerInstance.start;
 			const end = triggerInstance.end;
 			const targetScroll = start + (idx / (localizedProjects.length - 1)) * (end - start);
 			window.scrollTo({
 				top: targetScroll + 2, // Offset slightly to guarantee trigger activation
-				behavior: 'smooth'
-			});
-		} else {
-			// Mobile scroll naturally to target card element offset top minus navbar offset
-			const rect = targetCard.getBoundingClientRect();
-			const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-			window.scrollTo({
-				top: rect.top + scrollTop - 100, // 100px navbar buffer
 				behavior: 'smooth'
 			});
 		}
@@ -91,8 +82,8 @@
 		let pinTl: gsap.core.Timeline | null = null;
 
 		if (cards.length > 0) {
-			// Desktop: 3D Scroll-Pinned Deck Stack morphs
-			mm.add('(min-width: 1024px)', () => {
+			// All screens: 3D Scroll-Pinned Deck Stack morphs
+			mm.add('all', () => {
 				// Initially stack card layers in absolute frame
 				cards.forEach((card, idx) => {
 					const inner = card.querySelector('.project-card-inner');
@@ -214,45 +205,6 @@
 					}
 				};
 			});
-
-			// Mobile & Tablet: Natural vertical column scrolling
-			mm.add('(max-width: 1023px)', () => {
-				activeIndex = 0;
-				triggerInstance = null;
-
-				cards.forEach((card) => {
-					const inner = card.querySelector('.project-card-inner');
-					const shadow = card.querySelector('.project-card-shadow');
-
-					// Clear inline styles from desktop morphs to prevent styling conflicts
-					gsap.set([card, inner, shadow], { clearProps: 'all' });
-
-					gsap.set(card, {
-						opacity: 1,
-						scale: 1,
-						rotateX: 0,
-						pointerEvents: 'auto',
-						yPercent: 0,
-						visibility: 'visible',
-						position: 'relative'
-					});
-
-					// Stagger entrance on standard scroll
-					gsap.from(card, {
-						rotateX: -45,
-						transformOrigin: 'top center',
-						y: 40,
-						opacity: 0,
-						duration: 1.2,
-						ease: 'power2.out',
-						scrollTrigger: {
-							trigger: card,
-							start: 'top 85%',
-							toggleActions: 'play none none none'
-						}
-					});
-				});
-			});
 		}
 
 		// Mouse Parallax for section background elements
@@ -282,7 +234,7 @@
 	<Tooltip.Root bind:open={$tooltipOpen}>
 		<section
 			bind:this={$workSection}
-			class="work-section relative overflow-hidden bg-background py-24 md:py-32"
+			class="work-section relative overflow-hidden bg-background py-6 md:py-32"
 		>
 			<!-- Grain Texture Overlay -->
 			<div
@@ -293,7 +245,7 @@
 			<div class="relative container mx-auto px-6">
 				<!-- Responsive Grid Structure: Collapses vertically on mobile, Split columns on desktop -->
 				<div
-					class="work-parallax-layer relative grid grid-cols-1 items-center gap-16 lg:grid-cols-12"
+					class="work-parallax-layer relative grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16"
 				>
 					<!-- Decorative Background Shards -->
 					<div
@@ -309,7 +261,7 @@
 					<div
 						class="work-header-stagger flex flex-col justify-center py-4 text-left lg:col-span-5"
 					>
-						<div class="mb-6 flex flex-wrap items-center gap-4">
+						<div class="mb-4 flex flex-wrap items-center gap-2 md:mb-6 md:gap-4">
 							<div
 								class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
 							>
@@ -326,13 +278,15 @@
 							{m.work_title()}<span class="text-primary">.</span>
 						</h2>
 						<p
-							class="mt-6 max-w-lg font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm"
+							class="mt-4 max-w-lg font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm md:mt-6"
 						>
 							{m.work_subtitle()}
 						</p>
 
-						<!-- Interactive Origami Booklet HUD Controller (Visible on LG, collapsed smoothly) -->
-						<div class="mt-8 flex flex-col gap-6 border-t-2 border-foreground/10 pt-6">
+						<!-- Interactive Origami Booklet HUD Controller -->
+						<div
+							class="mt-4 flex flex-col gap-4 border-t-2 border-foreground/10 pt-4 md:mt-8 md:gap-6 md:pt-6"
+						>
 							<div class="flex items-center gap-4">
 								<span class="font-mono text-xs font-black tracking-widest text-primary uppercase">
 									CATALOG_INDEX: {String(activeIndex + 1).padStart(2, '0')} // {String(
@@ -348,7 +302,7 @@
 							</div>
 
 							<!-- Clickable Segment Tabs (Brutalist Mini-Origami button tabs) -->
-							<div class="flex flex-wrap gap-2">
+							<div class="hidden flex-wrap gap-2 md:flex">
 								{#each localizedProjects as proj, idx}
 									<button
 										onclick={() => navigateToCard(idx)}
@@ -365,9 +319,9 @@
 						</div>
 					</div>
 
-					<!-- RIGHT COLUMN: 3D Origami Card Deck Stack (7 cols on lg) -->
+					<!-- RIGHT COLUMN: 3D Origami Card Deck Stack -->
 					<div
-						class="min-h-none relative flex h-auto w-full flex-col items-center justify-center gap-10 lg:col-span-7 lg:block lg:h-[70vh] lg:min-h-[480px] lg:gap-0"
+						class="relative block h-[45vh] min-h-[300px] w-full lg:col-span-7 lg:h-[70vh] lg:min-h-[480px]"
 					>
 						{#each localizedProjects as project, i (project.id)}
 							<div
@@ -383,7 +337,7 @@
 
 				<!-- Footer Technicality -->
 				<div
-					class="mt-20 flex items-center justify-between border-t-2 border-foreground/10 pt-8 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase"
+					class="mt-8 flex items-center justify-between border-t-2 border-foreground/10 pt-4 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase lg:mt-20 lg:pt-8"
 				>
 					<div class="flex items-center gap-4">
 						<Hash class="size-3" />

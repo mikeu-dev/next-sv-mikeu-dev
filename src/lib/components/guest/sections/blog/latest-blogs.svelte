@@ -30,21 +30,13 @@
 		const targetPage = pages[idx];
 		if (!targetPage) return;
 
-		const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-		if (isDesktop && triggerInstance) {
+		if (triggerInstance) {
 			const start = triggerInstance.start;
 			const end = triggerInstance.end;
 			const totalPages = posts.length > 1 ? posts.length - 1 : 1;
 			const targetScroll = start + (idx / totalPages) * (end - start);
 			window.scrollTo({
 				top: targetScroll + 2,
-				behavior: 'smooth'
-			});
-		} else {
-			const rect = targetPage.getBoundingClientRect();
-			const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-			window.scrollTo({
-				top: rect.top + scrollTop - 100,
 				behavior: 'smooth'
 			});
 		}
@@ -92,8 +84,8 @@
 		let bookTl: gsap.core.Timeline | null = null;
 
 		if (pages.length > 0) {
-			// Desktop: 3D Horizontal Page-Turner Binder (rotateY along left hinge)
-			mm.add('(min-width: 1024px)', () => {
+			// All screens: 3D Horizontal Page-Turner Binder (rotateY along left hinge)
+			mm.add('all', () => {
 				// Initially stack page layers in absolute frame
 				pages.forEach((page, idx) => {
 					const panel = page.querySelector('.origami-panel') as HTMLElement;
@@ -209,40 +201,6 @@
 			});
 		}
 
-		// Mobile & Tablet: Natural vertical flow with matchbook flip-down entrances
-		mm.add('(max-width: 1023px)', () => {
-			activeIndex = 0;
-			triggerInstance = null;
-
-			pages.forEach((page) => {
-				// Clear desktop GSAP inline styles
-				gsap.set(page, { clearProps: 'all' });
-				gsap.set(page, {
-					opacity: 1,
-					scale: 1,
-					z: 0,
-					pointerEvents: 'auto',
-					visibility: 'visible',
-					position: 'relative'
-				});
-
-				// Matchbook flip-down entrance on scroll
-				gsap.from(page, {
-					rotateX: -60,
-					transformOrigin: 'top center',
-					y: 40,
-					opacity: 0,
-					duration: 1.2,
-					ease: 'power2.out',
-					scrollTrigger: {
-						trigger: page,
-						start: 'top 85%',
-						toggleActions: 'play none none none'
-					}
-				});
-			});
-		});
-
 		// Mouse Parallax for background depth elements
 		const handleMouseMove = (e: MouseEvent) => {
 			const { clientX, clientY } = e;
@@ -269,7 +227,7 @@
 <section
 	id="latest-blog"
 	bind:this={section}
-	class="relative overflow-hidden bg-background py-24 md:py-32"
+	class="relative overflow-hidden bg-background py-6 md:py-32"
 >
 	<!-- Grain Texture Overlay -->
 	<div
@@ -279,7 +237,9 @@
 
 	<div class="relative container mx-auto px-6">
 		<!-- Responsive Grid: Collapses vertically on mobile, split columns on desktop -->
-		<div class="blog-parallax-layer relative grid grid-cols-1 items-center gap-16 lg:grid-cols-12">
+		<div
+			class="blog-parallax-layer relative grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16"
+		>
 			<!-- Decorative Background Shards -->
 			<div
 				class="origami-shard-blog absolute -top-24 -right-24 size-96 bg-primary/5 dark:bg-primary/10"
@@ -292,7 +252,7 @@
 
 			<!-- LEFT COLUMN: Header + Dossier HUD Controls (5 cols on lg) -->
 			<div class="blog-header-stagger flex flex-col justify-center py-4 text-left lg:col-span-5">
-				<div class="mb-6 flex flex-wrap items-center gap-4">
+				<div class="mb-4 flex flex-wrap items-center gap-2 md:mb-6 md:gap-4">
 					<div
 						class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
 					>
@@ -312,14 +272,16 @@
 				</h2>
 
 				<p
-					class="mt-8 max-w-lg font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm"
+					class="mt-4 max-w-lg font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm md:mt-6"
 				>
 					{m.blog_subtitle()}
 				</p>
 
-				<!-- Interactive Dossier HUD Controller -->
+				<!-- Interactive Origami HUD Controller -->
 				{#if posts.length > 0}
-					<div class="mt-8 flex flex-col gap-6 border-t-2 border-foreground/10 pt-6">
+					<div
+						class="mt-4 flex flex-col gap-4 border-t-2 border-foreground/10 pt-4 md:mt-8 md:gap-6 md:pt-6"
+					>
 						<div class="flex items-center gap-4">
 							<span class="font-mono text-xs font-black tracking-widest text-primary uppercase">
 								DOSSIER_PAGE: {String(activeIndex + 1).padStart(2, '0')} // {String(
@@ -344,7 +306,7 @@
 						</div>
 
 						<!-- Clickable Page Tabs (Brutalist Mini-Origami Buttons) -->
-						<div class="flex flex-wrap gap-2">
+						<div class="hidden flex-wrap gap-2 md:flex">
 							{#each posts as post, idx (post.slug)}
 								<button
 									onclick={() => navigateToPage(idx)}
@@ -362,9 +324,9 @@
 				{/if}
 			</div>
 
-			<!-- RIGHT COLUMN: 3D Binder Page Stack (7 cols on lg) -->
+			<!-- RIGHT COLUMN: 3D Binder Page Stack -->
 			<div
-				class="blog-page-stack min-h-none relative flex h-auto w-full flex-col items-center justify-center gap-10 lg:col-span-7 lg:block lg:h-[70vh] lg:min-h-[480px] lg:gap-0"
+				class="blog-page-stack relative block h-[45vh] min-h-[300px] w-full lg:col-span-7 lg:h-[70vh] lg:min-h-[480px]"
 			>
 				{#if posts.length > 0}
 					{#each posts as post, idx (post.slug)}
@@ -462,10 +424,10 @@
 
 			<!-- CTA (full-width inside grid) -->
 			{#if posts.length > 0}
-				<div class="blog-header-stagger mt-24 text-center lg:col-span-12">
+				<div class="blog-header-stagger mt-8 text-center lg:col-span-12 lg:mt-24">
 					<a
 						href={localizeHref('/blog')}
-						class="group relative inline-flex h-20 items-center justify-center overflow-hidden bg-foreground px-12 text-background transition-all hover:bg-primary hover:text-primary-foreground sm:w-80"
+						class="group relative inline-flex h-16 items-center justify-center overflow-hidden bg-foreground px-12 text-background transition-all hover:bg-primary hover:text-primary-foreground sm:h-20 sm:w-80"
 						style="clip-path: polygon(0% 15%, 100% 0%, 95% 100%, 5% 85%);"
 					>
 						<div class="flex items-center gap-4">
@@ -484,7 +446,7 @@
 
 			<!-- Footer Technicality (full-width inside grid) -->
 			<div
-				class="mt-24 flex items-center justify-between border-t-2 border-foreground/10 pt-8 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase lg:col-span-12"
+				class="mt-8 flex items-center justify-between border-t-2 border-foreground/10 pt-4 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase lg:col-span-12 lg:mt-24 lg:pt-8"
 			>
 				<div class="flex items-center gap-4">
 					<Hash class="size-3" />
