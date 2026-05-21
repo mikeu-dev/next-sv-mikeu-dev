@@ -120,8 +120,7 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
-	html {
-	}
+
 	body {
 		@apply bg-background text-foreground;
 		font-family: var(--font-inter);
@@ -181,7 +180,7 @@
 		font-style: italic;
 		border-left-width: 4px;
 		border-left-color: var(--primary);
-		background-color: oklch(from var(--primary) l c h / 5%);
+		@apply bg-primary/5;
 		padding: 1.5rem;
 		border-radius: 0.5rem;
 	}
