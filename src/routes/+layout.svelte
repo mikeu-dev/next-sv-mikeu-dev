@@ -14,6 +14,8 @@
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import gsap from 'gsap';
 	import ScrollToPlugin from 'gsap/ScrollToPlugin';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import Lenis from 'lenis';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
@@ -28,7 +30,7 @@
 
 	// Register GSAP Plugin globally once
 	if (typeof window !== 'undefined') {
-		gsap.registerPlugin(ScrollToPlugin);
+		gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
 	}
 
 	onNavigate((navigation) => {
@@ -45,14 +47,19 @@
 	let fallingConfetti = $state(false);
 	let scrollBtn = $state<HTMLElement | null>(null);
 	let liveStats = $state({ total: 0, today: 0 });
+	let lenis: Lenis;
 
 	function scrollToTop() {
-		// Reduced duration for more responsive feel
-		gsap.to(window, {
-			duration: 0.5,
-			scrollTo: 0,
-			ease: 'power4.inOut'
-		});
+		if (lenis) {
+			lenis.scrollTo(0, { duration: 0.5 });
+		} else {
+			// Reduced duration for more responsive feel
+			gsap.to(window, {
+				duration: 0.5,
+				scrollTo: 0,
+				ease: 'power4.inOut'
+			});
+		}
 	}
 
 	function handleScroll() {
@@ -69,6 +76,20 @@
 	}
 
 	onMount(() => {
+		lenis = new Lenis({
+			lerp: 0.1,
+			smoothWheel: true
+		});
+
+		lenis.on('scroll', ScrollTrigger.update);
+
+		const updateLenis = (time: number) => {
+			lenis.raf(time * 1000);
+		};
+
+		gsap.ticker.add(updateLenis);
+		gsap.ticker.lagSmoothing(0);
+
 		window.addEventListener('scroll', handleScroll);
 
 		if ('serviceWorker' in navigator && !dev) {
@@ -97,7 +118,11 @@
 			}
 		})();
 
-		return () => window.removeEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+			gsap.ticker.remove(updateLenis);
+			if (lenis) lenis.destroy();
+		};
 	});
 
 	afterNavigate(() => {
