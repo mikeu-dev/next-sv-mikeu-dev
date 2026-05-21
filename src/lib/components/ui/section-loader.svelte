@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 	interface Props {
 		children: Snippet;
@@ -30,6 +31,7 @@
 				const entry = entries[0];
 				if (entry?.isIntersecting) {
 					visible = true;
+					setTimeout(() => ScrollTrigger.refresh(), 100);
 					if (once) {
 						observer.disconnect();
 					}

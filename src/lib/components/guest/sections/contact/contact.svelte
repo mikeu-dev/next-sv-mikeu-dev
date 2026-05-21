@@ -8,10 +8,14 @@
 
 	let contactSection = $state<HTMLElement>();
 	let shardsContainer = $state<HTMLElement>();
+	let cardElement = $state<HTMLElement>();
 
 	onMount(() => {
+		if (!contactSection || !shardsContainer || !cardElement) return;
+
 		gsap.registerPlugin(ScrollTrigger);
 
+		// 3D Reveal Timeline
 		const tl = gsap.timeline({
 			scrollTrigger: {
 				trigger: contactSection,
@@ -20,7 +24,7 @@
 			}
 		});
 
-		// Origami Reveal Animation
+		// Origami Reveal Animations
 		tl.from('.origami-bg-shard', {
 			rotateX: -90,
 			opacity: 0,
@@ -29,12 +33,14 @@
 			ease: 'power4.out'
 		})
 			.from(
-				'.contact-content',
+				cardElement,
 				{
-					y: 100,
+					rotateX: -100,
+					transformOrigin: 'top center',
+					y: 80,
 					opacity: 0,
-					duration: 1,
-					ease: 'expo.out'
+					duration: 1.5,
+					ease: 'elastic.out(0.9, 0.75)'
 				},
 				'-=0.8'
 			)
@@ -46,10 +52,10 @@
 					duration: 0.5,
 					stagger: 0.1
 				},
-				'-=0.5'
+				'-=0.8'
 			);
 
-		// Mouse Interaction (Parallax)
+		// Mouse Interaction (Parallax for Shards and Main Wrapper)
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!shardsContainer) return;
 			const { clientX, clientY } = e;
@@ -64,8 +70,141 @@
 			});
 		};
 
+		// 3D Card Hover Interaction (Tilt & Fold corner flap)
+		const isHoverable = window.matchMedia('(pointer: fine)').matches;
+		let hoverTl: gsap.core.Timeline | null = null;
+
+		const handleMouseEnter = () => {
+			if (!isHoverable || !cardElement) return;
+
+			if (hoverTl) hoverTl.kill();
+
+			const inner = cardElement.querySelector('.contact-card-inner');
+			const shadow = cardElement.querySelector('.contact-card-shadow');
+			const crease = cardElement.querySelector('.origami-crease');
+			const flap = cardElement.querySelector('.origami-flap');
+
+			hoverTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+			// Elevate card, shift & scale neo-brutalist backing shadow, and morph clip-paths
+			hoverTl.to(
+				inner,
+				{
+					z: 40,
+					scale: 1.02,
+					borderColor: 'var(--primary)',
+					clipPath: 'polygon(2% 2%, 98% 0%, 100% 100%, 0% 98%)',
+					duration: 0.5
+				},
+				0
+			);
+
+			hoverTl.to(
+				shadow,
+				{
+					x: 20,
+					y: 20,
+					rotate: -2,
+					backgroundColor: 'var(--primary)',
+					clipPath: 'polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%)',
+					duration: 0.5
+				},
+				0
+			);
+
+			// Crease shadow deepens for a 3D folded paper crease aesthetic
+			hoverTl.to(
+				crease,
+				{
+					opacity: 0.6,
+					duration: 0.4
+				},
+				0
+			);
+
+			// Fold top-right origami corner flap 180 degrees back along diagonal
+			hoverTl.to(
+				flap,
+				{
+					rotate3d: '1, -1, 0, 180',
+					duration: 0.6,
+					ease: 'power2.inOut'
+				},
+				0
+			);
+		};
+
+		const handleMouseLeave = () => {
+			if (!isHoverable || !cardElement) return;
+
+			if (hoverTl) hoverTl.kill();
+
+			const inner = cardElement.querySelector('.contact-card-inner');
+			const shadow = cardElement.querySelector('.contact-card-shadow');
+			const crease = cardElement.querySelector('.origami-crease');
+			const flap = cardElement.querySelector('.origami-flap');
+
+			hoverTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+			hoverTl.to(
+				inner,
+				{
+					z: 0,
+					scale: 1,
+					borderColor: 'var(--foreground)',
+					clipPath: 'polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%)',
+					duration: 0.5
+				},
+				0
+			);
+
+			hoverTl.to(
+				shadow,
+				{
+					x: 8,
+					y: 8,
+					rotate: 0,
+					backgroundColor: 'transparent',
+					clipPath: 'polygon(2% 2%, 98% 0%, 100% 100%, 0% 98%)',
+					duration: 0.5
+				},
+				0
+			);
+
+			hoverTl.to(
+				crease,
+				{
+					opacity: 0.35,
+					duration: 0.4
+				},
+				0
+			);
+
+			hoverTl.to(
+				flap,
+				{
+					rotate3d: '1, -1, 0, 0',
+					duration: 0.6,
+					ease: 'power2.inOut'
+				},
+				0
+			);
+		};
+
 		window.addEventListener('mousemove', handleMouseMove);
-		return () => window.removeEventListener('mousemove', handleMouseMove);
+
+		if (cardElement) {
+			cardElement.addEventListener('mouseenter', handleMouseEnter);
+			cardElement.addEventListener('mouseleave', handleMouseLeave);
+		}
+
+		return () => {
+			window.removeEventListener('mousemove', handleMouseMove);
+			if (cardElement) {
+				cardElement.removeEventListener('mouseenter', handleMouseEnter);
+				cardElement.removeEventListener('mouseleave', handleMouseLeave);
+			}
+		};
 	});
 </script>
 
@@ -107,47 +246,75 @@
 				</div>
 			</div>
 
-			<!-- Main Content -->
-			<div class="contact-content relative z-10 text-center">
+			<!-- Main Content Card Wrapper (Double Layer Asymmetric Origami Geometry) -->
+			<div class="group relative my-8 w-full max-w-4xl select-none" bind:this={cardElement}>
+				<!-- 1. Backing Shadow Card (Asymmetric Layer) -->
 				<div
-					class="mb-6 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 font-mono text-[10px] font-bold tracking-widest text-foreground/80 uppercase"
-				>
-					<MessageSquare class="size-3 text-primary" />
-					{m.contact_page_title()}
-				</div>
+					class="contact-card-shadow pointer-events-none absolute inset-0 z-0 border-4 border-foreground bg-transparent"
+				></div>
 
-				<h2 class="mb-8 font-poppins text-5xl font-black tracking-tighter sm:text-7xl lg:text-8xl">
-					{m.contact_title()}<span class="text-primary">.</span>
-				</h2>
-
-				<p
-					class="mx-auto mb-16 max-w-2xl font-mono text-sm leading-relaxed text-muted-foreground uppercase sm:text-base"
+				<!-- 2. Main Origami Card -->
+				<div
+					class="contact-card-inner relative z-10 flex flex-col items-center justify-center overflow-hidden border-4 border-foreground bg-card p-10 text-center sm:p-16 md:p-20"
 				>
-					{m.contact_subtitle_first_part()}
-					<span class="mt-2 block font-bold text-foreground">
-						{m.contact_subtitle_second_part()}
-					</span>
-				</p>
+					<!-- Origami Crease Lighting Overlay -->
+					<div class="origami-crease pointer-events-none absolute inset-0 z-20 opacity-35"></div>
 
-				<a
-					href={localizeHref('/contact')}
-					class="group relative inline-flex h-24 w-full items-center justify-center overflow-hidden bg-primary px-12 text-primary-foreground sm:w-80"
-					style="clip-path: polygon(0% 0%, 100% 15%, 90% 100%, 10% 85%);"
-				>
-					<!-- Button Hover Effect -->
+					<!-- 3D Origami Corner Flap -->
 					<div
-						class="absolute inset-0 bg-foreground opacity-0 transition-opacity group-hover:opacity-10"
-					></div>
-
-					<div class="flex items-center gap-4">
-						<span class="font-poppins text-2xl font-black tracking-tighter uppercase">
-							{m.contact_button()}
-						</span>
-						<ArrowRight
-							class="size-8 transition-transform duration-300 group-hover:translate-x-2"
-						/>
+						class="origami-flap-container pointer-events-none absolute top-0 right-0 z-30 size-20 overflow-visible"
+					>
+						<div
+							class="absolute inset-0 bg-primary/20"
+							style="clip-path: polygon(100% 0, 100% 100%, 0 0);"
+						></div>
+						<div
+							class="origami-flap absolute inset-0 origin-top-left border-b-4 border-l-4 border-foreground bg-card"
+							style="clip-path: polygon(100% 0, 100% 100%, 0 0); transform-style: preserve-3d; transform: rotate3d(1, -1, 0, 0deg);"
+						></div>
 					</div>
-				</a>
+
+					<!-- Content inside Card -->
+					<div class="contact-content relative z-10 flex w-full flex-col items-center">
+						<div
+							class="mb-6 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 font-mono text-[10px] font-bold tracking-widest text-foreground/80 uppercase"
+						>
+							<MessageSquare class="size-3 text-primary" />
+							{m.contact_page_title()}
+						</div>
+
+						<h2
+							class="mb-8 font-poppins text-4xl leading-none font-black tracking-tighter sm:text-6xl lg:text-7xl"
+						>
+							{m.contact_title()}<span class="text-primary">.</span>
+						</h2>
+
+						<p
+							class="mx-auto mb-12 max-w-2xl font-mono text-xs leading-relaxed text-muted-foreground uppercase sm:text-sm"
+						>
+							{m.contact_subtitle_first_part()}
+							<span class="mt-2 block font-bold text-foreground">
+								{m.contact_subtitle_second_part()}
+							</span>
+						</p>
+
+						<a
+							href={localizeHref('/contact')}
+							class="contact-button group/btn relative inline-flex h-20 w-full items-center justify-center bg-primary px-12 text-primary-foreground sm:w-80"
+						>
+							<div class="flex items-center gap-4">
+								<span
+									class="font-poppins text-xl font-black tracking-tighter uppercase sm:text-2xl"
+								>
+									{m.contact_button()}
+								</span>
+								<ArrowRight
+									class="size-7 transition-transform duration-300 group-hover/btn:translate-x-2"
+								/>
+							</div>
+						</a>
+					</div>
+				</div>
 			</div>
 
 			<!-- Technical Footer -->
@@ -155,7 +322,7 @@
 				<div
 					class="flex justify-between font-mono text-[8px] font-black tracking-[0.2em] text-foreground/40 uppercase"
 				>
-					<span>Â© MIKEU_DEV // 2026</span>
+					<span>© MIKEU_DEV // 2026</span>
 					<span class="hidden sm:block">ENCRYPTED_COMMS // SECURED</span>
 					<span>STATUS: ACTIVE</span>
 				</div>
@@ -168,15 +335,11 @@
 	@reference "tailwindcss";
 
 	.contact-section {
-		perspective: 1000px;
+		perspective: 1200px;
 	}
 
 	.shards-wrapper {
 		transform-style: preserve-3d;
-	}
-
-	.contact-content {
-		transform: translateZ(50px);
 	}
 
 	.origami-bg-shard {
@@ -184,7 +347,69 @@
 		pointer-events: none;
 	}
 
-	/* Disable clip-path on very small screens if it causes issues, but modern browsers handle it well */
+	/* Double Layer Asymmetric Origami Geometry for Main Container */
+	.contact-card-inner {
+		transform-style: preserve-3d;
+		clip-path: polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%);
+		transition: border-color 0.4s ease;
+		will-change: transform, border-color, clip-path;
+	}
+
+	.contact-card-shadow {
+		clip-path: polygon(2% 2%, 98% 0%, 100% 100%, 0% 98%);
+		transform: translate(8px, 8px);
+		transition:
+			transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+			background-color 0.4s ease;
+		will-change: transform, clip-path, background-color;
+	}
+
+	/* Crease and Flap styling */
+	.origami-crease {
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.05) 0%,
+			rgba(255, 255, 255, 0) 50%,
+			rgba(0, 0, 0, 0.08) 50.1%,
+			rgba(0, 0, 0, 0.16) 100%
+		);
+		mix-blend-mode: multiply;
+	}
+
+	:global(.dark) .origami-crease {
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.03) 0%,
+			rgba(255, 255, 255, 0) 50%,
+			rgba(0, 0, 0, 0.18) 50.1%,
+			rgba(0, 0, 0, 0.38) 100%
+		);
+	}
+
+	/* Brutalist Origami Button styling */
+	.contact-button {
+		clip-path: polygon(0 15%, 100% 0, 95% 100%, 5% 85%);
+		border: 2px solid var(--foreground);
+		transition:
+			transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+			box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+			background-color 0.3s ease;
+		will-change: transform, box-shadow;
+	}
+
+	.contact-button:hover {
+		transform: scale(1.03) skewX(-6deg);
+		box-shadow: 4px 4px 0px var(--foreground);
+		background-color: var(--primary);
+	}
+
+	@media (max-width: 1024px) {
+		.contact-card-shadow {
+			transform: translate(6px, 6px) !important;
+			background-color: var(--primary) !important;
+		}
+	}
+
 	@media (max-width: 640px) {
 		.origami-bg-shard {
 			opacity: 0.1;
