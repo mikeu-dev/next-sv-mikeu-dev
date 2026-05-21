@@ -14,6 +14,8 @@
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import gsap from 'gsap';
 	import ScrollToPlugin from 'gsap/ScrollToPlugin';
+	import ScrollTrigger from 'gsap/ScrollTrigger';
+	import Lenis from 'lenis';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
@@ -28,7 +30,7 @@
 
 	// Register GSAP Plugin globally once
 	if (typeof window !== 'undefined') {
-		gsap.registerPlugin(ScrollToPlugin);
+		gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
 	}
 
 	onNavigate((navigation) => {
@@ -45,14 +47,22 @@
 	let fallingConfetti = $state(false);
 	let scrollBtn = $state<HTMLElement | null>(null);
 	let liveStats = $state({ total: 0, today: 0 });
+	let lenisInstance: any = null;
 
 	function scrollToTop() {
-		// Reduced duration for more responsive feel
-		gsap.to(window, {
-			duration: 0.5,
-			scrollTo: 0,
-			ease: 'power4.inOut'
-		});
+		if (lenisInstance) {
+			lenisInstance.scrollTo(0, {
+				duration: 1.5,
+				easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+			});
+		} else {
+			// Reduced duration for more responsive feel
+			gsap.to(window, {
+				duration: 0.5,
+				scrollTo: 0,
+				ease: 'power4.inOut'
+			});
+		}
 	}
 
 	function handleScroll() {
@@ -70,6 +80,17 @@
 
 	onMount(() => {
 		window.addEventListener('scroll', handleScroll);
+
+		// Initialize Lenis for Smooth Movement
+		lenisInstance = new Lenis();
+
+		lenisInstance.on('scroll', ScrollTrigger.update);
+
+		gsap.ticker.add((time) => {
+			lenisInstance?.raf(time * 1000);
+		});
+
+		gsap.ticker.lagSmoothing(0);
 
 		if ('serviceWorker' in navigator && !dev) {
 			navigator.serviceWorker.register('/service-worker.js', {
@@ -97,7 +118,12 @@
 			}
 		})();
 
-		return () => window.removeEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+			if (lenisInstance) {
+				lenisInstance.destroy();
+			}
+		};
 	});
 
 	afterNavigate(() => {
