@@ -27,7 +27,7 @@ const envSchema = z.object({
 	GOOGLE_GEMINI_API_KEY: z.string().optional(),
 
 	// API Keys
-	PUBLIC_API_KEY: z.string().optional()
+	EXTERNAL_API_KEY: z.string().optional()
 });
 
 import { env as dynamicPrivateEnv } from '$env/dynamic/private';

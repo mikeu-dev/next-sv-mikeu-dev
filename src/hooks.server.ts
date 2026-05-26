@@ -189,10 +189,10 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 const handlePublicApi: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/api/public')) {
 		const apiKey = event.request.headers.get('x-api-key');
-		const validApiKey = env.PUBLIC_API_KEY;
+		const validApiKey = env.EXTERNAL_API_KEY;
 
 		if (!validApiKey) {
-			console.error('PUBLIC_API_KEY is not set in environment variables');
+			console.error('EXTERNAL_API_KEY is not set in environment variables');
 			return new Response(JSON.stringify({ error: 'Server configuration error' }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' }
