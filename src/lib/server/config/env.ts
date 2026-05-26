@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
 const envSchema = z.object({
 	// Firebase Admin SDK
@@ -24,7 +24,10 @@ const envSchema = z.object({
 	UPLOADS_DIR: z.string().default('./uploads'),
 
 	// AI Gemini
-	GOOGLE_GEMINI_API_KEY: z.string().optional()
+	GOOGLE_GEMINI_API_KEY: z.string().optional(),
+
+	// API Keys
+	PUBLIC_API_KEY: z.string().optional()
 });
 
 import { env as dynamicPrivateEnv } from '$env/dynamic/private';
