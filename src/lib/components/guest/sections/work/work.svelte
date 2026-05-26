@@ -132,6 +132,12 @@
 						end: `+=${cards.length * 100}%`,
 						pin: true,
 						scrub: 0.8,
+						snap: {
+							snapTo: 'labels',
+							duration: { min: 0.2, max: 0.5 },
+							delay: 0.05,
+							ease: 'power2.inOut'
+						},
 						onUpdate: (self) => {
 							const progress = self.progress;
 							activeIndex = Math.min(cards.length - 1, Math.floor(progress * cards.length * 0.99));
@@ -143,6 +149,8 @@
 
 				// Generate transitions between card layers
 				cards.forEach((card, idx) => {
+					pinTl!.addLabel('step' + idx, idx);
+
 					if (idx === cards.length - 1) return;
 
 					const nextCard = cards[idx + 1];

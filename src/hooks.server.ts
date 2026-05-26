@@ -182,6 +182,38 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+/**
+ * Public API middleware
+ * Protects /api/public routes with an API key
+ */
+const handlePublicApi: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname.startsWith('/api/public')) {
+		const apiKey = event.request.headers.get('x-api-key');
+		const validApiKey = env.EXTERNAL_API_KEY;
+
+		if (!validApiKey) {
+			console.error('EXTERNAL_API_KEY is not set in environment variables');
+			return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+
+		if (apiKey !== validApiKey) {
+			logWarning('Api:KeyCheck', 'Invalid or missing API key attempt', {
+				path: event.url.pathname,
+				ip: event.getClientAddress()
+			});
+			return new Response(JSON.stringify({ error: 'Unauthorized: Invalid API Key' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+	}
+
+	return resolve(event);
+};
+
 import { monitoringService } from '$lib/server/services/monitoring.service';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -191,7 +223,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		handleSecurityHeaders,
 		handleParaglide,
 		handleVisitor,
-		handleAuth
+		handleAuth,
+		handlePublicApi
 	)({ event, resolve });
 	console.log(
 		`[Hooks] Finished handling request: ${event.url.pathname} with status ${response.status}`

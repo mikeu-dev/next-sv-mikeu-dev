@@ -1,4 +1,4 @@
-﻿import { BlogRepository } from '../repositories/blog.repository';
+import { BlogRepository } from '../repositories/blog.repository';
 import { dev } from '$app/environment';
 import { persistentCache } from '../utils/cache.util';
 import type { BlogPost } from '$lib/types';
@@ -41,6 +41,15 @@ export class BlogService {
 		} catch (error: unknown) {
 			console.error('BlogService: Failed to get all posts', error);
 			return persistentCache.get<BlogPost[]>(cacheKey) || [];
+		}
+	}
+
+	async getPostByTitle(title: string) {
+		try {
+			return await this.repository.getByTitle(title);
+		} catch (error) {
+			console.error('BlogService: Quota exceeded while fetching post by title');
+			return null;
 		}
 	}
 
