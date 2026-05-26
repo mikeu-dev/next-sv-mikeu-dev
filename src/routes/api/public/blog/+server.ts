@@ -30,12 +30,45 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 		}
 
+		// Handle dual language payload from n8n (adopted from admin)
+		if (body.title_id && body.title_en) {
+			const postDataId: BlogPost = {
+				slug: body.slug,
+				locale: 'id',
+				title: body.title_id,
+				description: body.description_id || body.title_id,
+				date: body.date || new Date().toISOString(),
+				published: body.published === true || body.published === 'true',
+				content: body.content_id,
+				thumbnailUrl: body.thumbnail,
+				tags: parsedTags
+			};
+
+			const postDataEn: BlogPost = {
+				slug: body.slug,
+				locale: 'en',
+				title: body.title_en,
+				description: body.description_en || body.title_en,
+				date: body.date || new Date().toISOString(),
+				published: body.published === true || body.published === 'true',
+				content: body.content_en,
+				thumbnailUrl: body.thumbnail,
+				tags: parsedTags
+			};
+
+			await blogService.createPost(postDataId);
+			const postEn = await blogService.createPost(postDataEn);
+
+			return json({ success: true, data: [postDataId, postEn] }, { status: 201 });
+		}
+
+		// Fallback for single language payload
 		const postData: BlogPost = {
 			slug: body.slug,
-			locale: 'id', // Default bahasa Indonesia untuk artikel dari public API
+			locale: body.locale || 'id',
 			title: body.title,
-			description: body.title, // Default description ke title jika tidak ada
-			date: new Date().toISOString(),
+			description: body.description || body.title,
+			date: body.date || new Date().toISOString(),
 			published: body.published === true || body.published === 'true',
 			content: body.content,
 			thumbnailUrl: body.thumbnail,
