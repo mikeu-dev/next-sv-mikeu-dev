@@ -127,6 +127,12 @@
 						end: `+=${pages.length * 100}%`,
 						pin: true,
 						scrub: 0.8,
+						snap: {
+							snapTo: 'labels',
+							duration: { min: 0.2, max: 0.5 },
+							delay: 0.05,
+							ease: 'power2.inOut'
+						},
 						onUpdate: (self) => {
 							dossierProgress = self.progress * 100;
 							activeIndex = Math.min(
@@ -141,6 +147,8 @@
 
 				// Generate page-flip transitions between layers
 				pages.forEach((page, idx) => {
+					bookTl!.addLabel('step' + idx, idx);
+
 					if (idx === pages.length - 1) return;
 
 					const nextPage = pages[idx + 1];
