@@ -3,9 +3,14 @@ import type { RequestHandler } from './$types';
 import { blogService } from '$lib/server/services/blog.service';
 import type { BlogPost } from '$lib/types';
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ url }) => {
 	try {
 		// Mengambil semua post untuk pengecekan duplikat di eksternal (misal: n8n)
+		const title = url.searchParams.get('title');
+		if (title) {
+			const post = await blogService.getPostByTitle(title);
+			return json({ data: post ? [post] : [] });
+		}
 		const posts = await blogService.getAllPosts();
 		return json({ data: posts });
 	} catch (err) {

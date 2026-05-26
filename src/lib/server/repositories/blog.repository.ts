@@ -52,6 +52,15 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 		};
 	}
 
+	async getByTitle(title: string): Promise<BlogPost | null> {
+		const col = this.getCollection();
+		if (!col) return null;
+		const query = col.where('title', '==', title).limit(1);
+		const snapshot = await query.get();
+		if (snapshot.empty) return null;
+		return { ...this.toPOJO(snapshot.docs[0].data()), id: snapshot.docs[0].id } as BlogPost;
+	}
+
 	async getBySlugIndoEn(slug: string, locale?: string): Promise<BlogPost | null> {
 		const col = this.getCollection();
 		if (!col) return null;

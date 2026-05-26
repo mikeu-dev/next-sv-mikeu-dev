@@ -44,6 +44,15 @@ export class BlogService {
 		}
 	}
 
+	async async getPostByTitle(title: string) {
+		try {
+			return await this.repository.getByTitle(title);
+		} catch (error) {
+			console.error('BlogService: Quota exceeded while fetching post by title');
+			return null;
+		}
+	}
+
 	async getPostBySlug(slug: string, locale?: string) {
 		try {
 			return await this.repository.getBySlugIndoEn(slug, locale);
