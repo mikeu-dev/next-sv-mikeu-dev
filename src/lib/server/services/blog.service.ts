@@ -1,4 +1,4 @@
-﻿import { BlogRepository } from '../repositories/blog.repository';
+import { BlogRepository } from '../repositories/blog.repository';
 import { dev } from '$app/environment';
 import { persistentCache } from '../utils/cache.util';
 import type { BlogPost } from '$lib/types';
@@ -44,7 +44,7 @@ export class BlogService {
 		}
 	}
 
-	async async getPostByTitle(title: string) {
+	async getPostByTitle(title: string) {
 		try {
 			return await this.repository.getByTitle(title);
 		} catch (error) {
