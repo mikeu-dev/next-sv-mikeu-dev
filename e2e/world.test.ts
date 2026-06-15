@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Folded World Interaction Map', () => {
 	test('should render canvas, HUD, and allow mode switching', async ({ page }) => {
 		// Navigate to the world page
-		await page.goto('http://localhost:5173/world');
+		await page.goto('/world', { waitUntil: 'domcontentloaded' });
 
 		// Wait for the engine to initialize and drop the loading screen
 		// The loading screen has a text that says "LOADING FOLDED_WORLD" and then disappears
