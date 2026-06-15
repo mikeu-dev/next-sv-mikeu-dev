@@ -2,13 +2,12 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
 	webServer: {
-		command: 'pnpm run build && pnpm run preview',
-		port: 4173,
-		reuseExistingServer: !process.env.CI,
-		timeout: 120000
+		command: 'pnpm run dev',
+		port: 5173,
+		reuseExistingServer: !process.env.CI
 	},
 	use: {
-		baseURL: 'http://localhost:4173'
+		baseURL: 'http://localhost:5173'
 	},
 	testDir: 'e2e'
 });
