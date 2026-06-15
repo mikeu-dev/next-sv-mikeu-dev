@@ -2,12 +2,15 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
 	webServer: {
-		command: 'pnpm run dev',
-		port: 5173,
+		command: 'pnpm run preview',
+		url: 'http://127.0.0.1:4173',
 		reuseExistingServer: !process.env.CI
 	},
 	use: {
-		baseURL: 'http://localhost:5173'
+		baseURL: 'http://127.0.0.1:4173',
+		launchOptions: {
+			args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist', '--no-sandbox']
+		}
 	},
 	testDir: 'e2e'
 });
