@@ -1071,7 +1071,7 @@
 					class="tape-button tape-button-left group"
 				>
 					<span
-						class="relative z-10 font-mono text-base font-bold tracking-widest uppercase sm:text-lg md:text-xl"
+						class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
 						>Contact Me</span
 					>
 				</a>
@@ -1085,7 +1085,7 @@
 					class="tape-button tape-button-right group"
 				>
 					<span
-						class="relative z-10 font-mono text-base font-bold tracking-widest uppercase sm:text-lg md:text-xl"
+						class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
 						>View Work</span
 					>
 				</a>
@@ -1110,25 +1110,25 @@
 	:root {
 		--grid-color: rgba(0, 0, 0, 0.06);
 		--mouse-glow: rgba(0, 0, 0, 0.015);
-		--tape-bg: #f4f4f5;
-		--tape-color: #27272a;
-		--tape-fold-color: #d4d4d8;
-		--tape-shadow-bg: #a1a1aa; /* Layer 0: Latar belakang agak gelap */
-		--tape-underlay-bg: #ffffff; /* Layer 1: Segitiga underlay agak terang */
-		--tape-shadow: rgba(0, 0, 0, 0.08);
-		--tape-shadow-hover: rgba(0, 0, 0, 0.12);
+		--tape-bg: #e2e2e8;
+		--tape-color: #18181b;
+		--tape-fold-color: #ffffff;
+		--tape-shadow-bg: #9a9a9f; /* Layer 0: Latar belakang agak gelap */
+		--tape-underlay-bg: transparent; /* Layer 1: Segitiga underlay agak terang */
+		--tape-shadow: rgba(0, 0, 0, 0.15);
+		--tape-shadow-hover: rgba(0, 0, 0, 0.25);
 	}
 
 	:global(.dark) {
 		--grid-color: rgba(255, 255, 255, 0.035);
 		--mouse-glow: rgba(255, 255, 255, 0.045);
-		--tape-bg: #27272a;
-		--tape-color: #f4f4f5;
-		--tape-fold-color: #18181b;
-		--tape-shadow-bg: #09090b; /* Layer 0: Latar belakang agak gelap */
-		--tape-underlay-bg: #18181b; /* Layer 1: Segitiga underlay agak terang */
-		--tape-shadow: rgba(0, 0, 0, 0.35);
-		--tape-shadow-hover: rgba(0, 0, 0, 0.45);
+		--tape-bg: #e2e2e8;
+		--tape-color: #18181b;
+		--tape-fold-color: #ffffff;
+		--tape-shadow-bg: #000000; /* Layer 0: Latar belakang agak gelap */
+		--tape-underlay-bg: transparent; /* Layer 1: Segitiga underlay agak terang */
+		--tape-shadow: rgba(0, 0, 0, 0.6);
+		--tape-shadow-hover: rgba(0, 0, 0, 0.7);
 	}
 
 	/* Title characters */
@@ -1186,25 +1186,13 @@
 		inset: 0;
 		background: var(--tape-shadow-bg);
 		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
-		transform: translate(3px, 3px); /* Layer 0: Latar belakang agak gelap */
+		transform: translate(4px, 4px); /* Layer 0: Latar belakang agak gelap */
 		z-index: 0;
 		transition: all 0.25s ease;
 	}
 
 	.tape-underlay {
-		position: absolute;
-		left: -5px;
-		bottom: -5px;
-		width: 12px;
-		height: 14px;
-		background: var(--tape-underlay-bg);
-		clip-path: polygon(
-			100% 0%,
-			100% 100%,
-			0% 100%
-		); /* Layer 1: Segitiga siku lancip kiri (50 derajat) */
-		z-index: 1;
-		transition: all 0.25s ease;
+		display: none; /* Sembunyikan underlay segitiga kiri bawah agar bersih sesuai master */
 	}
 
 	.tape-wrapper:hover .tape-body {
@@ -1222,7 +1210,7 @@
 	.tape-label-text {
 		font-family: var(--font-inter);
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 500;
 		letter-spacing: 0.02em;
 	}
 
@@ -1273,27 +1261,17 @@
 
 	/* Segitiga siku-siku kiri bawah (Layer 1 - Agak Terang) */
 	.tape-button::before {
-		content: '';
-		position: absolute;
-		left: -4px;
-		bottom: -5px;
-		width: 14px;
-		height: 17px;
-		background: var(--tape-underlay-bg);
-		clip-path: polygon(100% 0, 0 100%, 100% 100%);
-		z-index: -1;
-		pointer-events: none;
-		transition: all 0.25s ease;
+		display: none; /* Sembunyikan underlay agar bersih sesuai master */
 	}
 
 	/* Kertas belakang agak gelap (Layer 0 - Paling Belakang) */
 	.tape-button::after {
 		content: '';
 		position: absolute;
-		top: 3px;
-		left: 3px;
-		right: -3px;
-		bottom: -3px;
+		top: 4px;
+		left: 4px;
+		right: -4px;
+		bottom: -4px;
 		background: var(--tape-shadow-bg);
 		z-index: -2;
 		pointer-events: none;
@@ -1305,19 +1283,19 @@
 	}
 
 	.tape-button-left {
-		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
+		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
 	}
 
 	.tape-button-left::after {
-		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
+		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
 	}
 
 	.tape-button-right {
-		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
+		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
 	}
 
 	.tape-button-right::after {
-		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
+		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
 	}
 
 	/* ── Origami Impact Shard ── */
