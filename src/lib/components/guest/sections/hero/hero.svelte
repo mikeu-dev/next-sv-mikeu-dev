@@ -654,7 +654,7 @@
 >
 	<!-- Adaptive Blueprint Background -->
 	<div
-		class="pointer-events-none absolute inset-0 bg-[#f3f3f6] transition-colors duration-300 dark:bg-[#111115]"
+		class="pointer-events-none absolute inset-0 bg-background transition-colors duration-300"
 	></div>
 
 	<!-- Blueprint Grid Pattern (1:1 subtle grid style) -->
