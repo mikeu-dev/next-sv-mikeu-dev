@@ -1033,9 +1033,13 @@
 				<!-- Row 1: SvelteKit, TypeScript, Go, PostgreSQL -->
 				<div class="flex flex-wrap justify-center gap-3">
 					{#each finalSkills.slice(0, 4) as skill (skill)}
-						<div class="tape-label">
-							<span class="tape-label-text">{skill}</span>
-							<div class="tape-fold"></div>
+						<div class="tape-wrapper">
+							<div class="tape-back"></div>
+							<div class="tape-underlay"></div>
+							<div class="tape-body">
+								<span class="tape-label-text">{skill}</span>
+								<div class="tape-fold"></div>
+							</div>
 						</div>
 					{/each}
 				</div>
@@ -1043,9 +1047,13 @@
 				{#if finalSkills.length > 4}
 					<div class="mt-1 flex flex-wrap justify-center gap-3">
 						{#each finalSkills.slice(4) as skill (skill)}
-							<div class="tape-label">
-								<span class="tape-label-text">{skill}</span>
-								<div class="tape-fold"></div>
+							<div class="tape-wrapper">
+								<div class="tape-back"></div>
+								<div class="tape-underlay"></div>
+								<div class="tape-body">
+									<span class="tape-label-text">{skill}</span>
+									<div class="tape-fold"></div>
+								</div>
 							</div>
 						{/each}
 					</div>
@@ -1105,6 +1113,8 @@
 		--tape-bg: #e4e4e7;
 		--tape-color: #111115;
 		--tape-fold-color: #b5b5bc;
+		--tape-shadow-bg: #7c7c82; /* Layer 0: Latar belakang agak gelap */
+		--tape-underlay-bg: #ffffff; /* Layer 1: Segitiga underlay agak terang */
 		--tape-shadow: rgba(0, 0, 0, 0.08);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.12);
 	}
@@ -1115,6 +1125,8 @@
 		--tape-bg: #ffffff;
 		--tape-color: #111115;
 		--tape-fold-color: #c2c2c9;
+		--tape-shadow-bg: #2c2c2e; /* Layer 0: Latar belakang agak gelap */
+		--tape-underlay-bg: #e2e2e8; /* Layer 1: Segitiga underlay agak terang */
 		--tape-shadow: rgba(0, 0, 0, 0.35);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.45);
 	}
@@ -1142,8 +1154,16 @@
 		);
 	}
 
-	/* ── Tape Label (Skill Badge) ── */
-	.tape-label {
+	/* ── Tape Label (Skill Badge Stacked Paper Style) ── */
+	.tape-wrapper {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+	}
+
+	.tape-body {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
@@ -1152,18 +1172,51 @@
 		color: var(--tape-color);
 		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
 		transition: all 0.25s ease;
-		box-shadow: 0 4px 10px var(--tape-shadow);
+		z-index: 2; /* Layer 2: Tape Label Utama */
 	}
 
 	@media (min-width: 640px) {
-		.tape-label {
+		.tape-body {
 			padding: 10px 22px;
 		}
 	}
 
-	.tape-label:hover {
+	.tape-back {
+		position: absolute;
+		inset: 0;
+		background: var(--tape-shadow-bg);
+		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
+		transform: translate(3px, 3px); /* Layer 0: Latar belakang agak gelap */
+		z-index: 0;
+		transition: all 0.25s ease;
+	}
+
+	.tape-underlay {
+		position: absolute;
+		left: -5px;
+		bottom: -5px;
+		width: 12px;
+		height: 14px;
+		background: var(--tape-underlay-bg);
+		clip-path: polygon(
+			100% 0%,
+			100% 100%,
+			0% 100%
+		); /* Layer 1: Segitiga siku lancip kiri (50 derajat) */
+		z-index: 1;
+		transition: all 0.25s ease;
+	}
+
+	.tape-wrapper:hover .tape-body {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 14px var(--tape-shadow-hover);
+	}
+
+	.tape-wrapper:hover .tape-back {
+		transform: translate(1px, 1px);
+	}
+
+	.tape-wrapper:hover .tape-underlay {
+		transform: translate(-1px, 1px);
 	}
 
 	.tape-label-text {
@@ -1193,6 +1246,9 @@
 		width: 10px;
 		height: 10px;
 		background: linear-gradient(135deg, transparent 50%, var(--tape-fold-color) 50%);
+		filter: drop-shadow(
+			-1.5px 1.5px 1px rgba(0, 0, 0, 0.25)
+		); /* Bayangan pada sudut siku lipatan */
 	}
 
 	/* ── Tape CTA Buttons (1:1) ── */
@@ -1205,7 +1261,6 @@
 		cursor: pointer;
 		background: var(--tape-bg);
 		color: var(--tape-color);
-		box-shadow: 0 8px 22px var(--tape-shadow);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
 	}
@@ -1216,16 +1271,52 @@
 		}
 	}
 
+	/* Segitiga siku-siku kiri bawah (Layer 1 - Agak Terang) */
+	.tape-button::before {
+		content: '';
+		position: absolute;
+		left: -4px;
+		bottom: -5px;
+		width: 14px;
+		height: 17px;
+		background: var(--tape-under-bg);
+		clip-path: polygon(100% 0, 0 100%, 100% 100%);
+		z-index: -1;
+		pointer-events: none;
+		transition: all 0.25s ease;
+	}
+
+	/* Kertas belakang agak gelap (Layer 0 - Paling Belakang) */
+	.tape-button::after {
+		content: '';
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		right: -3px;
+		bottom: -3px;
+		background: var(--tape-shadow-bg);
+		z-index: -2;
+		pointer-events: none;
+		transition: all 0.25s ease;
+	}
+
 	.tape-button:hover {
 		transform: translateY(-2.5px);
-		box-shadow: 0 12px 28px var(--tape-shadow-hover);
 	}
 
 	.tape-button-left {
 		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
 	}
 
+	.tape-button-left::after {
+		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
+	}
+
 	.tape-button-right {
+		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
+	}
+
+	.tape-button-right::after {
 		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
 	}
 
