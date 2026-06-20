@@ -541,61 +541,61 @@
 
 	<!-- ── SVG Blueprint Polyhedron (Kanan Atas) ── -->
 	<svg
-		class="pointer-events-none absolute top-[4%] right-[2%] h-[58%] w-[45%] opacity-[0.16]"
+		class="pointer-events-none absolute top-[4%] right-[2%] h-[58%] w-[45%] opacity-[0.35] dark:opacity-[0.16]"
 		viewBox="0 0 400 450"
 		fill="none"
 	>
 		<path
-			class="technical-path stroke-zinc-300 dark:stroke-white/70"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			d="M220,10 L380,80 L390,260 L340,380 L180,320 L220,10 Z"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
 			d="M220,10 L300,160 L390,260"
 			stroke-dasharray="2 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
 			d="M300,160 L340,380"
 			stroke-dasharray="2 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
 			d="M300,160 L180,320"
 			stroke-dasharray="2 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path stroke-zinc-300 dark:stroke-white/70"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			d="M220,10 L180,320"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path stroke-zinc-300 dark:stroke-white/70"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			d="M380,80 L300,160"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path stroke-zinc-300 dark:stroke-white/70"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			d="M220,10 L150,80 L80,50 L220,10"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
 			d="M150,80 L180,320"
 			stroke-dasharray="3 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path stroke-zinc-300 dark:stroke-white/70"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			d="M80,50 L120,240 L180,320"
 			stroke-width="0.7"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
 			d="M120,240 L340,380"
 			stroke-dasharray="2 4"
 			stroke-width="0.6"
@@ -604,42 +604,42 @@
 
 	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah) ── -->
 	<svg
-		class="pointer-events-none absolute bottom-[2%] left-[2%] h-[38%] w-[20%] opacity-[0.11]"
+		class="pointer-events-none absolute bottom-[2%] left-[2%] h-[38%] w-[20%] opacity-[0.3] dark:opacity-[0.11]"
 		viewBox="0 0 250 350"
 		fill="none"
 	>
 		<path
-			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
 			d="M10,240 L10,80 L70,80 L70,240 L10,240 Z"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
 			d="M70,80 L130,80 L130,240 L70,240"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
 			d="M130,80 L190,80 L190,240 L130,240"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
 			d="M70,80 L70,20 L130,20 L130,80"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
 			d="M70,240 L70,300 L130,300 L130,240"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path stroke-zinc-300 dark:stroke-white/70"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			d="M10,80 L70,80 L70,20 L130,20 L130,80 L190,80 L190,240 L130,240 L130,300 L70,300 L70,240 L10,240 Z"
 			stroke-width="0.8"
 		/>
