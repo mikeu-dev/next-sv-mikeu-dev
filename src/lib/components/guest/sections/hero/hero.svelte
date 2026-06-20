@@ -539,108 +539,226 @@
 		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 	></div>
 
-	<!-- ── SVG Blueprint Polyhedron (Kanan Atas) ── -->
+	<!-- ── SVG Blueprint Polyhedron (Kanan Atas - 3D Cardboard Box) ── -->
 	<svg
 		class="pointer-events-none absolute top-[4%] right-[2%] h-[58%] w-[45%] opacity-[0.35] dark:opacity-[0.16]"
 		viewBox="0 0 400 450"
 		fill="none"
 	>
+		<!-- Garis Proyeksi/Konstruksi Latar Belakang (Dashed) -->
+		<line
+			x1="100"
+			y1="0"
+			x2="100"
+			y2="450"
+			class="technical-path stroke-zinc-400/20 dark:stroke-white/10"
+			stroke-width="0.5"
+			stroke-dasharray="4 4"
+		/>
+		<line
+			x1="200"
+			y1="0"
+			x2="200"
+			y2="450"
+			class="technical-path stroke-zinc-400/20 dark:stroke-white/10"
+			stroke-width="0.5"
+			stroke-dasharray="4 4"
+		/>
+		<line
+			x1="0"
+			y1="220"
+			x2="400"
+			y2="220"
+			class="technical-path stroke-zinc-400/20 dark:stroke-white/10"
+			stroke-width="0.5"
+			stroke-dasharray="4 4"
+		/>
+
+		<!-- Busur Sudut Putaran (Angle Arc) -->
 		<path
+			d="M 70,200 A 40,40 0 0,1 100,160"
+			class="technical-path stroke-zinc-400/50 dark:stroke-white/30"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			d="M 300,160 A 40,40 0 0,1 330,200"
+			class="technical-path stroke-zinc-400/50 dark:stroke-white/30"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+
+		<!-- Bodi Dalam Kardus & Lipatan Dasar (Dashed) -->
+		<path
+			d="M200,240 L100,300 M200,240 L300,300 M200,240 L200,100"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/30"
+			stroke-width="0.6"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			d="M100,160 L200,100 L300,160"
+			class="technical-path stroke-zinc-400/40 dark:stroke-white/30"
+			stroke-width="0.6"
+			stroke-dasharray="2 2"
+		/>
+
+		<!-- Lipatan Flap Depan (Dashed) -->
+		<line
+			x1="100"
+			y1="160"
+			x2="200"
+			y2="220"
+			class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
+			stroke-width="0.6"
+			stroke-dasharray="2 2"
+		/>
+		<line
+			x1="200"
+			y1="220"
+			x2="300"
+			y2="160"
+			class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
+			stroke-width="0.6"
+			stroke-dasharray="2 2"
+		/>
+
+		<!-- Garis Solid Bodi Utama Kardus -->
+		<path
+			d="M100,160 L100,300 L200,360 L300,300 L300,160"
 			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M220,10 L380,80 L390,260 L340,380 L180,320 L220,10 Z"
+			stroke-width="0.8"
+		/>
+		<line
+			x1="200"
+			y1="220"
+			x2="200"
+			y2="360"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
+			stroke-width="0.8"
+		/>
+
+		<!-- Flap Depan Kiri & Kanan (Solid Outer) -->
+		<path
+			d="M100,160 L40,230 L140,290 L200,220"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
-			d="M220,10 L300,160 L390,260"
-			stroke-dasharray="2 3"
-			stroke-width="0.6"
-		/>
-		<path
-			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
-			d="M300,160 L340,380"
-			stroke-dasharray="2 3"
-			stroke-width="0.6"
-		/>
-		<path
-			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
-			d="M300,160 L180,320"
-			stroke-dasharray="2 3"
-			stroke-width="0.6"
-		/>
-		<path
+			d="M200,220 L260,290 L360,230 L300,160"
 			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M220,10 L180,320"
+			stroke-width="0.8"
+		/>
+
+		<!-- Flap Belakang Kiri & Kanan dengan Tuck Tab (Solid Outer) -->
+		<path
+			d="M100,160 L70,95 L80,90 L145,25 L155,30 L200,100"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
 			stroke-width="0.8"
 		/>
 		<path
+			d="M200,100 L245,30 L255,25 L320,90 L330,95 L300,160"
 			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M380,80 L300,160"
 			stroke-width="0.8"
-		/>
-		<path
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M220,10 L150,80 L80,50 L220,10"
-			stroke-width="0.8"
-		/>
-		<path
-			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
-			d="M150,80 L180,320"
-			stroke-dasharray="3 3"
-			stroke-width="0.6"
-		/>
-		<path
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M80,50 L120,240 L180,320"
-			stroke-width="0.7"
-		/>
-		<path
-			class="technical-path stroke-zinc-400/40 dark:stroke-white/40"
-			d="M120,240 L340,380"
-			stroke-dasharray="2 4"
-			stroke-width="0.6"
 		/>
 	</svg>
 
-	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah) ── -->
+	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
 	<svg
 		class="pointer-events-none absolute bottom-[2%] left-[2%] h-[38%] w-[20%] opacity-[0.3] dark:opacity-[0.11]"
 		viewBox="0 0 250 350"
 		fill="none"
 	>
-		<path
+		<!-- Garis Lipatan Kolom Utama (Dashed) -->
+		<line
+			x1="80"
+			y1="150"
+			x2="140"
+			y2="150"
 			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			d="M10,240 L10,80 L70,80 L70,240 L10,240 Z"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
-		<path
+		<line
+			x1="80"
+			y1="220"
+			x2="140"
+			y2="220"
 			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			d="M70,80 L130,80 L130,240 L70,240"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
-		<path
+		<line
+			x1="80"
+			y1="80"
+			x2="140"
+			y2="80"
 			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			d="M130,80 L190,80 L190,240 L130,240"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
-		<path
+		<line
+			x1="80"
+			y1="290"
+			x2="140"
+			y2="290"
 			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			d="M70,80 L70,20 L130,20 L130,80"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
-		<path
+
+		<!-- Garis Lipatan Panel Samping Kiri & Kanan (Dashed) -->
+		<line
+			x1="80"
+			y1="150"
+			x2="80"
+			y2="220"
 			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			d="M70,240 L70,300 L130,300 L130,240"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
+		<line
+			x1="140"
+			y1="150"
+			x2="140"
+			y2="220"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<line
+			x1="190"
+			y1="150"
+			x2="190"
+			y2="220"
+			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+
+		<!-- Pola Lipatan Origami Segitiga Flap Kiri (Dashed) -->
+		<line
+			x1="80"
+			y1="150"
+			x2="20"
+			y2="220"
+			class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
+			stroke-width="0.6"
+			stroke-dasharray="2 2"
+		/>
+		<line
+			x1="80"
+			y1="220"
+			x2="20"
+			y2="170"
+			class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
+			stroke-width="0.6"
+			stroke-dasharray="2 2"
+		/>
+
+		<!-- Garis Potong Solid Batas Luar Die-cut Net -->
 		<path
 			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M10,80 L70,80 L70,20 L130,20 L130,80 L190,80 L190,240 L130,240 L130,300 L70,300 L70,240 L10,240 Z"
+			d="M80,80 L85,20 L135,20 L140,80 L140,150 L190,150 L205,165 L205,205 L190,220 L140,220 L140,290 L135,330 L85,330 L80,290 L80,220 L20,220 L20,170 L80,150 Z"
 			stroke-width="0.8"
 		/>
 	</svg>
