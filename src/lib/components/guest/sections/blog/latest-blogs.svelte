@@ -26,7 +26,7 @@
 	let triggerInstance = $state<any>(null);
 
 	function navigateToPage(idx: number) {
-		const pages = gsap.utils.toArray('.origami-page-layer') as HTMLElement[];
+		const pages = gsap.utils.toArray('.origami-page-layer', section) as HTMLElement[];
 		const targetPage = pages[idx];
 		if (!targetPage) return;
 
@@ -80,7 +80,7 @@
 
 		// 2. Responsive matchMedia layout timelines
 		const mm = gsap.matchMedia();
-		const pages = gsap.utils.toArray('.origami-page-layer') as HTMLElement[];
+		const pages = gsap.utils.toArray('.origami-page-layer', section) as HTMLElement[];
 		let bookTl: gsap.core.Timeline | null = null;
 
 		if (pages.length > 0) {
@@ -162,7 +162,7 @@
 							{
 								rotateY: -180,
 								z: 15,
-								duration: 1.2,
+								duration: 0.8,
 								ease: 'power2.inOut'
 							},
 							idx
@@ -175,9 +175,9 @@
 								scale: 0.9,
 								pointerEvents: 'none',
 								visibility: 'hidden',
-								duration: 0.8
+								duration: 0.05
 							},
-							idx + 0.3
+							idx + 0.8
 						)
 						// Next page lifts into place
 						.fromTo(
@@ -194,10 +194,10 @@
 								z: 0,
 								visibility: 'visible',
 								pointerEvents: 'auto',
-								duration: 1.2,
+								duration: 0.8,
 								ease: 'power3.out'
 							},
-							idx + 0.2
+							idx + 0.1
 						);
 				});
 
