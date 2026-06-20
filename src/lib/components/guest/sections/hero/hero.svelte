@@ -304,25 +304,6 @@
 				delay: 0.5
 			});
 
-			// Ambient Floating Animations for Background Blueprint SVGs
-			gsap.to('.blueprint-svg-right', {
-				y: '+=12',
-				rotation: '+=1.5',
-				duration: 6,
-				ease: 'sine.inOut',
-				yoyo: true,
-				repeat: -1
-			});
-
-			gsap.to('.blueprint-svg-left', {
-				y: '-=10',
-				rotation: '-=1.2',
-				duration: 7,
-				ease: 'sine.inOut',
-				yoyo: true,
-				repeat: -1
-			});
-
 			// Subtle pulsing for blueprint technical details/annotations
 			gsap.to('.blueprint-annotation', {
 				opacity: 0.65,
@@ -332,6 +313,51 @@
 				yoyo: true,
 				repeat: -1
 			});
+
+			// ── Inisialisasi Posisi Awal & Animasi Terbuka Halaman (Page Load Damped Oscillation) ──
+			// Flap Box Kanan Atas melipat terbuka secara elastis teredam
+			gsap.fromTo(
+				'.box-flap-front-left',
+				{ rotation: -35 },
+				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.2, 0.4)', delay: 0.8 }
+			);
+			gsap.fromTo(
+				'.box-flap-front-right',
+				{ rotation: 35 },
+				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.2, 0.4)', delay: 0.9 }
+			);
+			gsap.fromTo(
+				'.box-flap-back-left',
+				{ rotation: 30 },
+				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.1, 0.45)', delay: 0.7 }
+			);
+			gsap.fromTo(
+				'.box-flap-back-right',
+				{ rotation: -30 },
+				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.1, 0.45)', delay: 0.75 }
+			);
+
+			// Flap Net Kiri Bawah melipat terbuka secara elastis teredam
+			gsap.fromTo(
+				'.net-flap-top',
+				{ rotation: -40 },
+				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.9 }
+			);
+			gsap.fromTo(
+				'.net-flap-bottom',
+				{ rotation: 40 },
+				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.95 }
+			);
+			gsap.fromTo(
+				'.net-flap-left',
+				{ rotation: 25 },
+				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.1, 0.45)', delay: 1.0 }
+			);
+			gsap.fromTo(
+				'.net-flap-right',
+				{ rotation: -25 },
+				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.1, 0.45)', delay: 1.05 }
+			);
 
 			const section = heroSection;
 			if (!section) return;
@@ -397,6 +423,59 @@
 			section.addEventListener('mousemove', handleMouseMove);
 			section.addEventListener('touchmove', handleTouchMove, { passive: true });
 			section.addEventListener('touchstart', handleTouchMove, { passive: true });
+
+			// ── Pemicu Getaran Engsel Pegas Teredam Interaktif (Mouse Hover Damped Oscillation) ──
+			const boxSvg = document.querySelector('.blueprint-svg-right');
+			if (boxSvg) {
+				boxSvg.addEventListener('mouseenter', () => {
+					gsap.fromTo(
+						'.box-flap-front-left',
+						{ rotation: -15 },
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.3, 0.35)' }
+					);
+					gsap.fromTo(
+						'.box-flap-front-right',
+						{ rotation: 15 },
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.3, 0.35)', delay: 0.04 }
+					);
+					gsap.fromTo(
+						'.box-flap-back-left',
+						{ rotation: 12 },
+						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.08 }
+					);
+					gsap.fromTo(
+						'.box-flap-back-right',
+						{ rotation: -12 },
+						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.12 }
+					);
+				});
+			}
+
+			const netSvg = document.querySelector('.blueprint-svg-left');
+			if (netSvg) {
+				netSvg.addEventListener('mouseenter', () => {
+					gsap.fromTo(
+						'.net-flap-top',
+						{ rotation: -12 },
+						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.3, 0.35)' }
+					);
+					gsap.fromTo(
+						'.net-flap-bottom',
+						{ rotation: 12 },
+						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.3, 0.35)', delay: 0.04 }
+					);
+					gsap.fromTo(
+						'.net-flap-left',
+						{ rotation: 10 },
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.2, 0.4)', delay: 0.08 }
+					);
+					gsap.fromTo(
+						'.net-flap-right',
+						{ rotation: -10 },
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.2, 0.4)', delay: 0.12 }
+					);
+				});
+			}
 		});
 
 		// --- Matter.js Logic ---
@@ -688,29 +767,41 @@
 			stroke-width="0.8"
 		/>
 
-		<!-- Flap Depan Kiri & Kanan (Solid Outer) -->
-		<path
-			d="M100,160 L40,230 L140,290 L200,220"
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			stroke-width="0.8"
-		/>
-		<path
-			d="M200,220 L260,290 L360,230 L300,160"
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			stroke-width="0.8"
-		/>
+		<!-- Flap Depan Kiri (Animatif) -->
+		<g class="box-flap box-flap-front-left" style="transform-origin: 150px 190px;">
+			<path
+				d="M100,160 L40,230 L140,290 L200,220"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+		</g>
 
-		<!-- Flap Belakang Kiri & Kanan dengan Tuck Tab (Solid Outer) -->
-		<path
-			d="M100,160 L70,95 L80,90 L145,25 L155,30 L200,100"
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			stroke-width="0.8"
-		/>
-		<path
-			d="M200,100 L245,30 L255,25 L320,90 L330,95 L300,160"
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			stroke-width="0.8"
-		/>
+		<!-- Flap Depan Kanan (Animatif) -->
+		<g class="box-flap box-flap-front-right" style="transform-origin: 250px 190px;">
+			<path
+				d="M200,220 L260,290 L360,230 L300,160"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+		</g>
+
+		<!-- Flap Belakang Kiri dengan Tuck Tab (Animatif) -->
+		<g class="box-flap box-flap-back-left" style="transform-origin: 150px 130px;">
+			<path
+				d="M100,160 L70,95 L80,90 L145,25 L155,30 L200,100"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+		</g>
+
+		<!-- Flap Belakang Kanan dengan Tuck Tab (Animatif) -->
+		<g class="box-flap box-flap-back-right" style="transform-origin: 250px 130px;">
+			<path
+				d="M200,100 L245,30 L255,25 L320,90 L330,95 L300,160"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+		</g>
 	</svg>
 
 	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
@@ -719,6 +810,13 @@
 		viewBox="0 0 250 350"
 		fill="none"
 	>
+		<!-- Bodi Tengah Utama (Statis) -->
+		<path
+			d="M80,80 L140,80 L140,290 L80,290 Z"
+			class="technical-path stroke-zinc-400 dark:stroke-white/70"
+			stroke-width="0.8"
+		/>
+
 		<!-- Garis Lipatan Kolom Utama (Dashed) -->
 		<line
 			x1="80"
@@ -738,80 +836,69 @@
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
-		<line
-			x1="80"
-			y1="80"
-			x2="140"
-			y2="80"
-			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-		<line
-			x1="80"
-			y1="290"
-			x2="140"
-			y2="290"
-			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
 
-		<!-- Garis Lipatan Panel Samping Kiri & Kanan (Dashed) -->
-		<line
-			x1="80"
-			y1="150"
-			x2="80"
-			y2="220"
-			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-		<line
-			x1="140"
-			y1="150"
-			x2="140"
-			y2="220"
-			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-		<line
-			x1="190"
-			y1="150"
-			x2="190"
-			y2="220"
-			class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
+		<!-- Tutup Atas (Animatif) -->
+		<g class="net-flap net-flap-top" style="transform-origin: 110px 80px;">
+			<path
+				d="M80,80 L85,20 L135,20 L140,80"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+		</g>
 
-		<!-- Pola Lipatan Origami Segitiga Flap Kiri (Dashed) -->
-		<line
-			x1="80"
-			y1="150"
-			x2="20"
-			y2="220"
-			class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
-			stroke-width="0.6"
-			stroke-dasharray="2 2"
-		/>
-		<line
-			x1="80"
-			y1="220"
-			x2="20"
-			y2="170"
-			class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
-			stroke-width="0.6"
-			stroke-dasharray="2 2"
-		/>
+		<!-- Tutup Bawah (Animatif) -->
+		<g class="net-flap net-flap-bottom" style="transform-origin: 110px 290px;">
+			<path
+				d="M140,290 L135,330 L85,330 L80,290"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+		</g>
 
-		<!-- Garis Potong Solid Batas Luar Die-cut Net -->
-		<path
-			class="technical-path stroke-zinc-400 dark:stroke-white/70"
-			d="M80,80 L85,20 L135,20 L140,80 L140,150 L190,150 L205,165 L205,205 L190,220 L140,220 L140,290 L135,330 L85,330 L80,290 L80,220 L20,220 L20,170 L80,150 Z"
-			stroke-width="0.8"
-		/>
+		<!-- Flap Samping Kiri (Animatif) -->
+		<g class="net-flap net-flap-left" style="transform-origin: 80px 185px;">
+			<path
+				d="M80,150 L20,170 L20,220 L80,220"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+			<line
+				x1="80"
+				y1="150"
+				x2="20"
+				y2="220"
+				class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
+				stroke-width="0.6"
+				stroke-dasharray="2 2"
+			/>
+			<line
+				x1="80"
+				y1="220"
+				x2="20"
+				y2="170"
+				class="technical-path stroke-zinc-400/50 dark:stroke-white/40"
+				stroke-width="0.6"
+				stroke-dasharray="2 2"
+			/>
+		</g>
+
+		<!-- Flap Samping Kanan (Animatif) -->
+		<g class="net-flap net-flap-right" style="transform-origin: 140px 185px;">
+			<path
+				d="M140,150 L190,150 L205,165 L205,205 L190,220 L140,220"
+				class="technical-path stroke-zinc-400 dark:stroke-white/70"
+				stroke-width="0.8"
+			/>
+			<line
+				x1="190"
+				y1="150"
+				x2="190"
+				y2="220"
+				class="technical-path stroke-zinc-400/60 dark:stroke-white/50"
+				stroke-width="0.8"
+				stroke-dasharray="2 2"
+			/>
+		</g>
 	</svg>
 
 	<!-- ── Blueprint Annotations (Kiri Atas) ── -->
