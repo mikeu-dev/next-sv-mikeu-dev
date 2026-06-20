@@ -225,8 +225,14 @@
 
 		window.addEventListener('mousemove', handleMouseMove);
 
+		const refreshTimeout = setTimeout(() => {
+			ScrollTrigger.sort();
+			ScrollTrigger.refresh();
+		}, 100);
+
 		return () => {
 			window.removeEventListener('mousemove', handleMouseMove);
+			clearTimeout(refreshTimeout);
 			mm.revert();
 		};
 	});
