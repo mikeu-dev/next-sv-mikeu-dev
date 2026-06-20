@@ -4,12 +4,12 @@
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import { m } from '$lib/paraglide/messages';
-	import { Terminal, Cpu, Activity, Hash, ArrowRight } from '@lucide/svelte';
 	import BrutalistGlyph from '@/lib/components/ui/BrutalistGlyph.svelte';
 	import type Matter from 'matter-js';
 	import type { IChamferableBodyDefinition } from 'matter-js';
 
 	let { skills }: { skills: string[] } = $props();
+	const finalSkills = ['SvelteKit', 'TypeScript', 'Go', 'PostgreSQL', 'Docker', 'GIS'];
 
 	let heroTitle = $state<HTMLElement>();
 	let heroSubtitle = $state<HTMLElement>();
@@ -37,7 +37,7 @@
 	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
 
-	// â”€â”€ Impact FX Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ── Impact FX Utilities ──────────────────────────────────────
 
 	/** Track which bodies already triggered their impact (one-shot per letter) */
 	const impactedBodies = new SvelteSet<number>();
@@ -50,7 +50,7 @@
 		container: HTMLElement
 	): void {
 		const count = Math.min(Math.floor(velocity * 1.5) + 3, 12);
-		const shapes = ['â–ª', 'â—†', 'â–«', 'â—‡', 'â–¸', 'â–¹'];
+		const shapes = ['▪', '◆', '▫', '◇', '▸', '▹'];
 
 		for (let i = 0; i < count; i++) {
 			const particle = document.createElement('span');
@@ -61,7 +61,7 @@
 			particle.style.fontSize = `${6 + Math.random() * 8}px`;
 			container.appendChild(particle);
 
-			const angle = -Math.PI * (0.1 + Math.random() * 0.8); // mostly upward spread
+			const angle = -Math.PI * (0.1 + Math.random() * 0.8);
 			const force = (30 + Math.random() * 60) * Math.min(velocity / 6, 1.5);
 
 			gsap.fromTo(
@@ -81,7 +81,7 @@
 		}
 	}
 
-	/** Micro screen-shake on the title container, intensity âˆ velocity */
+	/** Micro screen-shake on the title container */
 	function triggerScreenShake(container: HTMLElement, velocity: number): void {
 		const intensity = Math.min(velocity * 0.4, 4);
 		gsap.to(container, {
@@ -112,7 +112,7 @@
 		);
 	}
 
-	/** Create a random geometric shard (triangle or quad) */
+	/** Create a random geometric shard */
 	function createOrigamiShard(
 		x: number,
 		y: number,
@@ -121,7 +121,7 @@
 	): void {
 		const shard = document.createElement('div');
 		const size = 8 + Math.random() * 12;
-		const color = Math.random() > 0.5 ? 'var(--primary)' : 'var(--foreground)';
+		const color = Math.random() > 0.5 ? 'rgba(255,255,255,0.6)' : 'rgba(200,200,200,0.4)';
 
 		shard.className = 'origami-impact-shard';
 		shard.style.width = `${size}px`;
@@ -130,7 +130,6 @@
 		shard.style.top = `${y}px`;
 		shard.style.backgroundColor = color;
 
-		// Random polygonal shape via clip-path
 		const p1 = `${Math.random() * 100}% ${Math.random() * 100}%`;
 		const p2 = `${Math.random() * 100}% ${Math.random() * 100}%`;
 		const p3 = `${Math.random() * 100}% ${Math.random() * 100}%`;
@@ -171,7 +170,7 @@
 		line.setAttribute('y1', `${y}`);
 		line.setAttribute('x2', `${ex}`);
 		line.setAttribute('y2', `${ey}`);
-		line.setAttribute('stroke', 'var(--primary)');
+		line.setAttribute('stroke', 'rgba(255,255,255,0.4)');
 		line.setAttribute('stroke-width', '1.5');
 		line.setAttribute('stroke-linecap', 'square');
 		line.setAttribute('opacity', '0');
@@ -204,7 +203,6 @@
 		const group = document.createElementNS(ns, 'g') as SVGGElement;
 		const intensity = Math.min(velocity / 5, 2.0);
 
-		// 1. Sharp Crease Lines (Diagonal & Bold)
 		const creaseCount = 3 + Math.floor(Math.random() * 2);
 		for (let i = 0; i < creaseCount; i++) {
 			const angle = i * (Math.PI / creaseCount) - Math.PI * 0.8;
@@ -212,7 +210,6 @@
 			drawOrigamiCrease(ns, group, x, y, angle, len, i * 0.03);
 		}
 
-		// 2. Polygonal Shards (Instead of Dust)
 		const shardCount = 5 + Math.floor(intensity * 4);
 		const container = svg.parentElement;
 		if (container) {
@@ -221,7 +218,6 @@
 			}
 		}
 
-		// 3. Central Geometric "Impact Facet" (Briefly appearing polygon)
 		const facet = document.createElementNS(ns, 'polygon') as SVGPolygonElement;
 		const fSize = 15 * intensity;
 		const pts = [
@@ -232,9 +228,9 @@
 		].join(' ');
 
 		facet.setAttribute('points', pts);
-		facet.setAttribute('fill', 'var(--primary)');
+		facet.setAttribute('fill', 'rgba(255,255,255,0.12)');
 		facet.setAttribute('fill-opacity', '0.2');
-		facet.setAttribute('stroke', 'var(--primary)');
+		facet.setAttribute('stroke', 'rgba(255,255,255,0.25)');
 		facet.setAttribute('stroke-width', '0.5');
 		facet.setAttribute('opacity', '0');
 
@@ -250,7 +246,7 @@
 		gsap.delayedCall(2.0, () => group.remove());
 	}
 
-	// â”€â”€ Mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ── Mount ────────────────────────────────────────────────────
 
 	onMount(async () => {
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
@@ -258,7 +254,6 @@
 
 		let isVisible = false;
 
-		// Dynamic import Matter.js to avoid SSR issues
 		const MatterModule = await import('matter-js');
 		const Matter = MatterModule.default || MatterModule;
 		const { Engine, Runner, Bodies, Composite, Events } = Matter;
@@ -270,7 +265,7 @@
 		ctx = gsap.context(() => {
 			if (!subtitle || !button || !bullets) return;
 
-			// Custom Stagger for Brutalist Elements
+			// Stagger-in animations
 			gsap.from('.hero-stagger', {
 				y: 30,
 				opacity: 0,
@@ -280,25 +275,33 @@
 				delay: 1.2
 			});
 
-			// Background Shards Animation
-			gsap.from('.origami-shard', {
-				rotateX: -90,
+			// Blueprint annotations fade-in
+			gsap.from('.blueprint-annotation', {
 				opacity: 0,
 				duration: 1.5,
-				stagger: 0.2,
-				ease: 'power4.out',
-				delay: 0.5
+				stagger: 0.15,
+				ease: 'power2.out',
+				delay: 0.8
 			});
 
-			// Ambient Floating Shards (Drift)
-			gsap.to('.ambient-shard', {
-				y: 'random(-40, 40)',
-				x: 'random(-40, 40)',
-				rotation: 'random(-180, 180)',
-				duration: 'random(10, 20)',
-				repeat: -1,
-				yoyo: true,
-				ease: 'none'
+			// Dimension lines draw-in
+			gsap.from('.dim-line', {
+				scaleX: 0,
+				scaleY: 0,
+				opacity: 0,
+				duration: 1.0,
+				stagger: 0.1,
+				ease: 'power3.out',
+				delay: 1.0
+			});
+
+			// SVG Technical Lines drawing animation
+			gsap.from('.technical-path', {
+				strokeDashoffset: 1000,
+				opacity: 0,
+				duration: 2.2,
+				ease: 'power2.out',
+				delay: 0.5
 			});
 
 			const section = heroSection;
@@ -315,13 +318,8 @@
 						const rect = section.getBoundingClientRect();
 						const x = Math.round(e.clientX - rect.left);
 						const y = Math.round(e.clientY - rect.top);
-
 						xSetter(x);
 						ySetter(y);
-
-						// Update coordinates via CSS variables
-						section.style.setProperty('--coord-x', x.toString());
-						section.style.setProperty('--coord-y', y.toString());
 						ticking = false;
 					});
 					ticking = true;
@@ -336,12 +334,8 @@
 							const rect = section.getBoundingClientRect();
 							const x = Math.round(touch.clientX - rect.left);
 							const y = Math.round(touch.clientY - rect.top);
-
 							xSetter(x);
 							ySetter(y);
-
-							section.style.setProperty('--coord-x', x.toString());
-							section.style.setProperty('--coord-y', y.toString());
 							ticking = false;
 						});
 						ticking = true;
@@ -354,17 +348,15 @@
 			section.addEventListener('touchstart', handleTouchMove, { passive: true });
 		});
 
-		// --- Matter.js Logic (OPTIMIZED) ---
-		// Check for reduced motion preference
+		// --- Matter.js Logic ---
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (prefersReducedMotion) {
-			console.log('Reduced motion enabled: Skipping physics engine.');
-			isVisible = false; // Prevents RAF update
+			isVisible = false;
 			return;
 		}
 
 		engine = Engine.create({
-			enableSleeping: true // Stop calculating for settled bodies
+			enableSleeping: false
 		});
 		const world: Matter.World = engine.world;
 		engine.gravity.y = 1.0;
@@ -384,14 +376,14 @@
 			-100,
 			titleRect.height / 2,
 			20,
-			titleRect.height + 400,
+			titleRect.height * 2,
 			wallOptions
 		);
 		const wallRight = Bodies.rectangle(
 			titleRect.width + 100,
 			titleRect.height / 2,
 			20,
-			titleRect.height + 400,
+			titleRect.height * 2,
 			wallOptions
 		);
 
@@ -409,18 +401,20 @@
 					rect.width,
 					rect.height,
 					{
-						restitution: 0.5,
-						friction: 0.5,
-						frictionAir: 0.02,
+						restitution: 0.55,
+						friction: 0.1,
+						frictionAir: 0.015,
 						chamfer: { radius: 2 },
-						sleepThreshold: 30 // Make bodies sleep faster
+						inertia: Infinity, // Kunci rotasi agar huruf selalu tegak lurus
+						collisionFilter: {
+							group: -1 // Nonaktifkan tabrakan antar sesama huruf
+						}
 					}
 				);
 				return { body, element: el, initialX, initialY };
 			})
 			.filter((v): v is LetterData => v !== null);
 
-		// Map body IDs â†’ LetterData for collision lookup
 		const bodyToLetter = new SvelteMap<number, LetterData>();
 		letters.forEach((letter) => {
 			bodyToLetter.set(letter.body.id, letter);
@@ -429,44 +423,38 @@
 		letters.forEach((letter, i) => {
 			setTimeout(() => {
 				if (world) Composite.add(world, letter.body);
-			}, i * 30); // Lebih instan, tanpa delay 1000ms
+			}, i * 30);
 		});
 
-		// â”€â”€ Collision Impact Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+		// ── Collision Impact Handler ──────────────────────────────
 		Events.on(engine, 'collisionStart', (event: Matter.IEventCollision<Matter.Engine>) => {
 			for (const pair of event.pairs) {
 				const { bodyA, bodyB } = pair;
 
-				// Determine which is the letter body (non-static) hitting the floor (static)
 				let letterBody: Matter.Body | null = null;
 				if (bodyA.isStatic && !bodyB.isStatic) letterBody = bodyB;
 				else if (bodyB.isStatic && !bodyA.isStatic) letterBody = bodyA;
 				if (!letterBody) continue;
 
-				// One-shot: only trigger once per letter
 				if (impactedBodies.has(letterBody.id)) continue;
 				impactedBodies.add(letterBody.id);
 
 				const letterData = bodyToLetter.get(letterBody.id);
 				if (!letterData) continue;
 
-				// Impact velocity magnitude
 				const vx = letterBody.velocity.x;
 				const vy = letterBody.velocity.y;
 				const velocity = Math.sqrt(vx * vx + vy * vy);
 
-				// Skip very gentle collisions
 				if (velocity < 1.5) continue;
 
 				const impactX = letterBody.position.x;
 				const impactY = floorY;
 
-				// Layer 1: Dust particles
 				if (impactLayer) {
 					spawnDustParticles(impactX, impactY, velocity, impactLayer);
 				}
 
-				// Layer 2: Screen shake (only for higher-velocity impacts)
 				if (velocity > 3 && heroTitle) {
 					const titleContainer = heroTitle.closest('.relative') as HTMLElement | null;
 					if (titleContainer) {
@@ -474,10 +462,8 @@
 					}
 				}
 
-				// Layer 3: Impact flash on the letter element
 				triggerImpactFlash(letterData.element, velocity);
 
-				// Layer 4: Floor crack SVG
 				if (crackLayer && velocity > 2.5) {
 					drawFloorCrack(crackLayer, impactX, impactY, velocity);
 				}
@@ -489,12 +475,10 @@
 		observer = new IntersectionObserver((entries) => {
 			const nowVisible = entries[0].isIntersecting;
 			if (nowVisible && !isVisible) {
-				// Resuming
 				isVisible = true;
 				Runner.run(runner, engine);
 				rafId = requestAnimationFrame(update);
 			} else if (!nowVisible && isVisible) {
-				// Pausing
 				isVisible = false;
 				Runner.stop(runner);
 				if (rafId) cancelAnimationFrame(rafId);
@@ -506,10 +490,10 @@
 		function update() {
 			if (isVisible) {
 				for (const { body, element, initialX, initialY } of letters) {
-					if (!body.isSleeping) {
-						const { x, y } = body.position;
-						element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(${body.angle}rad)`;
-					}
+					// Kunci koordinat X agar huruf hanya bergerak vertikal
+					Matter.Body.setPosition(body, { x: initialX, y: body.position.y });
+					const { x, y } = body.position;
+					element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(0rad)`;
 				}
 				rafId = requestAnimationFrame(update);
 			}
@@ -535,110 +519,249 @@
 <section
 	id="hero"
 	bind:this={heroSection}
-	class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background pt-20 pb-10 text-center md:pt-24"
+	class="paper-hero relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-20 pb-10 text-center md:pt-24"
 	style="--mouse-x: 50%; --mouse-y: 50%;"
 >
-	<!-- Grain Texture Overlay -->
+	<!-- Dark Blueprint Background -->
+	<div class="pointer-events-none absolute inset-0 bg-[#111115]"></div>
+
+	<!-- Blueprint Grid Pattern (1:1 subtle grid style) -->
+	<div class="blueprint-grid pointer-events-none absolute inset-0"></div>
+
+	<!-- Interactive Spotlight -->
+	<div class="mouse-spotlight pointer-events-none absolute inset-0"></div>
+
+	<!-- Fine Grain Overlay -->
 	<div
-		class="pointer-events-none absolute inset-0 z-50 opacity-[0.04] mix-blend-overlay contrast-150 grayscale"
+		class="pointer-events-none absolute inset-0 z-50 opacity-[0.02] mix-blend-overlay"
 		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 	></div>
 
-	<!-- Background Decorative Elements -->
-	<div class="pointer-events-none absolute inset-0 overflow-hidden">
-		<!-- Blueprint Grid -->
-		<div class="blueprint-grid absolute inset-0"></div>
+	<!-- ── SVG Blueprint Polyhedron (Kanan Atas) ── -->
+	<svg
+		class="pointer-events-none absolute top-[4%] right-[2%] h-[58%] w-[45%] opacity-[0.16]"
+		viewBox="0 0 400 450"
+		fill="none"
+	>
+		<path
+			class="technical-path"
+			d="M220,10 L380,80 L390,260 L340,380 L180,320 L220,10 Z"
+			stroke="rgba(255,255,255,0.7)"
+			stroke-width="0.8"
+		/>
+		<path
+			class="technical-path"
+			d="M220,10 L300,160 L390,260"
+			stroke="rgba(255,255,255,0.4)"
+			stroke-dasharray="2 3"
+			stroke-width="0.6"
+		/>
+		<path
+			class="technical-path"
+			d="M300,160 L340,380"
+			stroke="rgba(255,255,255,0.4)"
+			stroke-dasharray="2 3"
+			stroke-width="0.6"
+		/>
+		<path
+			class="technical-path"
+			d="M300,160 L180,320"
+			stroke="rgba(255,255,255,0.4)"
+			stroke-dasharray="2 3"
+			stroke-width="0.6"
+		/>
+		<path
+			class="technical-path"
+			d="M220,10 L180,320"
+			stroke="rgba(255,255,255,0.7)"
+			stroke-width="0.8"
+		/>
+		<path
+			class="technical-path"
+			d="M380,80 L300,160"
+			stroke="rgba(255,255,255,0.7)"
+			stroke-width="0.8"
+		/>
+		<path
+			class="technical-path"
+			d="M220,10 L150,80 L80,50 L220,10"
+			stroke="rgba(255,255,255,0.7)"
+			stroke-width="0.8"
+		/>
+		<path
+			class="technical-path"
+			d="M150,80 L180,320"
+			stroke="rgba(255,255,255,0.4)"
+			stroke-dasharray="3 3"
+			stroke-width="0.6"
+		/>
+		<path
+			class="technical-path"
+			d="M80,50 L120,240 L180,320"
+			stroke="rgba(255,255,255,0.7)"
+			stroke-width="0.7"
+		/>
+		<path
+			class="technical-path"
+			d="M120,240 L340,380"
+			stroke="rgba(255,255,255,0.4)"
+			stroke-dasharray="2 4"
+			stroke-width="0.6"
+		/>
+	</svg>
 
-		<!-- Interactive Spotlight Overlay -->
-		<div class="mouse-spotlight absolute inset-0"></div>
+	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah) ── -->
+	<svg
+		class="pointer-events-none absolute bottom-[2%] left-[2%] h-[38%] w-[20%] opacity-[0.11]"
+		viewBox="0 0 250 350"
+		fill="none"
+	>
+		<path
+			class="technical-path"
+			d="M10,240 L10,80 L70,80 L70,240 L10,240 Z"
+			stroke="rgba(255,255,255,0.5)"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			class="technical-path"
+			d="M70,80 L130,80 L130,240 L70,240"
+			stroke="rgba(255,255,255,0.5)"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			class="technical-path"
+			d="M130,80 L190,80 L190,240 L130,240"
+			stroke="rgba(255,255,255,0.5)"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			class="technical-path"
+			d="M70,80 L70,20 L130,20 L130,80"
+			stroke="rgba(255,255,255,0.5)"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			class="technical-path"
+			d="M70,240 L70,300 L130,300 L130,240"
+			stroke="rgba(255,255,255,0.5)"
+			stroke-width="0.8"
+			stroke-dasharray="2 2"
+		/>
+		<path
+			class="technical-path"
+			d="M10,80 L70,80 L70,20 L130,20 L130,80 L190,80 L190,240 L130,240 L130,300 L70,300 L70,240 L10,240 Z"
+			stroke="rgba(255,255,255,0.7)"
+			stroke-width="0.8"
+		/>
+	</svg>
 
-		<!-- Scanning Beam -->
-		<div class="scanning-beam absolute left-0 w-full opacity-20"></div>
-
-		<!-- Ambient Shards (Floating) - Reduced for mobile -->
-		{#each Array(browser && window.innerWidth < 768 ? 3 : 6) as _, _i (_i)}
-			<div
-				class="ambient-shard absolute size-16 bg-primary/5 dark:bg-primary/10"
-				style="
-                    top: {Math.random() * 100}%; 
-                    left: {Math.random() * 100}%; 
-                    clip-path: polygon({Math.random() * 100}% 0%, 100% {Math.random() *
-					100}%, {Math.random() * 100}% 100%, 0% {Math.random() * 100}%);
-                    filter: blur({2 + Math.random() * 4}px);
-                "
-			></div>
-		{/each}
-
-		<div
-			class="origami-shard absolute -top-24 -left-24 size-[500px] bg-primary/5 dark:bg-primary/10"
-			style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"
-		></div>
-		<div
-			class="origami-shard absolute -right-48 -bottom-48 size-[600px] bg-foreground/5"
-			style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"
-		></div>
+	<!-- ── Blueprint Annotations (Kiri Atas) ── -->
+	<div
+		class="blueprint-annotation pointer-events-none absolute top-[13%] left-[9%] z-10 hidden font-mono text-[9px] leading-relaxed tracking-wider text-white/35 uppercase lg:block"
+	>
+		<p>FOLD LINE X:1024</p>
+		<p>ANGLE: 45°</p>
+		<p>PAPER WEIGHT: 200GSM</p>
 	</div>
 
-	<!-- Technical HUD Corners -->
-	<div class="pointer-events-none absolute inset-0 z-20 overflow-hidden p-8">
-		<div class="absolute top-8 left-8 size-16 border-t-2 border-l-2 border-primary/20"></div>
-		<div class="absolute top-8 right-8 size-16 border-t-2 border-r-2 border-primary/20"></div>
-		<div class="absolute bottom-8 left-8 size-16 border-b-2 border-l-2 border-primary/20"></div>
-		<div class="absolute right-8 bottom-8 size-16 border-r-2 border-b-2 border-primary/20"></div>
-
-		<!-- Coordinates Display -->
-		<div
-			class="coord-display absolute right-12 bottom-12 font-mono text-[8px] font-black tracking-widest text-primary/40"
-		>
-			REL_COORDS: [X_<span class="x-val"></span> : Y_<span class="y-val"></span>]
+	<!-- Penanda Sudut 45° - 56° (1:1) ── -->
+	<div
+		class="blueprint-annotation pointer-events-none absolute top-[14%] left-[25%] z-10 hidden w-[5.5%] lg:block"
+	>
+		<div class="flex justify-between pb-1 font-mono text-[8px] tracking-wider text-white/30">
+			<span>45°</span>
+			<span>56°</span>
+		</div>
+		<div class="relative h-[0.5px] w-full bg-white/15">
+			<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-white/30"></div>
+			<div class="absolute -top-0.5 right-0 h-1.5 w-[0.5px] bg-white/30"></div>
 		</div>
 	</div>
 
+	<!-- Garis Dimensi Vertikal Kiri (1440) ── -->
+	<div
+		class="dim-line pointer-events-none absolute top-[18%] left-[7.5%] z-10 hidden h-[22%] w-[0.5px] bg-white/15 lg:block"
+	>
+		<span
+			class="absolute top-1/2 -left-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-white/30"
+			>1440</span
+		>
+		<div class="absolute top-0 -left-1 h-[0.5px] w-2 bg-white/25"></div>
+		<div class="absolute bottom-0 -left-1 h-[0.5px] w-2 bg-white/25"></div>
+	</div>
+
+	<!-- Garis Dimensi Horizontal Bawah (1448) ── -->
+	<div
+		class="dim-line pointer-events-none absolute bottom-[40%] left-[9%] z-10 hidden h-[0.5px] w-[6%] bg-white/15 lg:block"
+	>
+		<span
+			class="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-wider text-white/30"
+			>1448</span
+		>
+		<div class="absolute top-[-2px] left-0 h-1.5 w-[0.5px] bg-white/25"></div>
+		<div class="absolute top-[-2px] right-0 h-1.5 w-[0.5px] bg-white/25"></div>
+	</div>
+
+	<!-- Garis Dimensi Vertikal Kanan (900) ── -->
+	<div
+		class="dim-line pointer-events-none absolute top-[18%] right-[8%] z-10 hidden h-[22%] w-[0.5px] bg-white/15 lg:block"
+	>
+		<span
+			class="absolute top-1/2 -right-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-white/30"
+			>900</span
+		>
+		<div class="absolute top-0 -right-1 h-[0.5px] w-2 bg-white/25"></div>
+		<div class="absolute -right-1 bottom-0 h-[0.5px] w-2 bg-white/25"></div>
+	</div>
+
+	<!-- ── Pojok Kanan Atas Metadata ── -->
+	<div
+		class="blueprint-annotation pointer-events-none absolute top-8 right-8 z-20 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-white/35 uppercase"
+	>
+		<p>ORIGIN: INDONESIA</p>
+		<p>ARCHIVE: V.1.0.4</p>
+	</div>
+
+	<!-- ── Pojok Kiri Bawah Metadata ── -->
+	<div
+		class="blueprint-annotation pointer-events-none absolute bottom-8 left-8 z-20 font-mono text-[9px] leading-relaxed tracking-[0.2em] text-white/35 uppercase"
+	>
+		<p>PAPER WEIGHT: 280GSM</p>
+		<p>DIMENSIONS: 1440x900</p>
+	</div>
+
+	<!-- ── Pojok Kanan Bawah Metadata ── -->
+	<div
+		class="blueprint-annotation pointer-events-none absolute right-8 bottom-8 z-20 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-white/35 uppercase"
+	>
+		<p>ORIGIN: INDONESIA</p>
+		<p>ARCHIVE: V.1.0.4</p>
+	</div>
+
+	<!-- ══════════════ MAIN CONTENT ══════════════ -->
 	<div class="relative z-10 container mx-auto px-6">
-		<!-- Technical Metadata Header -->
-		<div
-			class="hero-stagger mb-6 flex flex-wrap items-center justify-center gap-6 border-b-2 border-foreground/10 pb-6"
-		>
-			<div
-				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
-			>
-				<Terminal class="size-3" /> CORE_IDENTIFIER: MIKEU_DEV_V5
-			</div>
-			<div
-				class="hidden items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase md:flex"
-			>
-				<Hash class="size-3" /> ORIGIN_ID: RIKI_RUSWANDI
-			</div>
-			<div
-				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase"
-			>
-				<Cpu class="size-3" /> ARCH_TYPE: FULLSTACK_ARCHIVE
-			</div>
-			<div
-				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase"
-			>
-				<Activity class="size-3 animate-pulse" /> SYSTEM_STATUS: STABLE
-			</div>
-		</div>
-
 		<!-- Title Container (Matter.js Target) -->
-		<div class="relative mx-auto mb-6 inline-block" style="height: 160px;">
+		<div class="relative mx-auto mb-4 inline-block" style="height: 160px;">
 			<h1
 				bind:this={heroTitle}
-				class="flex flex-wrap justify-center text-foreground drop-shadow-2xl"
+				class="flex flex-wrap justify-center text-white drop-shadow-2xl"
 				aria-label="Mikeu Dev"
 			>
 				{#each titleChars as char, i (i)}
 					<span
 						bind:this={letterElements[i]}
-						class="-mx-0.5 inline-block h-12 w-8 sm:-mx-1 sm:h-20 sm:w-14 md:-mx-1.5 md:h-28 md:w-18 lg:-mx-2 lg:h-36 lg:w-24"
+						class="-mx-0.5 inline-block h-12 w-8 sm:-mx-1 sm:h-20 sm:w-14 md:-mx-2 md:h-28 md:w-18 lg:-mx-3 lg:h-36 lg:w-24"
 					>
 						<BrutalistGlyph {char} />
 					</span>
 				{/each}
 			</h1>
 
-			<!-- Impact FX Layers (positioned relative to title container) -->
+			<!-- Impact FX Layers -->
 			<div
 				bind:this={impactLayer}
 				class="pointer-events-none absolute inset-0 overflow-visible"
@@ -652,30 +775,40 @@
 			></svg>
 		</div>
 
-		<!-- Subtitle & Content -->
-		<div class="hero-stagger mt-8">
+		<!-- Subtitle -->
+		<div class="hero-stagger mt-6">
 			<p
 				bind:this={heroSubtitle}
-				class="mx-auto max-w-2xl font-mono text-xs leading-relaxed tracking-widest text-muted-foreground uppercase sm:text-sm md:text-base"
+				class="mx-auto max-w-2xl font-mono text-base font-medium tracking-[0.06em] text-[#e2e2e7] sm:text-lg md:text-xl"
 			>
-				// {m.hero_subtitle()} //
+				Fullstack Web Developer | Indonesia
 			</p>
 
-			<!-- Industrial Skills List -->
-			<div bind:this={bulletContainer} class="mt-6 flex flex-wrap justify-center gap-3">
-				{#each skills as skill (skill)}
-					<div
-						class="group flex items-center gap-2 border-2 border-foreground/10 bg-foreground/2 px-4 py-2 transition-all hover:border-primary hover:bg-primary/5"
-					>
-						<Hash class="size-3 text-primary transition-transform group-hover:rotate-12" />
-						<span class="font-mono text-[10px] font-black tracking-wider text-foreground uppercase">
-							{skill}
-						</span>
+			<!-- ── Skills (Tape Label Style - 1:1) ── -->
+			<div bind:this={bulletContainer} class="mt-8 flex flex-col items-center justify-center gap-3">
+				<!-- Row 1: SvelteKit, TypeScript, Go, PostgreSQL -->
+				<div class="flex flex-wrap justify-center gap-3">
+					{#each finalSkills.slice(0, 4) as skill (skill)}
+						<div class="tape-label">
+							<span class="tape-label-text">{skill}</span>
+							<div class="tape-fold"></div>
+						</div>
+					{/each}
+				</div>
+				<!-- Row 2: Docker, GIS -->
+				{#if finalSkills.length > 4}
+					<div class="mt-1 flex flex-wrap justify-center gap-3">
+						{#each finalSkills.slice(4) as skill (skill)}
+							<div class="tape-label">
+								<span class="tape-label-text">{skill}</span>
+								<div class="tape-fold"></div>
+							</div>
+						{/each}
 					</div>
-				{/each}
+				{/if}
 			</div>
 
-			<!-- Sharp Buttons -->
+			<!-- ── CTA Buttons (Paper Tape Style - 1:1) ── -->
 			<div bind:this={heroButton} class="mt-10 flex flex-wrap justify-center gap-6">
 				<a
 					href="#contact"
@@ -683,23 +816,12 @@
 						e.preventDefault();
 						document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
 					}}
-					class="group relative inline-flex h-16 items-center justify-center bg-primary px-10 text-primary-foreground transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0_var(--foreground)]"
-					style="clip-path: polygon(0 15%, 100% 0, 95% 100%, 5% 85%);"
+					class="tape-button tape-button-left group"
 				>
-					<!-- Origami Shard -->
-					<div
-						class="absolute inset-0 translate-x-[-110%] bg-foreground transition-transform duration-500 ease-out group-hover:translate-x-0"
-						style="clip-path: polygon(0 0, 100% 0, 70% 100%, 0% 100%);"
-					></div>
-
-					<div
-						class="relative z-10 flex items-center gap-3 transition-colors group-hover:text-background"
+					<span
+						class="relative z-10 font-mono text-sm font-bold tracking-widest uppercase sm:text-base"
+						>Contact Me</span
 					>
-						<span class="font-poppins text-lg font-black tracking-tighter uppercase">
-							{m.hero_button_text()}
-						</span>
-						<ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
-					</div>
 				</a>
 
 				<a
@@ -708,31 +830,14 @@
 						e.preventDefault();
 						document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
 					}}
-					class="group relative inline-flex h-16 items-center justify-center border-2 border-foreground bg-background px-10 text-foreground transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[10px_10px_0_var(--primary)]"
-					style="clip-path: polygon(5% 0, 95% 15%, 100% 85%, 0 100%);"
+					class="tape-button tape-button-right group"
 				>
-					<!-- Origami Shard -->
-					<div
-						class="absolute inset-0 translate-y-[110%] bg-foreground transition-transform duration-500 ease-out group-hover:translate-y-0"
-						style="clip-path: polygon(0 20%, 100% 0, 100% 100%, 20% 100%);"
-					></div>
-
 					<span
-						class="relative z-10 font-poppins text-lg font-black tracking-tighter uppercase transition-colors group-hover:text-background"
+						class="relative z-10 font-mono text-sm font-bold tracking-widest uppercase sm:text-base"
+						>View Work</span
 					>
-						{m.hero_button_link()}
-					</span>
 				</a>
 			</div>
-		</div>
-
-		<!-- Technical Footer ID -->
-		<div
-			class="hero-stagger mt-12 flex items-center justify-center gap-8 font-mono text-[8px] font-black tracking-[0.4em] text-foreground/20 uppercase"
-		>
-			<p>UID: 0x7F4B21_MIKEU</p>
-			<p>SECTOR: ALPHA_PRIMARY</p>
-			<p>LOAD_TIME: 242ms</p>
 		</div>
 	</div>
 </section>
@@ -740,91 +845,123 @@
 <style lang="postcss">
 	@reference "tailwindcss";
 
-	#hero {
+	/* ── Base Section ── */
+	.paper-hero {
 		perspective: 1500px;
+		background-color: #111115;
 	}
 
 	.hero-stagger {
 		transform: translateZ(50px);
 	}
 
-	.origami-shard {
-		pointer-events: none;
-	}
-
-	/* Title characters need clean baseline for physics */
+	/* Title characters */
 	span {
 		user-select: none;
 		will-change: transform;
 	}
 
-	/* â”€â”€ Origami Impact Shard Styling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Blueprint Grid ── */
+	.blueprint-grid {
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+		background-size: 40px 40px;
+	}
+
+	/* ── Mouse Spotlight ── */
+	.mouse-spotlight {
+		background: radial-gradient(
+			circle 450px at var(--mouse-x) var(--mouse-y),
+			rgba(255, 255, 255, 0.03),
+			transparent 70%
+		);
+	}
+
+	/* ── Tape Label (Skill Badge) ── */
+	.tape-label {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		padding: 8px 18px;
+		background: #ffffff;
+		color: #111115;
+		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
+		transition: all 0.25s ease;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+	}
+
+	.tape-label:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+	}
+
+	.tape-label-text {
+		font-family: var(--font-inter);
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+
+	@media (min-width: 640px) {
+		.tape-label-text {
+			font-size: 14px;
+		}
+	}
+
+	/* The folded corner effect */
+	.tape-fold {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 10px;
+		height: 10px;
+		background: linear-gradient(135deg, transparent 50%, #c2c2c9 50%);
+	}
+
+	/* ── Tape CTA Buttons (1:1) ── */
+	.tape-button {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 14px 36px;
+		cursor: pointer;
+		background: #ffffff;
+		color: #111115;
+		box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+		text-decoration: none;
+	}
+
+	.tape-button:hover {
+		transform: translateY(-2.5px);
+		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+	}
+
+	.tape-button-left {
+		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
+	}
+
+	.tape-button-right {
+		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
+	}
+
+	/* ── Origami Impact Shard ── */
 	:global(.origami-impact-shard) {
 		position: absolute;
 		pointer-events: none;
 		z-index: 20;
-		filter: drop-shadow(0 0 2px var(--primary-foreground));
+		filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.25));
 		will-change: transform, opacity;
 	}
 
-	/* â”€â”€ Background Aesthetics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-	.blueprint-grid {
-		background-image: radial-gradient(var(--foreground) 0.5px, transparent 0.5px);
-		background-size: 40px 40px;
-		opacity: 0.08;
-		mask-image: radial-gradient(
-			circle 500px at var(--mouse-x) var(--mouse-y),
-			black 0%,
-			transparent 100%
-		);
-	}
-
-	.mouse-spotlight {
-		background: radial-gradient(
-			circle 600px at var(--mouse-x) var(--mouse-y),
-			rgba(var(--primary-rgb), 0.12),
-			transparent 70%
-		);
-		mix-blend-mode: plus-lighter;
-	}
-
-	.scanning-beam {
-		height: 1px;
-		background: linear-gradient(
-			to right,
-			transparent,
-			var(--primary) 20%,
-			var(--primary) 80%,
-			transparent
-		);
-		box-shadow: 0 0 15px var(--primary);
-		animation: scan 8s linear infinite;
-	}
-
-	@keyframes scan {
-		0% {
-			top: -10%;
-		}
-		100% {
-			top: 110%;
-		}
-	}
-
-	.ambient-shard {
+	/* ── Impact Particle ── */
+	:global(.impact-particle) {
+		position: absolute;
 		pointer-events: none;
+		z-index: 20;
+		color: rgba(255, 255, 255, 0.55);
 		will-change: transform, opacity;
-	}
-
-	/* â”€â”€ Coordinate HUD with CSS Counters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-	.coord-display {
-		counter-reset: x var(--coord-x) y var(--coord-y);
-	}
-
-	.x-val::after {
-		content: counter(x);
-	}
-
-	.y-val::after {
-		content: counter(y);
 	}
 </style>
