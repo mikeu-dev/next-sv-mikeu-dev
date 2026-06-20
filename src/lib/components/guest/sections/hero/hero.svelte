@@ -1102,9 +1102,9 @@
 	:root {
 		--grid-color: rgba(0, 0, 0, 0.06);
 		--mouse-glow: rgba(0, 0, 0, 0.015);
-		--tape-bg: #111115;
-		--tape-color: #ffffff;
-		--tape-fold-color: #44444a;
+		--tape-bg: #e4e4e7;
+		--tape-color: #111115;
+		--tape-fold-color: #b5b5bc;
 		--tape-shadow: rgba(0, 0, 0, 0.08);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.12);
 	}
