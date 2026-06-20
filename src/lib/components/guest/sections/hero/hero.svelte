@@ -519,11 +519,13 @@
 <section
 	id="hero"
 	bind:this={heroSection}
-	class="paper-hero relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-20 pb-10 text-center md:pt-24"
+	class="paper-hero relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-20 pb-10 text-center transition-colors duration-300 md:pt-24"
 	style="--mouse-x: 50%; --mouse-y: 50%;"
 >
-	<!-- Dark Blueprint Background -->
-	<div class="pointer-events-none absolute inset-0 bg-[#111115]"></div>
+	<!-- Adaptive Blueprint Background -->
+	<div
+		class="pointer-events-none absolute inset-0 bg-[#f3f3f6] transition-colors duration-300 dark:bg-[#111115]"
+	></div>
 
 	<!-- Blueprint Grid Pattern (1:1 subtle grid style) -->
 	<div class="blueprint-grid pointer-events-none absolute inset-0"></div>
@@ -544,67 +546,57 @@
 		fill="none"
 	>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300 dark:stroke-white/70"
 			d="M220,10 L380,80 L390,260 L340,380 L180,320 L220,10 Z"
-			stroke="rgba(255,255,255,0.7)"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
 			d="M220,10 L300,160 L390,260"
-			stroke="rgba(255,255,255,0.4)"
 			stroke-dasharray="2 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
 			d="M300,160 L340,380"
-			stroke="rgba(255,255,255,0.4)"
 			stroke-dasharray="2 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
 			d="M300,160 L180,320"
-			stroke="rgba(255,255,255,0.4)"
 			stroke-dasharray="2 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300 dark:stroke-white/70"
 			d="M220,10 L180,320"
-			stroke="rgba(255,255,255,0.7)"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300 dark:stroke-white/70"
 			d="M380,80 L300,160"
-			stroke="rgba(255,255,255,0.7)"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300 dark:stroke-white/70"
 			d="M220,10 L150,80 L80,50 L220,10"
-			stroke="rgba(255,255,255,0.7)"
 			stroke-width="0.8"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
 			d="M150,80 L180,320"
-			stroke="rgba(255,255,255,0.4)"
 			stroke-dasharray="3 3"
 			stroke-width="0.6"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300 dark:stroke-white/70"
 			d="M80,50 L120,240 L180,320"
-			stroke="rgba(255,255,255,0.7)"
 			stroke-width="0.7"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/40 dark:stroke-white/40"
 			d="M120,240 L340,380"
-			stroke="rgba(255,255,255,0.4)"
 			stroke-dasharray="2 4"
 			stroke-width="0.6"
 		/>
@@ -617,51 +609,45 @@
 		fill="none"
 	>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
 			d="M10,240 L10,80 L70,80 L70,240 L10,240 Z"
-			stroke="rgba(255,255,255,0.5)"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
 			d="M70,80 L130,80 L130,240 L70,240"
-			stroke="rgba(255,255,255,0.5)"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
 			d="M130,80 L190,80 L190,240 L130,240"
-			stroke="rgba(255,255,255,0.5)"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
 			d="M70,80 L70,20 L130,20 L130,80"
-			stroke="rgba(255,255,255,0.5)"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300/60 dark:stroke-white/50"
 			d="M70,240 L70,300 L130,300 L130,240"
-			stroke="rgba(255,255,255,0.5)"
 			stroke-width="0.8"
 			stroke-dasharray="2 2"
 		/>
 		<path
-			class="technical-path"
+			class="technical-path stroke-zinc-300 dark:stroke-white/70"
 			d="M10,80 L70,80 L70,20 L130,20 L130,80 L190,80 L190,240 L130,240 L130,300 L70,300 L70,240 L10,240 Z"
-			stroke="rgba(255,255,255,0.7)"
 			stroke-width="0.8"
 		/>
 	</svg>
 
 	<!-- ── Blueprint Annotations (Kiri Atas) ── -->
 	<div
-		class="blueprint-annotation pointer-events-none absolute top-[13%] left-[9%] z-10 hidden font-mono text-[9px] leading-relaxed tracking-wider text-white/35 uppercase lg:block"
+		class="blueprint-annotation pointer-events-none absolute top-[13%] left-[9%] z-10 hidden font-mono text-[9px] leading-relaxed tracking-wider text-zinc-500 uppercase lg:block dark:text-white/35"
 	>
 		<p>FOLD LINE X:1024</p>
 		<p>ANGLE: 45°</p>
@@ -672,55 +658,57 @@
 	<div
 		class="blueprint-annotation pointer-events-none absolute top-[14%] left-[25%] z-10 hidden w-[5.5%] lg:block"
 	>
-		<div class="flex justify-between pb-1 font-mono text-[8px] tracking-wider text-white/30">
+		<div
+			class="flex justify-between pb-1 font-mono text-[8px] tracking-wider text-zinc-500 dark:text-white/30"
+		>
 			<span>45°</span>
 			<span>56°</span>
 		</div>
-		<div class="relative h-[0.5px] w-full bg-white/15">
-			<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-white/30"></div>
-			<div class="absolute -top-0.5 right-0 h-1.5 w-[0.5px] bg-white/30"></div>
+		<div class="relative h-[0.5px] w-full bg-zinc-300 dark:bg-white/15">
+			<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-zinc-400 dark:bg-white/30"></div>
+			<div class="absolute -top-0.5 right-0 h-1.5 w-[0.5px] bg-zinc-400 dark:bg-white/30"></div>
 		</div>
 	</div>
 
 	<!-- Garis Dimensi Vertikal Kiri (1440) ── -->
 	<div
-		class="dim-line pointer-events-none absolute top-[18%] left-[7.5%] z-10 hidden h-[22%] w-[0.5px] bg-white/15 lg:block"
+		class="dim-line pointer-events-none absolute top-[18%] left-[7.5%] z-10 hidden h-[22%] w-[0.5px] bg-zinc-300 lg:block dark:bg-white/15"
 	>
 		<span
-			class="absolute top-1/2 -left-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-white/30"
+			class="absolute top-1/2 -left-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-zinc-500 dark:text-white/30"
 			>1440</span
 		>
-		<div class="absolute top-0 -left-1 h-[0.5px] w-2 bg-white/25"></div>
-		<div class="absolute bottom-0 -left-1 h-[0.5px] w-2 bg-white/25"></div>
+		<div class="absolute top-0 -left-1 h-[0.5px] w-2 bg-zinc-400 dark:bg-white/25"></div>
+		<div class="absolute bottom-0 -left-1 h-[0.5px] w-2 bg-zinc-400 dark:bg-white/25"></div>
 	</div>
 
 	<!-- Garis Dimensi Horizontal Bawah (1448) ── -->
 	<div
-		class="dim-line pointer-events-none absolute bottom-[40%] left-[9%] z-10 hidden h-[0.5px] w-[6%] bg-white/15 lg:block"
+		class="dim-line pointer-events-none absolute bottom-[40%] left-[9%] z-10 hidden h-[0.5px] w-[6%] bg-zinc-300 lg:block dark:bg-white/15"
 	>
 		<span
-			class="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-wider text-white/30"
+			class="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-wider text-zinc-500 dark:text-white/30"
 			>1448</span
 		>
-		<div class="absolute top-[-2px] left-0 h-1.5 w-[0.5px] bg-white/25"></div>
-		<div class="absolute top-[-2px] right-0 h-1.5 w-[0.5px] bg-white/25"></div>
+		<div class="absolute top-[-2px] left-0 h-1.5 w-[0.5px] bg-zinc-400 dark:bg-white/25"></div>
+		<div class="absolute top-[-2px] right-0 h-1.5 w-[0.5px] bg-zinc-400 dark:bg-white/25"></div>
 	</div>
 
 	<!-- Garis Dimensi Vertikal Kanan (900) ── -->
 	<div
-		class="dim-line pointer-events-none absolute top-[18%] right-[8%] z-10 hidden h-[22%] w-[0.5px] bg-white/15 lg:block"
+		class="dim-line pointer-events-none absolute top-[18%] right-[8%] z-10 hidden h-[22%] w-[0.5px] bg-zinc-300 lg:block dark:bg-white/15"
 	>
 		<span
-			class="absolute top-1/2 -right-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-white/30"
+			class="absolute top-1/2 -right-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-zinc-500 dark:text-white/30"
 			>900</span
 		>
-		<div class="absolute top-0 -right-1 h-[0.5px] w-2 bg-white/25"></div>
-		<div class="absolute -right-1 bottom-0 h-[0.5px] w-2 bg-white/25"></div>
+		<div class="absolute top-0 -right-1 h-[0.5px] w-2 bg-zinc-400 dark:bg-white/25"></div>
+		<div class="absolute -right-1 bottom-0 h-[0.5px] w-2 bg-zinc-400 dark:bg-white/25"></div>
 	</div>
 
 	<!-- ── Pojok Kanan Atas Metadata ── -->
 	<div
-		class="blueprint-annotation pointer-events-none absolute top-8 right-8 z-20 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-white/35 uppercase"
+		class="blueprint-annotation pointer-events-none absolute top-8 right-8 z-20 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-zinc-500 uppercase dark:text-white/35"
 	>
 		<p>ORIGIN: INDONESIA</p>
 		<p>ARCHIVE: V.1.0.4</p>
@@ -728,7 +716,7 @@
 
 	<!-- ── Pojok Kiri Bawah Metadata ── -->
 	<div
-		class="blueprint-annotation pointer-events-none absolute bottom-8 left-8 z-20 font-mono text-[9px] leading-relaxed tracking-[0.2em] text-white/35 uppercase"
+		class="blueprint-annotation pointer-events-none absolute bottom-8 left-8 z-20 font-mono text-[9px] leading-relaxed tracking-[0.2em] text-zinc-500 uppercase dark:text-white/35"
 	>
 		<p>PAPER WEIGHT: 280GSM</p>
 		<p>DIMENSIONS: 1440x900</p>
@@ -736,7 +724,7 @@
 
 	<!-- ── Pojok Kanan Bawah Metadata ── -->
 	<div
-		class="blueprint-annotation pointer-events-none absolute right-8 bottom-8 z-20 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-white/35 uppercase"
+		class="blueprint-annotation pointer-events-none absolute right-8 bottom-8 z-20 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-zinc-500 uppercase dark:text-white/35"
 	>
 		<p>ORIGIN: INDONESIA</p>
 		<p>ARCHIVE: V.1.0.4</p>
@@ -779,7 +767,7 @@
 		<div class="hero-stagger mt-6">
 			<p
 				bind:this={heroSubtitle}
-				class="mx-auto max-w-2xl font-mono text-base font-medium tracking-[0.06em] text-[#e2e2e7] sm:text-lg md:text-xl"
+				class="mx-auto max-w-2xl font-mono text-base font-medium tracking-[0.06em] text-neutral-800 transition-colors duration-300 sm:text-lg md:text-xl dark:text-neutral-200"
 			>
 				Fullstack Web Developer | Indonesia
 			</p>
@@ -848,11 +836,25 @@
 	/* ── Base Section ── */
 	.paper-hero {
 		perspective: 1500px;
-		background-color: #111115;
 	}
 
 	.hero-stagger {
 		transform: translateZ(50px);
+	}
+
+	/* CSS Variables for Light / Dark Theme Adaptation */
+	:root {
+		--grid-color: rgba(0, 0, 0, 0.06);
+		--mouse-glow: rgba(0, 0, 0, 0.015);
+		--tape-shadow: rgba(0, 0, 0, 0.08);
+		--tape-shadow-hover: rgba(0, 0, 0, 0.12);
+	}
+
+	:global(.dark) {
+		--grid-color: rgba(255, 255, 255, 0.015);
+		--mouse-glow: rgba(255, 255, 255, 0.025);
+		--tape-shadow: rgba(0, 0, 0, 0.35);
+		--tape-shadow-hover: rgba(0, 0, 0, 0.45);
 	}
 
 	/* Title characters */
@@ -864,8 +866,8 @@
 	/* ── Blueprint Grid ── */
 	.blueprint-grid {
 		background-image:
-			linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+			linear-gradient(var(--grid-color) 1px, transparent 1px),
+			linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
 		background-size: 40px 40px;
 	}
 
@@ -873,7 +875,7 @@
 	.mouse-spotlight {
 		background: radial-gradient(
 			circle 450px at var(--mouse-x) var(--mouse-y),
-			rgba(255, 255, 255, 0.03),
+			var(--mouse-glow),
 			transparent 70%
 		);
 	}
@@ -888,12 +890,12 @@
 		color: #111115;
 		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
 		transition: all 0.25s ease;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+		box-shadow: 0 4px 10px var(--tape-shadow);
 	}
 
 	.tape-label:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+		box-shadow: 0 6px 14px var(--tape-shadow-hover);
 	}
 
 	.tape-label-text {
@@ -929,14 +931,14 @@
 		cursor: pointer;
 		background: #ffffff;
 		color: #111115;
-		box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+		box-shadow: 0 8px 22px var(--tape-shadow);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
 	}
 
 	.tape-button:hover {
 		transform: translateY(-2.5px);
-		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+		box-shadow: 0 12px 28px var(--tape-shadow-hover);
 	}
 
 	.tape-button-left {
