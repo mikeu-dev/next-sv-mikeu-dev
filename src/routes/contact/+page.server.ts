@@ -1,4 +1,4 @@
-﻿export const prerender = false;
+export const prerender = false;
 
 import type { Actions } from './$types';
 
@@ -8,8 +8,8 @@ export const actions: Actions = {
 		const name = formData.get('name');
 		const email = formData.get('email');
 		const message = formData.get('message');
-		const company = formData.get('company');
-		const budget = formData.get('budget');
+		const company = formData.get('company') || undefined;
+		const budget = formData.get('budget') || undefined;
 
 		try {
 			const response = await fetch('/api/contact', {
