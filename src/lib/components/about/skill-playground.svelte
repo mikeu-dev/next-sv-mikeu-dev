@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages';
@@ -13,7 +13,7 @@
 
 	let { categories }: { categories: LocalizedCategory[] } = $props();
 
-	const engine = new SkillEngine(categories);
+	const engine = new SkillEngine(() => categories);
 	let container: HTMLElement;
 	let lastW = 0;
 	let lastH = 0;

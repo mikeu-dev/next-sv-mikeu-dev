@@ -1,4 +1,4 @@
-﻿import type Matter from 'matter-js';
+import type Matter from 'matter-js';
 import { browser } from '$app/environment';
 import {
 	shapes,
@@ -49,10 +49,10 @@ export class SkillEngine {
 	canvasHeight = $state(0);
 
 	private container: HTMLElement | null = null;
-	private categories: LocalizedCategory[] = [];
+	private getCategories: () => LocalizedCategory[];
 
-	constructor(categories: LocalizedCategory[]) {
-		this.categories = categories;
+	constructor(getCategories: () => LocalizedCategory[]) {
+		this.getCategories = getCategories;
 	}
 
 	// Derived tetriminos
@@ -61,7 +61,7 @@ export class SkillEngine {
 		let currentSkillIndex = 0;
 		const shapeKeys = Object.keys(shapes);
 
-		const flatSkills = this.categories.flatMap((cat) =>
+		const flatSkills = this.getCategories().flatMap((cat) =>
 			(cat.items || []).map((item) => ({
 				...item,
 				category: cat.category,

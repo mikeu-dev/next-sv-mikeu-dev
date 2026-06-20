@@ -14,8 +14,8 @@
 	let { data }: { data: PageData } = $props();
 
 	// Reactive state for posts and pagination
-	let allPosts = $state(data.posts as BlogPost[]);
-	let nextCursor = $state(data.nextCursor);
+	let allPosts = $state<BlogPost[]>([]);
+	let nextCursor = $state<string | null | undefined>(null);
 	let isLoadingMore = $state(false);
 
 	// Sync with server data on initial load or when data changes (e.g. search)

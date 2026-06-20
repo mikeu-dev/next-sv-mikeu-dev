@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { page } from '$app/state';
 	import { locales, baseLocale } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
@@ -23,8 +23,8 @@
 	const defaultTitle = 'Mikeu | Fullstack Web Developer';
 	const defaultDescription = 'A passionate Fullstack Web Developer from Indonesia.';
 	const siteUrl = canonicalBase;
-	const finalTitle = title ? `${title} | Mikeu` : defaultTitle;
-	const finalDescription = description || defaultDescription;
+	const finalTitle = $derived(title ? `${title} | Mikeu` : defaultTitle);
+	const finalDescription = $derived(description || defaultDescription);
 
 	// Use dynamic OG image if no specific image is provided
 	const finalImage = $derived.by(() => {

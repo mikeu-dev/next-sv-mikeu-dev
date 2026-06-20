@@ -20,6 +20,7 @@ project_structure.md
 .env*
 .DS_Store
 *.log
+/project.inlang/
 .firebase/
 .idea/
 .vscode/

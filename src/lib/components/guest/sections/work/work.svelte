@@ -333,9 +333,15 @@
 					>
 						{#each localizedProjects as project, i (project.id)}
 							<div
-								class="origami-card-layer h-full w-full will-change-transform"
+								role="button"
+								tabindex="0"
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') navigateToCard(i);
+								}}
+								class="origami-card-layer h-full w-full cursor-pointer will-change-transform"
 								style="z-index: {localizedProjects.length - i}; transform-style: preserve-3d;"
 								data-index={i}
+								onclick={() => navigateToCard(i)}
 							>
 								<ProjectCard {project} animateOnScroll={false} />
 							</div>

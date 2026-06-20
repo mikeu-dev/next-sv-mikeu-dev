@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import {
 		FolderKanban,
 		FileText,
@@ -18,7 +18,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const stats = [
+	const stats = $derived([
 		{
 			label: 'Total Projects',
 			value: data.stats.projects || 0,
@@ -59,7 +59,7 @@
 			bg: 'bg-pink-100 dark:bg-pink-900/20',
 			href: `${base}/admin/analytics`
 		}
-	];
+	]);
 </script>
 
 <div class="space-y-8">

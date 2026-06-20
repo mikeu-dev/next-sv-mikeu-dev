@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import ProjectSkeleton from '@/lib/components/guest/card/project-skeleton.svelte';
 	import type { PageData } from './$types';
@@ -29,7 +29,7 @@
 	}
 
 	let { data }: { data: PageData } = $props();
-	const { projects }: { projects: Record<string, Project[]> } = data;
+	let projects = $derived(data.projects as Record<string, Project[]>);
 
 	let locale = $derived(getLocale());
 	let isLoading = $state(true);

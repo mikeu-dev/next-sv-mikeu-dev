@@ -13,7 +13,11 @@ const config = {
 		})
 	],
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			runtime: 'nodejs22.x',
+			memory: 1024,
+			regions: ['sin1']
+		}),
 		alias: {
 			'@/*': 'src/*',
 			'@lib/*': 'src/lib/*'

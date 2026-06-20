@@ -7,12 +7,21 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let label = $state(data.link.label);
-	let href = $state(data.link.href);
-	let iconName = $state(data.link.iconName);
-	let color = $state(data.link.color);
+	let label = $state('');
+	let href = $state('');
+	let iconName = $state('');
+	let color = $state('');
 	let saving = $state(false);
 	let deleting = $state(false);
+
+	$effect(() => {
+		if (data.link) {
+			label = data.link.label || '';
+			href = data.link.href || '';
+			iconName = data.link.iconName || '';
+			color = data.link.color || '';
+		}
+	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();

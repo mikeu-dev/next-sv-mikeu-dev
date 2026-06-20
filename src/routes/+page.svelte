@@ -29,7 +29,7 @@
 				<Skeleton class="h-64 w-full" />
 			</div>
 		{/snippet}
-		{#await Promise.all([data.projects, import('$lib/components/guest/sections/work/work.svelte')]) then [projects, mod]}
+		{#await Promise.all( [data.projects, import('$lib/components/guest/sections/work/work.svelte')] ) then [projects, mod]}
 			<mod.default {projects} />
 		{/await}
 	</SectionLoader>
@@ -46,7 +46,7 @@
 			</div>
 		</div>
 	{/snippet}
-	{#await Promise.all([data.latestPosts, import('$lib/components/guest/sections/blog/latest-blogs.svelte')]) then [posts, mod]}
+	{#await Promise.all( [data.latestPosts, import('$lib/components/guest/sections/blog/latest-blogs.svelte')] ) then [posts, mod]}
 		<mod.default {posts} />
 	{/await}
 </SectionLoader>

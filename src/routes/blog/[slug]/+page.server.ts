@@ -4,12 +4,6 @@ import { blogService } from '$lib/server/services/blog.service';
 import { renderMarkdown } from '$lib/server/utils/markdown';
 import { reactionService } from '$lib/server/services/reaction.service';
 
-export const config = {
-	isr: {
-		expiration: 300 // Revalidate every 5 minutes
-	}
-};
-
 export const load: PageServerLoad = async (event) => {
 	const { params, locals } = event;
 	const locale = locals.paraglide.locale;

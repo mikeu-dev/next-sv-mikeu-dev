@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import AIAssist from '$lib/components/admin/ai-assist.svelte';
@@ -23,14 +23,9 @@
 
 	// Unified Form Data Storage
 	let commonData = $state({
-		slug: initialData?.slug || '',
-		date: initialData?.date || new Date().toISOString().split('T')[0],
-		published: initialData?.published || false // Global publish switch? Or per lang? Let's make it per lang effectively, or shared?
-		// User request "Create post" implies both.
-		// Usually publish status might differ (e.g. translate later).
-		// Let's keep published separated per locale in UI, OR shared?
-		// Simplicity: Shared for now? Or separated?
-		// Let's try Separated "Published" status per language to allow draft translation.
+		slug: '',
+		date: new Date().toISOString().split('T')[0],
+		published: false
 	});
 
 	// Content specific to locales
@@ -38,23 +33,45 @@
 		Record<string, { title: string; description: string; content: string; published: boolean }>
 	>({
 		en: {
-			title: initialData?.locale === 'en' ? initialData?.title || '' : '',
-			description: initialData?.locale === 'en' ? initialData?.description || '' : '',
-			content: initialData?.locale === 'en' ? initialData?.content || '' : '',
-			published: initialData?.locale === 'en' ? initialData?.published || false : false
+			title: '',
+			description: '',
+			content: '',
+			published: false
 		},
 		id: {
-			title: initialData?.locale === 'id' ? initialData?.title || '' : '',
-			description: initialData?.locale === 'id' ? initialData?.description || '' : '',
-			content: initialData?.locale === 'id' ? initialData?.content || '' : '',
-			published: initialData?.locale === 'id' ? initialData?.published || false : false
+			title: '',
+			description: '',
+			content: '',
+			published: false
 		}
 	});
 
-	let activeTab = $state<'en' | 'id'>((initialData?.locale as 'en' | 'id') || 'en');
+	let activeTab = $state<'en' | 'id'>('en');
 	let loading = $state(false);
 	let drafting = $state(false);
 	let aiPrompt = $state('');
+
+	$effect(() => {
+		if (initialData) {
+			commonData.slug = initialData.slug || '';
+			commonData.date = initialData.date || new Date().toISOString().split('T')[0];
+			commonData.published = initialData.published || false;
+
+			contentData.en = {
+				title: initialData.locale === 'en' ? initialData.title || '' : '',
+				description: initialData.locale === 'en' ? initialData.description || '' : '',
+				content: initialData.locale === 'en' ? initialData.content || '' : '',
+				published: initialData.locale === 'en' ? initialData.published || false : false
+			};
+			contentData.id = {
+				title: initialData.locale === 'id' ? initialData.title || '' : '',
+				description: initialData.locale === 'id' ? initialData.description || '' : '',
+				content: initialData.locale === 'id' ? initialData.content || '' : '',
+				published: initialData.locale === 'id' ? initialData.published || false : false
+			};
+			activeTab = (initialData.locale as 'en' | 'id') || 'en';
+		}
+	});
 
 	// If editing, we might need to fetch the OTHER language data if it wasn't passed in initialData
 	// ideally the parent loads BOTH. But parent currently loads ONE.
