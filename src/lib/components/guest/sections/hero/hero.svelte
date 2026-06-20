@@ -304,12 +304,45 @@
 				delay: 0.5
 			});
 
+			// Ambient Floating Animations for Background Blueprint SVGs
+			gsap.to('.blueprint-svg-right', {
+				y: '+=12',
+				rotation: '+=1.5',
+				duration: 6,
+				ease: 'sine.inOut',
+				yoyo: true,
+				repeat: -1
+			});
+
+			gsap.to('.blueprint-svg-left', {
+				y: '-=10',
+				rotation: '-=1.2',
+				duration: 7,
+				ease: 'sine.inOut',
+				yoyo: true,
+				repeat: -1
+			});
+
+			// Subtle pulsing for blueprint technical details/annotations
+			gsap.to('.blueprint-annotation', {
+				opacity: 0.65,
+				duration: 3,
+				stagger: 0.15,
+				ease: 'sine.inOut',
+				yoyo: true,
+				repeat: -1
+			});
+
 			const section = heroSection;
 			if (!section) return;
 
-			// Mouse Spotlight Tracker
+			// Mouse Spotlight Tracker & Parallax Setters
 			const xSetter = gsap.quickSetter(section, '--mouse-x', 'px');
 			const ySetter = gsap.quickSetter(section, '--mouse-y', 'px');
+			const svgRightX = gsap.quickSetter('.blueprint-svg-right', 'x', 'px');
+			const svgRightY = gsap.quickSetter('.blueprint-svg-right', 'y', 'px');
+			const svgLeftX = gsap.quickSetter('.blueprint-svg-left', 'x', 'px');
+			const svgLeftY = gsap.quickSetter('.blueprint-svg-left', 'y', 'px');
 
 			let ticking = false;
 			const handleMouseMove = (e: MouseEvent) => {
@@ -320,6 +353,15 @@
 						const y = Math.round(e.clientY - rect.top);
 						xSetter(x);
 						ySetter(y);
+
+						// Parallax shift based on mouse relative position (range ±25px)
+						const relX = x / rect.width - 0.5;
+						const relY = y / rect.height - 0.5;
+						svgRightX(relX * -25);
+						svgRightY(relY * -25);
+						svgLeftX(relX * 20);
+						svgLeftY(relY * 20);
+
 						ticking = false;
 					});
 					ticking = true;
@@ -336,6 +378,15 @@
 							const y = Math.round(touch.clientY - rect.top);
 							xSetter(x);
 							ySetter(y);
+
+							// Parallax shift for touch
+							const relX = x / rect.width - 0.5;
+							const relY = y / rect.height - 0.5;
+							svgRightX(relX * -25);
+							svgRightY(relY * -25);
+							svgLeftX(relX * 20);
+							svgLeftY(relY * 20);
+
 							ticking = false;
 						});
 						ticking = true;
@@ -541,7 +592,7 @@
 
 	<!-- ── SVG Blueprint Polyhedron (Kanan Atas - 3D Cardboard Box) ── -->
 	<svg
-		class="pointer-events-none absolute top-[4%] right-[2%] h-[58%] w-[45%] opacity-[0.35] dark:opacity-[0.16]"
+		class="blueprint-svg-right pointer-events-none absolute top-[4%] right-[2%] h-[58%] w-[45%] opacity-[0.35] dark:opacity-[0.16]"
 		viewBox="0 0 400 450"
 		fill="none"
 	>
@@ -664,7 +715,7 @@
 
 	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
 	<svg
-		class="pointer-events-none absolute bottom-[2%] left-[2%] h-[38%] w-[20%] opacity-[0.3] dark:opacity-[0.11]"
+		class="blueprint-svg-left pointer-events-none absolute bottom-[2%] left-[2%] h-[38%] w-[20%] opacity-[0.3] dark:opacity-[0.11]"
 		viewBox="0 0 250 350"
 		fill="none"
 	>
