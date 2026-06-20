@@ -2,16 +2,9 @@ import type { LayoutServerLoad } from './$types';
 import { socialsService } from '$lib/server/services/socials.service';
 import { visitorService } from '$lib/server/services/visitor.service';
 import { settingsService } from '$lib/server/services/settings.service';
-import type { Config } from '@sveltejs/adapter-vercel';
 import { showExperimentalFeature } from '$lib/flags';
 
 import { building } from '$app/environment';
-
-export const config: Config = {
-	runtime: 'nodejs22.x',
-	memory: 1024,
-	regions: ['sin1']
-};
 
 export const load: LayoutServerLoad = async (event) => {
 	const { locals, setHeaders } = event;
