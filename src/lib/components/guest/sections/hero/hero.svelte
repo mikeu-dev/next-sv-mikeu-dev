@@ -1023,7 +1023,7 @@
 		<div class="hero-stagger mt-6">
 			<p
 				bind:this={heroSubtitle}
-				class="mx-auto max-w-2xl font-mono text-base font-medium tracking-[0.06em] text-neutral-800 transition-colors duration-300 sm:text-lg md:text-xl dark:text-neutral-200"
+				class="mx-auto max-w-4xl font-mono text-lg font-medium tracking-[0.06em] text-neutral-800 transition-colors duration-300 sm:text-xl md:text-2xl lg:text-3xl dark:text-neutral-200"
 			>
 				Fullstack Web Developer | Indonesia
 			</p>
@@ -1063,7 +1063,7 @@
 					class="tape-button tape-button-left group"
 				>
 					<span
-						class="relative z-10 font-mono text-sm font-bold tracking-widest uppercase sm:text-base"
+						class="relative z-10 font-mono text-base font-bold tracking-widest uppercase sm:text-lg md:text-xl"
 						>Contact Me</span
 					>
 				</a>
@@ -1077,7 +1077,7 @@
 					class="tape-button tape-button-right group"
 				>
 					<span
-						class="relative z-10 font-mono text-sm font-bold tracking-widest uppercase sm:text-base"
+						class="relative z-10 font-mono text-base font-bold tracking-widest uppercase sm:text-lg md:text-xl"
 						>View Work</span
 					>
 				</a>
@@ -1141,12 +1141,18 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		padding: 8px 18px;
+		padding: 8px 16px;
 		background: #ffffff;
 		color: #111115;
 		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
 		transition: all 0.25s ease;
 		box-shadow: 0 4px 10px var(--tape-shadow);
+	}
+
+	@media (min-width: 640px) {
+		.tape-label {
+			padding: 10px 22px;
+		}
 	}
 
 	.tape-label:hover {
@@ -1156,14 +1162,20 @@
 
 	.tape-label-text {
 		font-family: var(--font-inter);
-		font-size: 13px;
+		font-size: 14px;
 		font-weight: 700;
 		letter-spacing: 0.02em;
 	}
 
 	@media (min-width: 640px) {
 		.tape-label-text {
-			font-size: 14px;
+			font-size: 16px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.tape-label-text {
+			font-size: 17px;
 		}
 	}
 
@@ -1183,13 +1195,19 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 14px 36px;
+		padding: 12px 30px;
 		cursor: pointer;
 		background: #ffffff;
 		color: #111115;
 		box-shadow: 0 8px 22px var(--tape-shadow);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
+	}
+
+	@media (min-width: 640px) {
+		.tape-button {
+			padding: 16px 42px;
+		}
 	}
 
 	.tape-button:hover {
