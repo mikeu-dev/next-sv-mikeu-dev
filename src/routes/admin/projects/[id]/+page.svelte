@@ -10,25 +10,40 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Handle legacy data structure
-	const project = data.project as Record<string, unknown>;
-
-	let title_id = $state(data.project.title_id || project.title || '');
-	let title_en = $state(data.project.title_en || project.title || '');
-	let description_id = $state(data.project.description_id || project.description || '');
-	let description_en = $state(data.project.description_en || project.description || '');
-	let content = $state(data.project.content || '');
-	let repoUrl = $state(data.project.repoUrl || '');
-	let demoUrl = $state(data.project.demoUrl || '');
-	let published = $state(data.project.published || false);
-	let pinned = $state(data.project.pinned || false);
-	let tags = $state<SerializedTag[]>((data.project.tags as SerializedTag[]) || []);
+	let title_id = $state('');
+	let title_en = $state('');
+	let description_id = $state('');
+	let description_en = $state('');
+	let content = $state('');
+	let repoUrl = $state('');
+	let demoUrl = $state('');
+	let published = $state(false);
+	let pinned = $state(false);
+	let tags = $state<SerializedTag[]>([]);
 	let thumbnailFile: File | null = $state(null);
-	let thumbnailPreview = $state(data.project.thumbnailUrl || project.thumbnail || '');
+	let thumbnailPreview = $state('');
 	let imageFiles: File[] = $state([]);
-	let imagePreviews: string[] = $state(data.project.imagesUrl || project.images || []);
+	let imagePreviews: string[] = $state([]);
 	let uploading = $state(false);
 	let saving = $state(false);
+
+	$effect(() => {
+		if (data.project) {
+			const project = data.project as Record<string, unknown>;
+			title_id = data.project.title_id || project.title || '';
+			title_en = data.project.title_en || project.title || '';
+			description_id = data.project.description_id || project.description || '';
+			description_en = data.project.description_en || project.description || '';
+			content = data.project.content || '';
+			repoUrl = data.project.repoUrl || '';
+			demoUrl = data.project.demoUrl || '';
+			published = data.project.published || false;
+			pinned = data.project.pinned || false;
+			tags = (data.project.tags as SerializedTag[]) || [];
+			thumbnailPreview = data.project.thumbnailUrl || project.thumbnail || '';
+			imagePreviews = (data.project.imagesUrl as string[]) || (project.images as string[]) || [];
+		}
+	});
 	let analyzingRepo = $state(false);
 	let activeTab = $state<'id' | 'en'>('id');
 

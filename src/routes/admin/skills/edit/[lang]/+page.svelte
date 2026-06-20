@@ -6,8 +6,14 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let items = $state([...data.items]);
+	let items = $state<string[]>([]);
 	let saving = $state(false);
+
+	$effect(() => {
+		if (data.items) {
+			items = [...data.items];
+		}
+	});
 
 	function addSkill() {
 		items = [...items, ''];

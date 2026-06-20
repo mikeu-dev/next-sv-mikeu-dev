@@ -7,19 +7,25 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let category = $state(data.category.category);
-	let description = $state(data.category.description);
-	let items = $state<{ name: string; iconName: string; color: string; url: string }[]>(
-		data.category.items.map(
-			(item: { name: string; iconName: string; color: string; url: string }) => ({
-				name: item.name,
-				iconName: item.iconName,
-				color: item.color,
-				url: item.url
-			})
-		)
-	);
+	let category = $state('');
+	let description = $state('');
+	let items = $state<{ name: string; iconName: string; color: string; url: string }[]>([]);
 	let saving = $state(false);
+
+	$effect(() => {
+		if (data.category) {
+			category = data.category.category || '';
+			description = data.category.description || '';
+			items = (data.category.items || []).map(
+				(item: { name: string; iconName: string; color: string; url: string }) => ({
+					name: item.name,
+					iconName: item.iconName,
+					color: item.color,
+					url: item.url
+				})
+			);
+		}
+	});
 
 	function addItem() {
 		items = [

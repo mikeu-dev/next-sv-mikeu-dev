@@ -339,9 +339,15 @@
 				{#if posts.length > 0}
 					{#each posts as post, idx (post.slug)}
 						<div
-							class="origami-page-layer h-full w-full will-change-transform"
+							class="origami-page-layer h-full w-full cursor-pointer will-change-transform"
 							style="z-index: {posts.length - idx}; transform-style: preserve-3d;"
 							data-index={idx}
+							role="button"
+							tabindex="0"
+							onkeydown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') navigateToPage(idx);
+							}}
+							onclick={() => navigateToPage(idx)}
 						>
 							<div
 								class="origami-panel relative h-full w-full will-change-transform"

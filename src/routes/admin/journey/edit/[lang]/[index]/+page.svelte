@@ -7,13 +7,23 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let year = $state(data.item.year);
-	let title_id = $state(data.item.title_id || data.item.title);
-	let title_en = $state(data.item.title_en || data.item.title);
-	let description_id = $state(data.item.description_id || data.item.description);
-	let description_en = $state(data.item.description_en || data.item.description);
+	let year = $state('');
+	let title_id = $state('');
+	let title_en = $state('');
+	let description_id = $state('');
+	let description_en = $state('');
 	let saving = $state(false);
 	let deleting = $state(false);
+
+	$effect(() => {
+		if (data.item) {
+			year = data.item.year || '';
+			title_id = data.item.title_id || data.item.title || '';
+			title_en = data.item.title_en || data.item.title || '';
+			description_id = data.item.description_id || data.item.description || '';
+			description_en = data.item.description_en || data.item.description || '';
+		}
+	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
