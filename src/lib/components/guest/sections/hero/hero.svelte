@@ -992,7 +992,7 @@
 		<div class="relative mx-auto mb-4 inline-block" style="height: 160px;">
 			<h1
 				bind:this={heroTitle}
-				class="flex flex-wrap justify-center text-white drop-shadow-2xl"
+				class="flex flex-wrap justify-center text-white drop-shadow-sm"
 				aria-label="Mikeu Dev"
 			>
 				{#each titleChars as char, i (i)}
@@ -1110,10 +1110,10 @@
 	:root {
 		--grid-color: rgba(0, 0, 0, 0.06);
 		--mouse-glow: rgba(0, 0, 0, 0.015);
-		--tape-bg: #e4e4e7;
-		--tape-color: #111115;
-		--tape-fold-color: #b5b5bc;
-		--tape-shadow-bg: #7c7c82; /* Layer 0: Latar belakang agak gelap */
+		--tape-bg: #f4f4f5;
+		--tape-color: #27272a;
+		--tape-fold-color: #d4d4d8;
+		--tape-shadow-bg: #a1a1aa; /* Layer 0: Latar belakang agak gelap */
 		--tape-underlay-bg: #ffffff; /* Layer 1: Segitiga underlay agak terang */
 		--tape-shadow: rgba(0, 0, 0, 0.08);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.12);
@@ -1122,11 +1122,11 @@
 	:global(.dark) {
 		--grid-color: rgba(255, 255, 255, 0.035);
 		--mouse-glow: rgba(255, 255, 255, 0.045);
-		--tape-bg: #ffffff;
-		--tape-color: #111115;
-		--tape-fold-color: #c2c2c9;
-		--tape-shadow-bg: #2c2c2e; /* Layer 0: Latar belakang agak gelap */
-		--tape-underlay-bg: #e2e2e8; /* Layer 1: Segitiga underlay agak terang */
+		--tape-bg: #27272a;
+		--tape-color: #f4f4f5;
+		--tape-fold-color: #18181b;
+		--tape-shadow-bg: #09090b; /* Layer 0: Latar belakang agak gelap */
+		--tape-underlay-bg: #18181b; /* Layer 1: Segitiga underlay agak terang */
 		--tape-shadow: rgba(0, 0, 0, 0.35);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.45);
 	}
@@ -1279,7 +1279,7 @@
 		bottom: -5px;
 		width: 14px;
 		height: 17px;
-		background: var(--tape-under-bg);
+		background: var(--tape-underlay-bg);
 		clip-path: polygon(100% 0, 0 100%, 100% 100%);
 		z-index: -1;
 		pointer-events: none;
