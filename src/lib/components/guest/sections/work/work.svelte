@@ -23,14 +23,15 @@
 	const { workSection, tooltipOpen, virtualAnchor, tooltipText } = useWorkSection();
 
 	function navigateToCard(idx: number) {
-		const cards = gsap.utils.toArray('.origami-card-layer') as HTMLElement[];
+		const cards = gsap.utils.toArray('.origami-card-layer', $workSection) as HTMLElement[];
 		const targetCard = cards[idx];
 		if (!targetCard) return;
 
 		if (triggerInstance) {
 			const start = triggerInstance.start;
 			const end = triggerInstance.end;
-			const targetScroll = start + (idx / (localizedProjects.length - 1)) * (end - start);
+			const totalCards = localizedProjects.length > 1 ? localizedProjects.length - 1 : 1;
+			const targetScroll = start + (idx / totalCards) * (end - start);
 			window.scrollTo({
 				top: targetScroll + 2, // Offset slightly to guarantee trigger activation
 				behavior: 'smooth'
@@ -78,7 +79,7 @@
 
 		// 2. Responsive matchMedia timeline
 		const mm = gsap.matchMedia();
-		const cards = gsap.utils.toArray('.origami-card-layer') as HTMLElement[];
+		const cards = gsap.utils.toArray('.origami-card-layer', sectionEl) as HTMLElement[];
 		let pinTl: gsap.core.Timeline | null = null;
 
 		if (cards.length > 0) {
@@ -166,7 +167,7 @@
 								rotateY: -30,
 								yPercent: 100,
 								opacity: 0,
-								duration: 1,
+								duration: 0.8,
 								ease: 'power2.inOut'
 							},
 							idx
@@ -177,7 +178,7 @@
 								clipPath: 'polygon(0% 0%, 100% 0%, 50% 50%, 0% 100%)',
 								opacity: 0,
 								scale: 0.8,
-								duration: 1,
+								duration: 0.8,
 								ease: 'power2.inOut'
 							},
 							idx
@@ -187,9 +188,9 @@
 							{
 								pointerEvents: 'none',
 								visibility: 'hidden',
-								duration: 0.1
+								duration: 0.05
 							},
-							idx
+							idx + 0.8
 						)
 						.to(
 							nextCard,
@@ -200,10 +201,10 @@
 								yPercent: 0,
 								pointerEvents: 'auto',
 								visibility: 'visible',
-								duration: 1,
+								duration: 0.8,
 								ease: 'power3.out'
 							},
-							idx + 0.2
+							idx + 0.1
 						);
 				});
 
@@ -231,8 +232,14 @@
 
 		window.addEventListener('mousemove', handleMouseMove);
 
+		const refreshTimeout = setTimeout(() => {
+			ScrollTrigger.sort();
+			ScrollTrigger.refresh();
+		}, 100);
+
 		return () => {
 			window.removeEventListener('mousemove', handleMouseMove);
+			clearTimeout(refreshTimeout);
 			mm.revert();
 		};
 	});

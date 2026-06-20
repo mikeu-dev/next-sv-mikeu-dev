@@ -108,7 +108,7 @@
 			hoverTl.to(
 				flap,
 				{
-					rotate3d: '1, -1, 0, 180',
+					transform: 'rotate3d(1, -1, 0, 180deg)',
 					duration: 0.6,
 					ease: 'power2.inOut'
 				},
@@ -269,7 +269,7 @@
 			hoverTl.to(
 				flap,
 				{
-					rotate3d: '1, -1, 0, 0'
+					transform: 'rotate3d(1, -1, 0, 0deg)'
 				},
 				0
 			);
@@ -351,7 +351,7 @@
 		</div>
 
 		<!-- Image Wrapper with Clip-Path -->
-		<div class="project-card-image-wrapper relative aspect-video overflow-hidden">
+		<div class="project-card-image-wrapper relative hidden aspect-video overflow-hidden sm:block">
 			{#if project.thumbnailUrl}
 				<img
 					src={optimizeImage(project.thumbnailUrl, { width: 800, quality: 75 })}
@@ -419,6 +419,24 @@
 
 		<!-- Content -->
 		<div class="relative z-10 flex flex-1 flex-col bg-card p-6">
+			<!-- Technical Badges (Mobile Only) -->
+			<div class="mb-4 flex flex-wrap gap-2 sm:hidden">
+				{#if isFeatured}
+					<div
+						class="flex items-center gap-1.5 bg-yellow-500 px-2 py-0.5 font-mono text-[8px] font-black tracking-widest text-black uppercase"
+					>
+						<Trophy class="size-2.5" /> [FEATURED]
+					</div>
+				{/if}
+				{#if isNew}
+					<div
+						class="flex items-center gap-1.5 bg-primary px-2 py-0.5 font-mono text-[8px] font-black tracking-widest text-primary-foreground uppercase"
+					>
+						<Sparkles class="size-2.5" /> [NEW]
+					</div>
+				{/if}
+			</div>
+
 			<!-- Tech Stack -->
 			{#if project.tags && project.tags.length > 0}
 				<div class="mb-4 flex flex-wrap gap-2">

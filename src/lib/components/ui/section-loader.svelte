@@ -31,7 +31,10 @@
 				const entry = entries[0];
 				if (entry?.isIntersecting) {
 					visible = true;
-					setTimeout(() => ScrollTrigger.refresh(), 100);
+					setTimeout(() => {
+						ScrollTrigger.sort();
+						ScrollTrigger.refresh();
+					}, 100);
 					if (once) {
 						observer.disconnect();
 					}
