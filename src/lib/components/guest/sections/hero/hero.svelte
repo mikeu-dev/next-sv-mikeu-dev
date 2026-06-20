@@ -1102,6 +1102,9 @@
 	:root {
 		--grid-color: rgba(0, 0, 0, 0.06);
 		--mouse-glow: rgba(0, 0, 0, 0.015);
+		--tape-bg: #111115;
+		--tape-color: #ffffff;
+		--tape-fold-color: #44444a;
 		--tape-shadow: rgba(0, 0, 0, 0.08);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.12);
 	}
@@ -1109,6 +1112,9 @@
 	:global(.dark) {
 		--grid-color: rgba(255, 255, 255, 0.035);
 		--mouse-glow: rgba(255, 255, 255, 0.045);
+		--tape-bg: #ffffff;
+		--tape-color: #111115;
+		--tape-fold-color: #c2c2c9;
 		--tape-shadow: rgba(0, 0, 0, 0.35);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.45);
 	}
@@ -1142,8 +1148,8 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 8px 16px;
-		background: #ffffff;
-		color: #111115;
+		background: var(--tape-bg);
+		color: var(--tape-color);
 		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
 		transition: all 0.25s ease;
 		box-shadow: 0 4px 10px var(--tape-shadow);
@@ -1186,7 +1192,7 @@
 		right: 0;
 		width: 10px;
 		height: 10px;
-		background: linear-gradient(135deg, transparent 50%, #c2c2c9 50%);
+		background: linear-gradient(135deg, transparent 50%, var(--tape-fold-color) 50%);
 	}
 
 	/* ── Tape CTA Buttons (1:1) ── */
@@ -1197,8 +1203,8 @@
 		justify-content: center;
 		padding: 12px 30px;
 		cursor: pointer;
-		background: #ffffff;
-		color: #111115;
+		background: var(--tape-bg);
+		color: var(--tape-color);
 		box-shadow: 0 8px 22px var(--tape-shadow);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
