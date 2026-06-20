@@ -319,44 +319,44 @@
 			gsap.fromTo(
 				'.box-flap-front-left',
 				{ rotation: -35 },
-				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.2, 0.4)', delay: 0.8 }
+				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.0, 0.85)', delay: 0.8 }
 			);
 			gsap.fromTo(
 				'.box-flap-front-right',
 				{ rotation: 35 },
-				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.2, 0.4)', delay: 0.9 }
+				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.0, 0.85)', delay: 0.9 }
 			);
 			gsap.fromTo(
 				'.box-flap-back-left',
 				{ rotation: 30 },
-				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.1, 0.45)', delay: 0.7 }
+				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.0, 0.85)', delay: 0.7 }
 			);
 			gsap.fromTo(
 				'.box-flap-back-right',
 				{ rotation: -30 },
-				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.1, 0.45)', delay: 0.75 }
+				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.0, 0.85)', delay: 0.75 }
 			);
 
 			// Flap Net Kiri Bawah melipat terbuka secara elastis teredam
 			gsap.fromTo(
 				'.net-flap-top',
 				{ rotation: -40 },
-				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.9 }
+				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.85)', delay: 0.9 }
 			);
 			gsap.fromTo(
 				'.net-flap-bottom',
 				{ rotation: 40 },
-				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.95 }
+				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.85)', delay: 0.95 }
 			);
 			gsap.fromTo(
 				'.net-flap-left',
 				{ rotation: 25 },
-				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.1, 0.45)', delay: 1.0 }
+				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.0, 0.85)', delay: 1.0 }
 			);
 			gsap.fromTo(
 				'.net-flap-right',
 				{ rotation: -25 },
-				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.1, 0.45)', delay: 1.05 }
+				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.0, 0.85)', delay: 1.05 }
 			);
 
 			const section = heroSection;
@@ -431,22 +431,22 @@
 					gsap.fromTo(
 						'.box-flap-front-left',
 						{ rotation: -15 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.3, 0.35)' }
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)' }
 					);
 					gsap.fromTo(
 						'.box-flap-front-right',
 						{ rotation: 15 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.3, 0.35)', delay: 0.04 }
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)', delay: 0.04 }
 					);
 					gsap.fromTo(
 						'.box-flap-back-left',
 						{ rotation: 12 },
-						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.08 }
+						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.8)', delay: 0.08 }
 					);
 					gsap.fromTo(
 						'.box-flap-back-right',
 						{ rotation: -12 },
-						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.2, 0.4)', delay: 0.12 }
+						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.8)', delay: 0.12 }
 					);
 				});
 			}
@@ -457,22 +457,22 @@
 					gsap.fromTo(
 						'.net-flap-top',
 						{ rotation: -12 },
-						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.3, 0.35)' }
+						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.0, 0.8)' }
 					);
 					gsap.fromTo(
 						'.net-flap-bottom',
 						{ rotation: 12 },
-						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.3, 0.35)', delay: 0.04 }
+						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.0, 0.8)', delay: 0.04 }
 					);
 					gsap.fromTo(
 						'.net-flap-left',
 						{ rotation: 10 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.2, 0.4)', delay: 0.08 }
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)', delay: 0.08 }
 					);
 					gsap.fromTo(
 						'.net-flap-right',
 						{ rotation: -10 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.2, 0.4)', delay: 0.12 }
+						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)', delay: 0.12 }
 					);
 				});
 			}
