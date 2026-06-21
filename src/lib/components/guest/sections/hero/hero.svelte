@@ -22,6 +22,25 @@
 	const titleText = $state<string>(m.hero_title().replace(/\s/g, ''));
 	const titleChars: string[] = titleText.split('');
 
+	// Blueprint Real-time Data
+	let viewportWidth = $state(1440);
+	let viewportHeight = $state(900);
+	let screenHeight = $state(900);
+	let pixelRatio = $state(2);
+	let userTimeZone = $state('INDONESIA');
+	let lastModifiedDate = $state('V.1.0.4');
+	let pointerX = $state(1024);
+	let pointerAngle = $state(45);
+	let pointerAngle2 = $state(56);
+
+	const updateDimensions = () => {
+		if (!browser) return;
+		viewportWidth = window.innerWidth;
+		viewportHeight = window.innerHeight;
+		screenHeight = window.screen.height;
+		pixelRatio = window.devicePixelRatio || 1;
+	};
+
 	interface LetterData {
 		body: Matter.Body;
 		element: HTMLElement;
@@ -251,6 +270,27 @@
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
 			return;
 
+		// Initialize real-time blueprint data
+		updateDimensions();
+		window.addEventListener('resize', updateDimensions);
+
+		try {
+			userTimeZone =
+				Intl.DateTimeFormat()
+					.resolvedOptions()
+					.timeZone.split('/')
+					.pop()
+					?.replace(/_/g, ' ')
+					.toUpperCase() || 'UNKNOWN';
+		} catch (e) {
+			userTimeZone = 'GLOBAL';
+		}
+
+		const buildDate = new Date(document.lastModified);
+		if (!isNaN(buildDate.getTime())) {
+			lastModifiedDate = `V.${buildDate.getFullYear().toString().slice(2)}.${buildDate.getMonth() + 1}.${buildDate.getDate()}`;
+		}
+
 		let isVisible = false;
 
 		const MatterModule = await import('matter-js');
@@ -379,6 +419,15 @@
 						xSetter(x);
 						ySetter(y);
 
+						// Update blueprint data
+						pointerX = x;
+						const centerX = rect.width / 2;
+						const centerY = rect.height / 2;
+						let angleDeg = Math.round(Math.atan2(y - centerY, x - centerX) * (180 / Math.PI));
+						if (angleDeg < 0) angleDeg += 360;
+						pointerAngle = angleDeg;
+						pointerAngle2 = Math.round(angleDeg * 1.25) % 360;
+
 						// Parallax shift based on mouse relative position (range ±25px)
 						const relX = x / rect.width - 0.5;
 						const relY = y / rect.height - 0.5;
@@ -403,6 +452,15 @@
 							const y = Math.round(touch.clientY - rect.top);
 							xSetter(x);
 							ySetter(y);
+
+							// Update blueprint data
+							pointerX = x;
+							const centerX = rect.width / 2;
+							const centerY = rect.height / 2;
+							let angleDeg = Math.round(Math.atan2(y - centerY, x - centerX) * (180 / Math.PI));
+							if (angleDeg < 0) angleDeg += 360;
+							pointerAngle = angleDeg;
+							pointerAngle2 = Math.round(angleDeg * 1.25) % 360;
 
 							// Parallax shift for touch
 							const relX = x / rect.width - 0.5;
@@ -632,6 +690,7 @@
 	});
 
 	onDestroy(() => {
+		if (browser) window.removeEventListener('resize', updateDimensions);
 		if (ctx) ctx.revert();
 		if (observer) observer.disconnect();
 		if (runner) {
@@ -904,9 +963,9 @@
 	<div
 		class="blueprint-annotation pointer-events-none absolute top-[13%] left-[9%] z-40 hidden font-mono text-[9px] leading-relaxed tracking-wider text-[#c7d796] uppercase lg:block dark:text-white/60"
 	>
-		<p>FOLD LINE X:1024</p>
-		<p>ANGLE: 45°</p>
-		<p>PAPER WEIGHT: 200GSM</p>
+		<p>FOLD LINE X:{pointerX}</p>
+		<p>ANGLE: {pointerAngle}°</p>
+		<p>PAPER WEIGHT: {Math.round(pixelRatio * 100)}GSM</p>
 	</div>
 
 	<!-- Penanda Sudut 45° - 56° (1:1) ── -->
@@ -916,8 +975,8 @@
 		<div
 			class="flex justify-between pb-1 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
 		>
-			<span>45°</span>
-			<span>56°</span>
+			<span>{pointerAngle}°</span>
+			<span>{pointerAngle2}°</span>
 		</div>
 		<div class="relative h-[0.5px] w-full bg-[#c7d796]/40 dark:bg-white/35">
 			<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/50"></div>
@@ -931,7 +990,7 @@
 	>
 		<span
 			class="absolute top-1/2 -left-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-			>1440</span
+			>{viewportHeight}</span
 		>
 		<div class="absolute top-0 -left-1 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
 		<div class="absolute bottom-0 -left-1 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
@@ -943,7 +1002,7 @@
 	>
 		<span
 			class="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-			>1448</span
+			>{viewportWidth}</span
 		>
 		<div class="absolute top-[-2px] left-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
 		<div class="absolute top-[-2px] right-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
@@ -955,7 +1014,7 @@
 	>
 		<span
 			class="absolute top-1/2 -right-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-			>900</span
+			>{screenHeight}</span
 		>
 		<div class="absolute top-0 -right-1 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
 		<div class="absolute -right-1 bottom-0 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
@@ -965,16 +1024,16 @@
 	<div
 		class="blueprint-annotation pointer-events-none absolute bottom-12 left-8 z-40 font-mono text-[9px] leading-relaxed tracking-[0.2em] text-[#c7d796] uppercase dark:text-white/60"
 	>
-		<p>PAPER WEIGHT: 280GSM</p>
-		<p>DIMENSIONS: 1440x900</p>
+		<p>PAPER WEIGHT: {Math.round(pixelRatio * 100)}GSM</p>
+		<p>DIMENSIONS: {viewportWidth}x{viewportHeight}</p>
 	</div>
 
 	<!-- ── Pojok Kanan Bawah Metadata ── -->
 	<div
 		class="blueprint-annotation pointer-events-none absolute right-8 bottom-12 z-40 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-[#c7d796] uppercase dark:text-white/60"
 	>
-		<p>ORIGIN: INDONESIA</p>
-		<p>ARCHIVE: V.1.0.4</p>
+		<p>ORIGIN: {userTimeZone}</p>
+		<p>ARCHIVE: {lastModifiedDate}</p>
 	</div>
 
 	<!-- ── Central Origami Background Panel ── -->
