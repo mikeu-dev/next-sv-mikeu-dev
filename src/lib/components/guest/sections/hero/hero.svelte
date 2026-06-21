@@ -986,6 +986,47 @@
 		<p>ARCHIVE: V.1.0.4</p>
 	</div>
 
+	<!-- ── Central Origami Background Panel ── -->
+	<div
+		class="hero-stagger pointer-events-none absolute top-[48%] left-1/2 z-0 h-[85%] w-[92%] -translate-x-1/2 -translate-y-1/2 sm:h-[80%] sm:w-[85%] md:h-[75%] md:w-[80%] lg:h-[70%] lg:w-[65%]"
+	>
+		<!-- Asymmetric Shadow Layer -->
+		<div
+			class="absolute inset-0 top-3 left-3 bg-black/5 dark:bg-black/40"
+			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%);"
+		></div>
+
+		<!-- Main Paper Layer -->
+		<div
+			class="absolute inset-0 border-2 border-foreground/10 bg-background dark:border-foreground/20"
+			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%);"
+		>
+			<!-- Blueprint Grid Overlay -->
+			<div
+				class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+				style="background-image: linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px); background-size: 24px 24px;"
+			></div>
+
+			<!-- Crease Overlay (Lighting) -->
+			<div
+				class="absolute inset-0 opacity-40 mix-blend-multiply dark:opacity-60 dark:mix-blend-overlay"
+				style="background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50.1%, rgba(0,0,0,0.1) 100%);"
+			></div>
+
+			<!-- Folded Corner Flap (Top Right) -->
+			<div
+				class="absolute top-0 right-0 size-16 border-b-2 border-l-2 border-foreground/10 bg-muted dark:border-foreground/20"
+				style="clip-path: polygon(100% 0, 0 100%, 0 0); transform: rotate(180deg); transform-origin: top right;"
+			></div>
+
+			<!-- Folded Corner Flap (Bottom Left) -->
+			<div
+				class="absolute bottom-0 left-0 size-12 border-t-2 border-r-2 border-foreground/10 bg-muted dark:border-foreground/20"
+				style="clip-path: polygon(100% 100%, 0 100%, 0 0); transform: rotate(180deg); transform-origin: bottom left;"
+			></div>
+		</div>
+	</div>
+
 	<!-- ══════════════ MAIN CONTENT ══════════════ -->
 	<div class="relative z-10 container mx-auto px-6">
 		<!-- Title Container (Matter.js Target) -->
