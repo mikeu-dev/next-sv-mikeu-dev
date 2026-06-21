@@ -1034,11 +1034,10 @@
 				<div class="flex flex-wrap justify-center gap-3">
 					{#each finalSkills.slice(0, 4) as skill (skill)}
 						<div class="tape-wrapper">
-							<div class="tape-back"></div>
-							<div class="tape-underlay"></div>
 							<div class="tape-body">
 								<span class="tape-label-text">{skill}</span>
-								<div class="tape-fold"></div>
+								<div class="tape-fold-tr"></div>
+								<div class="tape-fold-bl"></div>
 							</div>
 						</div>
 					{/each}
@@ -1048,11 +1047,10 @@
 					<div class="mt-1 flex flex-wrap justify-center gap-3">
 						{#each finalSkills.slice(4) as skill (skill)}
 							<div class="tape-wrapper">
-								<div class="tape-back"></div>
-								<div class="tape-underlay"></div>
 								<div class="tape-body">
 									<span class="tape-label-text">{skill}</span>
-									<div class="tape-fold"></div>
+									<div class="tape-fold-tr"></div>
+									<div class="tape-fold-bl"></div>
 								</div>
 							</div>
 						{/each}
@@ -1062,33 +1060,37 @@
 
 			<!-- ── CTA Buttons (Paper Tape Style - 1:1) ── -->
 			<div bind:this={heroButton} class="mt-10 flex flex-wrap justify-center gap-6">
-				<a
-					href="#contact"
-					onclick={(e) => {
-						e.preventDefault();
-						document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-					}}
-					class="tape-button tape-button-left group"
-				>
-					<span
-						class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
-						>Contact Me</span
+				<div class="tape-button-wrapper">
+					<a
+						href="#contact"
+						onclick={(e) => {
+							e.preventDefault();
+							document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+						}}
+						class="tape-button tape-button-left group"
 					>
-				</a>
+						<span
+							class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
+							>Contact Me</span
+						>
+					</a>
+				</div>
 
-				<a
-					href="#work"
-					onclick={(e) => {
-						e.preventDefault();
-						document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
-					}}
-					class="tape-button tape-button-right group"
-				>
-					<span
-						class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
-						>View Work</span
+				<div class="tape-button-wrapper">
+					<a
+						href="#work"
+						onclick={(e) => {
+							e.preventDefault();
+							document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
+						}}
+						class="tape-button tape-button-right group"
 					>
-				</a>
+						<span
+							class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
+							>View Work</span
+						>
+					</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1113,8 +1115,6 @@
 		--tape-bg: #e2e2e8;
 		--tape-color: #18181b;
 		--tape-fold-color: #ffffff;
-		--tape-shadow-bg: #9a9a9f; /* Layer 0: Latar belakang agak gelap */
-		--tape-underlay-bg: transparent; /* Layer 1: Segitiga underlay agak terang */
 		--tape-shadow: rgba(0, 0, 0, 0.15);
 		--tape-shadow-hover: rgba(0, 0, 0, 0.25);
 	}
@@ -1125,10 +1125,8 @@
 		--tape-bg: #e2e2e8;
 		--tape-color: #18181b;
 		--tape-fold-color: #ffffff;
-		--tape-shadow-bg: #000000; /* Layer 0: Latar belakang agak gelap */
-		--tape-underlay-bg: transparent; /* Layer 1: Segitiga underlay agak terang */
 		--tape-shadow: rgba(0, 0, 0, 0.6);
-		--tape-shadow-hover: rgba(0, 0, 0, 0.7);
+		--tape-shadow-hover: rgba(0, 0, 0, 0.8);
 	}
 
 	/* Title characters */
@@ -1160,51 +1158,38 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		filter: drop-shadow(0px 4px 6px var(--tape-shadow));
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+		will-change: transform, filter;
+	}
+
+	.tape-wrapper:hover {
+		filter: drop-shadow(0px 6px 10px var(--tape-shadow-hover));
+		transform: translateY(-2px);
 	}
 
 	.tape-body {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		padding: 8px 16px;
+		padding: 8px 18px;
 		background: var(--tape-bg);
 		color: var(--tape-color);
-		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
+		clip-path: polygon(
+			0% 0%,
+			calc(100% - 16px) 0%,
+			100% 16px,
+			100% 100%,
+			16px 100%,
+			0% calc(100% - 16px)
+		);
 		transition: all 0.25s ease;
-		z-index: 2; /* Layer 2: Tape Label Utama */
 	}
 
 	@media (min-width: 640px) {
 		.tape-body {
-			padding: 10px 22px;
+			padding: 10px 24px;
 		}
-	}
-
-	.tape-back {
-		position: absolute;
-		inset: 0;
-		background: var(--tape-shadow-bg);
-		clip-path: polygon(0% 0%, calc(100% - 10px) 0%, 100% 10px, 100% 100%, 0% 100%);
-		transform: translate(4px, 4px); /* Layer 0: Latar belakang agak gelap */
-		z-index: 0;
-		transition: all 0.25s ease;
-	}
-
-	.tape-underlay {
-		display: none; /* Sembunyikan underlay segitiga kiri bawah agar bersih sesuai master */
-	}
-
-	.tape-wrapper:hover .tape-body {
-		transform: translateY(-2px);
-	}
-
-	.tape-wrapper:hover .tape-back {
-		transform: translate(1px, 1px);
-	}
-
-	.tape-wrapper:hover .tape-underlay {
-		transform: translate(-1px, 1px);
 	}
 
 	.tape-label-text {
@@ -1227,19 +1212,39 @@
 	}
 
 	/* The folded corner effect */
-	.tape-fold {
+	.tape-fold-tr {
 		position: absolute;
 		top: 0;
 		right: 0;
-		width: 10px;
-		height: 10px;
-		background: linear-gradient(135deg, transparent 50%, var(--tape-fold-color) 50%);
-		filter: drop-shadow(
-			-1.5px 1.5px 1px rgba(0, 0, 0, 0.25)
-		); /* Bayangan pada sudut siku lipatan */
+		width: 16px;
+		height: 16px;
+		background: linear-gradient(225deg, transparent 50%, var(--tape-fold-color) 50%);
+		filter: drop-shadow(-1.5px 1.5px 1px rgba(0, 0, 0, 0.15));
+	}
+
+	.tape-fold-bl {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 16px;
+		height: 16px;
+		background: linear-gradient(45deg, transparent 50%, var(--tape-fold-color) 50%);
+		filter: drop-shadow(1.5px -1.5px 1px rgba(0, 0, 0, 0.15));
 	}
 
 	/* ── Tape CTA Buttons (1:1) ── */
+	.tape-button-wrapper {
+		display: inline-flex;
+		filter: drop-shadow(0px 6px 12px var(--tape-shadow));
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		will-change: transform, filter;
+	}
+
+	.tape-button-wrapper:hover {
+		filter: drop-shadow(0px 10px 16px var(--tape-shadow-hover));
+		transform: translateY(-2px);
+	}
+
 	.tape-button {
 		position: relative;
 		display: inline-flex;
@@ -1259,42 +1264,11 @@
 		}
 	}
 
-	/* Segitiga siku-siku kiri bawah (Layer 1 - Agak Terang) */
-	.tape-button::before {
-		display: none; /* Sembunyikan underlay agar bersih sesuai master */
-	}
-
-	/* Kertas belakang agak gelap (Layer 0 - Paling Belakang) */
-	.tape-button::after {
-		content: '';
-		position: absolute;
-		top: 4px;
-		left: 4px;
-		right: -4px;
-		bottom: -4px;
-		background: var(--tape-shadow-bg);
-		z-index: -2;
-		pointer-events: none;
-		transition: all 0.25s ease;
-	}
-
-	.tape-button:hover {
-		transform: translateY(-2.5px);
-	}
-
 	.tape-button-left {
 		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
 	}
 
-	.tape-button-left::after {
-		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
-	}
-
 	.tape-button-right {
-		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
-	}
-
-	.tape-button-right::after {
 		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
 	}
 
