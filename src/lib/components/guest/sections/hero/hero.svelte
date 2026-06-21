@@ -670,7 +670,7 @@
 
 	<!-- ── SVG Blueprint Polyhedron (Kanan Atas - 3D Cardboard Box) ── -->
 	<svg
-		class="blueprint-svg-right pointer-events-none absolute top-[4%] right-[2%] z-20 h-[58%] w-[45%] opacity-[0.5] dark:opacity-[0.4]"
+		class="blueprint-svg-right pointer-events-none absolute top-[4%] right-[2%] z-20 h-[58%] w-[45%] opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
 		viewBox="0 0 400 450"
 		fill="none"
 	>
@@ -805,7 +805,7 @@
 
 	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
 	<svg
-		class="blueprint-svg-left pointer-events-none absolute bottom-[2%] left-[2%] z-20 h-[38%] w-[20%] opacity-[0.5] dark:opacity-[0.4]"
+		class="blueprint-svg-left pointer-events-none absolute bottom-[2%] left-[2%] z-20 h-[38%] w-[20%] opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
 		viewBox="0 0 250 350"
 		fill="none"
 	>
@@ -983,32 +983,50 @@
 	>
 		<!-- Asymmetric Shadow Layer -->
 		<div
-			class="absolute inset-0 top-3 left-3 bg-black/5 dark:bg-black/40"
+			class="absolute inset-0 top-3 left-3 bg-black/15 blur-md dark:bg-black/60"
 			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%);"
 		></div>
 
 		<!-- Main Paper Layer -->
 		<div
-			class="absolute inset-0 border-2 border-[#c7d796]/20 bg-[#1a4435] dark:border-foreground/20"
-			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%);"
+			class="absolute inset-0 border-[3px] border-[#c7d796]/50 bg-linear-to-br from-[#215542] via-[#1a4435] to-[#0c2019] dark:border-foreground/30 dark:from-[#3f3f46] dark:via-[#18181b] dark:to-[#000000]"
+			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%); box-shadow: inset 0 4px 10px rgba(255,255,255,0.1);"
 		>
+			<!-- Glossy Reflection Overlay (Diagonal Light) -->
+			<div
+				class="absolute inset-0 opacity-70"
+				style="background: linear-gradient(110deg, rgba(255,255,255,0) 35%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 55%); mix-blend-mode: overlay;"
+			></div>
+
 			<!-- Crease Overlay (Lighting) -->
 			<div
-				class="absolute inset-0 opacity-40 mix-blend-multiply dark:opacity-60 dark:mix-blend-overlay"
-				style="background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50.1%, rgba(0,0,0,0.1) 100%);"
+				class="absolute inset-0 opacity-60 mix-blend-multiply dark:opacity-80 dark:mix-blend-overlay"
+				style="background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50.1%, rgba(0,0,0,0.3) 100%);"
 			></div>
 
 			<!-- Folded Corner Flap (Top Right) -->
 			<div
-				class="absolute top-0 right-0 size-16 border-b-2 border-l-2 border-[#1a4435]/50 bg-[#c7d796] dark:border-foreground/20 dark:bg-muted"
-				style="clip-path: polygon(100% 0, 0 100%, 0 0); transform: rotate(180deg); transform-origin: top right;"
-			></div>
+				class="absolute top-0 right-0 size-16 border-b-2 border-l-2 border-[#1a4435]/50 dark:border-foreground/20"
+				style="background: linear-gradient(225deg, #e4edc8 0%, #c7d796 100%); clip-path: polygon(100% 0, 0 100%, 0 0); transform: rotate(180deg); transform-origin: top right;"
+			>
+				<!-- Highlight reflection on the fold -->
+				<div
+					class="absolute inset-0"
+					style="background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 40%);"
+				></div>
+			</div>
 
 			<!-- Folded Corner Flap (Bottom Left) -->
 			<div
-				class="absolute bottom-0 left-0 size-12 border-t-2 border-r-2 border-[#1a4435]/50 bg-[#c7d796] dark:border-foreground/20 dark:bg-muted"
-				style="clip-path: polygon(100% 100%, 0 100%, 0 0); transform: rotate(180deg); transform-origin: bottom left;"
-			></div>
+				class="absolute bottom-0 left-0 size-12 border-t-2 border-r-2 border-[#1a4435]/50 dark:border-foreground/20"
+				style="background: linear-gradient(45deg, #e4edc8 0%, #c7d796 100%); clip-path: polygon(100% 100%, 0 100%, 0 0); transform: rotate(180deg); transform-origin: bottom left;"
+			>
+				<!-- Highlight reflection on the fold -->
+				<div
+					class="absolute inset-0"
+					style="background: linear-gradient(225deg, rgba(255,255,255,0.8) 0%, transparent 40%);"
+				></div>
+			</div>
 		</div>
 	</div>
 
@@ -1024,7 +1042,7 @@
 		<div class="relative mx-auto mb-4 inline-block" style="height: 160px;">
 			<h1
 				bind:this={heroTitle}
-				class="flex flex-wrap justify-center text-white drop-shadow-sm"
+				class="flex flex-wrap justify-center text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
 				aria-label="Mikeu Dev"
 			>
 				{#each titleChars as char, i (i)}
@@ -1142,29 +1160,47 @@
 
 	/* CSS Variables for Light / Dark Theme Adaptation */
 	:root {
-		--grid-color: rgba(199, 215, 150, 0.2);
-		--mouse-glow: rgba(199, 215, 150, 0.05);
-		--tape-bg: #fcec62;
+		--grid-color: rgba(199, 215, 150, 0.4);
+		--mouse-glow: rgba(199, 215, 150, 0.1);
+
+		/* Glossy Tape Buttons */
+		--tape-bg-grad:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
+			linear-gradient(135deg, #fff07c 0%, #fcec62 50%, #e5c300 100%);
 		--tape-color: #363200;
 		--tape-fold-color: #ffffff;
-		--badge-bg: #ffffff;
+
+		/* Glossy Badges */
+		--badge-bg-grad:
+			linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 25%),
+			linear-gradient(135deg, #ffffff 0%, #f4f4f4 50%, #e0e0e0 100%);
 		--badge-color: #1a4435;
-		--badge-fold-color: #e5e5e5;
-		--tape-shadow: rgba(5, 26, 19, 0.3);
-		--tape-shadow-hover: rgba(5, 26, 19, 0.5);
+		--badge-fold-color: #f8f8f8;
+
+		--tape-shadow: rgba(5, 26, 19, 0.4);
+		--tape-shadow-hover: rgba(5, 26, 19, 0.6);
 	}
 
 	:global(.dark) {
-		--grid-color: rgba(255, 255, 255, 0.035);
-		--mouse-glow: rgba(255, 255, 255, 0.045);
-		--tape-bg: #e2e2e8;
+		--grid-color: rgba(255, 255, 255, 0.08);
+		--mouse-glow: rgba(255, 255, 255, 0.08);
+
+		/* Glossy Tape Buttons (Dark Mode) */
+		--tape-bg-grad:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
+			linear-gradient(135deg, #f4f4f5 0%, #e2e2e8 50%, #b0b0b8 100%);
 		--tape-color: #18181b;
 		--tape-fold-color: #ffffff;
-		--badge-bg: #27272a;
+
+		/* Glossy Badges (Dark Mode) */
+		--badge-bg-grad:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 25%),
+			linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%);
 		--badge-color: #e2e2e8;
-		--badge-fold-color: #3f3f46;
-		--tape-shadow: rgba(0, 0, 0, 0.6);
-		--tape-shadow-hover: rgba(0, 0, 0, 0.8);
+		--badge-fold-color: #4a4a52;
+
+		--tape-shadow: rgba(0, 0, 0, 0.8);
+		--tape-shadow-hover: rgba(0, 0, 0, 1);
 	}
 
 	/* Title characters */
@@ -1211,7 +1247,7 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 8px 18px;
-		background: var(--badge-bg);
+		background: var(--badge-bg-grad);
 		color: var(--badge-color);
 		clip-path: polygon(
 			0% 0%,
@@ -1256,8 +1292,13 @@
 		right: 0;
 		width: 16px;
 		height: 16px;
-		background: linear-gradient(225deg, transparent 50%, var(--badge-fold-color) 50%);
-		filter: drop-shadow(-1.5px 1.5px 1px rgba(0, 0, 0, 0.15));
+		background: linear-gradient(
+			225deg,
+			transparent 50%,
+			var(--badge-fold-color) 50%,
+			rgba(255, 255, 255, 0.9) 100%
+		);
+		filter: drop-shadow(-1.5px 1.5px 1px rgba(0, 0, 0, 0.3));
 	}
 
 	.tape-fold-bl {
@@ -1266,8 +1307,13 @@
 		left: 0;
 		width: 16px;
 		height: 16px;
-		background: linear-gradient(45deg, transparent 50%, var(--badge-fold-color) 50%);
-		filter: drop-shadow(1.5px -1.5px 1px rgba(0, 0, 0, 0.15));
+		background: linear-gradient(
+			45deg,
+			transparent 50%,
+			var(--badge-fold-color) 50%,
+			rgba(255, 255, 255, 0.9) 100%
+		);
+		filter: drop-shadow(1.5px -1.5px 1px rgba(0, 0, 0, 0.3));
 	}
 
 	/* ── Tape CTA Buttons (1:1) ── */
@@ -1290,7 +1336,7 @@
 		justify-content: center;
 		padding: 12px 30px;
 		cursor: pointer;
-		background: var(--tape-bg);
+		background: var(--tape-bg-grad);
 		color: var(--tape-color);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
