@@ -55,7 +55,7 @@
 <SectionLoader rootMargin="300px">
 	{#snippet fallback()}
 		<div
-			class="flex h-[65vh] min-h-[500px] w-full animate-pulse items-center justify-center bg-muted/5"
+			class="flex h-[65vh] min-h-125 w-full animate-pulse items-center justify-center bg-muted/5"
 		>
 			<div class="h-1.5 w-1.5 animate-pulse bg-primary"></div>
 		</div>
