@@ -8,6 +8,10 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 export default defineConfig({
+	define: {
+		// Replaced at build time so hero.svelte can show a real build date
+		'import.meta.env.VITE_BUILD_DATE': JSON.stringify(new Date().toISOString())
+	},
 	server: {
 		watch: {
 			ignored: [

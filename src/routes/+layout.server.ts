@@ -11,8 +11,12 @@ export const load: LayoutServerLoad = async (event) => {
 	// Enable Edge Caching for layout data (Socials, Visitor Stats, etc.)
 	// Only set headers when not building (prerendering) to avoid conflicts
 	if (!building) {
+		// Never use public CDN cache when a user session is present — user data
+		// (uid, email) would be cached and served to other visitors by Vercel Edge.
 		setHeaders({
-			'cache-control': 'public, s-maxage=300, stale-while-revalidate=1800'
+			'cache-control': locals.user
+				? 'private, no-store'
+				: 'public, s-maxage=300, stale-while-revalidate=1800'
 		});
 	}
 

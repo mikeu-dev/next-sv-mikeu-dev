@@ -1,7 +1,14 @@
 ﻿import { json, type RequestHandler } from '@sveltejs/kit';
 import { geminiService } from '$lib/server/services/gemini.service';
+import { checkRateLimit } from '$lib/server/middleware/rate-limit';
 
-export const POST: RequestHandler = async ({ request }) => {
+const AI_RATE_LIMIT = { maxRequests: 20, windowMs: 60_000 }; // 20 req/min per session
+
+export const POST: RequestHandler = async (event) => {
+	const rateLimitResult = checkRateLimit(event, AI_RATE_LIMIT);
+	if (rateLimitResult) return rateLimitResult;
+
+	const { request } = event;
 	try {
 		const { action, payload } = await request.json();
 
@@ -43,12 +50,23 @@ export const POST: RequestHandler = async ({ request }) => {
 				result = await geminiService.suggestTags(payload.title, payload.description || '');
 				break;
 
-			case 'analyzeRepo':
+			case 'analyzeRepo': {
 				if (!payload.repoUrl) {
 					return json({ error: 'Missing repoUrl for repository analysis' }, { status: 400 });
 				}
-				result = await geminiService.analyzeRepo(payload.repoUrl);
+				// Validate URL before passing to AI to prevent SSRF / prompt injection
+				let parsedUrl: URL;
+				try {
+					parsedUrl = new URL(payload.repoUrl);
+				} catch {
+					return json({ error: 'Invalid URL format' }, { status: 400 });
+				}
+				if (parsedUrl.protocol !== 'https:') {
+					return json({ error: 'Only HTTPS URLs are allowed' }, { status: 400 });
+				}
+				result = await geminiService.analyzeRepo(parsedUrl.toString());
 				break;
+			}
 			case 'generateBlogFromPrompt':
 				if (!payload.prompt) {
 					return json({ error: 'Missing prompt for blog generation' }, { status: 400 });

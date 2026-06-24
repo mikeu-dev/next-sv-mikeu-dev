@@ -57,6 +57,8 @@
 	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
 	let removeListeners: (() => void) | undefined;
+	// Stored so onDestroy can stop physics without a re-import
+	let stopPhysics: (() => void) | undefined;
 
 	// ── Impact FX Utilities ──────────────────────────────────────
 
@@ -270,8 +272,6 @@
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
 			return;
 
-		gsap.registerPlugin(ScrollTrigger);
-
 		// Initialize real-time blueprint data
 		updateDimensions();
 		window.addEventListener('resize', updateDimensions);
@@ -289,9 +289,13 @@
 			userTimeZone = 'GLOBAL';
 		}
 
-		const buildDate = new Date(document.lastModified);
-		if (!isNaN(buildDate.getTime())) {
-			lastModifiedDate = `V.${buildDate.getFullYear().toString().slice(2)}.${buildDate.getMonth() + 1}.${buildDate.getDate()}`;
+		// VITE_BUILD_DATE is injected at build time via vite.config.ts define
+		const buildDateStr = import.meta.env.VITE_BUILD_DATE as string | undefined;
+		if (buildDateStr) {
+			const buildDate = new Date(buildDateStr);
+			if (!isNaN(buildDate.getTime())) {
+				lastModifiedDate = `V.${buildDate.getFullYear().toString().slice(2)}.${buildDate.getMonth() + 1}.${buildDate.getDate()}`;
+			}
 		}
 
 		let isVisible = false;
@@ -703,7 +707,7 @@
 
 		const letters: LetterData[] = letterElements
 			.map((el, i) => {
-				if (!el || titleChars[i] === ' ') return null;
+				if (!el) return null;
 				const rect = el.getBoundingClientRect();
 				const initialX = rect.left - titleRect.left + rect.width / 2;
 				const initialY = rect.top - titleRect.top + rect.height / 2;
@@ -784,6 +788,10 @@
 		});
 
 		runner = Runner.create();
+		stopPhysics = () => {
+			Runner.stop(runner);
+			Engine.clear(engine);
+		};
 
 		observer = new IntersectionObserver((entries) => {
 			const nowVisible = entries[0].isIntersecting;
@@ -820,13 +828,7 @@
 		removeListeners?.();
 		if (ctx) ctx.revert();
 		if (observer) observer.disconnect();
-		if (runner) {
-			import('matter-js').then((Matter) => {
-				const M = Matter.default || Matter;
-				M.Runner.stop(runner);
-				M.Engine.clear(engine);
-			});
-		}
+		stopPhysics?.();
 		if (rafId) cancelAnimationFrame(rafId);
 	});
 </script>

@@ -24,10 +24,7 @@ if (!getApps().length) {
 	}
 }
 
-// Safely export db and auth
-export const db = getApps().length
-	? admin.firestore()
-	: (null as unknown as admin.firestore.Firestore);
+export const db: admin.firestore.Firestore | null = getApps().length ? admin.firestore() : null;
 
-export const auth = getApps().length ? admin.auth() : (null as unknown as admin.auth.Auth);
+export const auth: admin.auth.Auth | null = getApps().length ? admin.auth() : null;
 export { admin };
