@@ -100,16 +100,6 @@
 		"ua-parser-js": "^2.0.10",
 		"zod": "^4.4.3"
 	},
-	"pnpm": {
-		"ignoredBuiltDependencies": [
-			"@firebase/util",
-			"protobufjs"
-		],
-		"onlyBuiltDependencies": [
-			"esbuild",
-			"@tailwindcss/oxide"
-		]
-	},
 	"lint-staged": {
 		"*.{js,ts,svelte,css,json,md}": [
 			"prettier --write"

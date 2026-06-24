@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { SvelteSet, SvelteMap } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { m } from '$lib/paraglide/messages';
 	import BrutalistGlyph from '@/lib/components/ui/BrutalistGlyph.svelte';
 	import type Matter from 'matter-js';
@@ -19,7 +19,7 @@
 	let heroSection = $state<HTMLElement>();
 	let letterElements = $state<HTMLElement[]>([]);
 
-	const titleText = $state<string>(m.hero_title().replace(/\s/g, ''));
+	const titleText: string = m.hero_title().replace(/\s/g, '');
 	const titleChars: string[] = titleText.split('');
 
 	// Blueprint Real-time Data
@@ -48,17 +48,17 @@
 		initialY: number;
 	}
 
+	let titleContainerHeight = $state(160);
+
 	// Physics references for cleanup
 	let engine: Matter.Engine;
 	let runner: Matter.Runner;
 	let rafId: number;
 	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
+	let removeListeners: (() => void) | undefined;
 
 	// ── Impact FX Utilities ──────────────────────────────────────
-
-	/** Track which bodies already triggered their impact (one-shot per letter) */
-	const impactedBodies = new SvelteSet<number>();
 
 	/** Spawn geometric dust particles at impact point */
 	function spawnDustParticles(
@@ -270,6 +270,8 @@
 		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
 			return;
 
+		gsap.registerPlugin(ScrollTrigger);
+
 		// Initialize real-time blueprint data
 		updateDimensions();
 		window.addEventListener('resize', updateDimensions);
@@ -283,6 +285,7 @@
 					?.replace(/_/g, ' ')
 					.toUpperCase() || 'UNKNOWN';
 		} catch (e) {
+			console.error('Failed to detect user timezone:', e);
 			userTimeZone = 'GLOBAL';
 		}
 
@@ -297,109 +300,225 @@
 		const Matter = MatterModule.default || MatterModule;
 		const { Engine, Runner, Bodies, Composite, Events } = Matter;
 
-		const subtitle = heroSubtitle;
-		const button = heroButton;
-		const bullets = bulletContainer;
+		const title = heroTitle as HTMLElement;
+		const subtitle = heroSubtitle as HTMLElement;
+		const button = heroButton as HTMLElement;
+		const bullets = bulletContainer as HTMLElement;
+		const section = heroSection as HTMLElement;
 
 		ctx = gsap.context(() => {
-			if (!subtitle || !button || !bullets) return;
-
-			// Stagger-in animations
-			gsap.from('.hero-stagger', {
-				y: 30,
+			// Set initial states for elements that will be revealed on scroll
+			gsap.set([subtitle, bullets, button], {
 				opacity: 0,
-				duration: 0.8,
-				stagger: 0.1,
-				ease: 'expo.out',
-				delay: 1.2
+				y: 50
 			});
 
-			// Blueprint annotations fade-in
-			gsap.from('.blueprint-annotation', {
+			gsap.set('.central-origami-panel', {
 				opacity: 0,
-				duration: 1.5,
-				stagger: 0.15,
-				ease: 'power2.out',
-				delay: 0.8
+				scale: 0.8,
+				transformOrigin: 'center center'
 			});
 
-			// Dimension lines draw-in
-			gsap.from('.dim-line', {
-				scaleX: 0,
-				scaleY: 0,
+			gsap.set('.blueprint-svg-right-wrapper', {
 				opacity: 0,
-				duration: 1.0,
-				stagger: 0.1,
-				ease: 'power3.out',
-				delay: 1.0
+				x: 40,
+				y: -40
 			});
 
-			// SVG Technical Lines drawing animation
-			gsap.from('.technical-path', {
-				strokeDashoffset: 1000,
+			gsap.set('.blueprint-svg-left-wrapper', {
 				opacity: 0,
-				duration: 2.2,
-				ease: 'power2.out',
-				delay: 0.5
+				x: -40,
+				y: 40
 			});
 
-			// Subtle pulsing for blueprint technical details/annotations
+			gsap.set(['.blueprint-annotation', '.dim-line'], {
+				opacity: 0
+			});
+
+			// Create ScrollTrigger Timeline for Parallax Reveal
+			const tl = gsap.timeline({
+				scrollTrigger: {
+					trigger: heroSection,
+					start: 'top top',
+					end: '+=100%',
+					scrub: 1,
+					pin: true,
+					pinSpacing: true,
+					invalidateOnRefresh: true
+				}
+			});
+
+			// 1. Reveal Central Origami background panel
+			tl.to(
+				'.central-origami-panel',
+				{
+					opacity: 1,
+					scale: 1,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0
+			);
+
+			// 2. Reveal SVG Blueprint wrappers (slide and fade-in)
+			tl.to(
+				'.blueprint-svg-right-wrapper',
+				{
+					opacity: 1,
+					x: 0,
+					y: 0,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0.1
+			);
+
+			tl.to(
+				'.blueprint-svg-left-wrapper',
+				{
+					opacity: 1,
+					x: 0,
+					y: 0,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0.1
+			);
+
+			// 3. Draw SVG technical paths dynamically on scroll
+			tl.fromTo(
+				'.technical-path',
+				{
+					strokeDashoffset: 1000,
+					opacity: 0
+				},
+				{
+					strokeDashoffset: 0,
+					opacity: 1,
+					duration: 1.5,
+					ease: 'power2.out'
+				},
+				0.15
+			);
+
+			// 4. Fold open cardboard box flaps in sync with scroll
+			tl.fromTo(
+				'.box-flap-front-left',
+				{ rotation: -35 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.2
+			);
+			tl.fromTo(
+				'.box-flap-front-right',
+				{ rotation: 35 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.22
+			);
+			tl.fromTo(
+				'.box-flap-back-left',
+				{ rotation: 30 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.18
+			);
+			tl.fromTo(
+				'.box-flap-back-right',
+				{ rotation: -30 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.2
+			);
+
+			// 5. Fold open origami net flaps in sync with scroll
+			tl.fromTo(
+				'.net-flap-top',
+				{ rotation: -40 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.2
+			);
+			tl.fromTo(
+				'.net-flap-bottom',
+				{ rotation: 40 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.22
+			);
+			tl.fromTo(
+				'.net-flap-left',
+				{ rotation: 25 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.24
+			);
+			tl.fromTo(
+				'.net-flap-right',
+				{ rotation: -25 },
+				{ rotation: 0, duration: 1, ease: 'power2.out' },
+				0.26
+			);
+
+			// 6. Reveal blueprint dimensions and annotations
+			tl.to(
+				['.blueprint-annotation', '.dim-line'],
+				{
+					opacity: 1,
+					stagger: 0.05,
+					duration: 1,
+					ease: 'power2.out'
+				},
+				0.3
+			);
+
+			// 7. Parallax shift the main title upwards to make room for content
+			tl.to(
+				title,
+				{
+					y: -40,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0.2
+			);
+
+			// 8. Stagger-in subtitle, skills, and buttons
+			tl.to(
+				subtitle,
+				{
+					opacity: 1,
+					y: 0,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0.4
+			);
+
+			tl.to(
+				bullets,
+				{
+					opacity: 1,
+					y: 0,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0.6
+			);
+
+			tl.to(
+				button,
+				{
+					opacity: 1,
+					y: 0,
+					duration: 1.2,
+					ease: 'power2.out'
+				},
+				0.8
+			);
+
+			// Subtle pulsing for blueprint annotations (using filter to avoid opacity conflicts)
 			gsap.to('.blueprint-annotation', {
-				opacity: 0.65,
+				filter: 'brightness(0.75)',
 				duration: 3,
 				stagger: 0.15,
 				ease: 'sine.inOut',
 				yoyo: true,
 				repeat: -1
 			});
-
-			// ── Inisialisasi Posisi Awal & Animasi Terbuka Halaman (Page Load Damped Oscillation) ──
-			// Flap Box Kanan Atas melipat terbuka secara elastis teredam
-			gsap.fromTo(
-				'.box-flap-front-left',
-				{ rotation: -35 },
-				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.0, 0.85)', delay: 0.8 }
-			);
-			gsap.fromTo(
-				'.box-flap-front-right',
-				{ rotation: 35 },
-				{ rotation: 0, duration: 2.2, ease: 'elastic.out(1.0, 0.85)', delay: 0.9 }
-			);
-			gsap.fromTo(
-				'.box-flap-back-left',
-				{ rotation: 30 },
-				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.0, 0.85)', delay: 0.7 }
-			);
-			gsap.fromTo(
-				'.box-flap-back-right',
-				{ rotation: -30 },
-				{ rotation: 0, duration: 2.5, ease: 'elastic.out(1.0, 0.85)', delay: 0.75 }
-			);
-
-			// Flap Net Kiri Bawah melipat terbuka secara elastis teredam
-			gsap.fromTo(
-				'.net-flap-top',
-				{ rotation: -40 },
-				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.85)', delay: 0.9 }
-			);
-			gsap.fromTo(
-				'.net-flap-bottom',
-				{ rotation: 40 },
-				{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.85)', delay: 0.95 }
-			);
-			gsap.fromTo(
-				'.net-flap-left',
-				{ rotation: 25 },
-				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.0, 0.85)', delay: 1.0 }
-			);
-			gsap.fromTo(
-				'.net-flap-right',
-				{ rotation: -25 },
-				{ rotation: 0, duration: 2.3, ease: 'elastic.out(1.0, 0.85)', delay: 1.05 }
-			);
-
-			const section = heroSection;
-			if (!section) return;
 
 			// Mouse Spotlight Tracker & Parallax Setters
 			const xSetter = gsap.quickSetter(section, '--mouse-x', 'px');
@@ -481,6 +600,12 @@
 			section.addEventListener('touchmove', handleTouchMove, { passive: true });
 			section.addEventListener('touchstart', handleTouchMove, { passive: true });
 
+			removeListeners = () => {
+				section.removeEventListener('mousemove', handleMouseMove);
+				section.removeEventListener('touchmove', handleTouchMove);
+				section.removeEventListener('touchstart', handleTouchMove);
+			};
+
 			// ── Pemicu Getaran Engsel Pegas Teredam Interaktif (Mouse Hover Damped Oscillation) ──
 			const boxSvg = document.querySelector('.blueprint-svg-right');
 			if (boxSvg) {
@@ -551,7 +676,7 @@
 		const titleRect: DOMRect = heroTitle.getBoundingClientRect();
 		const wallOptions: IChamferableBodyDefinition = { isStatic: true, render: { visible: false } };
 
-		const floorY = 160;
+		const floorY = titleContainerHeight;
 		const floor = Bodies.rectangle(
 			titleRect.width / 2,
 			floorY,
@@ -602,9 +727,9 @@
 			})
 			.filter((v): v is LetterData => v !== null);
 
-		const bodyToLetter = new SvelteMap<number, LetterData>();
+		const bodyToLetter: Record<number, LetterData> = Object.create(null);
 		letters.forEach((letter) => {
-			bodyToLetter.set(letter.body.id, letter);
+			bodyToLetter[letter.body.id] = letter;
 		});
 
 		letters.forEach((letter, i) => {
@@ -614,6 +739,7 @@
 		});
 
 		// ── Collision Impact Handler ──────────────────────────────
+		const impactedBodies: Record<number, true> = Object.create(null);
 		Events.on(engine, 'collisionStart', (event: Matter.IEventCollision<Matter.Engine>) => {
 			for (const pair of event.pairs) {
 				const { bodyA, bodyB } = pair;
@@ -623,10 +749,10 @@
 				else if (bodyB.isStatic && !bodyA.isStatic) letterBody = bodyA;
 				if (!letterBody) continue;
 
-				if (impactedBodies.has(letterBody.id)) continue;
-				impactedBodies.add(letterBody.id);
+				if (impactedBodies[letterBody.id]) continue;
+				impactedBodies[letterBody.id] = true;
 
-				const letterData = bodyToLetter.get(letterBody.id);
+				const letterData = bodyToLetter[letterBody.id];
 				if (!letterData) continue;
 
 				const vx = letterBody.velocity.x;
@@ -691,6 +817,7 @@
 
 	onDestroy(() => {
 		if (browser) window.removeEventListener('resize', updateDimensions);
+		removeListeners?.();
 		if (ctx) ctx.revert();
 		if (observer) observer.disconnect();
 		if (runner) {
@@ -728,236 +855,244 @@
 	></div>
 
 	<!-- ── SVG Blueprint Polyhedron (Kanan Atas - 3D Cardboard Box) ── -->
-	<svg
-		class="blueprint-svg-right pointer-events-none absolute top-[4%] right-[2%] z-20 h-[58%] w-[45%] opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
-		viewBox="0 0 400 450"
-		fill="none"
+	<div
+		class="blueprint-svg-right-wrapper pointer-events-none absolute top-[4%] right-[2%] z-20 h-[58%] w-[45%]"
 	>
-		<!-- Garis Proyeksi/Konstruksi Latar Belakang (Dashed) -->
-		<line
-			x1="100"
-			y1="0"
-			x2="100"
-			y2="450"
-			class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
-			stroke-width="0.5"
-			stroke-dasharray="4 4"
-		/>
-		<line
-			x1="200"
-			y1="0"
-			x2="200"
-			y2="450"
-			class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
-			stroke-width="0.5"
-			stroke-dasharray="4 4"
-		/>
-		<line
-			x1="0"
-			y1="220"
-			x2="400"
-			y2="220"
-			class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
-			stroke-width="0.5"
-			stroke-dasharray="4 4"
-		/>
-
-		<!-- Busur Sudut Putaran (Angle Arc) -->
-		<path
-			d="M 70,200 A 40,40 0 0,1 100,160"
-			class="technical-path stroke-[#c7d796]/70 dark:stroke-white/45"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-		<path
-			d="M 300,160 A 40,40 0 0,1 330,200"
-			class="technical-path stroke-[#c7d796]/70 dark:stroke-white/45"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-
-		<!-- Bodi Dalam Kardus & Lipatan Dasar (Dashed) -->
-		<path
-			d="M200,240 L100,300 M200,240 L300,300 M200,240 L200,100"
-			class="technical-path stroke-[#c7d796]/60 dark:stroke-white/45"
-			stroke-width="0.6"
-			stroke-dasharray="2 2"
-		/>
-		<path
-			d="M100,160 L200,100 L300,160"
-			class="technical-path stroke-[#c7d796]/60 dark:stroke-white/45"
-			stroke-width="0.6"
-			stroke-dasharray="2 2"
-		/>
-
-		<!-- Lipatan Flap Depan (Dashed) -->
-		<line
-			x1="100"
-			y1="160"
-			x2="200"
-			y2="220"
-			class="technical-path stroke-zinc-400/50 dark:stroke-white/55"
-			stroke-width="0.6"
-			stroke-dasharray="2 2"
-		/>
-		<line
-			x1="200"
-			y1="220"
-			x2="300"
-			y2="160"
-			class="technical-path stroke-zinc-400/50 dark:stroke-white/55"
-			stroke-width="0.6"
-			stroke-dasharray="2 2"
-		/>
-
-		<!-- Garis Solid Bodi Utama Kardus -->
-		<path
-			d="M100,160 L100,300 L200,360 L300,300 L300,160"
-			class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-			stroke-width="0.8"
-		/>
-		<line
-			x1="200"
-			y1="220"
-			x2="200"
-			y2="360"
-			class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-			stroke-width="0.8"
-		/>
-
-		<!-- Flap Depan Kiri (Animatif) -->
-		<g class="box-flap box-flap-front-left" style="transform-origin: 150px 190px;">
-			<path
-				d="M100,160 L40,230 L140,290 L200,220"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
+		<svg
+			class="blueprint-svg-right pointer-events-none h-full w-full opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+			viewBox="0 0 400 450"
+			fill="none"
+		>
+			<!-- Garis Proyeksi/Konstruksi Latar Belakang (Dashed) -->
+			<line
+				x1="100"
+				y1="0"
+				x2="100"
+				y2="450"
+				class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
+				stroke-width="0.5"
+				stroke-dasharray="4 4"
 			/>
-		</g>
-
-		<!-- Flap Depan Kanan (Animatif) -->
-		<g class="box-flap box-flap-front-right" style="transform-origin: 250px 190px;">
-			<path
-				d="M200,220 L260,290 L360,230 L300,160"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
+			<line
+				x1="200"
+				y1="0"
+				x2="200"
+				y2="450"
+				class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
+				stroke-width="0.5"
+				stroke-dasharray="4 4"
 			/>
-		</g>
-
-		<!-- Flap Belakang Kiri dengan Tuck Tab (Animatif) -->
-		<g class="box-flap box-flap-back-left" style="transform-origin: 150px 130px;">
-			<path
-				d="M100,160 L70,95 L80,90 L145,25 L155,30 L200,100"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
+			<line
+				x1="0"
+				y1="220"
+				x2="400"
+				y2="220"
+				class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
+				stroke-width="0.5"
+				stroke-dasharray="4 4"
 			/>
-		</g>
 
-		<!-- Flap Belakang Kanan dengan Tuck Tab (Animatif) -->
-		<g class="box-flap box-flap-back-right" style="transform-origin: 250px 130px;">
+			<!-- Busur Sudut Putaran (Angle Arc) -->
 			<path
-				d="M200,100 L245,30 L255,25 L320,90 L330,95 L300,160"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+				d="M 70,200 A 40,40 0 0,1 100,160"
+				class="technical-path stroke-[#c7d796]/70 dark:stroke-white/45"
 				stroke-width="0.8"
+				stroke-dasharray="2 2"
 			/>
-		</g>
-	</svg>
-
-	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
-	<svg
-		class="blueprint-svg-left pointer-events-none absolute bottom-[2%] left-[2%] z-20 h-[38%] w-[20%] opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
-		viewBox="0 0 250 350"
-		fill="none"
-	>
-		<!-- Bodi Tengah Utama (Statis) -->
-		<path
-			d="M80,80 L140,80 L140,290 L80,290 Z"
-			class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-			stroke-width="0.8"
-		/>
-
-		<!-- Garis Lipatan Kolom Utama (Dashed) -->
-		<line
-			x1="80"
-			y1="150"
-			x2="140"
-			y2="150"
-			class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-		<line
-			x1="80"
-			y1="220"
-			x2="140"
-			y2="220"
-			class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
-			stroke-width="0.8"
-			stroke-dasharray="2 2"
-		/>
-
-		<!-- Tutup Atas (Animatif) -->
-		<g class="net-flap net-flap-top" style="transform-origin: 110px 80px;">
 			<path
-				d="M80,80 L85,20 L135,20 L140,80"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+				d="M 300,160 A 40,40 0 0,1 330,200"
+				class="technical-path stroke-[#c7d796]/70 dark:stroke-white/45"
 				stroke-width="0.8"
+				stroke-dasharray="2 2"
 			/>
-		</g>
 
-		<!-- Tutup Bawah (Animatif) -->
-		<g class="net-flap net-flap-bottom" style="transform-origin: 110px 290px;">
+			<!-- Bodi Dalam Kardus & Lipatan Dasar (Dashed) -->
 			<path
-				d="M140,290 L135,330 L85,330 L80,290"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
+				d="M200,240 L100,300 M200,240 L300,300 M200,240 L200,100"
+				class="technical-path stroke-[#c7d796]/60 dark:stroke-white/45"
+				stroke-width="0.6"
+				stroke-dasharray="2 2"
 			/>
-		</g>
-
-		<!-- Flap Samping Kiri (Animatif) -->
-		<g class="net-flap net-flap-left" style="transform-origin: 80px 185px;">
 			<path
-				d="M80,150 L20,170 L20,220 L80,220"
+				d="M100,160 L200,100 L300,160"
+				class="technical-path stroke-[#c7d796]/60 dark:stroke-white/45"
+				stroke-width="0.6"
+				stroke-dasharray="2 2"
+			/>
+
+			<!-- Lipatan Flap Depan (Dashed) -->
+			<line
+				x1="100"
+				y1="160"
+				x2="200"
+				y2="220"
+				class="technical-path stroke-zinc-400/50 dark:stroke-white/55"
+				stroke-width="0.6"
+				stroke-dasharray="2 2"
+			/>
+			<line
+				x1="200"
+				y1="220"
+				x2="300"
+				y2="160"
+				class="technical-path stroke-zinc-400/50 dark:stroke-white/55"
+				stroke-width="0.6"
+				stroke-dasharray="2 2"
+			/>
+
+			<!-- Garis Solid Bodi Utama Kardus -->
+			<path
+				d="M100,160 L100,300 L200,360 L300,300 L300,160"
 				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
 				stroke-width="0.8"
 			/>
 			<line
+				x1="200"
+				y1="220"
+				x2="200"
+				y2="360"
+				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+				stroke-width="0.8"
+			/>
+
+			<!-- Flap Depan Kiri (Animatif) -->
+			<g class="box-flap box-flap-front-left" style="transform-origin: 150px 190px;">
+				<path
+					d="M100,160 L40,230 L140,290 L200,220"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+			</g>
+
+			<!-- Flap Depan Kanan (Animatif) -->
+			<g class="box-flap box-flap-front-right" style="transform-origin: 250px 190px;">
+				<path
+					d="M200,220 L260,290 L360,230 L300,160"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+			</g>
+
+			<!-- Flap Belakang Kiri dengan Tuck Tab (Animatif) -->
+			<g class="box-flap box-flap-back-left" style="transform-origin: 150px 130px;">
+				<path
+					d="M100,160 L70,95 L80,90 L145,25 L155,30 L200,100"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+			</g>
+
+			<!-- Flap Belakang Kanan dengan Tuck Tab (Animatif) -->
+			<g class="box-flap box-flap-back-right" style="transform-origin: 250px 130px;">
+				<path
+					d="M200,100 L245,30 L255,25 L320,90 L330,95 L300,160"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+			</g>
+		</svg>
+	</div>
+
+	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
+	<div
+		class="blueprint-svg-left-wrapper pointer-events-none absolute bottom-[2%] left-[2%] z-20 h-[38%] w-[20%]"
+	>
+		<svg
+			class="blueprint-svg-left pointer-events-none h-full w-full opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+			viewBox="0 0 250 350"
+			fill="none"
+		>
+			<!-- Bodi Tengah Utama (Statis) -->
+			<path
+				d="M80,80 L140,80 L140,290 L80,290 Z"
+				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+				stroke-width="0.8"
+			/>
+
+			<!-- Garis Lipatan Kolom Utama (Dashed) -->
+			<line
 				x1="80"
 				y1="150"
-				x2="20"
-				y2="220"
-				class="technical-path stroke-[#c7d796]/70 dark:stroke-white/55"
-				stroke-width="0.6"
+				x2="140"
+				y2="150"
+				class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
+				stroke-width="0.8"
 				stroke-dasharray="2 2"
 			/>
 			<line
 				x1="80"
 				y1="220"
-				x2="20"
-				y2="170"
-				class="technical-path stroke-[#c7d796]/70 dark:stroke-white/55"
-				stroke-width="0.6"
-				stroke-dasharray="2 2"
-			/>
-		</g>
-
-		<!-- Flap Samping Kanan (Animatif) -->
-		<g class="net-flap net-flap-right" style="transform-origin: 140px 185px;">
-			<path
-				d="M140,150 L190,150 L205,165 L205,205 L190,220 L140,220"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
-			/>
-			<line
-				x1="190"
-				y1="150"
-				x2="190"
+				x2="140"
 				y2="220"
 				class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
 				stroke-width="0.8"
 				stroke-dasharray="2 2"
 			/>
-		</g>
-	</svg>
+
+			<!-- Tutup Atas (Animatif) -->
+			<g class="net-flap net-flap-top" style="transform-origin: 110px 80px;">
+				<path
+					d="M80,80 L85,20 L135,20 L140,80"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+			</g>
+
+			<!-- Tutup Bawah (Animatif) -->
+			<g class="net-flap net-flap-bottom" style="transform-origin: 110px 290px;">
+				<path
+					d="M140,290 L135,330 L85,330 L80,290"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+			</g>
+
+			<!-- Flap Samping Kiri (Animatif) -->
+			<g class="net-flap net-flap-left" style="transform-origin: 80px 185px;">
+				<path
+					d="M80,150 L20,170 L20,220 L80,220"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+				<line
+					x1="80"
+					y1="150"
+					x2="20"
+					y2="220"
+					class="technical-path stroke-[#c7d796]/70 dark:stroke-white/55"
+					stroke-width="0.6"
+					stroke-dasharray="2 2"
+				/>
+				<line
+					x1="80"
+					y1="220"
+					x2="20"
+					y2="170"
+					class="technical-path stroke-[#c7d796]/70 dark:stroke-white/55"
+					stroke-width="0.6"
+					stroke-dasharray="2 2"
+				/>
+			</g>
+
+			<!-- Flap Samping Kanan (Animatif) -->
+			<g class="net-flap net-flap-right" style="transform-origin: 140px 185px;">
+				<path
+					d="M140,150 L190,150 L205,165 L205,205 L190,220 L140,220"
+					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
+					stroke-width="0.8"
+				/>
+				<line
+					x1="190"
+					y1="150"
+					x2="190"
+					y2="220"
+					class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
+					stroke-width="0.8"
+					stroke-dasharray="2 2"
+				/>
+			</g>
+		</svg>
+	</div>
 
 	<!-- ── Blueprint Annotations (Kiri Atas) ── -->
 	<div
@@ -1004,8 +1139,8 @@
 			class="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
 			>{viewportWidth}</span
 		>
-		<div class="absolute top-[-2px] left-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
-		<div class="absolute top-[-2px] right-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
+		<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
+		<div class="absolute -top-0.5 right-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
 	</div>
 
 	<!-- Garis Dimensi Vertikal Kanan (900) ── -->
@@ -1038,7 +1173,7 @@
 
 	<!-- ── Central Origami Background Panel ── -->
 	<div
-		class="hero-stagger pointer-events-none absolute top-[48%] left-1/2 z-0 h-[85%] w-[92%] -translate-x-1/2 -translate-y-1/2 sm:h-[80%] sm:w-[85%] md:h-[75%] md:w-[80%] lg:h-[70%] lg:w-[65%]"
+		class="central-origami-panel pointer-events-none absolute top-[48%] left-1/2 z-0 h-[85%] w-[92%] -translate-x-1/2 -translate-y-1/2 sm:h-[80%] sm:w-[85%] md:h-[75%] md:w-[80%] lg:h-[70%] lg:w-[65%]"
 	>
 		<!-- Asymmetric Shadow Layer -->
 		<div
@@ -1098,7 +1233,7 @@
 	<!-- ══════════════ MAIN CONTENT ══════════════ -->
 	<div class="relative z-10 container mx-auto px-6">
 		<!-- Title Container (Matter.js Target) -->
-		<div class="relative mx-auto mb-4 inline-block" style="height: 160px;">
+		<div class="relative mx-auto mb-4 inline-block" bind:clientHeight={titleContainerHeight}>
 			<h1
 				bind:this={heroTitle}
 				class="flex flex-wrap justify-center text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
@@ -1107,7 +1242,7 @@
 				{#each titleChars as char, i (i)}
 					<span
 						bind:this={letterElements[i]}
-						class="-mx-0.5 inline-block h-12 w-8 sm:-mx-1 sm:h-20 sm:w-14 md:-mx-2 md:h-28 md:w-18 lg:-mx-3 lg:h-36 lg:w-24"
+						class="-mx-0.5 inline-flex h-12 w-8 items-center justify-center sm:-mx-1 sm:h-20 sm:w-14 md:-mx-2 md:h-28 md:w-18 lg:-mx-3 lg:h-36 lg:w-24"
 					>
 						<BrutalistGlyph {char} />
 					</span>
