@@ -296,7 +296,7 @@
 				style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"
 			></div>
 			<div
-				class="absolute -right-48 -bottom-48 size-[500px] bg-foreground/5"
+				class="absolute -right-48 -bottom-48 size-125 bg-foreground/5"
 				style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"
 			></div>
 		</div>
