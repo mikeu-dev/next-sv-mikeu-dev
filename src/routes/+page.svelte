@@ -7,9 +7,9 @@
 </script>
 
 {#await data.skills}
-	<div class="space-y-4 py-20 text-center">
-		<Skeleton class="mx-auto h-12 w-3/4" />
-		<Skeleton class="mx-auto h-6 w-1/2" />
+	<div class="flex min-h-screen flex-col items-center justify-center space-y-4">
+		<Skeleton class="h-12 w-3/4 max-w-xl" />
+		<Skeleton class="h-6 w-1/2 max-w-sm" />
 		<div class="flex justify-center gap-2">
 			<Skeleton class="h-8 w-20 rounded-full" />
 			<Skeleton class="h-8 w-20 rounded-full" />
