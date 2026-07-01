@@ -19,8 +19,8 @@
 	let heroSection = $state<HTMLElement>();
 	let letterElements = $state<HTMLElement[]>([]);
 
-	const titleText: string = m.hero_title().replace(/\s/g, '');
-	const titleChars: string[] = titleText.split('');
+	const titleText: string = m.hero_title();
+	const titleWords: string[][] = titleText.split(' ').map((word) => word.split(''));
 
 	// Blueprint Real-time Data
 	let viewportWidth = $state(1440);
@@ -41,24 +41,11 @@
 		pixelRatio = window.devicePixelRatio || 1;
 	};
 
-	interface LetterData {
-		body: Matter.Body;
-		element: HTMLElement;
-		initialX: number;
-		initialY: number;
-	}
-
 	let titleContainerHeight = $state(160);
 
-	// Physics references for cleanup
-	let engine: Matter.Engine;
-	let runner: Matter.Runner;
-	let rafId: number;
 	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
 	let removeListeners: (() => void) | undefined;
-	// Stored so onDestroy can stop physics without a re-import
-	let stopPhysics: (() => void) | undefined;
 
 	// ── Impact FX Utilities ──────────────────────────────────────
 
@@ -300,9 +287,7 @@
 
 		let isVisible = false;
 
-		const MatterModule = await import('matter-js');
-		const Matter = MatterModule.default || MatterModule;
-		const { Engine, Runner, Bodies, Composite, Events } = Matter;
+		// Matter.js is no longer used for hero text.
 
 		const title = heroTitle as HTMLElement;
 		const subtitle = heroSubtitle as HTMLElement;
@@ -664,163 +649,39 @@
 			}
 		});
 
-		// --- Matter.js Logic ---
+		// --- GSAP "Blown by Wind" Animation Logic ---
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		if (prefersReducedMotion) {
-			isVisible = false;
-			return;
-		}
-
-		engine = Engine.create({
-			enableSleeping: false
-		});
-		const world: Matter.World = engine.world;
-		engine.gravity.y = 1.0;
-
-		const titleRect: DOMRect = heroTitle.getBoundingClientRect();
-		const wallOptions: IChamferableBodyDefinition = { isStatic: true, render: { visible: false } };
-
-		const floorY = titleContainerHeight;
-		const floor = Bodies.rectangle(
-			titleRect.width / 2,
-			floorY,
-			titleRect.width * 2,
-			20,
-			wallOptions
-		);
-		const wallLeft = Bodies.rectangle(
-			-100,
-			titleRect.height / 2,
-			20,
-			titleRect.height * 2,
-			wallOptions
-		);
-		const wallRight = Bodies.rectangle(
-			titleRect.width + 100,
-			titleRect.height / 2,
-			20,
-			titleRect.height * 2,
-			wallOptions
-		);
-
-		Composite.add(world, [floor, wallLeft, wallRight]);
-
-		const letters: LetterData[] = letterElements
-			.map((el, i) => {
-				if (!el) return null;
-				const rect = el.getBoundingClientRect();
-				const initialX = rect.left - titleRect.left + rect.width / 2;
-				const initialY = rect.top - titleRect.top + rect.height / 2;
-				const body = Bodies.rectangle(
-					initialX,
-					initialY - 200 - Math.random() * 100,
-					rect.width,
-					rect.height,
+		if (!prefersReducedMotion) {
+			ctx.add(() => {
+				gsap.fromTo(
+					'.letter-element',
 					{
-						restitution: 0.55,
-						friction: 0.1,
-						frictionAir: 0.015,
-						chamfer: { radius: 2 },
-						inertia: Infinity, // Kunci rotasi agar huruf selalu tegak lurus
-						collisionFilter: {
-							group: -1 // Nonaktifkan tabrakan antar sesama huruf
+						opacity: 0,
+						x: () => -600 - Math.random() * 600,
+						y: () => (Math.random() - 0.5) * 600,
+						rotation: () => (Math.random() - 0.5) * 720,
+						scale: () => Math.random() * 2
+					},
+					{
+						opacity: 1,
+						x: 0,
+						y: 0,
+						rotation: 0,
+						scale: 1,
+						duration: 1.8,
+						stagger: {
+							each: 0.02,
+							from: 'start'
+						},
+						ease: 'power3.out',
+						scrollTrigger: {
+							trigger: heroSection,
+							start: 'top 50%'
 						}
 					}
 				);
-				return { body, element: el, initialX, initialY };
-			})
-			.filter((v): v is LetterData => v !== null);
-
-		const bodyToLetter: Record<number, LetterData> = Object.create(null);
-		letters.forEach((letter) => {
-			bodyToLetter[letter.body.id] = letter;
-		});
-
-		letters.forEach((letter, i) => {
-			setTimeout(() => {
-				if (world) Composite.add(world, letter.body);
-			}, i * 30);
-		});
-
-		// ── Collision Impact Handler ──────────────────────────────
-		const impactedBodies: Record<number, true> = Object.create(null);
-		Events.on(engine, 'collisionStart', (event: Matter.IEventCollision<Matter.Engine>) => {
-			for (const pair of event.pairs) {
-				const { bodyA, bodyB } = pair;
-
-				let letterBody: Matter.Body | null = null;
-				if (bodyA.isStatic && !bodyB.isStatic) letterBody = bodyB;
-				else if (bodyB.isStatic && !bodyA.isStatic) letterBody = bodyA;
-				if (!letterBody) continue;
-
-				if (impactedBodies[letterBody.id]) continue;
-				impactedBodies[letterBody.id] = true;
-
-				const letterData = bodyToLetter[letterBody.id];
-				if (!letterData) continue;
-
-				const vx = letterBody.velocity.x;
-				const vy = letterBody.velocity.y;
-				const velocity = Math.sqrt(vx * vx + vy * vy);
-
-				if (velocity < 1.5) continue;
-
-				const impactX = letterBody.position.x;
-				const impactY = floorY;
-
-				if (impactLayer) {
-					spawnDustParticles(impactX, impactY, velocity, impactLayer);
-				}
-
-				if (velocity > 3 && heroTitle) {
-					const titleContainer = heroTitle.closest('.relative') as HTMLElement | null;
-					if (titleContainer) {
-						triggerScreenShake(titleContainer, velocity);
-					}
-				}
-
-				triggerImpactFlash(letterData.element, velocity);
-
-				if (crackLayer && velocity > 2.5) {
-					drawFloorCrack(crackLayer, impactX, impactY, velocity);
-				}
-			}
-		});
-
-		runner = Runner.create();
-		stopPhysics = () => {
-			Runner.stop(runner);
-			Engine.clear(engine);
-		};
-
-		observer = new IntersectionObserver((entries) => {
-			const nowVisible = entries[0].isIntersecting;
-			if (nowVisible && !isVisible) {
-				isVisible = true;
-				Runner.run(runner, engine);
-				rafId = requestAnimationFrame(update);
-			} else if (!nowVisible && isVisible) {
-				isVisible = false;
-				Runner.stop(runner);
-				if (rafId) cancelAnimationFrame(rafId);
-			}
-		});
-
-		if (heroSection) observer.observe(heroSection);
-
-		function update() {
-			if (isVisible) {
-				for (const { body, element, initialX, initialY } of letters) {
-					// Kunci koordinat X agar huruf hanya bergerak vertikal
-					Matter.Body.setPosition(body, { x: initialX, y: body.position.y });
-					const { x, y } = body.position;
-					element.style.transform = `translate(${x - initialX}px, ${y - initialY}px) rotate(0rad)`;
-				}
-				rafId = requestAnimationFrame(update);
-			}
+			});
 		}
-		heroTitle.style.position = 'relative';
-		heroTitle.style.overflow = 'visible';
 	});
 
 	onDestroy(() => {
@@ -828,8 +689,6 @@
 		removeListeners?.();
 		if (ctx) ctx.revert();
 		if (observer) observer.disconnect();
-		stopPhysics?.();
-		if (rafId) cancelAnimationFrame(rafId);
 	});
 </script>
 
@@ -1234,19 +1093,22 @@
 
 	<!-- ══════════════ MAIN CONTENT ══════════════ -->
 	<div class="relative z-10 container mx-auto px-6">
-		<!-- Title Container (Matter.js Target) -->
-		<div class="relative mx-auto mb-4 inline-block" bind:clientHeight={titleContainerHeight}>
+		<!-- Title Container -->
+		<div class="relative mx-auto mb-4 inline-block max-w-5xl">
 			<h1
 				bind:this={heroTitle}
-				class="flex flex-wrap justify-center text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-				aria-label="Mikeu Dev"
+				class="flex flex-wrap justify-center gap-x-3 gap-y-2 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] sm:gap-x-4 sm:gap-y-3 md:gap-x-5 md:gap-y-4 lg:gap-x-6 lg:gap-y-5"
+				aria-label={m.hero_title()}
 			>
-				{#each titleChars as char, i (i)}
-					<span
-						bind:this={letterElements[i]}
-						class="-mx-0.5 inline-flex h-12 w-8 items-center justify-center sm:-mx-1 sm:h-20 sm:w-14 md:-mx-2 md:h-28 md:w-18 lg:-mx-3 lg:h-36 lg:w-24"
-					>
-						<BrutalistGlyph {char} />
+				{#each titleWords as word, wIndex (wIndex)}
+					<span class="flex flex-nowrap">
+						{#each word as char, cIndex (cIndex)}
+							<span
+								class="letter-element -mx-0.5 inline-flex h-10 w-7 items-center justify-center sm:-mx-0.5 sm:h-12 sm:w-8 md:-mx-1 md:h-16 md:w-10 lg:-mx-1 lg:h-20 lg:w-14"
+							>
+								<BrutalistGlyph {char} />
+							</span>
+						{/each}
 					</span>
 				{/each}
 			</h1>
