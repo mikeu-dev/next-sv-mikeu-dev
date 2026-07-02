@@ -6,15 +6,19 @@
 
 	let { project, index }: { project: LocalizedProject; index: number } = $props();
 
-	// Deterministic bento rhythm: every 4 tiles, the 1st and 4th span both columns and are taller.
-	const isFeature = $derived(index % 4 === 0 || index % 4 === 3);
+	// Deterministic bento rhythm: every 3rd tile is a wide feature tile — at both the
+	// 2-col (sm) and 3-col (lg) grid, a span-2 tile plus the following span-1 tile(s)
+	// tile evenly into full rows, so no dense-packing gaps appear. All tiles share the
+	// same row height (set by the grid container's auto-rows) and stretch to fill it,
+	// so the gap between rows stays visually identical everywhere.
+	const isFeature = $derived(index % 3 === 0);
 	const primaryTag = $derived(project.tags?.[0]?.name);
 </script>
 
 <article
-	class="work-item group relative overflow-hidden rounded-2xl bg-muted {isFeature
-		? 'col-span-2 h-72 md:h-96'
-		: 'col-span-2 h-64 sm:col-span-1 md:h-80'}"
+	class="work-item group relative h-full overflow-hidden rounded-2xl bg-muted {isFeature
+		? 'sm:col-span-2'
+		: ''}"
 >
 	<a href={localizeHref(`/projects/${project.slug}`)} class="absolute inset-0">
 		{#if project.thumbnailUrl}

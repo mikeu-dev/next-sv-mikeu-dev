@@ -42,37 +42,41 @@
 }
 
 .dark {
-	--background: oklch(0.129 0.042 264.695);
-	--foreground: oklch(0.984 0.003 247.858);
-	--card: oklch(0.208 0.042 265.755);
-	--card-foreground: oklch(0.984 0.003 247.858);
-	--popover: oklch(0.208 0.042 265.755);
-	--popover-foreground: oklch(0.984 0.003 247.858);
-	--primary: oklch(0.929 0.013 255.508);
-	--primary-foreground: oklch(0.208 0.042 265.755);
-	--secondary: oklch(0.279 0.041 260.031);
-	--secondary-foreground: oklch(0.984 0.003 247.858);
-	--muted: oklch(0.279 0.041 260.031);
-	--muted-foreground: oklch(0.704 0.04 256.788);
-	--accent: oklch(0.279 0.041 260.031);
-	--accent-foreground: oklch(0.984 0.003 247.858);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.551 0.027 264.364);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.208 0.042 265.755);
-	--sidebar-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-accent: oklch(0.279 0.041 260.031);
-	--sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.551 0.027 264.364);
+	/* Avocado Theme (Dark) — same brand hexes as light mode, remapped so the
+	   darkest existing brand color (--secondary in light mode) becomes the base
+	   surface here: dark and dominant, with a deliberate green tint rather than
+	   the generic grayscale-blue scaffold this used to fall back to. */
+	--background: #020d09;
+	--foreground: #ffffff;
+	--card: #10281e;
+	--card-foreground: #ffffff;
+	--popover: #10281e;
+	--popover-foreground: #ffffff;
+	--primary: #fcec62;
+	--primary-foreground: #363200;
+	--secondary: #438468;
+	--secondary-foreground: #ffffff;
+	--muted: #10281e;
+	--muted-foreground: #c7d796;
+	--accent: #10281e;
+	--accent-foreground: #c7d796;
+	--destructive: #8a5a54;
+	--border: rgba(255, 255, 255, 0.08);
+	--input: rgba(255, 255, 255, 0.1);
+	--ring: #fcec62;
+	--chart-1: #c7d796;
+	--chart-2: #fcec62;
+	--chart-3: #438468;
+	--chart-4: #10281e;
+	--chart-5: #ffffff;
+	--sidebar: #020d09;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #fcec62;
+	--sidebar-primary-foreground: #363200;
+	--sidebar-accent: #10281e;
+	--sidebar-accent-foreground: #c7d796;
+	--sidebar-border: rgba(255, 255, 255, 0.08);
+	--sidebar-ring: #fcec62;
 }
 
 @theme inline {

@@ -83,7 +83,7 @@
 		style="clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);"
 	></div>
 
-	<div class="relative container mx-auto max-w-6xl px-6">
+	<div class="max-w-screen-4xl relative mx-auto px-6">
 		<div class="work-header-stagger mb-12 text-left md:mb-16">
 			<h2 class="font-poppins text-4xl leading-none font-black tracking-tighter sm:text-5xl">
 				{m.work_title()}<span class="text-primary">.</span>
@@ -93,7 +93,9 @@
 			</p>
 		</div>
 
-		<div class="work-list grid grid-cols-2 gap-4 md:gap-6">
+		<div
+			class="work-list grid grid-flow-row-dense auto-rows-[16rem] grid-cols-1 gap-4 sm:auto-rows-[18rem] sm:grid-cols-2 lg:auto-rows-[20rem] lg:grid-cols-3 lg:gap-6"
+		>
 			{#each localizedProjects as project, i (project.id)}
 				<WorkProjectTile {project} index={i} />
 			{/each}

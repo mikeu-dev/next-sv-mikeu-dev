@@ -5,6 +5,7 @@
 	import { m } from '$lib/paraglide/messages';
 
 	let heroSection = $state<HTMLElement>();
+	let heroCard = $state<HTMLElement>();
 
 	const currentYear = new Date().getFullYear();
 
@@ -42,6 +43,73 @@
 		return () => cleanups.forEach((fn) => fn());
 	}
 
+	/**
+	 * Blobs live entirely on their own ambient drift/morph — they never move toward
+	 * the cursor. The cursor's only job is to "ignite" whichever blob(s) it gets
+	 * close to: those glow brighter and distort — skewed/stretched toward the
+	 * cursor's direction like a liquid surface reacting to proximity — while their
+	 * position stays fully autonomous. Skew is a transform property, independent
+	 * of the `border-radius` CSS-keyframe morph already running on the same blob,
+	 * so the two never fight over the same property.
+	 */
+	function setupCursorBlobs(card: HTMLElement): () => void {
+		const blobs = Array.from(card.querySelectorAll<HTMLElement>('.hero-blob'));
+		const movers = blobs.map((blob) => ({
+			blob,
+			skewXTo: gsap.quickTo(blob, 'skewX', { duration: 0.5, ease: 'power2.out' }),
+			skewYTo: gsap.quickTo(blob, 'skewY', { duration: 0.5, ease: 'power2.out' }),
+			scaleTo: gsap.quickTo(blob, 'scale', { duration: 0.5, ease: 'power2.out' }),
+			opacityTo: gsap.quickTo(blob, 'opacity', { duration: 0.45, ease: 'power2.out' })
+		}));
+
+		let ticking = false;
+		let lastEvent: MouseEvent | null = null;
+
+		const applyMove = () => {
+			if (!lastEvent) return;
+
+			movers.forEach(({ blob, skewXTo, skewYTo, scaleTo, opacityTo }) => {
+				const blobRect = blob.getBoundingClientRect();
+				const centerX = blobRect.left + blobRect.width / 2;
+				const centerY = blobRect.top + blobRect.height / 2;
+				const dx = lastEvent!.clientX - centerX;
+				const dy = lastEvent!.clientY - centerY;
+				const dist = Math.hypot(dx, dy);
+				const proximity = gsap.utils.clamp(0, 1, 1 - dist / 420);
+
+				skewXTo(gsap.utils.clamp(-25, 25, dx * 0.045 * proximity));
+				skewYTo(gsap.utils.clamp(-25, 25, dy * 0.045 * proximity));
+				scaleTo(1 + proximity * 0.15);
+				opacityTo(0.4 + proximity * 0.45);
+			});
+
+			ticking = false;
+		};
+
+		const handleMove = (e: MouseEvent) => {
+			lastEvent = e;
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(applyMove);
+			}
+		};
+		const handleLeave = () => {
+			movers.forEach(({ skewXTo, skewYTo, scaleTo, opacityTo }) => {
+				skewXTo(0);
+				skewYTo(0);
+				scaleTo(1);
+				opacityTo(0.4);
+			});
+		};
+
+		card.addEventListener('mousemove', handleMove);
+		card.addEventListener('mouseleave', handleLeave);
+		return () => {
+			card.removeEventListener('mousemove', handleMove);
+			card.removeEventListener('mouseleave', handleLeave);
+		};
+	}
+
 	onMount(() => {
 		if (!browser || !heroSection) return;
 
@@ -73,8 +141,10 @@
 				);
 				introTl.to('.hero-caption', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.5);
 
-				// Ambient blob drift — slow, organic, non-synchronized
-				gsap.to('.hero-blob-1', {
+				// Ambient blob drift — slow, organic, non-synchronized. Targets the wrapper
+				// layer (not `.hero-blob` itself) so it doesn't fight the cursor-follow
+				// tween below, which animates the inner blob's x/y independently.
+				gsap.to('.hero-blob-wrap-1', {
 					x: 40,
 					y: 30,
 					duration: 9,
@@ -82,7 +152,7 @@
 					yoyo: true,
 					ease: 'sine.inOut'
 				});
-				gsap.to('.hero-blob-2', {
+				gsap.to('.hero-blob-wrap-2', {
 					x: -35,
 					y: -25,
 					duration: 11,
@@ -90,10 +160,34 @@
 					yoyo: true,
 					ease: 'sine.inOut'
 				});
-				gsap.to('.hero-blob-3', {
+				gsap.to('.hero-blob-wrap-3', {
 					x: 25,
 					y: -30,
 					duration: 7.5,
+					repeat: -1,
+					yoyo: true,
+					ease: 'sine.inOut'
+				});
+				gsap.to('.hero-blob-wrap-4', {
+					x: -20,
+					y: 35,
+					duration: 13,
+					repeat: -1,
+					yoyo: true,
+					ease: 'sine.inOut'
+				});
+				gsap.to('.hero-blob-wrap-5', {
+					x: 30,
+					y: 20,
+					duration: 10,
+					repeat: -1,
+					yoyo: true,
+					ease: 'sine.inOut'
+				});
+				gsap.to('.hero-blob-wrap-6', {
+					x: -28,
+					y: -18,
+					duration: 8.5,
 					repeat: -1,
 					yoyo: true,
 					ease: 'sine.inOut'
@@ -108,9 +202,13 @@
 				});
 			}
 
+			const pointerIsFine = window.matchMedia('(pointer: fine)').matches;
 			const removeMagnetic = prefersReducedMotion ? undefined : setupMagneticButtons(section);
+			const removeCursorBlobs =
+				!prefersReducedMotion && pointerIsFine && heroCard ? setupCursorBlobs(heroCard) : undefined;
 			removeListeners = () => {
 				removeMagnetic?.();
+				removeCursorBlobs?.();
 			};
 		});
 	});
@@ -127,12 +225,29 @@
 	class="paper-hero relative flex flex-col items-center justify-center px-3 pt-24 pb-6 transition-colors duration-300 sm:px-6 sm:pt-28 sm:pb-10"
 >
 	<div
-		class="hero-card relative flex min-h-[70vh] w-full max-w-6xl flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 text-center sm:min-h-[75vh]"
+		bind:this={heroCard}
+		class="hero-card max-w-screen-4xl relative flex min-h-[70vh] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 text-center sm:min-h-[75vh]"
 	>
-		<!-- Blurred color-blob glass background -->
-		<div class="hero-blob hero-blob-1 absolute rounded-full blur-3xl"></div>
-		<div class="hero-blob hero-blob-2 absolute rounded-full blur-3xl"></div>
-		<div class="hero-blob hero-blob-3 absolute rounded-full blur-3xl"></div>
+		<!-- Blurred organic color-blob glass background — outer wrapper drifts ambiently,
+		     inner blob morphs shape and is pulled toward the cursor independently -->
+		<div class="hero-blob-wrap hero-blob-wrap-1 absolute">
+			<div class="hero-blob hero-blob-1 h-full w-full blur-[110px]"></div>
+		</div>
+		<div class="hero-blob-wrap hero-blob-wrap-2 absolute">
+			<div class="hero-blob hero-blob-2 h-full w-full blur-[110px]"></div>
+		</div>
+		<div class="hero-blob-wrap hero-blob-wrap-3 absolute">
+			<div class="hero-blob hero-blob-3 h-full w-full blur-[110px]"></div>
+		</div>
+		<div class="hero-blob-wrap hero-blob-wrap-4 absolute">
+			<div class="hero-blob hero-blob-4 h-full w-full blur-[110px]"></div>
+		</div>
+		<div class="hero-blob-wrap hero-blob-wrap-5 absolute">
+			<div class="hero-blob hero-blob-5 h-full w-full blur-[110px]"></div>
+		</div>
+		<div class="hero-blob-wrap hero-blob-wrap-6 absolute">
+			<div class="hero-blob hero-blob-6 h-full w-full blur-[110px]"></div>
+		</div>
 		<div class="hero-glass pointer-events-none absolute inset-0 backdrop-blur-sm"></div>
 
 		<!-- Content -->
@@ -211,9 +326,21 @@
 
 	:root {
 		--hero-base: #051a13;
-		--hero-blob-1: #fcec62;
-		--hero-blob-2: #c7d796;
-		--hero-blob-3: #438468;
+		/* Blob palette stays theme-independent — the card is always a dark glass
+		   surface regardless of the site's light/dark toggle, so one set of
+		   avocado-family colors covers both. */
+		--hero-blob-1: #fcec62; /* yellow */
+		--hero-blob-1-light: #fff9c4;
+		--hero-blob-2: #c7d796; /* soft mint */
+		--hero-blob-2-light: #eef6d9;
+		--hero-blob-3: #438468; /* avocado green */
+		--hero-blob-3-light: #8fd6ac;
+		--hero-blob-4: #a8e063; /* vivid lime, bridges yellow and green */
+		--hero-blob-4-light: #e3f7b8;
+		--hero-blob-5: #1a4435; /* deep emerald */
+		--hero-blob-5-light: #4f9973;
+		--hero-blob-6: #2f6e52; /* deep teal-green */
+		--hero-blob-6-light: #6bbf94;
 
 		/* Glossy Tape CTA — the one remaining signature visual detail */
 		--tape-bg-grad:
@@ -226,9 +353,6 @@
 
 	:global(.dark) {
 		--hero-base: #051a13;
-		--hero-blob-1: #fcec62;
-		--hero-blob-2: #1a4435;
-		--hero-blob-3: #438468;
 
 		--tape-bg-grad:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
@@ -238,32 +362,163 @@
 		--tape-shadow-hover: rgba(0, 0, 0, 1);
 	}
 
-	.hero-blob {
-		width: 60vw;
-		max-width: 640px;
+	.hero-blob-wrap {
+		width: 50vw;
+		max-width: 560px;
 		aspect-ratio: 1;
-		opacity: 0.55;
 		will-change: transform;
 	}
 
+	/* Blobs are sized well past the card itself and heavily overlapped so their
+	   blur merges into one continuous mesh-gradient wash, not separate floating
+	   shapes — matching the reference's smooth full-bleed color blend. */
+	.hero-blob-wrap-1 {
+		top: -40%;
+		left: -30%;
+		width: 95vw;
+		max-width: 1050px;
+	}
+
+	.hero-blob-wrap-2 {
+		right: -25%;
+		bottom: -35%;
+		width: 90vw;
+		max-width: 1000px;
+	}
+
+	.hero-blob-wrap-3 {
+		top: -10%;
+		right: -15%;
+		width: 75vw;
+		max-width: 840px;
+	}
+
+	.hero-blob-wrap-4 {
+		bottom: -20%;
+		left: -15%;
+		width: 70vw;
+		max-width: 780px;
+	}
+
+	.hero-blob-wrap-5 {
+		top: 15%;
+		left: 20%;
+		width: 62vw;
+		max-width: 700px;
+	}
+
+	.hero-blob-wrap-6 {
+		top: -20%;
+		right: 15%;
+		width: 58vw;
+		max-width: 650px;
+	}
+
+	.hero-blob {
+		opacity: 0.4;
+		/* Screen blend makes overlapping blobs add light together instead of just
+		   stacking flat color — the key to reading as glowing light, not paint.
+		   Kept lower at rest since these blobs now overlap heavily; screen blend
+		   compounds brightness fast where several colors stack. */
+		mix-blend-mode: screen;
+		will-change: transform, opacity, border-radius;
+	}
+
 	.hero-blob-1 {
-		top: -12%;
-		left: -10%;
-		background: var(--hero-blob-1);
+		background: radial-gradient(
+			circle at 50% 50%,
+			var(--hero-blob-1-light) 0%,
+			var(--hero-blob-1) 45%,
+			transparent 75%
+		);
+		animation: blob-morph-a 16s ease-in-out infinite;
 	}
 
 	.hero-blob-2 {
-		right: -8%;
-		bottom: -15%;
-		background: var(--hero-blob-2);
+		background: radial-gradient(
+			circle at 50% 50%,
+			var(--hero-blob-2-light) 0%,
+			var(--hero-blob-2) 45%,
+			transparent 75%
+		);
+		animation: blob-morph-b 19s ease-in-out infinite;
 	}
 
 	.hero-blob-3 {
-		top: 15%;
-		right: 15%;
-		width: 40vw;
-		max-width: 420px;
-		background: var(--hero-blob-3);
+		background: radial-gradient(
+			circle at 50% 50%,
+			var(--hero-blob-3-light) 0%,
+			var(--hero-blob-3) 45%,
+			transparent 75%
+		);
+		animation: blob-morph-c 14s ease-in-out infinite;
+	}
+
+	.hero-blob-4 {
+		background: radial-gradient(
+			circle at 50% 50%,
+			var(--hero-blob-4-light) 0%,
+			var(--hero-blob-4) 45%,
+			transparent 75%
+		);
+		animation: blob-morph-a 21s ease-in-out infinite reverse;
+	}
+
+	.hero-blob-5 {
+		background: radial-gradient(
+			circle at 50% 50%,
+			var(--hero-blob-5-light) 0%,
+			var(--hero-blob-5) 45%,
+			transparent 75%
+		);
+		animation: blob-morph-b 17s ease-in-out infinite reverse;
+	}
+
+	.hero-blob-6 {
+		background: radial-gradient(
+			circle at 50% 50%,
+			var(--hero-blob-6-light) 0%,
+			var(--hero-blob-6) 45%,
+			transparent 75%
+		);
+		animation: blob-morph-c 23s ease-in-out infinite reverse;
+	}
+
+	@keyframes blob-morph-a {
+		0%,
+		100% {
+			border-radius: 63% 37% 54% 46% / 43% 65% 35% 57%;
+		}
+		50% {
+			border-radius: 38% 62% 63% 37% / 61% 41% 59% 39%;
+		}
+	}
+
+	@keyframes blob-morph-b {
+		0%,
+		100% {
+			border-radius: 42% 58% 68% 32% / 55% 45% 55% 45%;
+		}
+		50% {
+			border-radius: 66% 34% 44% 56% / 38% 62% 38% 62%;
+		}
+	}
+
+	@keyframes blob-morph-c {
+		0%,
+		100% {
+			border-radius: 55% 45% 35% 65% / 65% 55% 45% 35%;
+		}
+		50% {
+			border-radius: 48% 52% 70% 30% / 45% 62% 38% 55%;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-blob {
+			animation: none;
+			border-radius: 50%;
+		}
 	}
 
 	.hero-glass {
