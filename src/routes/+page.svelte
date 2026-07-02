@@ -6,19 +6,7 @@
 	let { data } = $props();
 </script>
 
-{#await data.skills}
-	<div class="flex min-h-screen flex-col items-center justify-center space-y-4">
-		<Skeleton class="h-12 w-3/4 max-w-xl" />
-		<Skeleton class="h-6 w-1/2 max-w-sm" />
-		<div class="flex justify-center gap-2">
-			<Skeleton class="h-8 w-20 rounded-full" />
-			<Skeleton class="h-8 w-20 rounded-full" />
-			<Skeleton class="h-8 w-20 rounded-full" />
-		</div>
-	</div>
-{:then skills}
-	<HeroSection {skills} />
-{/await}
+<HeroSection />
 
 <div id="work">
 	<SectionLoader rootMargin="400px">

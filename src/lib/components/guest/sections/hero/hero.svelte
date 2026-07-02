@@ -2,1204 +2,140 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { m } from '$lib/paraglide/messages';
-	import BrutalistGlyph from '@/lib/components/ui/BrutalistGlyph.svelte';
-	import type Matter from 'matter-js';
-	import type { IChamferableBodyDefinition } from 'matter-js';
 
-	let { skills = [] }: { skills: string[] } = $props();
-
-	let heroTitle = $state<HTMLElement>();
-	let heroSubtitle = $state<HTMLElement>();
-	let heroButton = $state<HTMLElement>();
-	let bulletContainer = $state<HTMLElement>();
-	let impactLayer = $state<HTMLElement>();
-	let crackLayer = $state<SVGSVGElement>();
 	let heroSection = $state<HTMLElement>();
-	let letterElements = $state<HTMLElement[]>([]);
 
-	const titleText: string = m.hero_title();
-	const titleWords: string[][] = titleText.split(' ').map((word) => word.split(''));
-
-	// Blueprint Real-time Data
-	let viewportWidth = $state(1440);
-	let viewportHeight = $state(900);
-	let screenHeight = $state(900);
-	let pixelRatio = $state(2);
-	let userTimeZone = $state('INDONESIA');
-	let lastModifiedDate = $state('V.1.0.4');
-	let pointerX = $state(1024);
-	let pointerAngle = $state(45);
-	let pointerAngle2 = $state(56);
-
-	const updateDimensions = () => {
-		if (!browser) return;
-		viewportWidth = window.innerWidth;
-		viewportHeight = window.innerHeight;
-		screenHeight = window.screen.height;
-		pixelRatio = window.devicePixelRatio || 1;
-	};
-
-	let titleContainerHeight = $state(160);
-
-	let observer: IntersectionObserver;
 	let ctx: gsap.Context;
 	let removeListeners: (() => void) | undefined;
 
-	// ── Impact FX Utilities ──────────────────────────────────────
+	/** Subtle magnetic cursor-pull on the CTA button; returns a cleanup function */
+	function setupMagneticButtons(root: HTMLElement): () => void {
+		const wrappers = root.querySelectorAll<HTMLElement>('.tape-button-wrapper');
+		const cleanups: (() => void)[] = [];
 
-	/** Spawn geometric dust particles at impact point */
-	function spawnDustParticles(
-		x: number,
-		y: number,
-		velocity: number,
-		container: HTMLElement
-	): void {
-		const count = Math.min(Math.floor(velocity * 1.5) + 3, 12);
-		const shapes = ['▪', '◆', '▫', '◇', '▸', '▹'];
+		wrappers.forEach((wrapper) => {
+			const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.4, ease: 'power3.out' });
+			const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.4, ease: 'power3.out' });
 
-		for (let i = 0; i < count; i++) {
-			const particle = document.createElement('span');
-			particle.className = 'impact-particle';
-			particle.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-			particle.style.left = `${x}px`;
-			particle.style.top = `${y}px`;
-			particle.style.fontSize = `${6 + Math.random() * 8}px`;
-			container.appendChild(particle);
+			const handleMove = (e: MouseEvent) => {
+				const rect = wrapper.getBoundingClientRect();
+				const relX = e.clientX - rect.left - rect.width / 2;
+				const relY = e.clientY - rect.top - rect.height / 2;
+				xTo(gsap.utils.clamp(-8, 8, relX * 0.25));
+				yTo(gsap.utils.clamp(-8, 8, relY * 0.25) - 2);
+			};
+			const handleLeave = () => {
+				gsap.to(wrapper, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
+			};
 
-			const angle = -Math.PI * (0.1 + Math.random() * 0.8);
-			const force = (30 + Math.random() * 60) * Math.min(velocity / 6, 1.5);
-
-			gsap.fromTo(
-				particle,
-				{ opacity: 1, scale: 1 },
-				{
-					x: Math.cos(angle) * force,
-					y: Math.sin(angle) * force,
-					opacity: 0,
-					scale: 0.2,
-					rotation: (Math.random() - 0.5) * 360,
-					duration: 0.4 + Math.random() * 0.4,
-					ease: 'power3.out',
-					onComplete: () => particle.remove()
-				}
-			);
-		}
-	}
-
-	/** Micro screen-shake on the title container */
-	function triggerScreenShake(container: HTMLElement, velocity: number): void {
-		const intensity = Math.min(velocity * 0.4, 4);
-		gsap.to(container, {
-			x: `+=${(Math.random() - 0.5) * intensity}`,
-			y: `+=${Math.random() * intensity * 0.5}`,
-			duration: 0.06,
-			ease: 'power2.out',
-			yoyo: true,
-			repeat: 3,
-			onComplete: () => {
-				gsap.set(container, { x: 0, y: 0 });
-			}
-		});
-	}
-
-	/** Brief flash / scale pulse on the letter element */
-	function triggerImpactFlash(element: HTMLElement, velocity: number): void {
-		const pulseScale = 1 + Math.min(velocity * 0.02, 0.15);
-		gsap.fromTo(
-			element,
-			{ filter: 'brightness(2.5)', scale: pulseScale },
-			{
-				filter: 'brightness(1)',
-				scale: 1,
-				duration: 0.3,
-				ease: 'power2.out'
-			}
-		);
-	}
-
-	/** Create a random geometric shard */
-	function createOrigamiShard(
-		x: number,
-		y: number,
-		velocity: number,
-		container: HTMLElement
-	): void {
-		const shard = document.createElement('div');
-		const size = 8 + Math.random() * 12;
-		const color = Math.random() > 0.5 ? 'rgba(255,255,255,0.6)' : 'rgba(200,200,200,0.4)';
-
-		shard.className = 'origami-impact-shard';
-		shard.style.width = `${size}px`;
-		shard.style.height = `${size}px`;
-		shard.style.left = `${x}px`;
-		shard.style.top = `${y}px`;
-		shard.style.backgroundColor = color;
-
-		const p1 = `${Math.random() * 100}% ${Math.random() * 100}%`;
-		const p2 = `${Math.random() * 100}% ${Math.random() * 100}%`;
-		const p3 = `${Math.random() * 100}% ${Math.random() * 100}%`;
-		shard.style.clipPath = `polygon(${p1}, ${p2}, ${p3})`;
-
-		container.appendChild(shard);
-
-		const angle = -Math.PI * (0.2 + Math.random() * 0.6);
-		const force = (40 + Math.random() * 80) * Math.min(velocity / 5, 2);
-
-		gsap.to(shard, {
-			x: Math.cos(angle) * force,
-			y: Math.sin(angle) * force,
-			rotation: (Math.random() - 0.5) * 720,
-			opacity: 0,
-			scale: 0.2,
-			duration: 0.6 + Math.random() * 0.4,
-			ease: 'power2.out',
-			onComplete: () => shard.remove()
-		});
-	}
-
-	/** Draw a sharp geometric "crease" line */
-	function drawOrigamiCrease(
-		ns: string,
-		group: SVGGElement,
-		x: number,
-		y: number,
-		angle: number,
-		length: number,
-		delay: number
-	): void {
-		const line = document.createElementNS(ns, 'line') as SVGLineElement;
-		const ex = x + Math.cos(angle) * length;
-		const ey = y + Math.sin(angle) * length;
-
-		line.setAttribute('x1', `${x}`);
-		line.setAttribute('y1', `${y}`);
-		line.setAttribute('x2', `${ex}`);
-		line.setAttribute('y2', `${ey}`);
-		line.setAttribute('stroke', 'rgba(255,255,255,0.4)');
-		line.setAttribute('stroke-width', '1.5');
-		line.setAttribute('stroke-linecap', 'square');
-		line.setAttribute('opacity', '0');
-
-		group.appendChild(line);
-
-		const len = Math.sqrt(Math.pow(ex - x, 2) + Math.pow(ey - y, 2));
-		line.style.strokeDasharray = `${len}`;
-		line.style.strokeDashoffset = `${len}`;
-
-		gsap.to(line, {
-			opacity: 0.8,
-			strokeDashoffset: 0,
-			duration: 0.15,
-			delay: delay,
-			ease: 'expo.out'
+			wrapper.addEventListener('mousemove', handleMove);
+			wrapper.addEventListener('mouseleave', handleLeave);
+			cleanups.push(() => {
+				wrapper.removeEventListener('mousemove', handleMove);
+				wrapper.removeEventListener('mouseleave', handleLeave);
+			});
 		});
 
-		gsap.to(line, {
-			opacity: 0,
-			duration: 1,
-			delay: delay + 0.8,
-			ease: 'power2.in'
-		});
+		return () => cleanups.forEach((fn) => fn());
 	}
 
-	/** Draw "Origami Shatter" impact effects */
-	function drawFloorCrack(svg: SVGSVGElement, x: number, y: number, velocity: number): void {
-		const ns = 'http://www.w3.org/2000/svg';
-		const group = document.createElementNS(ns, 'g') as SVGGElement;
-		const intensity = Math.min(velocity / 5, 2.0);
+	onMount(() => {
+		if (!browser || !heroSection) return;
 
-		const creaseCount = 3 + Math.floor(Math.random() * 2);
-		for (let i = 0; i < creaseCount; i++) {
-			const angle = i * (Math.PI / creaseCount) - Math.PI * 0.8;
-			const len = (30 + Math.random() * 40) * intensity;
-			drawOrigamiCrease(ns, group, x, y, angle, len, i * 0.03);
-		}
-
-		const shardCount = 5 + Math.floor(intensity * 4);
-		const container = svg.parentElement;
-		if (container) {
-			for (let i = 0; i < shardCount; i++) {
-				createOrigamiShard(x, y, velocity, container);
-			}
-		}
-
-		const facet = document.createElementNS(ns, 'polygon') as SVGPolygonElement;
-		const fSize = 15 * intensity;
-		const pts = [
-			`${x},${y}`,
-			`${x + fSize},${y - fSize / 2}`,
-			`${x + fSize / 2},${y + fSize / 2}`,
-			`${x - fSize / 2},${y + fSize}`
-		].join(' ');
-
-		facet.setAttribute('points', pts);
-		facet.setAttribute('fill', 'rgba(255,255,255,0.12)');
-		facet.setAttribute('fill-opacity', '0.2');
-		facet.setAttribute('stroke', 'rgba(255,255,255,0.25)');
-		facet.setAttribute('stroke-width', '0.5');
-		facet.setAttribute('opacity', '0');
-
-		group.appendChild(facet);
-
-		gsap.fromTo(
-			facet,
-			{ scale: 0, opacity: 0.6 },
-			{ scale: 1.5, opacity: 0, duration: 0.4, ease: 'power4.out' }
-		);
-
-		svg.appendChild(group);
-		gsap.delayedCall(2.0, () => group.remove());
-	}
-
-	// ── Mount ────────────────────────────────────────────────────
-
-	onMount(async () => {
-		if (!browser || !heroTitle || !heroSubtitle || !heroButton || !bulletContainer || !heroSection)
-			return;
-
-		// Initialize real-time blueprint data
-		updateDimensions();
-		window.addEventListener('resize', updateDimensions);
-
-		try {
-			userTimeZone =
-				Intl.DateTimeFormat()
-					.resolvedOptions()
-					.timeZone.split('/')
-					.pop()
-					?.replace(/_/g, ' ')
-					.toUpperCase() || 'UNKNOWN';
-		} catch (e) {
-			console.error('Failed to detect user timezone:', e);
-			userTimeZone = 'GLOBAL';
-		}
-
-		// VITE_BUILD_DATE is injected at build time via vite.config.ts define
-		const buildDateStr = import.meta.env.VITE_BUILD_DATE as string | undefined;
-		if (buildDateStr) {
-			const buildDate = new Date(buildDateStr);
-			if (!isNaN(buildDate.getTime())) {
-				lastModifiedDate = `V.${buildDate.getFullYear().toString().slice(2)}.${buildDate.getMonth() + 1}.${buildDate.getDate()}`;
-			}
-		}
-
-		let isVisible = false;
-
-		// Matter.js is no longer used for hero text.
-
-		const title = heroTitle as HTMLElement;
-		const subtitle = heroSubtitle as HTMLElement;
-		const button = heroButton as HTMLElement;
-		const bullets = bulletContainer as HTMLElement;
-		const section = heroSection as HTMLElement;
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const section = heroSection;
 
 		ctx = gsap.context(() => {
-			// Set initial states for elements that will be revealed on scroll
-			gsap.set([subtitle, bullets, button], {
-				opacity: 0,
-				y: 50
-			});
+			if (!prefersReducedMotion) {
+				gsap.set('.hero-greeting', { opacity: 0, y: 24 });
+				gsap.set('.hero-role', { opacity: 0, y: 16 });
+				gsap.set('.tape-button-wrapper', { opacity: 0, scale: 0.6, y: 16 });
+				gsap.set('.hero-secondary-link', { opacity: 0, y: 8 });
 
-			gsap.set('.central-origami-panel', {
-				opacity: 0,
-				scale: 0.8,
-				transformOrigin: 'center center'
-			});
-
-			gsap.set('.blueprint-svg-right-wrapper', {
-				opacity: 0,
-				x: 40,
-				y: -40
-			});
-
-			gsap.set('.blueprint-svg-left-wrapper', {
-				opacity: 0,
-				x: -40,
-				y: 40
-			});
-
-			gsap.set(['.blueprint-annotation', '.dim-line'], {
-				opacity: 0
-			});
-
-			// Create ScrollTrigger Timeline for Parallax Reveal
-			const tl = gsap.timeline({
-				scrollTrigger: {
-					trigger: heroSection,
-					start: 'top top',
-					end: '+=100%',
-					scrub: 1,
-					pin: true,
-					pinSpacing: true,
-					invalidateOnRefresh: true
-				}
-			});
-
-			// 1. Reveal Central Origami background panel
-			tl.to(
-				'.central-origami-panel',
-				{
-					opacity: 1,
-					scale: 1,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0
-			);
-
-			// 2. Reveal SVG Blueprint wrappers (slide and fade-in)
-			tl.to(
-				'.blueprint-svg-right-wrapper',
-				{
-					opacity: 1,
-					x: 0,
-					y: 0,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0.1
-			);
-
-			tl.to(
-				'.blueprint-svg-left-wrapper',
-				{
-					opacity: 1,
-					x: 0,
-					y: 0,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0.1
-			);
-
-			// 3. Draw SVG technical paths dynamically on scroll
-			tl.fromTo(
-				'.technical-path',
-				{
-					strokeDashoffset: 1000,
-					opacity: 0
-				},
-				{
-					strokeDashoffset: 0,
-					opacity: 1,
-					duration: 1.5,
-					ease: 'power2.out'
-				},
-				0.15
-			);
-
-			// 4. Fold open cardboard box flaps in sync with scroll
-			tl.fromTo(
-				'.box-flap-front-left',
-				{ rotation: -35 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.2
-			);
-			tl.fromTo(
-				'.box-flap-front-right',
-				{ rotation: 35 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.22
-			);
-			tl.fromTo(
-				'.box-flap-back-left',
-				{ rotation: 30 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.18
-			);
-			tl.fromTo(
-				'.box-flap-back-right',
-				{ rotation: -30 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.2
-			);
-
-			// 5. Fold open origami net flaps in sync with scroll
-			tl.fromTo(
-				'.net-flap-top',
-				{ rotation: -40 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.2
-			);
-			tl.fromTo(
-				'.net-flap-bottom',
-				{ rotation: 40 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.22
-			);
-			tl.fromTo(
-				'.net-flap-left',
-				{ rotation: 25 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.24
-			);
-			tl.fromTo(
-				'.net-flap-right',
-				{ rotation: -25 },
-				{ rotation: 0, duration: 1, ease: 'power2.out' },
-				0.26
-			);
-
-			// 6. Reveal blueprint dimensions and annotations
-			tl.to(
-				['.blueprint-annotation', '.dim-line'],
-				{
-					opacity: 1,
-					stagger: 0.05,
-					duration: 1,
-					ease: 'power2.out'
-				},
-				0.3
-			);
-
-			// 7. Parallax shift the main title upwards to make room for content
-			tl.to(
-				title,
-				{
-					y: -40,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0.2
-			);
-
-			// 8. Stagger-in subtitle, skills, and buttons
-			tl.to(
-				subtitle,
-				{
-					opacity: 1,
-					y: 0,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0.4
-			);
-
-			tl.to(
-				bullets,
-				{
-					opacity: 1,
-					y: 0,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0.6
-			);
-
-			tl.to(
-				button,
-				{
-					opacity: 1,
-					y: 0,
-					duration: 1.2,
-					ease: 'power2.out'
-				},
-				0.8
-			);
-
-			// Subtle pulsing for blueprint annotations (using filter to avoid opacity conflicts)
-			gsap.to('.blueprint-annotation', {
-				filter: 'brightness(0.75)',
-				duration: 3,
-				stagger: 0.15,
-				ease: 'sine.inOut',
-				yoyo: true,
-				repeat: -1
-			});
-
-			// Mouse Spotlight Tracker & Parallax Setters
-			const xSetter = gsap.quickSetter(section, '--mouse-x', 'px');
-			const ySetter = gsap.quickSetter(section, '--mouse-y', 'px');
-			const svgRightX = gsap.quickSetter('.blueprint-svg-right', 'x', 'px');
-			const svgRightY = gsap.quickSetter('.blueprint-svg-right', 'y', 'px');
-			const svgLeftX = gsap.quickSetter('.blueprint-svg-left', 'x', 'px');
-			const svgLeftY = gsap.quickSetter('.blueprint-svg-left', 'y', 'px');
-
-			let ticking = false;
-			const handleMouseMove = (e: MouseEvent) => {
-				if (!ticking) {
-					requestAnimationFrame(() => {
-						const rect = section.getBoundingClientRect();
-						const x = Math.round(e.clientX - rect.left);
-						const y = Math.round(e.clientY - rect.top);
-						xSetter(x);
-						ySetter(y);
-
-						// Update blueprint data
-						pointerX = x;
-						const centerX = rect.width / 2;
-						const centerY = rect.height / 2;
-						let angleDeg = Math.round(Math.atan2(y - centerY, x - centerX) * (180 / Math.PI));
-						if (angleDeg < 0) angleDeg += 360;
-						pointerAngle = angleDeg;
-						pointerAngle2 = Math.round(angleDeg * 1.25) % 360;
-
-						// Parallax shift based on mouse relative position (range ±25px)
-						const relX = x / rect.width - 0.5;
-						const relY = y / rect.height - 0.5;
-						svgRightX(relX * -25);
-						svgRightY(relY * -25);
-						svgLeftX(relX * 20);
-						svgLeftY(relY * 20);
-
-						ticking = false;
-					});
-					ticking = true;
-				}
-			};
-
-			const handleTouchMove = (e: TouchEvent) => {
-				if (e.touches[0]) {
-					const touch = e.touches[0];
-					if (!ticking) {
-						requestAnimationFrame(() => {
-							const rect = section.getBoundingClientRect();
-							const x = Math.round(touch.clientX - rect.left);
-							const y = Math.round(touch.clientY - rect.top);
-							xSetter(x);
-							ySetter(y);
-
-							// Update blueprint data
-							pointerX = x;
-							const centerX = rect.width / 2;
-							const centerY = rect.height / 2;
-							let angleDeg = Math.round(Math.atan2(y - centerY, x - centerX) * (180 / Math.PI));
-							if (angleDeg < 0) angleDeg += 360;
-							pointerAngle = angleDeg;
-							pointerAngle2 = Math.round(angleDeg * 1.25) % 360;
-
-							// Parallax shift for touch
-							const relX = x / rect.width - 0.5;
-							const relY = y / rect.height - 0.5;
-							svgRightX(relX * -25);
-							svgRightY(relY * -25);
-							svgLeftX(relX * 20);
-							svgLeftY(relY * 20);
-
-							ticking = false;
-						});
-						ticking = true;
-					}
-				}
-			};
-
-			section.addEventListener('mousemove', handleMouseMove);
-			section.addEventListener('touchmove', handleTouchMove, { passive: true });
-			section.addEventListener('touchstart', handleTouchMove, { passive: true });
-
-			removeListeners = () => {
-				section.removeEventListener('mousemove', handleMouseMove);
-				section.removeEventListener('touchmove', handleTouchMove);
-				section.removeEventListener('touchstart', handleTouchMove);
-			};
-
-			// ── Pemicu Getaran Engsel Pegas Teredam Interaktif (Mouse Hover Damped Oscillation) ──
-			const boxSvg = document.querySelector('.blueprint-svg-right');
-			if (boxSvg) {
-				boxSvg.addEventListener('mouseenter', () => {
-					gsap.fromTo(
-						'.box-flap-front-left',
-						{ rotation: -15 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)' }
-					);
-					gsap.fromTo(
-						'.box-flap-front-right',
-						{ rotation: 15 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)', delay: 0.04 }
-					);
-					gsap.fromTo(
-						'.box-flap-back-left',
-						{ rotation: 12 },
-						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.8)', delay: 0.08 }
-					);
-					gsap.fromTo(
-						'.box-flap-back-right',
-						{ rotation: -12 },
-						{ rotation: 0, duration: 2.0, ease: 'elastic.out(1.0, 0.8)', delay: 0.12 }
-					);
-				});
-			}
-
-			const netSvg = document.querySelector('.blueprint-svg-left');
-			if (netSvg) {
-				netSvg.addEventListener('mouseenter', () => {
-					gsap.fromTo(
-						'.net-flap-top',
-						{ rotation: -12 },
-						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.0, 0.8)' }
-					);
-					gsap.fromTo(
-						'.net-flap-bottom',
-						{ rotation: 12 },
-						{ rotation: 0, duration: 1.6, ease: 'elastic.out(1.0, 0.8)', delay: 0.04 }
-					);
-					gsap.fromTo(
-						'.net-flap-left',
-						{ rotation: 10 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)', delay: 0.08 }
-					);
-					gsap.fromTo(
-						'.net-flap-right',
-						{ rotation: -10 },
-						{ rotation: 0, duration: 1.8, ease: 'elastic.out(1.0, 0.8)', delay: 0.12 }
-					);
-				});
-			}
-		});
-
-		// --- GSAP "Blown by Wind" Animation Logic ---
-		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		if (!prefersReducedMotion) {
-			ctx.add(() => {
-				gsap.fromTo(
-					'.letter-element',
-					{
-						opacity: 0,
-						x: () => -600 - Math.random() * 600,
-						y: () => (Math.random() - 0.5) * 600,
-						rotation: () => (Math.random() - 0.5) * 720,
-						scale: () => Math.random() * 2
-					},
-					{
-						opacity: 1,
-						x: 0,
-						y: 0,
-						rotation: 0,
-						scale: 1,
-						duration: 1.8,
-						stagger: {
-							each: 0.02,
-							from: 'start'
-						},
-						ease: 'power3.out',
-						scrollTrigger: {
-							trigger: heroSection,
-							start: 'top 50%'
-						}
-					}
+				const introTl = gsap.timeline();
+				introTl.to('.hero-greeting', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0);
+				introTl.to('.hero-role', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.25);
+				introTl.to(
+					'.tape-button-wrapper',
+					{ opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(2)' },
+					0.5
 				);
-			});
-		}
+				introTl.to(
+					'.hero-secondary-link',
+					{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+					0.65
+				);
+			}
+
+			const removeMagnetic = prefersReducedMotion ? undefined : setupMagneticButtons(section);
+			removeListeners = () => {
+				removeMagnetic?.();
+			};
+		});
 	});
 
 	onDestroy(() => {
-		if (browser) window.removeEventListener('resize', updateDimensions);
 		removeListeners?.();
 		if (ctx) ctx.revert();
-		if (observer) observer.disconnect();
 	});
 </script>
 
 <section
 	id="hero"
 	bind:this={heroSection}
-	class="paper-hero relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-20 pb-10 text-center transition-colors duration-300 md:pt-24"
-	style="--mouse-x: 50%; --mouse-y: 50%;"
+	class="paper-hero relative flex flex-col items-center justify-center overflow-hidden px-6 py-28 text-center transition-colors duration-300 md:py-36 lg:py-44"
 >
-	<!-- Adaptive Blueprint Background -->
+	<!-- Adaptive Background -->
 	<div
 		class="pointer-events-none absolute inset-0 bg-background transition-colors duration-300"
 	></div>
 
-	<!-- Blueprint Grid Pattern (1:1 subtle grid style) -->
-	<div class="blueprint-grid pointer-events-none absolute inset-0"></div>
-
-	<!-- Interactive Spotlight -->
-	<div class="mouse-spotlight pointer-events-none absolute inset-0"></div>
-
-	<!-- Fine Grain Overlay -->
+	<!-- Fine Grain Overlay (site-wide texture, kept for consistency with other sections) -->
 	<div
-		class="pointer-events-none absolute inset-0 z-50 opacity-[0.02] mix-blend-overlay"
+		class="pointer-events-none absolute inset-0 z-10 opacity-[0.02] mix-blend-overlay"
 		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 	></div>
 
-	<!-- ── SVG Blueprint Polyhedron (Kanan Atas - 3D Cardboard Box) ── -->
-	<div
-		class="blueprint-svg-right-wrapper pointer-events-none absolute top-[4%] right-[2%] z-20 h-[58%] w-[45%]"
-	>
-		<svg
-			class="blueprint-svg-right pointer-events-none h-full w-full opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
-			viewBox="0 0 400 450"
-			fill="none"
+	<div class="relative z-20 mx-auto max-w-3xl">
+		<h1
+			class="hero-greeting font-poppins text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl"
 		>
-			<!-- Garis Proyeksi/Konstruksi Latar Belakang (Dashed) -->
-			<line
-				x1="100"
-				y1="0"
-				x2="100"
-				y2="450"
-				class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
-				stroke-width="0.5"
-				stroke-dasharray="4 4"
-			/>
-			<line
-				x1="200"
-				y1="0"
-				x2="200"
-				y2="450"
-				class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
-				stroke-width="0.5"
-				stroke-dasharray="4 4"
-			/>
-			<line
-				x1="0"
-				y1="220"
-				x2="400"
-				y2="220"
-				class="technical-path stroke-[#c7d796]/40 dark:stroke-white/20"
-				stroke-width="0.5"
-				stroke-dasharray="4 4"
-			/>
+			{m.hero_title()} <span class="text-primary">{m.common_author_name()}</span>
+		</h1>
 
-			<!-- Busur Sudut Putaran (Angle Arc) -->
-			<path
-				d="M 70,200 A 40,40 0 0,1 100,160"
-				class="technical-path stroke-[#c7d796]/70 dark:stroke-white/45"
-				stroke-width="0.8"
-				stroke-dasharray="2 2"
-			/>
-			<path
-				d="M 300,160 A 40,40 0 0,1 330,200"
-				class="technical-path stroke-[#c7d796]/70 dark:stroke-white/45"
-				stroke-width="0.8"
-				stroke-dasharray="2 2"
-			/>
-
-			<!-- Bodi Dalam Kardus & Lipatan Dasar (Dashed) -->
-			<path
-				d="M200,240 L100,300 M200,240 L300,300 M200,240 L200,100"
-				class="technical-path stroke-[#c7d796]/60 dark:stroke-white/45"
-				stroke-width="0.6"
-				stroke-dasharray="2 2"
-			/>
-			<path
-				d="M100,160 L200,100 L300,160"
-				class="technical-path stroke-[#c7d796]/60 dark:stroke-white/45"
-				stroke-width="0.6"
-				stroke-dasharray="2 2"
-			/>
-
-			<!-- Lipatan Flap Depan (Dashed) -->
-			<line
-				x1="100"
-				y1="160"
-				x2="200"
-				y2="220"
-				class="technical-path stroke-zinc-400/50 dark:stroke-white/55"
-				stroke-width="0.6"
-				stroke-dasharray="2 2"
-			/>
-			<line
-				x1="200"
-				y1="220"
-				x2="300"
-				y2="160"
-				class="technical-path stroke-zinc-400/50 dark:stroke-white/55"
-				stroke-width="0.6"
-				stroke-dasharray="2 2"
-			/>
-
-			<!-- Garis Solid Bodi Utama Kardus -->
-			<path
-				d="M100,160 L100,300 L200,360 L300,300 L300,160"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
-			/>
-			<line
-				x1="200"
-				y1="220"
-				x2="200"
-				y2="360"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
-			/>
-
-			<!-- Flap Depan Kiri (Animatif) -->
-			<g class="box-flap box-flap-front-left" style="transform-origin: 150px 190px;">
-				<path
-					d="M100,160 L40,230 L140,290 L200,220"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-			</g>
-
-			<!-- Flap Depan Kanan (Animatif) -->
-			<g class="box-flap box-flap-front-right" style="transform-origin: 250px 190px;">
-				<path
-					d="M200,220 L260,290 L360,230 L300,160"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-			</g>
-
-			<!-- Flap Belakang Kiri dengan Tuck Tab (Animatif) -->
-			<g class="box-flap box-flap-back-left" style="transform-origin: 150px 130px;">
-				<path
-					d="M100,160 L70,95 L80,90 L145,25 L155,30 L200,100"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-			</g>
-
-			<!-- Flap Belakang Kanan dengan Tuck Tab (Animatif) -->
-			<g class="box-flap box-flap-back-right" style="transform-origin: 250px 130px;">
-				<path
-					d="M200,100 L245,30 L255,25 L320,90 L330,95 L300,160"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-			</g>
-		</svg>
-	</div>
-
-	<!-- ── SVG Blueprint Origami Box Template (Kiri Bawah - 2D Unfolded Box Net) ── -->
-	<div
-		class="blueprint-svg-left-wrapper pointer-events-none absolute bottom-[2%] left-[2%] z-20 h-[38%] w-[20%]"
-	>
-		<svg
-			class="blueprint-svg-left pointer-events-none h-full w-full opacity-[0.85] drop-shadow-[0_0_12px_rgba(199,215,150,0.4)] dark:opacity-[0.7] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]"
-			viewBox="0 0 250 350"
-			fill="none"
+		<p
+			class="hero-role mx-auto mt-5 max-w-xl font-mono text-sm leading-relaxed tracking-wide text-muted-foreground sm:text-base md:text-lg"
 		>
-			<!-- Bodi Tengah Utama (Statis) -->
-			<path
-				d="M80,80 L140,80 L140,290 L80,290 Z"
-				class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-				stroke-width="0.8"
-			/>
+			{m.hero_subtitle()}
+		</p>
 
-			<!-- Garis Lipatan Kolom Utama (Dashed) -->
-			<line
-				x1="80"
-				y1="150"
-				x2="140"
-				y2="150"
-				class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
-				stroke-width="0.8"
-				stroke-dasharray="2 2"
-			/>
-			<line
-				x1="80"
-				y1="220"
-				x2="140"
-				y2="220"
-				class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
-				stroke-width="0.8"
-				stroke-dasharray="2 2"
-			/>
-
-			<!-- Tutup Atas (Animatif) -->
-			<g class="net-flap net-flap-top" style="transform-origin: 110px 80px;">
-				<path
-					d="M80,80 L85,20 L135,20 L140,80"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-			</g>
-
-			<!-- Tutup Bawah (Animatif) -->
-			<g class="net-flap net-flap-bottom" style="transform-origin: 110px 290px;">
-				<path
-					d="M140,290 L135,330 L85,330 L80,290"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-			</g>
-
-			<!-- Flap Samping Kiri (Animatif) -->
-			<g class="net-flap net-flap-left" style="transform-origin: 80px 185px;">
-				<path
-					d="M80,150 L20,170 L20,220 L80,220"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-				<line
-					x1="80"
-					y1="150"
-					x2="20"
-					y2="220"
-					class="technical-path stroke-[#c7d796]/70 dark:stroke-white/55"
-					stroke-width="0.6"
-					stroke-dasharray="2 2"
-				/>
-				<line
-					x1="80"
-					y1="220"
-					x2="20"
-					y2="170"
-					class="technical-path stroke-[#c7d796]/70 dark:stroke-white/55"
-					stroke-width="0.6"
-					stroke-dasharray="2 2"
-				/>
-			</g>
-
-			<!-- Flap Samping Kanan (Animatif) -->
-			<g class="net-flap net-flap-right" style="transform-origin: 140px 185px;">
-				<path
-					d="M140,150 L190,150 L205,165 L205,205 L190,220 L140,220"
-					class="technical-path stroke-[#c7d796] dark:stroke-white/80"
-					stroke-width="0.8"
-				/>
-				<line
-					x1="190"
-					y1="150"
-					x2="190"
-					y2="220"
-					class="technical-path stroke-[#c7d796]/80 dark:stroke-white/60"
-					stroke-width="0.8"
-					stroke-dasharray="2 2"
-				/>
-			</g>
-		</svg>
-	</div>
-
-	<!-- ── Blueprint Annotations (Kiri Atas) ── -->
-	<div
-		class="blueprint-annotation pointer-events-none absolute top-[13%] left-[9%] z-40 hidden font-mono text-[9px] leading-relaxed tracking-wider text-[#c7d796] uppercase lg:block dark:text-white/60"
-	>
-		<p>FOLD LINE X:{pointerX}</p>
-		<p>ANGLE: {pointerAngle}°</p>
-		<p>PAPER WEIGHT: {Math.round(pixelRatio * 100)}GSM</p>
-	</div>
-
-	<!-- Penanda Sudut 45° - 56° (1:1) ── -->
-	<div
-		class="blueprint-annotation pointer-events-none absolute top-[14%] left-[25%] z-40 hidden w-[5.5%] lg:block"
-	>
-		<div
-			class="flex justify-between pb-1 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-		>
-			<span>{pointerAngle}°</span>
-			<span>{pointerAngle2}°</span>
-		</div>
-		<div class="relative h-[0.5px] w-full bg-[#c7d796]/40 dark:bg-white/35">
-			<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/50"></div>
-			<div class="absolute -top-0.5 right-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/50"></div>
-		</div>
-	</div>
-
-	<!-- Garis Dimensi Vertikal Kiri (1440) ── -->
-	<div
-		class="dim-line pointer-events-none absolute top-[18%] left-[7.5%] z-40 hidden h-[22%] w-[0.5px] bg-[#c7d796]/40 lg:block dark:bg-white/35"
-	>
-		<span
-			class="absolute top-1/2 -left-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-			>{viewportHeight}</span
-		>
-		<div class="absolute top-0 -left-1 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
-		<div class="absolute bottom-0 -left-1 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
-	</div>
-
-	<!-- Garis Dimensi Horizontal Bawah (1448) ── -->
-	<div
-		class="dim-line pointer-events-none absolute bottom-[40%] left-[9%] z-40 hidden h-[0.5px] w-[6%] bg-[#c7d796]/40 lg:block dark:bg-white/35"
-	>
-		<span
-			class="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-			>{viewportWidth}</span
-		>
-		<div class="absolute -top-0.5 left-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
-		<div class="absolute -top-0.5 right-0 h-1.5 w-[0.5px] bg-[#c7d796]/60 dark:bg-white/45"></div>
-	</div>
-
-	<!-- Garis Dimensi Vertikal Kanan (900) ── -->
-	<div
-		class="dim-line pointer-events-none absolute top-[18%] right-[8%] z-40 hidden h-[22%] w-[0.5px] bg-[#c7d796]/40 lg:block dark:bg-white/35"
-	>
-		<span
-			class="absolute top-1/2 -right-7 -translate-y-1/2 font-mono text-[8px] tracking-wider text-[#c7d796] dark:text-white/55"
-			>{screenHeight}</span
-		>
-		<div class="absolute top-0 -right-1 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
-		<div class="absolute -right-1 bottom-0 h-[0.5px] w-2 bg-[#c7d796]/60 dark:bg-white/45"></div>
-	</div>
-
-	<!-- ── Pojok Kiri Bawah Metadata ── -->
-	<div
-		class="blueprint-annotation pointer-events-none absolute bottom-12 left-8 z-40 font-mono text-[9px] leading-relaxed tracking-[0.2em] text-[#c7d796] uppercase dark:text-white/60"
-	>
-		<p>PAPER WEIGHT: {Math.round(pixelRatio * 100)}GSM</p>
-		<p>DIMENSIONS: {viewportWidth}x{viewportHeight}</p>
-	</div>
-
-	<!-- ── Pojok Kanan Bawah Metadata ── -->
-	<div
-		class="blueprint-annotation pointer-events-none absolute right-8 bottom-12 z-40 text-right font-mono text-[9px] leading-relaxed tracking-[0.2em] text-[#c7d796] uppercase dark:text-white/60"
-	>
-		<p>ORIGIN: {userTimeZone}</p>
-		<p>ARCHIVE: {lastModifiedDate}</p>
-	</div>
-
-	<!-- ── Central Origami Background Panel ── -->
-	<div
-		class="central-origami-panel pointer-events-none absolute top-[48%] left-1/2 z-0 h-[85%] w-[92%] -translate-x-1/2 -translate-y-1/2 sm:h-[80%] sm:w-[85%] md:h-[75%] md:w-[80%] lg:h-[70%] lg:w-[65%]"
-	>
-		<!-- Asymmetric Shadow Layer -->
-		<div
-			class="absolute inset-0 top-3 left-3 bg-black/15 blur-md dark:bg-black/60"
-			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%);"
-		></div>
-
-		<!-- Main Paper Layer -->
-		<div
-			class="absolute inset-0 border-[3px] border-[#c7d796]/50 bg-linear-to-br from-[#215542] via-[#1a4435] to-[#0c2019] dark:border-foreground/30 dark:from-[#3f3f46] dark:via-[#18181b] dark:to-[#000000]"
-			style="clip-path: polygon(0% 4%, 96% 0%, 100% 96%, 4% 100%); box-shadow: inset 0 4px 10px rgba(255,255,255,0.1);"
-		>
-			<!-- Glossy Reflection Overlay (Diagonal Light) -->
-			<div
-				class="absolute inset-0 opacity-70"
-				style="background: linear-gradient(110deg, rgba(255,255,255,0) 35%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 55%); mix-blend-mode: overlay;"
-			></div>
-
-			<!-- Crease Overlay (Lighting) -->
-			<div
-				class="absolute inset-0 opacity-60 mix-blend-multiply dark:opacity-80 dark:mix-blend-overlay"
-				style="background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50.1%, rgba(0,0,0,0.3) 100%);"
-			></div>
-
-			<!-- Folded Corner Flap (Top Right) -->
-			<div
-				class="absolute top-0 right-0 size-16 border-b-2 border-l-2 border-[#1a4435]/50 dark:border-foreground/20"
-				style="background: linear-gradient(225deg, #e4edc8 0%, #c7d796 100%); clip-path: polygon(100% 0, 0 100%, 0 0); transform: rotate(180deg); transform-origin: top right;"
-			>
-				<!-- Highlight reflection on the fold -->
-				<div
-					class="absolute inset-0"
-					style="background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 40%);"
-				></div>
-			</div>
-
-			<!-- Folded Corner Flap (Bottom Left) -->
-			<div
-				class="absolute bottom-0 left-0 size-12 border-t-2 border-r-2 border-[#1a4435]/50 dark:border-foreground/20"
-				style="background: linear-gradient(45deg, #e4edc8 0%, #c7d796 100%); clip-path: polygon(100% 100%, 0 100%, 0 0); transform: rotate(180deg); transform-origin: bottom left;"
-			>
-				<!-- Highlight reflection on the fold -->
-				<div
-					class="absolute inset-0"
-					style="background: linear-gradient(225deg, rgba(255,255,255,0.8) 0%, transparent 40%);"
-				></div>
-			</div>
-		</div>
-	</div>
-
-	<!-- ── Blueprint Grid Overlay (Topmost Layer) ── -->
-	<div
-		class="pointer-events-none absolute inset-0 z-50 opacity-10 mix-blend-overlay dark:opacity-[0.05]"
-		style="background-image: linear-gradient(#c7d796 1px, transparent 1px), linear-gradient(90deg, #c7d796 1px, transparent 1px); background-size: 24px 24px;"
-	></div>
-
-	<!-- ══════════════ MAIN CONTENT ══════════════ -->
-	<div class="relative z-10 container mx-auto px-6">
-		<!-- Title Container -->
-		<div class="relative mx-auto mb-4 inline-block max-w-5xl">
-			<h1
-				bind:this={heroTitle}
-				class="flex flex-wrap justify-center gap-x-3 gap-y-2 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] sm:gap-x-4 sm:gap-y-3 md:gap-x-5 md:gap-y-4 lg:gap-x-6 lg:gap-y-5"
-				aria-label={m.hero_title()}
-			>
-				{#each titleWords as word, wIndex (wIndex)}
-					<span class="flex flex-nowrap">
-						{#each word as char, cIndex (cIndex)}
-							<span
-								class="letter-element -mx-0.5 inline-flex h-10 w-7 items-center justify-center sm:-mx-0.5 sm:h-12 sm:w-8 md:-mx-1 md:h-16 md:w-10 lg:-mx-1 lg:h-20 lg:w-14"
-							>
-								<BrutalistGlyph {char} />
-							</span>
-						{/each}
+		<div class="mt-10 flex flex-col items-center gap-4">
+			<div class="tape-button-wrapper">
+				<a
+					href="#contact"
+					onclick={(e) => {
+						e.preventDefault();
+						document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+					}}
+					class="tape-button"
+				>
+					<span class="relative z-10 font-poppins text-lg font-bold tracking-wide sm:text-xl">
+						{m.hero_button_text()}
 					</span>
-				{/each}
-			</h1>
+				</a>
+			</div>
 
-			<!-- Impact FX Layers -->
-			<div
-				bind:this={impactLayer}
-				class="pointer-events-none absolute inset-0 overflow-visible"
-				aria-hidden="true"
-			></div>
-			<svg
-				bind:this={crackLayer}
-				class="pointer-events-none absolute inset-0 overflow-visible"
-				aria-hidden="true"
-				style="width: 100%; height: 100%;"
-			></svg>
-		</div>
-
-		<!-- Subtitle -->
-		<div class="hero-stagger mt-6">
-			<p
-				bind:this={heroSubtitle}
-				class="mx-auto max-w-3xl font-mono text-sm leading-relaxed font-medium tracking-wider text-[#c7d796] transition-colors duration-300 sm:text-base md:text-lg dark:text-neutral-100"
+			<a
+				href="#work"
+				onclick={(e) => {
+					e.preventDefault();
+					document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
+				}}
+				class="hero-secondary-link font-mono text-xs tracking-wide text-muted-foreground underline decoration-transparent underline-offset-4 transition-colors hover:text-foreground hover:decoration-current sm:text-sm"
 			>
-				{m.hero_subtitle()}
-			</p>
-
-			<!-- ── Skills (Tape Label Style - 1:1) ── -->
-			<div bind:this={bulletContainer} class="mt-8 flex flex-col items-center justify-center gap-3">
-				<!-- Row 1: First 4 skills -->
-				<div class="flex flex-wrap justify-center gap-3">
-					{#each skills.slice(0, 4) as skill (skill)}
-						<div class="tape-wrapper">
-							<div class="tape-body">
-								<span class="tape-label-text">{skill}</span>
-								<div class="tape-fold-tr"></div>
-								<div class="tape-fold-bl"></div>
-							</div>
-						</div>
-					{/each}
-				</div>
-				<!-- Row 2: Remaining skills -->
-				{#if skills.length > 4}
-					<div class="mt-1 flex flex-wrap justify-center gap-3">
-						{#each skills.slice(4) as skill (skill)}
-							<div class="tape-wrapper">
-								<div class="tape-body">
-									<span class="tape-label-text">{skill}</span>
-									<div class="tape-fold-tr"></div>
-									<div class="tape-fold-bl"></div>
-								</div>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<!-- ── CTA Buttons (Paper Tape Style - 1:1) ── -->
-			<div bind:this={heroButton} class="mt-10 flex flex-wrap justify-center gap-6">
-				<div class="tape-button-wrapper">
-					<a
-						href="#contact"
-						onclick={(e) => {
-							e.preventDefault();
-							document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-						}}
-						class="tape-button tape-button-left group"
-					>
-						<span
-							class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
-							>Contact Me</span
-						>
-					</a>
-				</div>
-
-				<div class="tape-button-wrapper">
-					<a
-						href="#work"
-						onclick={(e) => {
-							e.preventDefault();
-							document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
-						}}
-						class="tape-button tape-button-right group"
-					>
-						<span
-							class="relative z-10 font-poppins text-base font-semibold tracking-wide sm:text-lg md:text-xl"
-							>View Work</span
-						>
-					</a>
-				</div>
-			</div>
+				{m.hero_button_link()} →
+			</a>
 		</div>
 	</div>
 </section>
@@ -1207,184 +143,40 @@
 <style lang="postcss">
 	@reference "tailwindcss";
 
-	/* ── Base Section ── */
 	.paper-hero {
 		perspective: 1500px;
 	}
 
-	.hero-stagger {
-		transform: translateZ(50px);
-	}
-
-	/* CSS Variables for Light / Dark Theme Adaptation */
+	/* Glossy Tape CTA — the one remaining signature visual detail */
 	:root {
-		--grid-color: rgba(199, 215, 150, 0.4);
-		--mouse-glow: rgba(199, 215, 150, 0.1);
-
-		/* Glossy Tape Buttons */
 		--tape-bg-grad:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
 			linear-gradient(135deg, #fff07c 0%, #fcec62 50%, #e5c300 100%);
 		--tape-color: #363200;
-		--tape-fold-color: #ffffff;
-
-		/* Glossy Badges */
-		--badge-bg-grad:
-			linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 25%),
-			linear-gradient(135deg, #ffffff 0%, #f4f4f4 50%, #e0e0e0 100%);
-		--badge-color: #1a4435;
-		--badge-fold-color: #f8f8f8;
-
 		--tape-shadow: rgba(5, 26, 19, 0.4);
 		--tape-shadow-hover: rgba(5, 26, 19, 0.6);
 	}
 
 	:global(.dark) {
-		--grid-color: rgba(255, 255, 255, 0.08);
-		--mouse-glow: rgba(255, 255, 255, 0.08);
-
-		/* Glossy Tape Buttons (Dark Mode) */
 		--tape-bg-grad:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
 			linear-gradient(135deg, #f4f4f5 0%, #e2e2e8 50%, #b0b0b8 100%);
 		--tape-color: #18181b;
-		--tape-fold-color: #ffffff;
-
-		/* Glossy Badges (Dark Mode) */
-		--badge-bg-grad:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 25%),
-			linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%);
-		--badge-color: #e2e2e8;
-		--badge-fold-color: #4a4a52;
-
 		--tape-shadow: rgba(0, 0, 0, 0.8);
 		--tape-shadow-hover: rgba(0, 0, 0, 1);
 	}
 
-	/* Title characters */
-	span {
-		user-select: none;
-		will-change: transform;
-	}
-
-	/* ── Blueprint Grid ── */
-	.blueprint-grid {
-		background-image:
-			linear-gradient(var(--grid-color) 1px, transparent 1px),
-			linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-		background-size: 40px 40px;
-	}
-
-	/* ── Mouse Spotlight ── */
-	.mouse-spotlight {
-		background: radial-gradient(
-			circle 450px at var(--mouse-x) var(--mouse-y),
-			var(--mouse-glow),
-			transparent 70%
-		);
-	}
-
-	/* ── Tape Label (Skill Badge Stacked Paper Style) ── */
-	.tape-wrapper {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		filter: drop-shadow(0px 4px 6px var(--tape-shadow));
-		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-		will-change: transform, filter;
-	}
-
-	.tape-wrapper:hover {
-		filter: drop-shadow(0px 6px 10px var(--tape-shadow-hover));
-		transform: translateY(-2px);
-	}
-
-	.tape-body {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		padding: 8px 18px;
-		background: var(--badge-bg-grad);
-		color: var(--badge-color);
-		clip-path: polygon(
-			0% 0%,
-			calc(100% - 16px) 0%,
-			100% 16px,
-			100% 100%,
-			16px 100%,
-			0% calc(100% - 16px)
-		);
-		transition: all 0.25s ease;
-	}
-
-	@media (min-width: 640px) {
-		.tape-body {
-			padding: 10px 24px;
-		}
-	}
-
-	.tape-label-text {
-		font-family: var(--font-inter);
-		font-size: 14px;
-		font-weight: 500;
-		letter-spacing: 0.02em;
-	}
-
-	@media (min-width: 640px) {
-		.tape-label-text {
-			font-size: 16px;
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.tape-label-text {
-			font-size: 17px;
-		}
-	}
-
-	/* The folded corner effect */
-	.tape-fold-tr {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 16px;
-		height: 16px;
-		background: linear-gradient(
-			225deg,
-			transparent 50%,
-			var(--badge-fold-color) 50%,
-			rgba(255, 255, 255, 0.9) 100%
-		);
-		filter: drop-shadow(-1.5px 1.5px 1px rgba(0, 0, 0, 0.3));
-	}
-
-	.tape-fold-bl {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 16px;
-		height: 16px;
-		background: linear-gradient(
-			45deg,
-			transparent 50%,
-			var(--badge-fold-color) 50%,
-			rgba(255, 255, 255, 0.9) 100%
-		);
-		filter: drop-shadow(1.5px -1.5px 1px rgba(0, 0, 0, 0.3));
-	}
-
-	/* ── Tape CTA Buttons (1:1) ── */
 	.tape-button-wrapper {
 		display: inline-flex;
 		filter: drop-shadow(0px 6px 12px var(--tape-shadow));
-		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		transition: filter 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 		will-change: transform, filter;
 	}
 
 	.tape-button-wrapper:hover {
+		/* Lift is applied via the magnetic-hover GSAP tween, not here — an inline
+		   transform written by GSAP always wins over this rule anyway. */
 		filter: drop-shadow(0px 10px 16px var(--tape-shadow-hover));
-		transform: translateY(-2px);
 	}
 
 	.tape-button {
@@ -1392,43 +184,18 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 12px 30px;
+		padding: 14px 36px;
 		cursor: pointer;
 		background: var(--tape-bg-grad);
 		color: var(--tape-color);
+		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
 	}
 
 	@media (min-width: 640px) {
 		.tape-button {
-			padding: 16px 42px;
+			padding: 18px 48px;
 		}
-	}
-
-	.tape-button-left {
-		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
-	}
-
-	.tape-button-right {
-		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
-	}
-
-	/* ── Origami Impact Shard ── */
-	:global(.origami-impact-shard) {
-		position: absolute;
-		pointer-events: none;
-		z-index: 20;
-		filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.25));
-		will-change: transform, opacity;
-	}
-
-	/* ── Impact Particle ── */
-	:global(.impact-particle) {
-		position: absolute;
-		pointer-events: none;
-		z-index: 20;
-		color: rgba(255, 255, 255, 0.55);
-		will-change: transform, opacity;
 	}
 </style>
