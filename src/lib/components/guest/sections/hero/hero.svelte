@@ -6,6 +6,8 @@
 
 	let heroSection = $state<HTMLElement>();
 	let heroCard = $state<HTMLElement>();
+	let heroNameEl = $state<HTMLElement>();
+	let devTagEl = $state<HTMLElement>();
 
 	const currentYear = new Date().getFullYear();
 
@@ -110,6 +112,27 @@
 		};
 	}
 
+	/**
+	 * The "Dev" tag hangs at an angle (its entrance swing lives in the intro
+	 * timeline) and straightens up on hover, then swings back on mouseleave —
+	 * moved here from the navbar logo, which no longer has it.
+	 */
+	function setupPendulumHover(trigger: HTMLElement, tag: HTMLElement): () => void {
+		const hoverIn = () => {
+			gsap.to(tag, { rotate: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+		};
+		const hoverOut = () => {
+			gsap.to(tag, { rotate: -25, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+		};
+
+		trigger.addEventListener('mouseenter', hoverIn);
+		trigger.addEventListener('mouseleave', hoverOut);
+		return () => {
+			trigger.removeEventListener('mouseenter', hoverIn);
+			trigger.removeEventListener('mouseleave', hoverOut);
+		};
+	}
+
 	onMount(() => {
 		if (!browser || !heroSection) return;
 
@@ -120,6 +143,7 @@
 			if (!prefersReducedMotion) {
 				gsap.set('.hero-greeting', { opacity: 0, y: 24 });
 				gsap.set('.hero-name', { opacity: 0, y: 24 });
+				gsap.set('.hero-dev-tag', { opacity: 0, rotate: 0 });
 				gsap.set('.hero-pills', { opacity: 0, y: 16 });
 				gsap.set('.tape-button-wrapper', { opacity: 0, scale: 0.6, y: 16 });
 				gsap.set('.hero-secondary-link', { opacity: 0, y: 8 });
@@ -128,7 +152,12 @@
 				const introTl = gsap.timeline();
 				introTl.to('.hero-greeting', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0);
 				introTl.to('.hero-name', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.1);
-				introTl.to('.hero-pills', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.3);
+				introTl.to(
+					'.hero-dev-tag',
+					{ opacity: 1, rotate: -25, duration: 1, ease: 'bounce.out' },
+					0.3
+				);
+				introTl.to('.hero-pills', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.35);
 				introTl.to(
 					'.tape-button-wrapper',
 					{ opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(2)' },
@@ -206,9 +235,14 @@
 			const removeMagnetic = prefersReducedMotion ? undefined : setupMagneticButtons(section);
 			const removeCursorBlobs =
 				!prefersReducedMotion && pointerIsFine && heroCard ? setupCursorBlobs(heroCard) : undefined;
+			const removePendulumHover =
+				!prefersReducedMotion && heroNameEl && devTagEl
+					? setupPendulumHover(heroNameEl, devTagEl)
+					: undefined;
 			removeListeners = () => {
 				removeMagnetic?.();
 				removeCursorBlobs?.();
+				removePendulumHover?.();
 			};
 		});
 	});
@@ -257,11 +291,20 @@
 			</p>
 
 			<h1
-				class="hero-name relative mt-2 font-poppins text-6xl font-bold tracking-tight text-white italic drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] sm:text-7xl md:text-8xl"
+				bind:this={heroNameEl}
+				class="hero-name relative z-50 mt-2 font-poppins text-6xl font-bold tracking-tight text-white italic drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] sm:text-7xl md:text-8xl"
 			>
 				{m.common_alias_name()}
 				<span class="hero-dot absolute top-2 -right-4 inline-block size-3 rounded-full bg-primary"
 				></span>
+				<span
+					bind:this={devTagEl}
+					class="hero-dev-tag absolute -right-2 -bottom-2 inline-block bg-primary px-3 py-1 font-mono text-xs font-black tracking-widest text-primary-foreground uppercase not-italic sm:-right-4 sm:-bottom-3 sm:text-sm"
+					style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
+				>
+					Dev
+					<span class="absolute right-1 bottom-1 size-1.5 rounded-full bg-white"></span>
+				</span>
 			</h1>
 
 			<div class="hero-pills mt-6">
@@ -322,6 +365,12 @@
 
 	.hero-card {
 		background: var(--hero-base);
+	}
+
+	/* "Dev" tag — hangs off the name at an angle, pinned at its own bottom-right
+	   corner (moved here from the navbar logo, which no longer has it). */
+	.hero-dev-tag {
+		transform-origin: calc(100% - 0.375rem) calc(100% - 0.375rem);
 	}
 
 	:root {

@@ -15,7 +15,7 @@
 	import { authState } from '$lib/stores/auth.svelte';
 	import InstallButton from '../pwa/InstallButton.svelte';
 	import { getLocale, setLocale, localizeHref } from '$lib/paraglide/runtime';
-	import { setupGsapPendulum, createMenuTimeline } from './navbar.svelte.js';
+	import { createMenuTimeline } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
@@ -39,9 +39,6 @@
 		(locale === 'id' ? resolvedResumeUrls.id : resolvedResumeUrls.en) || fallbackResumeUrl
 	);
 
-	let anchorElement: HTMLAnchorElement;
-	let headerElement: HTMLElement;
-	let devSpan: HTMLElement;
 	let menuOverlay: HTMLElement;
 	let menuGridBg: HTMLElement;
 	let menuControls: HTMLElement;
@@ -64,13 +61,6 @@
 
 	$effect(() => {
 		if (locale) setLocale(locale);
-	});
-
-	$effect(() => {
-		if (anchorElement && headerElement && devSpan) {
-			const cleanup = setupGsapPendulum(anchorElement, headerElement, devSpan);
-			return cleanup;
-		}
 	});
 
 	onMount(() => {
@@ -157,7 +147,6 @@
 
 <!-- Minimal fixed header -->
 <header
-	bind:this={headerElement}
 	class="fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-out"
 	class:translate-y-[-100%]={hideHeader}
 >
@@ -168,12 +157,8 @@
 		></div>
 
 		<div class="mx-auto flex h-14 max-w-screen-2xl items-center justify-between px-6 lg:px-12">
-			<!-- Logo with pendulum -->
-			<a
-				href={localizeHref('/')}
-				bind:this={anchorElement}
-				class="group relative flex items-center gap-3"
-			>
+			<!-- Logo -->
+			<a href={localizeHref('/')} class="group relative flex items-center gap-3">
 				<div
 					class="relative size-9 overflow-hidden border-2 border-foreground"
 					style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);"
@@ -187,19 +172,9 @@
 						<Avatar.Fallback class="rounded-none!">RR</Avatar.Fallback>
 					</Avatar.Root>
 				</div>
-				<div class="flex flex-col">
-					<span class="font-poppins text-base leading-none font-black tracking-tighter uppercase">
-						Mikeu<span class="text-primary">.</span>
-					</span>
-					<span
-						bind:this={devSpan}
-						class="mt-0.5 inline-block origin-bottom-right bg-primary px-2.5 py-0.5 font-mono text-[9px] font-black tracking-widest text-primary-foreground uppercase"
-						style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
-					>
-						Dev
-						<span class="absolute right-0.5 bottom-0.5 size-1 rounded-full bg-white"></span>
-					</span>
-				</div>
+				<span class="font-poppins text-base leading-none font-black tracking-tighter uppercase">
+					Mikeu<span class="text-primary">.</span>
+				</span>
 			</a>
 
 			<!-- Right controls -->

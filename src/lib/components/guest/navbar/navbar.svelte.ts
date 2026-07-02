@@ -1,35 +1,5 @@
 import { gsap } from 'gsap';
 
-export function setupGsapPendulum(
-	anchorElement: HTMLAnchorElement,
-	_header: HTMLElement,
-	devSpan: HTMLElement
-) {
-	devSpan.style.transformOrigin = 'calc(100% - 0.375rem) calc(100% - 0.375rem)';
-
-	gsap.fromTo(
-		devSpan,
-		{ rotate: 0, transformOrigin: 'calc(100% - 0.375rem) calc(100% - 0.375rem)' },
-		{ rotate: -25, duration: 1.2, ease: 'bounce.out' }
-	);
-
-	const hoverIn = () => {
-		gsap.to(devSpan, { rotate: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
-	};
-
-	const hoverOut = () => {
-		gsap.to(devSpan, { rotate: -25, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
-	};
-
-	anchorElement.addEventListener('mouseenter', hoverIn);
-	anchorElement.addEventListener('mouseleave', hoverOut);
-
-	return () => {
-		anchorElement.removeEventListener('mouseenter', hoverIn);
-		anchorElement.removeEventListener('mouseleave', hoverOut);
-	};
-}
-
 // Entry origins for each nav item — alternating left/right with slight skew
 const ITEM_ORIGINS = [
 	{ x: '-110vw', skewX: -5 },
