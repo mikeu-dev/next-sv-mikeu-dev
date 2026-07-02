@@ -260,7 +260,7 @@
 >
 	<div
 		bind:this={heroCard}
-		class="hero-card max-w-screen-4xl relative flex min-h-[70vh] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 text-center sm:min-h-[75vh]"
+		class="hero-card max-w-screen-4xl relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 text-center sm:min-h-[90vh]"
 	>
 		<!-- Blurred organic color-blob glass background — outer wrapper drifts ambiently,
 		     inner blob morphs shape and is pulled toward the cursor independently -->
