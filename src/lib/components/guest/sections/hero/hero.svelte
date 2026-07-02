@@ -13,6 +13,8 @@
 
 	let ctx: gsap.Context;
 	let removeListeners: (() => void) | undefined;
+	let visibilityObserver: IntersectionObserver | undefined;
+	const ambientTweens: gsap.core.Tween[] = [];
 
 	/** Subtle magnetic cursor-pull on the CTA button; returns a cleanup function */
 	function setupMagneticButtons(root: HTMLElement): () => void {
@@ -173,62 +175,82 @@
 				// Ambient blob drift — slow, organic, non-synchronized. Targets the wrapper
 				// layer (not `.hero-blob` itself) so it doesn't fight the cursor-follow
 				// tween below, which animates the inner blob's x/y independently.
-				gsap.to('.hero-blob-wrap-1', {
-					x: 40,
-					y: 30,
-					duration: 9,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
-				gsap.to('.hero-blob-wrap-2', {
-					x: -35,
-					y: -25,
-					duration: 11,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
-				gsap.to('.hero-blob-wrap-3', {
-					x: 25,
-					y: -30,
-					duration: 7.5,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
-				gsap.to('.hero-blob-wrap-4', {
-					x: -20,
-					y: 35,
-					duration: 13,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
-				gsap.to('.hero-blob-wrap-5', {
-					x: 30,
-					y: 20,
-					duration: 10,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
-				gsap.to('.hero-blob-wrap-6', {
-					x: -28,
-					y: -18,
-					duration: 8.5,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
-				gsap.to('.hero-dot', {
-					scale: 1.5,
-					opacity: 0.4,
-					duration: 1.6,
-					repeat: -1,
-					yoyo: true,
-					ease: 'sine.inOut'
-				});
+				// Collected so they can be paused whenever the hero scrolls out of view —
+				// otherwise these infinite tweens (plus the blurred/blended blobs they
+				// drive) keep costing frame budget site-wide even when scrolled away,
+				// which is what made scrolling feel unsmooth everywhere, not just here.
+				ambientTweens.push(
+					gsap.to('.hero-blob-wrap-1', {
+						x: 40,
+						y: 30,
+						duration: 9,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					}),
+					gsap.to('.hero-blob-wrap-2', {
+						x: -35,
+						y: -25,
+						duration: 11,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					}),
+					gsap.to('.hero-blob-wrap-3', {
+						x: 25,
+						y: -30,
+						duration: 7.5,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					}),
+					gsap.to('.hero-blob-wrap-4', {
+						x: -20,
+						y: 35,
+						duration: 13,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					}),
+					gsap.to('.hero-blob-wrap-5', {
+						x: 30,
+						y: 20,
+						duration: 10,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					}),
+					gsap.to('.hero-blob-wrap-6', {
+						x: -28,
+						y: -18,
+						duration: 8.5,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					}),
+					gsap.to('.hero-dot', {
+						scale: 1.5,
+						opacity: 0.4,
+						duration: 1.6,
+						repeat: -1,
+						yoyo: true,
+						ease: 'sine.inOut'
+					})
+				);
+
+				visibilityObserver = new IntersectionObserver(
+					([entry]) => {
+						if (entry.isIntersecting) {
+							ambientTweens.forEach((tween) => tween.play());
+							section.classList.remove('hero-offscreen');
+						} else {
+							ambientTweens.forEach((tween) => tween.pause());
+							section.classList.add('hero-offscreen');
+						}
+					},
+					{ threshold: 0 }
+				);
+				visibilityObserver.observe(section);
 			}
 
 			const pointerIsFine = window.matchMedia('(pointer: fine)').matches;
@@ -249,6 +271,7 @@
 
 	onDestroy(() => {
 		removeListeners?.();
+		visibilityObserver?.disconnect();
 		if (ctx) ctx.revert();
 	});
 </script>
@@ -471,6 +494,13 @@
 		   compounds brightness fast where several colors stack. */
 		mix-blend-mode: screen;
 		will-change: transform, opacity, border-radius;
+	}
+
+	/* Paused whenever the hero scrolls out of view (toggled via IntersectionObserver
+	   in the script) — these blurred/blended/morphing layers are expensive to keep
+	   repainting when nobody can even see them. */
+	:global(.hero-offscreen) .hero-blob {
+		animation-play-state: paused;
 	}
 
 	.hero-blob-1 {
