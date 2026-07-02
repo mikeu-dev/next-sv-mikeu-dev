@@ -126,6 +126,15 @@
 		@apply border-border outline-ring/50;
 	}
 
+	html {
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none; /* legacy Edge/IE */
+	}
+
+	html::-webkit-scrollbar {
+		display: none; /* Chrome, Safari, Chromium Edge */
+	}
+
 	body {
 		@apply bg-background text-foreground;
 		font-family: var(--font-inter);
