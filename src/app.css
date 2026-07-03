@@ -39,6 +39,16 @@
 	--sidebar-accent-foreground: #1a4435;
 	--sidebar-border: #051a13;
 	--sidebar-ring: #fcec62;
+
+	/* Glossy "tape" gradient — the hero CTA's signature treatment, shared globally
+	   so other sections (e.g. the work section's CTA) can reuse the same brand
+	   look instead of inventing a separate button style. */
+	--tape-bg-grad:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
+		linear-gradient(135deg, #fff07c 0%, #fcec62 50%, #e5c300 100%);
+	--tape-color: #363200;
+	--tape-shadow: rgba(5, 26, 19, 0.4);
+	--tape-shadow-hover: rgba(5, 26, 19, 0.6);
 }
 
 .dark {
@@ -77,6 +87,13 @@
 	--sidebar-accent-foreground: #c7d796;
 	--sidebar-border: rgba(255, 255, 255, 0.08);
 	--sidebar-ring: #fcec62;
+
+	--tape-bg-grad:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
+		linear-gradient(135deg, #f4f4f5 0%, #e2e2e8 50%, #b0b0b8 100%);
+	--tape-color: #18181b;
+	--tape-shadow: rgba(0, 0, 0, 0.8);
+	--tape-shadow-hover: rgba(0, 0, 0, 1);
 }
 
 @theme inline {

@@ -413,25 +413,12 @@
 		--hero-blob-5-light: #4f9973;
 		--hero-blob-6: #2f6e52; /* deep teal-green */
 		--hero-blob-6-light: #6bbf94;
-
-		/* Glossy Tape CTA — the one remaining signature visual detail */
-		--tape-bg-grad:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
-			linear-gradient(135deg, #fff07c 0%, #fcec62 50%, #e5c300 100%);
-		--tape-color: #363200;
-		--tape-shadow: rgba(5, 26, 19, 0.4);
-		--tape-shadow-hover: rgba(5, 26, 19, 0.6);
+		/* --tape-bg-grad / --tape-color / --tape-shadow* now live in app.css as
+		   global brand tokens, shared with the work section's CTA. */
 	}
 
 	:global(.dark) {
 		--hero-base: #051a13;
-
-		--tape-bg-grad:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
-			linear-gradient(135deg, #f4f4f5 0%, #e2e2e8 50%, #b0b0b8 100%);
-		--tape-color: #18181b;
-		--tape-shadow: rgba(0, 0, 0, 0.8);
-		--tape-shadow-hover: rgba(0, 0, 0, 1);
 	}
 
 	.hero-blob-wrap {
