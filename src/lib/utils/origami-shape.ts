@@ -17,6 +17,8 @@
  * shape instead of reshuffling on every render like `Math.random()` would.
  */
 
+import { seededRandom } from './seeded-random';
+
 export type CornerCut = number | { x: number; y: number };
 
 export interface OrigamiCorners {
@@ -80,28 +82,6 @@ export function skewedClipPath(tl: number, tr: number, br: number, bl: number): 
 	return `polygon(0% ${tl}%, ${100 - tr}% 0%, 100% ${100 - br}%, ${bl}% 100%)`;
 }
 
-/** FNV-1a style string hash — deterministic, no external dependency. */
-function hashSeed(seed: string): number {
-	let h = 2166136261;
-	for (let i = 0; i < seed.length; i++) {
-		h ^= seed.charCodeAt(i);
-		h = Math.imul(h, 16777619);
-	}
-	return h >>> 0;
-}
-
-/** mulberry32 PRNG — small, fast, deterministic from a numeric seed. */
-function mulberry32(seed: number): () => number {
-	let a = seed;
-	return () => {
-		a |= 0;
-		a = (a + 0x6d2b79f5) | 0;
-		let t = Math.imul(a ^ (a >>> 15), 1 | a);
-		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-	};
-}
-
 /**
  * Derives a shape from `seed` instead of explicit values — same visual
  * language as `origamiClipPath` / `skewedClipPath`, but which family gets
@@ -114,7 +94,7 @@ export function randomOrigamiClipPath(
 	options: OrigamiRandomOptions = {}
 ): string {
 	const { minCut = 4, maxCut = 18, maxSkew = 7, sharpChance = 0.15, family } = options;
-	const rand = mulberry32(hashSeed(String(seed)));
+	const rand = seededRandom(seed);
 	const cut = () => (rand() < sharpChance ? 0 : minCut + rand() * (maxCut - minCut));
 	const skew = () => (rand() < sharpChance ? 0 : rand() * maxSkew);
 

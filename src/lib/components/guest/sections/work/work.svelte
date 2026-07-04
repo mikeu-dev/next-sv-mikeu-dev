@@ -6,9 +6,11 @@
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowUpRight, Terminal, Hash } from '@lucide/svelte';
+	import { simulateDenseGrid, assignPuzzleEdges } from '$lib/utils/puzzle-grid';
 
 	let { projects }: { projects: Project[] } = $props();
 	let currentLocale = $derived(getLocale());
@@ -16,7 +18,46 @@
 		projects.filter((p) => p.pinned).map((p) => getLocalizedProject(p, currentLocale))
 	);
 
+	// Deterministic bento rhythm: every 3rd tile is a wide feature tile — at both the
+	// 2-col (sm) and 3-col (lg) grid, a span-2 tile plus the following span-1 tile(s)
+	// tile evenly into full rows, so no dense-packing gaps appear.
+	let gridItems = $derived(
+		localizedProjects.map((p, i) => ({ id: p.id, colSpan: (i % 3 === 0 ? 2 : 1) as 1 | 2 }))
+	);
+
+	/**
+	 * Mirrors the `grid-cols-*` breakpoints below in JS so the puzzle-piece
+	 * bump/socket assignment (computed from a simulated layout) matches
+	 * whichever column count CSS is actually rendering at the current
+	 * viewport — the interlocking only works if both agree on who's next to
+	 * whom.
+	 */
+	function computeColumns(): number {
+		if (!browser) return 3;
+		if (window.matchMedia('(min-width: 1024px)').matches) return 3;
+		if (window.matchMedia('(min-width: 640px)').matches) return 2;
+		return 1;
+	}
+
+	let columns = $state(computeColumns());
+	let placements = $derived(simulateDenseGrid(gridItems, columns));
+	let edgeMap = $derived(assignPuzzleEdges(placements));
+
 	let workSection = $state<HTMLElement>();
+
+	onMount(() => {
+		const mqSm = window.matchMedia('(min-width: 640px)');
+		const mqLg = window.matchMedia('(min-width: 1024px)');
+		const updateColumns = () => {
+			columns = computeColumns();
+		};
+		mqSm.addEventListener('change', updateColumns);
+		mqLg.addEventListener('change', updateColumns);
+		return () => {
+			mqSm.removeEventListener('change', updateColumns);
+			mqLg.removeEventListener('change', updateColumns);
+		};
+	});
 
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
@@ -95,10 +136,10 @@
 		</div>
 
 		<div
-			class="work-list grid grid-flow-row-dense auto-rows-[16rem] grid-cols-1 gap-4 sm:auto-rows-[18rem] sm:grid-cols-2 lg:auto-rows-[20rem] lg:grid-cols-3 lg:gap-6"
+			class="work-list grid grid-flow-row-dense auto-rows-[16rem] grid-cols-1 gap-0 sm:auto-rows-[18rem] sm:grid-cols-2 lg:auto-rows-[20rem] lg:grid-cols-3"
 		>
 			{#each localizedProjects as project, i (project.id)}
-				<WorkProjectTile {project} index={i} />
+				<WorkProjectTile {project} index={i} isFeature={i % 3 === 0} edges={edgeMap[project.id]} />
 			{/each}
 		</div>
 

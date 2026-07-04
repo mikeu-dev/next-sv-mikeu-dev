@@ -4,26 +4,24 @@
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import { optimizeImage } from '$lib/utils/image.util';
 	import { randomOrigamiClipPath } from '$lib/utils/origami-shape';
+	import { puzzlePiecePath, type PuzzleEdgeState } from '$lib/utils/puzzle-shape';
 
-	let { project, index }: { project: LocalizedProject; index: number } = $props();
+	let {
+		project,
+		index,
+		isFeature,
+		edges
+	}: {
+		project: LocalizedProject;
+		index: number;
+		isFeature: boolean;
+		edges?: Record<'top' | 'right' | 'bottom' | 'left', PuzzleEdgeState>;
+	} = $props();
 
-	// Deterministic bento rhythm: every 3rd tile is a wide feature tile — at both the
-	// 2-col (sm) and 3-col (lg) grid, a span-2 tile plus the following span-1 tile(s)
-	// tile evenly into full rows, so no dense-packing gaps appear. All tiles share the
-	// same row height (set by the grid container's auto-rows) and stretch to fill it,
-	// so the gap between rows stays visually identical everywhere.
-	const isFeature = $derived(index % 3 === 0);
 	const primaryTag = $derived(project.tags?.[0]?.name);
 
-	// Every tile gets its own torn-paper silhouette instead of a uniform stamped
-	// corner cut — seeded off the project id so it's stable across SSR/hydration
-	// and doesn't reshuffle on every re-render. Feature tiles are pinned to the
-	// "notch" family: a whole-edge skew is a percentage of that edge's own
-	// length, so on a 2-column-wide tile it turns into a much bigger pixel
-	// shift than on a square one and can slice into the title/caption text.
-	const tileClipPath = $derived(
-		randomOrigamiClipPath(project.id, isFeature ? { family: 'notch' } : {})
-	);
+	// The arrow badge keeps the smaller torn-paper corner treatment — it's
+	// tiny and isolated, not a puzzle piece sharing edges with neighbors.
 	const badgeClipPath = $derived(
 		randomOrigamiClipPath(`${project.id}-badge`, {
 			minCut: 10,
@@ -32,21 +30,35 @@
 			family: 'notch'
 		})
 	);
+
+	// Measured from the actual grid cell so the knob radius — and therefore
+	// where a bump/socket lands — is based on real pixels, not a guess.
+	let tileWidth = $state(0);
+	let tileHeight = $state(0);
+	const measured = $derived(tileWidth > 0 && tileHeight > 0);
+	const piece = $derived(
+		measured ? puzzlePiecePath(tileWidth, tileHeight, edges ?? {}) : { path: 'none', bleed: 0 }
+	);
 </script>
 
 <!-- The hard offset "shadow" has to live on a sibling, not a child of the clipped
      article — clip-path clips a box's entire subtree (including filter/box-shadow
      and any child that pokes past its edges) to its own polygon, so a shadow tied
-     to the article itself gets silently clipped away too. -->
-<div class="work-item group relative h-full {isFeature ? 'sm:col-span-2' : ''}">
+     to the article itself gets silently clipped away too. Same reason the knob's
+     bump has to live on a sibling rather than just overflowing the article. -->
+<div
+	class="work-item group relative h-full {isFeature ? 'sm:col-span-2' : ''}"
+	bind:clientWidth={tileWidth}
+	bind:clientHeight={tileHeight}
+>
 	<div
-		class="pointer-events-none absolute inset-0 bg-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-		style="clip-path: {tileClipPath}; transform: translate(6px, 6px);"
+		class="pointer-events-none absolute bg-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+		style="inset: -{piece.bleed}px; clip-path: {piece.path}; transform: translate(6px, 6px);"
 	></div>
 
 	<article
-		class="relative h-full overflow-hidden border-2 border-foreground/15 bg-muted transition-transform duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1"
-		style="clip-path: {tileClipPath};"
+		class="absolute border-2 border-foreground/15 bg-muted transition-transform duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1"
+		style="inset: -{piece.bleed}px; clip-path: {piece.path};"
 	>
 		<a href={localizeHref(`/projects/${project.slug}`)} class="absolute inset-0">
 			{#if project.thumbnailUrl}
@@ -58,29 +70,35 @@
 				/>
 			{/if}
 
-			<!-- Bottom gradient scrim for caption legibility -->
-			<div
-				class="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/80 via-black/10 to-transparent"
-			></div>
+			<!-- Pulls back to the tile's nominal rectangle (excluding the knob
+			     bleed) so captions/badge stay put regardless of how big the
+			     bump/socket margin is. -->
+			<div class="absolute" style="inset: {piece.bleed}px;">
+				<!-- Bottom gradient scrim for caption legibility -->
+				<div
+					class="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/80 via-black/10 to-transparent"
+				></div>
 
-			<!-- Arrow badge -->
-			<div
-				class="absolute top-4 right-4 flex size-9 items-center justify-center border border-white/40 bg-white/10 text-white backdrop-blur-md transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-				style="clip-path: {badgeClipPath};"
-			>
-				<ArrowUpRight class="size-4" />
-			</div>
-
-			<!-- Caption -->
-			<div class="absolute inset-x-0 bottom-0 z-10 p-5">
-				<span class="font-mono text-[10px] text-white/60">{String(index + 1).padStart(2, '0')}</span
+				<!-- Arrow badge -->
+				<div
+					class="absolute top-4 right-4 flex size-9 items-center justify-center border border-white/40 bg-white/10 text-white backdrop-blur-md transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+					style="clip-path: {badgeClipPath};"
 				>
-				<h3 class="font-poppins text-xl font-bold tracking-tight text-white sm:text-2xl">
-					{project.title}
-				</h3>
-				{#if primaryTag}
-					<p class="mt-1 font-mono text-xs tracking-wide text-white/70 uppercase">{primaryTag}</p>
-				{/if}
+					<ArrowUpRight class="size-4" />
+				</div>
+
+				<!-- Caption -->
+				<div class="absolute inset-x-0 bottom-0 z-10 p-5">
+					<span class="font-mono text-[10px] text-white/60"
+						>{String(index + 1).padStart(2, '0')}</span
+					>
+					<h3 class="font-poppins text-xl font-bold tracking-tight text-white sm:text-2xl">
+						{project.title}
+					</h3>
+					{#if primaryTag}
+						<p class="mt-1 font-mono text-xs tracking-wide text-white/70 uppercase">{primaryTag}</p>
+					{/if}
+				</div>
 			</div>
 		</a>
 	</article>
