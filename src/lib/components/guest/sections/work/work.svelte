@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { ArrowUpRight } from '@lucide/svelte';
+	import { ArrowUpRight, Terminal, Hash } from '@lucide/svelte';
 
 	let { projects }: { projects: Project[] } = $props();
 	let currentLocale = $derived(getLocale());
@@ -68,17 +68,24 @@
 		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 	></div>
 
-	<!-- Color echo from the hero's blob palette — ties this section back to the
-	     hero without competing with the project imagery in the grid below. -->
+	<!-- Origami shard decorations — angular clipped panels echoing the hero's
+	     folded-paper panel, instead of the soft blurred glass blobs. -->
 	<div
-		class="work-glow work-glow-1 pointer-events-none absolute -top-40 -left-40 size-144 rounded-full blur-[100px]"
+		class="origami-shard pointer-events-none absolute -top-32 -left-32 size-96 bg-primary/5 dark:bg-primary/10"
+		style="clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);"
 	></div>
 	<div
-		class="work-glow work-glow-2 pointer-events-none absolute top-1/3 -right-40 size-120 rounded-full blur-[100px]"
+		class="origami-shard pointer-events-none absolute -right-32 -bottom-32 size-80 bg-foreground/5"
+		style="clip-path: polygon(0% 15%, 85% 0%, 100% 85%, 15% 100%);"
 	></div>
 
 	<div class="max-w-screen-4xl relative mx-auto px-6">
 		<div class="work-header-stagger mb-12 text-left md:mb-16">
+			<div
+				class="mb-4 flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase md:mb-6"
+			>
+				<Terminal class="size-3" /> ARCHIVE_SECTOR: PROJECTS_CATALOG
+			</div>
 			<h2 class="font-poppins text-4xl leading-none font-black tracking-tighter sm:text-5xl">
 				{m.work_title()}<span class="text-primary italic">.</span>
 			</h2>
@@ -99,13 +106,24 @@
 			<div class="mt-12 flex justify-center md:mt-16">
 				<a
 					href={localizeHref('/projects')}
-					class="tape-cta inline-flex items-center gap-1.5 rounded-full px-6 py-2.5 font-mono text-sm font-bold tracking-wide"
+					class="tape-cta inline-flex items-center gap-1.5 px-6 py-2.5 font-mono text-sm font-bold tracking-wide"
 				>
 					{m.work_view_all_button()}
 					<ArrowUpRight class="size-4" />
 				</a>
 			</div>
 		{/if}
+
+		<!-- Footer technicality -->
+		<div
+			class="mt-8 flex items-center justify-between border-t-2 border-foreground/10 pt-4 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase lg:mt-16 lg:pt-6"
+		>
+			<div class="flex items-center gap-4">
+				<Hash class="size-3" />
+				<span>MIKEU_DEV // PROJECT_VAULT</span>
+			</div>
+			<span>LOAD_COUNT: {localizedProjects.length.toString().padStart(2, '0')}</span>
+		</div>
 	</div>
 </section>
 
@@ -117,6 +135,7 @@
 	.tape-cta {
 		background: var(--tape-bg-grad);
 		color: var(--tape-color);
+		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
 		box-shadow: 0 6px 12px var(--tape-shadow);
 		transition:
 			box-shadow 0.3s ease,
@@ -128,15 +147,7 @@
 		transform: translateY(-2px);
 	}
 
-	.work-glow {
-		opacity: 0.08;
-	}
-
-	.work-glow-1 {
-		background: #fcec62;
-	}
-
-	.work-glow-2 {
-		background: #438468;
+	.origami-shard {
+		pointer-events: none;
 	}
 </style>
