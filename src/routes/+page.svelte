@@ -11,7 +11,7 @@
 <div id="work">
 	<SectionLoader rootMargin="400px">
 		{#snippet fallback()}
-			<div class="container grid grid-cols-1 gap-6 py-20 md:grid-cols-2 lg:grid-cols-3">
+			<div class="container mx-auto grid grid-cols-1 gap-6 py-20 md:grid-cols-2 lg:grid-cols-3">
 				<Skeleton class="h-64 w-full" />
 				<Skeleton class="h-64 w-full" />
 				<Skeleton class="h-64 w-full" />
@@ -25,7 +25,7 @@
 
 <SectionLoader rootMargin="400px">
 	{#snippet fallback()}
-		<div class="container space-y-4 py-20">
+		<div class="container mx-auto space-y-4 py-20">
 			<Skeleton class="h-10 w-48" />
 			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 				<Skeleton class="h-40 w-full" />

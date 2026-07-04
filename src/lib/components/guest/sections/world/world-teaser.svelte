@@ -285,7 +285,7 @@
 
 	<!-- Technical HUD Watermark Overlays -->
 	<div
-		class="pointer-events-none absolute inset-x-0 top-6 z-10 container flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/20 uppercase"
+		class="pointer-events-none absolute inset-x-0 top-6 z-10 container mx-auto flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/20 uppercase"
 	>
 		<div class="flex items-center gap-2">
 			<Terminal class="size-3" />
@@ -299,7 +299,7 @@
 
 	<!-- Central Teaser Content Overlay -->
 	<div
-		class="teaser-parallax-layer relative z-20 container flex h-full flex-col items-center justify-center"
+		class="teaser-parallax-layer relative z-20 container mx-auto flex h-full flex-col items-center justify-center"
 	>
 		<!-- Floating Origami Shards -->
 		<div
@@ -381,7 +381,7 @@
 
 	<!-- Bottom Technical Overlay -->
 	<div
-		class="pointer-events-none absolute inset-x-0 bottom-6 z-10 container flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/20 uppercase"
+		class="pointer-events-none absolute inset-x-0 bottom-6 z-10 container mx-auto flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/20 uppercase"
 	>
 		<span>GEOMETRY: POLYGONAL_GLOBE // ACC-01</span>
 		<div class="hidden items-center gap-1 sm:flex">
