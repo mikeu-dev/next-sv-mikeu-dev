@@ -48,45 +48,22 @@
 	}
 
 	/**
-	 * Blobs live entirely on their own ambient drift/morph — they never move toward
-	 * the cursor. The cursor's only job is to "ignite" whichever blob(s) it gets
-	 * close to: those glow brighter and distort — skewed/stretched toward the
-	 * cursor's direction like a liquid surface reacting to proximity — while their
-	 * position stays fully autonomous. Skew is a transform property, independent
-	 * of the `border-radius` CSS-keyframe morph already running on the same blob,
-	 * so the two never fight over the same property.
+	 * Blueprint-style cursor spotlight — tracks pointer position as CSS custom
+	 * properties consumed by `.mouse-spotlight`'s radial-gradient, instead of
+	 * animating any element directly (cheap: one style write per rAF-throttled
+	 * move, no GSAP tween churn).
 	 */
-	function setupCursorBlobs(card: HTMLElement): () => void {
-		const blobs = Array.from(card.querySelectorAll<HTMLElement>('.hero-blob'));
-		const movers = blobs.map((blob) => ({
-			blob,
-			skewXTo: gsap.quickTo(blob, 'skewX', { duration: 0.5, ease: 'power2.out' }),
-			skewYTo: gsap.quickTo(blob, 'skewY', { duration: 0.5, ease: 'power2.out' }),
-			scaleTo: gsap.quickTo(blob, 'scale', { duration: 0.5, ease: 'power2.out' }),
-			opacityTo: gsap.quickTo(blob, 'opacity', { duration: 0.45, ease: 'power2.out' })
-		}));
-
+	function setupMouseSpotlight(card: HTMLElement): () => void {
 		let ticking = false;
 		let lastEvent: MouseEvent | null = null;
 
 		const applyMove = () => {
 			if (!lastEvent) return;
-
-			movers.forEach(({ blob, skewXTo, skewYTo, scaleTo, opacityTo }) => {
-				const blobRect = blob.getBoundingClientRect();
-				const centerX = blobRect.left + blobRect.width / 2;
-				const centerY = blobRect.top + blobRect.height / 2;
-				const dx = lastEvent!.clientX - centerX;
-				const dy = lastEvent!.clientY - centerY;
-				const dist = Math.hypot(dx, dy);
-				const proximity = gsap.utils.clamp(0, 1, 1 - dist / 420);
-
-				skewXTo(gsap.utils.clamp(-25, 25, dx * 0.045 * proximity));
-				skewYTo(gsap.utils.clamp(-25, 25, dy * 0.045 * proximity));
-				scaleTo(1 + proximity * 0.15);
-				opacityTo(0.4 + proximity * 0.45);
-			});
-
+			const rect = card.getBoundingClientRect();
+			const x = ((lastEvent.clientX - rect.left) / rect.width) * 100;
+			const y = ((lastEvent.clientY - rect.top) / rect.height) * 100;
+			card.style.setProperty('--mouse-x', `${x}%`);
+			card.style.setProperty('--mouse-y', `${y}%`);
 			ticking = false;
 		};
 
@@ -97,21 +74,9 @@
 				requestAnimationFrame(applyMove);
 			}
 		};
-		const handleLeave = () => {
-			movers.forEach(({ skewXTo, skewYTo, scaleTo, opacityTo }) => {
-				skewXTo(0);
-				skewYTo(0);
-				scaleTo(1);
-				opacityTo(0.4);
-			});
-		};
 
 		card.addEventListener('mousemove', handleMove);
-		card.addEventListener('mouseleave', handleLeave);
-		return () => {
-			card.removeEventListener('mousemove', handleMove);
-			card.removeEventListener('mouseleave', handleLeave);
-		};
+		return () => card.removeEventListener('mousemove', handleMove);
 	}
 
 	/**
@@ -172,62 +137,10 @@
 				);
 				introTl.to('.hero-caption', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.5);
 
-				// Ambient blob drift — slow, organic, non-synchronized. Targets the wrapper
-				// layer (not `.hero-blob` itself) so it doesn't fight the cursor-follow
-				// tween below, which animates the inner blob's x/y independently.
-				// Collected so they can be paused whenever the hero scrolls out of view —
-				// otherwise these infinite tweens (plus the blurred/blended blobs they
-				// drive) keep costing frame budget site-wide even when scrolled away,
-				// which is what made scrolling feel unsmooth everywhere, not just here.
+				// Ambient dot pulse — the only looping tween left once the color-blob
+				// background was swapped for the static blueprint/origami panel.
+				// Collected so it can be paused whenever the hero scrolls out of view.
 				ambientTweens.push(
-					gsap.to('.hero-blob-wrap-1', {
-						x: 40,
-						y: 30,
-						duration: 9,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					}),
-					gsap.to('.hero-blob-wrap-2', {
-						x: -35,
-						y: -25,
-						duration: 11,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					}),
-					gsap.to('.hero-blob-wrap-3', {
-						x: 25,
-						y: -30,
-						duration: 7.5,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					}),
-					gsap.to('.hero-blob-wrap-4', {
-						x: -20,
-						y: 35,
-						duration: 13,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					}),
-					gsap.to('.hero-blob-wrap-5', {
-						x: 30,
-						y: 20,
-						duration: 10,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					}),
-					gsap.to('.hero-blob-wrap-6', {
-						x: -28,
-						y: -18,
-						duration: 8.5,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					}),
 					gsap.to('.hero-dot', {
 						scale: 1.5,
 						opacity: 0.4,
@@ -255,15 +168,17 @@
 
 			const pointerIsFine = window.matchMedia('(pointer: fine)').matches;
 			const removeMagnetic = prefersReducedMotion ? undefined : setupMagneticButtons(section);
-			const removeCursorBlobs =
-				!prefersReducedMotion && pointerIsFine && heroCard ? setupCursorBlobs(heroCard) : undefined;
+			const removeSpotlight =
+				!prefersReducedMotion && pointerIsFine && heroCard
+					? setupMouseSpotlight(heroCard)
+					: undefined;
 			const removePendulumHover =
 				!prefersReducedMotion && heroNameEl && devTagEl
 					? setupPendulumHover(heroNameEl, devTagEl)
 					: undefined;
 			removeListeners = () => {
 				removeMagnetic?.();
-				removeCursorBlobs?.();
+				removeSpotlight?.();
 				removePendulumHover?.();
 			};
 		});
@@ -283,33 +198,38 @@
 >
 	<div
 		bind:this={heroCard}
-		class="hero-card max-w-screen-4xl relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 text-center sm:min-h-[90vh]"
+		class="hero-card max-w-screen-4xl relative flex min-h-[90vh] w-full flex-col items-center justify-center text-center sm:min-h-[90vh]"
+		style="--mouse-x: 50%; --mouse-y: 50%;"
 	>
-		<!-- Blurred organic color-blob glass background — outer wrapper drifts ambiently,
-		     inner blob morphs shape and is pulled toward the cursor independently -->
-		<div class="hero-blob-wrap hero-blob-wrap-1 absolute">
-			<div class="hero-blob hero-blob-1 h-full w-full blur-[110px]"></div>
+		<!-- Blueprint grid — technical drafting-paper texture etched into the panel -->
+		<div class="blueprint-grid pointer-events-none absolute inset-0"></div>
+
+		<!-- Interactive spotlight following the cursor -->
+		<div class="mouse-spotlight pointer-events-none absolute inset-0"></div>
+
+		<!-- Glossy diagonal reflection, like light catching a folded paper surface -->
+		<div class="hero-sweep pointer-events-none absolute inset-0"></div>
+
+		<!-- Crease shading — a soft diagonal fold running through the panel -->
+		<div class="hero-crease pointer-events-none absolute inset-0"></div>
+
+		<!-- Folded paper corners -->
+		<div class="hero-fold hero-fold-tr absolute top-0 right-0">
+			<div class="hero-fold-shine absolute inset-0"></div>
 		</div>
-		<div class="hero-blob-wrap hero-blob-wrap-2 absolute">
-			<div class="hero-blob hero-blob-2 h-full w-full blur-[110px]"></div>
+		<div class="hero-fold hero-fold-bl absolute bottom-0 left-0">
+			<div class="hero-fold-shine absolute inset-0"></div>
 		</div>
-		<div class="hero-blob-wrap hero-blob-wrap-3 absolute">
-			<div class="hero-blob hero-blob-3 h-full w-full blur-[110px]"></div>
-		</div>
-		<div class="hero-blob-wrap hero-blob-wrap-4 absolute">
-			<div class="hero-blob hero-blob-4 h-full w-full blur-[110px]"></div>
-		</div>
-		<div class="hero-blob-wrap hero-blob-wrap-5 absolute">
-			<div class="hero-blob hero-blob-5 h-full w-full blur-[110px]"></div>
-		</div>
-		<div class="hero-blob-wrap hero-blob-wrap-6 absolute">
-			<div class="hero-blob hero-blob-6 h-full w-full blur-[110px]"></div>
-		</div>
-		<div class="hero-glass pointer-events-none absolute inset-0 backdrop-blur-sm"></div>
+
+		<!-- Fine grain overlay -->
+		<div
+			class="pointer-events-none absolute inset-0 z-40 opacity-[0.04] mix-blend-overlay"
+			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
+		></div>
 
 		<!-- Content -->
 		<div class="relative z-10 mx-auto flex flex-col items-center px-6 py-16 md:py-24">
-			<p class="hero-greeting font-mono text-sm tracking-wide text-white/80">
+			<p class="hero-greeting font-mono text-sm tracking-wide text-[#c7d796]/80">
 				{m.hero_title()}
 			</p>
 
@@ -331,11 +251,13 @@
 			</h1>
 
 			<div class="hero-pills mt-6">
-				<span
-					class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-5 py-2 font-mono text-xs tracking-wide text-white/90 backdrop-blur-md sm:text-sm"
-				>
-					{m.hero_subtitle()}
-				</span>
+				<div class="tape-wrapper">
+					<div class="tape-body">
+						<span class="tape-label-text font-mono">{m.hero_subtitle()}</span>
+						<div class="tape-fold-tr"></div>
+						<div class="tape-fold-bl"></div>
+					</div>
+				</div>
 			</div>
 
 			<div class="mt-10 flex flex-col items-center gap-4">
@@ -360,20 +282,20 @@
 						e.preventDefault();
 						document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
 					}}
-					class="hero-secondary-link font-mono text-xs tracking-wide text-white/60 underline decoration-transparent underline-offset-4 transition-colors hover:text-white hover:decoration-current sm:text-sm"
+					class="hero-secondary-link font-mono text-xs tracking-wide text-[#c7d796]/70 underline decoration-transparent underline-offset-4 transition-colors hover:text-white hover:decoration-current sm:text-sm"
 				>
 					{m.hero_button_link()} →
 				</a>
 			</div>
 		</div>
 
-		<!-- Corner captions -->
+		<!-- Corner captions — blueprint-style annotations -->
 		<span
-			class="hero-caption absolute bottom-4 left-4 z-10 font-mono text-[10px] tracking-widest text-white/50 sm:bottom-6 sm:left-6"
+			class="hero-caption absolute bottom-4 left-4 z-10 font-mono text-[10px] tracking-[0.2em] text-[#c7d796]/70 uppercase sm:bottom-6 sm:left-6"
 			>{currentYear}</span
 		>
 		<span
-			class="hero-caption absolute right-4 bottom-4 z-10 font-mono text-[10px] tracking-widest text-white/50 sm:right-6 sm:bottom-6"
+			class="hero-caption absolute right-4 bottom-4 z-10 font-mono text-[10px] tracking-[0.2em] text-[#c7d796]/70 uppercase sm:right-6 sm:bottom-6"
 			>Indonesia</span
 		>
 	</div>
@@ -386,8 +308,14 @@
 		perspective: 1500px;
 	}
 
+	/* The card is now the origami "paper" panel itself — an asymmetric clipped
+	   sheet rather than a rounded glass card, matching the brutalist-origami
+	   fold motif used across the rest of the site (tape CTAs, the "Dev" tag). */
 	.hero-card {
-		background: var(--hero-base);
+		overflow: hidden;
+		clip-path: polygon(0% 2%, 98% 0%, 100% 98%, 2% 100%);
+		border: 3px solid var(--hero-border);
+		background: var(--hero-paper-grad);
 	}
 
 	/* "Dev" tag — hangs off the name at an angle, pinned at its own bottom-right
@@ -397,203 +325,182 @@
 	}
 
 	:root {
-		--hero-base: #051a13;
-		/* Blob palette stays theme-independent — the card is always a dark glass
-		   surface regardless of the site's light/dark toggle, so one set of
-		   avocado-family colors covers both. */
-		--hero-blob-1: #fcec62; /* yellow */
-		--hero-blob-1-light: #fff9c4;
-		--hero-blob-2: #c7d796; /* soft mint */
-		--hero-blob-2-light: #eef6d9;
-		--hero-blob-3: #438468; /* avocado green */
-		--hero-blob-3-light: #8fd6ac;
-		--hero-blob-4: #a8e063; /* vivid lime, bridges yellow and green */
-		--hero-blob-4-light: #e3f7b8;
-		--hero-blob-5: #1a4435; /* deep emerald */
-		--hero-blob-5-light: #4f9973;
-		--hero-blob-6: #2f6e52; /* deep teal-green */
-		--hero-blob-6-light: #6bbf94;
+		--hero-border: rgba(199, 215, 150, 0.5);
+		--hero-paper-grad: linear-gradient(135deg, #215542 0%, #1a4435 55%, #0c2019 100%);
+		--grid-color: rgba(199, 215, 150, 0.14);
+		--mouse-glow: rgba(252, 236, 98, 0.1);
+
+		/* Glossy Badges — the subtitle's "tape label" treatment */
+		--badge-bg-grad:
+			linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 25%),
+			linear-gradient(135deg, #ffffff 0%, #f4f4f4 50%, #e0e0e0 100%);
+		--badge-color: #1a4435;
+		--badge-fold-color: #f8f8f8;
 		/* --tape-bg-grad / --tape-color / --tape-shadow* now live in app.css as
 		   global brand tokens, shared with the work section's CTA. */
 	}
 
 	:global(.dark) {
-		--hero-base: #051a13;
+		--hero-border: rgba(255, 255, 255, 0.3);
+		--hero-paper-grad: linear-gradient(135deg, #3f3f46 0%, #18181b 55%, #000000 100%);
+		--grid-color: rgba(255, 255, 255, 0.08);
+		--mouse-glow: rgba(255, 255, 255, 0.08);
+
+		--badge-bg-grad:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 25%),
+			linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%);
+		--badge-color: #e2e2e8;
+		--badge-fold-color: #4a4a52;
 	}
 
-	.hero-blob-wrap {
-		width: 50vw;
-		max-width: 560px;
-		aspect-ratio: 1;
-		will-change: transform;
+	.blueprint-grid {
+		background-image:
+			linear-gradient(var(--grid-color) 1px, transparent 1px),
+			linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+		background-size: 40px 40px;
 	}
 
-	/* Blobs are sized well past the card itself and heavily overlapped so their
-	   blur merges into one continuous mesh-gradient wash, not separate floating
-	   shapes — matching the reference's smooth full-bleed color blend. */
-	.hero-blob-wrap-1 {
-		top: -40%;
-		left: -30%;
-		width: 95vw;
-		max-width: 1050px;
-	}
-
-	.hero-blob-wrap-2 {
-		right: -25%;
-		bottom: -35%;
-		width: 90vw;
-		max-width: 1000px;
-	}
-
-	.hero-blob-wrap-3 {
-		top: -10%;
-		right: -15%;
-		width: 75vw;
-		max-width: 840px;
-	}
-
-	.hero-blob-wrap-4 {
-		bottom: -20%;
-		left: -15%;
-		width: 70vw;
-		max-width: 780px;
-	}
-
-	.hero-blob-wrap-5 {
-		top: 15%;
-		left: 20%;
-		width: 62vw;
-		max-width: 700px;
-	}
-
-	.hero-blob-wrap-6 {
-		top: -20%;
-		right: 15%;
-		width: 58vw;
-		max-width: 650px;
-	}
-
-	.hero-blob {
-		opacity: 0.4;
-		/* Screen blend makes overlapping blobs add light together instead of just
-		   stacking flat color — the key to reading as glowing light, not paint.
-		   Kept lower at rest since these blobs now overlap heavily; screen blend
-		   compounds brightness fast where several colors stack. */
-		mix-blend-mode: screen;
-		will-change: transform, opacity, border-radius;
-	}
-
-	/* Paused whenever the hero scrolls out of view (toggled via IntersectionObserver
-	   in the script) — these blurred/blended/morphing layers are expensive to keep
-	   repainting when nobody can even see them. */
-	:global(.hero-offscreen) .hero-blob {
-		animation-play-state: paused;
-	}
-
-	.hero-blob-1 {
+	.mouse-spotlight {
 		background: radial-gradient(
-			circle at 50% 50%,
-			var(--hero-blob-1-light) 0%,
-			var(--hero-blob-1) 45%,
-			transparent 75%
+			circle 450px at var(--mouse-x) var(--mouse-y),
+			var(--mouse-glow),
+			transparent 70%
 		);
-		animation: blob-morph-a 16s ease-in-out infinite;
 	}
 
-	.hero-blob-2 {
-		background: radial-gradient(
-			circle at 50% 50%,
-			var(--hero-blob-2-light) 0%,
-			var(--hero-blob-2) 45%,
-			transparent 75%
-		);
-		animation: blob-morph-b 19s ease-in-out infinite;
-	}
-
-	.hero-blob-3 {
-		background: radial-gradient(
-			circle at 50% 50%,
-			var(--hero-blob-3-light) 0%,
-			var(--hero-blob-3) 45%,
-			transparent 75%
-		);
-		animation: blob-morph-c 14s ease-in-out infinite;
-	}
-
-	.hero-blob-4 {
-		background: radial-gradient(
-			circle at 50% 50%,
-			var(--hero-blob-4-light) 0%,
-			var(--hero-blob-4) 45%,
-			transparent 75%
-		);
-		animation: blob-morph-a 21s ease-in-out infinite reverse;
-	}
-
-	.hero-blob-5 {
-		background: radial-gradient(
-			circle at 50% 50%,
-			var(--hero-blob-5-light) 0%,
-			var(--hero-blob-5) 45%,
-			transparent 75%
-		);
-		animation: blob-morph-b 17s ease-in-out infinite reverse;
-	}
-
-	.hero-blob-6 {
-		background: radial-gradient(
-			circle at 50% 50%,
-			var(--hero-blob-6-light) 0%,
-			var(--hero-blob-6) 45%,
-			transparent 75%
-		);
-		animation: blob-morph-c 23s ease-in-out infinite reverse;
-	}
-
-	@keyframes blob-morph-a {
-		0%,
-		100% {
-			border-radius: 63% 37% 54% 46% / 43% 65% 35% 57%;
-		}
-		50% {
-			border-radius: 38% 62% 63% 37% / 61% 41% 59% 39%;
-		}
-	}
-
-	@keyframes blob-morph-b {
-		0%,
-		100% {
-			border-radius: 42% 58% 68% 32% / 55% 45% 55% 45%;
-		}
-		50% {
-			border-radius: 66% 34% 44% 56% / 38% 62% 38% 62%;
-		}
-	}
-
-	@keyframes blob-morph-c {
-		0%,
-		100% {
-			border-radius: 55% 45% 35% 65% / 65% 55% 45% 35%;
-		}
-		50% {
-			border-radius: 48% 52% 70% 30% / 45% 62% 38% 55%;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.hero-blob {
-			animation: none;
-			border-radius: 50%;
-		}
-	}
-
-	.hero-glass {
+	.hero-sweep {
+		opacity: 0.7;
+		mix-blend-mode: overlay;
 		background: linear-gradient(
-			180deg,
-			rgba(255, 255, 255, 0.06) 0%,
-			rgba(255, 255, 255, 0) 40%,
-			rgba(0, 0, 0, 0.25) 100%
+			110deg,
+			rgba(255, 255, 255, 0) 35%,
+			rgba(255, 255, 255, 0.2) 45%,
+			rgba(255, 255, 255, 0.6) 50%,
+			rgba(255, 255, 255, 0) 55%
 		);
+	}
+
+	.hero-crease {
+		opacity: 0.6;
+		mix-blend-mode: multiply;
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.1) 0%,
+			rgba(255, 255, 255, 0) 50%,
+			rgba(0, 0, 0, 0.1) 50.1%,
+			rgba(0, 0, 0, 0.3) 100%
+		);
+	}
+
+	:global(.dark) .hero-crease {
+		opacity: 0.8;
+		mix-blend-mode: overlay;
+	}
+
+	/* Dog-eared paper corners, sitting flush in the card's own corners (rather
+	   than the old design's hang-past-the-edge trick, which relied on empty
+	   space around a much smaller decorative panel — this card is full-bleed,
+	   so the wedge is clipped to stay inside it instead). */
+	.hero-fold {
+		width: 4rem;
+		height: 4rem;
+	}
+
+	.hero-fold-tr {
+		background: linear-gradient(225deg, #e4edc8 0%, #c7d796 100%);
+		clip-path: polygon(100% 0%, 0% 0%, 100% 100%);
+		filter: drop-shadow(-2px 2px 3px rgba(0, 0, 0, 0.35));
+	}
+
+	.hero-fold-bl {
+		width: 3rem;
+		height: 3rem;
+		background: linear-gradient(45deg, #e4edc8 0%, #c7d796 100%);
+		clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
+		filter: drop-shadow(2px -2px 3px rgba(0, 0, 0, 0.35));
+	}
+
+	.hero-fold-tr .hero-fold-shine {
+		background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, transparent 40%);
+	}
+
+	.hero-fold-bl .hero-fold-shine {
+		background: linear-gradient(225deg, rgba(255, 255, 255, 0.8) 0%, transparent 40%);
+	}
+
+	/* ── Tape Label (subtitle badge, stacked-paper style) ── */
+	.tape-wrapper {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		filter: drop-shadow(0px 4px 6px var(--tape-shadow));
+		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+		will-change: transform, filter;
+	}
+
+	.tape-wrapper:hover {
+		filter: drop-shadow(0px 6px 10px var(--tape-shadow-hover));
+		transform: translateY(-2px);
+	}
+
+	.tape-body {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		padding: 8px 20px;
+		background: var(--badge-bg-grad);
+		color: var(--badge-color);
+		clip-path: polygon(
+			0% 0%,
+			calc(100% - 16px) 0%,
+			100% 16px,
+			100% 100%,
+			16px 100%,
+			0% calc(100% - 16px)
+		);
+	}
+
+	.tape-label-text {
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+	}
+
+	@media (min-width: 640px) {
+		.tape-label-text {
+			font-size: 14px;
+		}
+	}
+
+	.tape-fold-tr {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 16px;
+		height: 16px;
+		background: linear-gradient(
+			225deg,
+			transparent 50%,
+			var(--badge-fold-color) 50%,
+			rgba(255, 255, 255, 0.9) 100%
+		);
+		filter: drop-shadow(-1.5px 1.5px 1px rgba(0, 0, 0, 0.3));
+	}
+
+	.tape-fold-bl {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 16px;
+		height: 16px;
+		background: linear-gradient(
+			45deg,
+			transparent 50%,
+			var(--badge-fold-color) 50%,
+			rgba(255, 255, 255, 0.9) 100%
+		);
+		filter: drop-shadow(1.5px -1.5px 1px rgba(0, 0, 0, 0.3));
 	}
 
 	.tape-button-wrapper {
@@ -618,7 +525,7 @@
 		cursor: pointer;
 		background: var(--tape-bg-grad);
 		color: var(--tape-color);
-		border-radius: 9999px;
+		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
 		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 		text-decoration: none;
 	}
