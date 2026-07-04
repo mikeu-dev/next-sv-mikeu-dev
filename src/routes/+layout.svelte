@@ -168,7 +168,7 @@
 <ModeWatcher defaultMode="light" />
 <Toaster />
 
-<div class="flex min-h-dvh flex-col overflow-x-hidden">
+<div class="flex min-h-dvh flex-col overflow-x-clip">
 	{#if !isAdmin}
 		{#await data.resumeUrls}
 			<Navbar resolvedResumeUrls={{ en: '', id: '' }} />

@@ -112,6 +112,7 @@
 								[KNOWLEDGE_NODE_v1.0]
 							</div>
 							<h1
+								id="post-title"
 								class="font-poppins text-4xl leading-tight font-black tracking-tighter uppercase italic md:text-7xl"
 							>
 								{data.meta.title}<span class="text-primary">_</span>
@@ -178,14 +179,14 @@
 			</article>
 
 			<!-- Sidebar -->
-			<aside class="content-stagger hidden xl:block">
-				<div class="sticky top-32 space-y-12">
+			<aside class="hidden xl:block">
+				<div class="content-stagger sticky top-32 space-y-12">
 					<div class="border-4 border-foreground bg-card p-6 shadow-[6px_6px_0_var(--foreground)]">
 						<div class="mb-6 flex items-center gap-3 border-b-2 border-foreground/10 pb-3">
 							<BookOpen class="size-4 text-primary" />
 							<h4 class="font-poppins text-xs font-black tracking-widest uppercase">[NAV_HUD]</h4>
 						</div>
-						<TableOfContents headings={data.headings || []} />
+						<TableOfContents headings={data.headings || []} title={data.meta.title} />
 					</div>
 
 					<!-- System Status Widget -->
