@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { gsap } from 'gsap';
 	import { m } from '$lib/paraglide/messages';
+	import { tornPaperClipPath } from '$lib/utils/torn-paper-shape';
 
 	let heroSection = $state<HTMLElement>();
 	let heroCard = $state<HTMLElement>();
@@ -10,6 +11,10 @@
 	let devTagEl = $state<HTMLElement>();
 
 	const currentYear = new Date().getFullYear();
+
+	// Hand-torn deckle silhouette for the paper sheet — a fixed seed keeps SSR and
+	// the client rendering the identical tear instead of reshuffling on hydration.
+	const heroClip = tornPaperClipPath('hero-paper', { segments: 10, jitter: 2 });
 
 	let ctx: gsap.Context;
 	let removeListeners: (() => void) | undefined;
@@ -199,7 +204,7 @@
 	<div
 		bind:this={heroCard}
 		class="hero-card max-w-screen-4xl relative flex min-h-[90vh] w-full flex-col items-center justify-center text-center sm:min-h-[90vh]"
-		style="--mouse-x: 50%; --mouse-y: 50%;"
+		style="--mouse-x: 50%; --mouse-y: 50%; clip-path: {heroClip};"
 	>
 		<!-- Crumpled-paper surface — fractal-noise height map lit by SVG filters:
 		     feDiffuseLighting bakes each wrinkle's matte shadow/highlight, the
@@ -216,13 +221,9 @@
 		<!-- Crease shading — a soft diagonal fold running through the panel -->
 		<div class="hero-crease pointer-events-none absolute inset-0"></div>
 
-		<!-- Folded paper corners -->
-		<div class="hero-fold hero-fold-tr absolute top-0 right-0">
-			<div class="hero-fold-shine absolute inset-0"></div>
-		</div>
-		<div class="hero-fold hero-fold-bl absolute bottom-0 left-0">
-			<div class="hero-fold-shine absolute inset-0"></div>
-		</div>
+		<!-- Torn rim shading — a soft inner shadow giving the deckle edge a hint of
+		     paper thickness where the sheet lifts off the page. -->
+		<div class="hero-edge pointer-events-none absolute inset-0"></div>
 
 		<!-- Fine grain overlay -->
 		<div
@@ -311,14 +312,13 @@
 		perspective: 1500px;
 	}
 
-	/* The card is now the origami "paper" panel itself — an asymmetric clipped
-	   sheet rather than a rounded glass card, matching the brutalist-origami
-	   fold motif used across the rest of the site (tape CTAs, the "Dev" tag). */
+	/* The card is the paper sheet itself: a hand-torn deckle silhouette (the
+	   clip-path is generated in the script) carrying the crumpled surface, lifted
+	   off the page by a soft drop-shadow that follows that same torn outline. */
 	.hero-card {
 		overflow: hidden;
-		clip-path: polygon(0% 2%, 98% 0%, 100% 98%, 2% 100%);
-		border: 3px solid var(--hero-border);
 		background: var(--hero-paper-grad);
+		filter: drop-shadow(var(--hero-shadow));
 	}
 
 	/* "Dev" tag — hangs off the name at an angle, pinned at its own bottom-right
@@ -328,7 +328,7 @@
 	}
 
 	:root {
-		--hero-border: rgba(199, 215, 150, 0.5);
+		--hero-shadow: 0 16px 28px rgba(0, 0, 0, 0.3);
 		--hero-paper-grad: linear-gradient(135deg, #215542 0%, #1a4435 55%, #0c2019 100%);
 		--mouse-glow: rgba(252, 236, 98, 0.1);
 
@@ -343,7 +343,7 @@
 	}
 
 	:global(.dark) {
-		--hero-border: rgba(255, 255, 255, 0.3);
+		--hero-shadow: 0 18px 34px rgba(0, 0, 0, 0.6);
 		--hero-paper-grad: linear-gradient(135deg, #3f3f46 0%, #18181b 55%, #000000 100%);
 		--mouse-glow: rgba(255, 255, 255, 0.08);
 
@@ -424,35 +424,10 @@
 		mix-blend-mode: overlay;
 	}
 
-	/* Dog-eared paper corners, sitting flush in the card's own corners (rather
-	   than the old design's hang-past-the-edge trick, which relied on empty
-	   space around a much smaller decorative panel — this card is full-bleed,
-	   so the wedge is clipped to stay inside it instead). */
-	.hero-fold {
-		width: 4rem;
-		height: 4rem;
-	}
-
-	.hero-fold-tr {
-		background: linear-gradient(225deg, #e4edc8 0%, #c7d796 100%);
-		clip-path: polygon(100% 0%, 0% 0%, 100% 100%);
-		filter: drop-shadow(-2px 2px 3px rgba(0, 0, 0, 0.35));
-	}
-
-	.hero-fold-bl {
-		width: 3rem;
-		height: 3rem;
-		background: linear-gradient(45deg, #e4edc8 0%, #c7d796 100%);
-		clip-path: polygon(0% 100%, 0% 0%, 100% 100%);
-		filter: drop-shadow(2px -2px 3px rgba(0, 0, 0, 0.35));
-	}
-
-	.hero-fold-tr .hero-fold-shine {
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, transparent 40%);
-	}
-
-	.hero-fold-bl .hero-fold-shine {
-		background: linear-gradient(225deg, rgba(255, 255, 255, 0.8) 0%, transparent 40%);
+	/* Torn rim: a soft inner shadow that darkens the deckle edge, giving the
+	   sheet a hint of thickness where it lifts off the page. */
+	.hero-edge {
+		box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.28);
 	}
 
 	/* ── Tape Label (subtitle badge, stacked-paper style) ── */
