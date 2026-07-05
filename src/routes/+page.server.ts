@@ -8,9 +8,11 @@ export const prerender = false;
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
 
-	// Disable CDN and browser caching for the homepage in production
+	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
 	setHeaders({
-		'cache-control': 'private, no-cache, no-store, must-revalidate'
+		'cache-control': locals.user
+			? 'private, no-store'
+			: 'public, s-maxage=10, stale-while-revalidate=30'
 	});
 
 	// Projects fetch is the same for both, but we fetch it once.

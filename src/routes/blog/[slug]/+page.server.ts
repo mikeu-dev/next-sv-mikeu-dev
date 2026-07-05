@@ -9,9 +9,11 @@ export const load: PageServerLoad = async (event) => {
 	const locale = locals.paraglide.locale;
 	const slug = params.slug;
 
-	// Disable CDN and browser caching for the article detail in production
+	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
 	setHeaders({
-		'cache-control': 'private, no-cache, no-store, must-revalidate'
+		'cache-control': locals.user
+			? 'private, no-store'
+			: 'public, s-maxage=10, stale-while-revalidate=30'
 	});
 
 	try {

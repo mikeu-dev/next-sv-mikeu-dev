@@ -7,9 +7,11 @@ export const load: PageServerLoad = async ({ locals, url, setHeaders }) => {
 	const locale = locals.paraglide.locale;
 	const search = url.searchParams.get('q') || '';
 
-	// Disable CDN and browser caching for the blog list in production
+	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
 	setHeaders({
-		'cache-control': 'private, no-cache, no-store, must-revalidate'
+		'cache-control': locals.user
+			? 'private, no-store'
+			: 'public, s-maxage=10, stale-while-revalidate=30'
 	});
 
 	const { posts, nextCursor } = await blogService.getPublishedPostsByLocale(locale, {
