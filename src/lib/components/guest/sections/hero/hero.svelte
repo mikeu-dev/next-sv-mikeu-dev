@@ -201,8 +201,11 @@
 		class="hero-card max-w-screen-4xl relative flex min-h-[90vh] w-full flex-col items-center justify-center text-center sm:min-h-[90vh]"
 		style="--mouse-x: 50%; --mouse-y: 50%;"
 	>
-		<!-- Blueprint grid — technical drafting-paper texture etched into the panel -->
-		<div class="blueprint-grid pointer-events-none absolute inset-0"></div>
+		<!-- Crumpled-paper surface — fractal-noise height map lit by SVG filters:
+		     feDiffuseLighting bakes each wrinkle's matte shadow/highlight, the
+		     sheen layer adds the glossy light-catch on crease ridges. -->
+		<div class="crumpled-paper pointer-events-none absolute inset-0"></div>
+		<div class="crumpled-sheen pointer-events-none absolute inset-0"></div>
 
 		<!-- Interactive spotlight following the cursor -->
 		<div class="mouse-spotlight pointer-events-none absolute inset-0"></div>
@@ -327,7 +330,6 @@
 	:root {
 		--hero-border: rgba(199, 215, 150, 0.5);
 		--hero-paper-grad: linear-gradient(135deg, #215542 0%, #1a4435 55%, #0c2019 100%);
-		--grid-color: rgba(199, 215, 150, 0.14);
 		--mouse-glow: rgba(252, 236, 98, 0.1);
 
 		/* Glossy Badges — the subtitle's "tape label" treatment */
@@ -343,7 +345,6 @@
 	:global(.dark) {
 		--hero-border: rgba(255, 255, 255, 0.3);
 		--hero-paper-grad: linear-gradient(135deg, #3f3f46 0%, #18181b 55%, #000000 100%);
-		--grid-color: rgba(255, 255, 255, 0.08);
 		--mouse-glow: rgba(255, 255, 255, 0.08);
 
 		--badge-bg-grad:
@@ -353,11 +354,37 @@
 		--badge-fold-color: #4a4a52;
 	}
 
-	.blueprint-grid {
-		background-image:
-			linear-gradient(var(--grid-color) 1px, transparent 1px),
-			linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-		background-size: 40px 40px;
+	/* ── Realistic crumpled-paper surface ────────────────────────────────────
+	   A fractal-noise height map fed into SVG lighting filters. `feDiffuseLighting`
+	   bakes the matte shadow/highlight of every wrinkle under a fixed top-left
+	   "sun" (azimuth 235°, low elevation), tuned so a FLAT area lands on ~0.5 grey
+	   — neutral for the `overlay` blend — while slopes facing the light lift and
+	   slopes turned away sink into shadow. Tune crease SIZE via `baseFrequency`
+	   and crease DEPTH via `surfaceScale`. The sheen layer reuses the same
+	   seed/frequency so its glossy `feSpecularLighting` highlights land on the
+	   exact same ridges. */
+	.crumpled-paper {
+		background: center / cover no-repeat
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.009 0.012' numOctaves='6' seed='6' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' surfaceScale='3.4' diffuseConstant='0.72' lighting-color='%23fff'%3E%3CfeDistantLight azimuth='235' elevation='46'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='1200' height='1200' filter='url(%23p)'/%3E%3C/svg%3E");
+		mix-blend-mode: overlay;
+		opacity: 0.68;
+	}
+
+	.crumpled-sheen {
+		background: center / cover no-repeat
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.009 0.012' numOctaves='6' seed='6' stitchTiles='stitch' result='n'/%3E%3CfeSpecularLighting in='n' surfaceScale='3.4' specularConstant='0.55' specularExponent='18' lighting-color='%23fff'%3E%3CfeDistantLight azimuth='235' elevation='58'/%3E%3C/feSpecularLighting%3E%3C/filter%3E%3Crect width='1200' height='1200' filter='url(%23s)'/%3E%3C/svg%3E");
+		mix-blend-mode: screen;
+		opacity: 0.3;
+	}
+
+	/* Dark paper is already near-black, so the same wrinkles need a gentler hand
+	   to avoid crushing to pure black / blowing out to white. */
+	:global(.dark) .crumpled-paper {
+		opacity: 0.52;
+	}
+
+	:global(.dark) .crumpled-sheen {
+		opacity: 0.17;
 	}
 
 	.mouse-spotlight {
