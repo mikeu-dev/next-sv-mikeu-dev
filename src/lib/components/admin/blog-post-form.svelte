@@ -271,7 +271,7 @@
 					type="text"
 					bind:value={aiPrompt}
 					placeholder="Tulis topik atau instruksi blog (misal: keamanan API, optimasi query PostgreSQL, atau tren AI 2025)..."
-					class="w-full rounded-lg border border-purple-200 bg-white px-4 py-2.5 text-sm focus:border-purple-500 focus:outline-none dark:border-purple-900/50 dark:bg-gray-950"
+					class="w-full rounded-lg border border-purple-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-purple-500 focus:outline-none dark:border-purple-900/50 dark:bg-gray-950 dark:text-gray-100"
 				/>
 			</div>
 			<button
@@ -328,7 +328,7 @@
 						type="text"
 						id="slug"
 						bind:value={commonData.slug}
-						class="w-full flex-1 rounded-l-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+						class="w-full flex-1 rounded-l-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 						placeholder="url-slug"
 					/>
 					<button
@@ -350,7 +350,7 @@
 					type="date"
 					id="date"
 					bind:value={commonData.date}
-					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 				/>
 			</div>
 		</div>
@@ -398,7 +398,7 @@
 			id="title"
 			bind:value={contentData[activeTab].title}
 			oninput={generateSlug}
-			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 			placeholder="Enter post title"
 		/>
 
@@ -418,7 +418,7 @@
 			id="description"
 			bind:value={contentData[activeTab].description}
 			rows="3"
-			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 			placeholder="Short description for SEO and lists"
 		></textarea>
 
