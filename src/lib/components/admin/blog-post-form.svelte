@@ -269,7 +269,7 @@
 				<input
 					type="text"
 					bind:value={aiPrompt}
-					placeholder="Tulis topik atau instruksi blog (misal: Tips belajar Svelte 5)..."
+					placeholder="Tulis topik atau instruksi blog (misal: keamanan API, optimasi query PostgreSQL, atau tren AI 2025)..."
 					class="w-full rounded-lg border border-purple-200 bg-white px-4 py-2.5 text-sm focus:border-purple-500 focus:outline-none dark:border-purple-900/50 dark:bg-gray-950"
 				/>
 			</div>

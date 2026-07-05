@@ -194,24 +194,26 @@ Return only a valid JSON object with the following structure:
 		const prompt = `Act as a professional tech blogger with a great sense of humor and a deep understanding of premium typography and modern content structure. Generate a full blog post draft based on this instruction: "${userPrompt}".
 
 Requirements:
-1. **Dynamic Technical Freshness**:
-   - Always apply the **LATEST STABLE INDUSTRY STANDARDS** (as of 2024-2025) for any framework, tool, or technology mentioned in the prompt.
-   - If the topic relates to **Svelte/SvelteKit**, you MUST use **Svelte 5 Runes** ($state, $derived, $props) and **SvelteKit 2+** patterns. Avoid older Svelte 4 syntax or deprecated SvelteKit APIs.
-   - For other technologies (e.g., React, Next.js, AI, DevOps), default to the most modern and non-deprecated best practices.
-   - If the topic is non-technical, maintain a smart, contemporary perspective.
-2. **Typography & Structure**:
+1. **Topic Fidelity & Niche Scope**:
+   - Write specifically about the exact subject in the user's instruction. Do NOT drift toward, substitute, or steer the article back to a different technology, framework, or tool than the one requested.
+   - This is a broad **technology** blog. Keep the subject anywhere within the wide technology domain — e.g. software engineering, web, mobile, backend, databases, AI/ML, data engineering, DevOps, cloud, cybersecurity, hardware & gadgets, developer tooling, or emerging tech. Treat "tech" expansively, not just web or front-end development.
+   - Never inject a framework, library, language, or stack the user did not ask for. In particular, do NOT mention Svelte or SvelteKit unless the user's instruction is explicitly about them.
+2. **Technical Freshness**:
+   - Apply the **LATEST STABLE INDUSTRY STANDARDS** (as of 2024-2025) and non-deprecated best practices for whichever specific technology the instruction actually names.
+   - Only when the instruction is explicitly about **Svelte or SvelteKit**, use **Svelte 5 Runes** ($state, $derived, $props) and **SvelteKit 2+** patterns, and avoid deprecated Svelte 4 / old SvelteKit APIs.
+3. **Typography & Structure**:
    - Use a clear visual hierarchy: **H2 for major sections**, **H3 for nested points**.
    - Use **Blockquotes (>)** for "Pro Tips", key takeaways, or humorous dev observations.
    - Use **Bold text** strategically for emphasis.
    - Use **Lists (ul/ol)** to break up long sections.
-   - For technical topics, include high-quality, formatted **Code Blocks** using modern syntax.
-3. **Meme Instruction**: Include 2-3 technical "memes" or jokes. These can be funny observations, sarcastic remarks about "legacy code", or relatable developer struggles.
-4. **Image Instruction**: Include 2-3 relevant images using Markdown syntax: ![Descriptive Alt Text](https://loremflickr.com/800/600/tech,coding,humor).
-5. **SEO Auditing & Visibility**:
+   - For technical topics, include high-quality, formatted **Code Blocks** in the topic's own language/tooling (never default to Svelte examples).
+4. **Meme Instruction**: Include 2-3 technical "memes" or jokes relevant to the article's own topic. These can be funny observations, sarcastic remarks about "legacy code", or relatable developer struggles.
+5. **Image Instruction**: Include 2-3 relevant images using Markdown syntax: ![Descriptive Alt Text](https://loremflickr.com/800/600/tech,coding,humor).
+6. **SEO Auditing & Visibility**:
    - Ensure the main keyword from the user prompt has a natural but effective density throughout the content.
    - The generated titles and descriptions must be optimized for click-through rate (CTR) and search visibility.
    - Images must have highly descriptive Alt Text for accessibility and SEO.
-6. **Goal**: The content should feel like it was written by a current industry expert today, not 2 years ago, and be fully optimized for search engines.
+7. **Goal**: The content should feel like it was written by a current industry expert today, not 2 years ago, and be fully optimized for search engines.
 
 Return ONLY a valid JSON object with this structure:
 {
