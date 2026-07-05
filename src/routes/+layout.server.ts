@@ -4,21 +4,8 @@ import { visitorService } from '$lib/server/services/visitor.service';
 import { settingsService } from '$lib/server/services/settings.service';
 import { showExperimentalFeature } from '$lib/flags';
 
-import { building } from '$app/environment';
-
 export const load: LayoutServerLoad = async (event) => {
-	const { locals, setHeaders } = event;
-	// Enable Edge Caching for layout data (Socials, Visitor Stats, etc.)
-	// Only set headers when not building (prerendering) to avoid conflicts
-	if (!building) {
-		// Never use public CDN cache when a user session is present — user data
-		// (uid, email) would be cached and served to other visitors by Vercel Edge.
-		setHeaders({
-			'cache-control': locals.user
-				? 'private, no-store'
-				: 'public, s-maxage=300, stale-while-revalidate=1800'
-		});
-	}
+	const { locals } = event;
 
 	// Melakukan fetch secara paralel untuk efisiensi.
 	// Kita tidak melakukan 'await' langsung pada return untuk mengaktifkan streaming di SvelteKit.

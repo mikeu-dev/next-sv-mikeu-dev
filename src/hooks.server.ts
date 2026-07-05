@@ -59,6 +59,16 @@ const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
 		);
 	}
 
+	// Default Cache-Control if not set by SvelteKit page-level load functions
+	if (!response.headers.has('cache-control') && !building) {
+		// Never use public CDN cache when a user session is present — user data
+		// (uid, email) would be cached and served to other visitors by Vercel Edge.
+		response.headers.set(
+			'cache-control',
+			event.locals.user ? 'private, no-store' : 'public, s-maxage=300, stale-while-revalidate=1800'
+		);
+	}
+
 	return response;
 };
 
