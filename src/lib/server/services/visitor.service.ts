@@ -118,19 +118,20 @@ export class VisitorService {
 			});
 
 			if (logData) {
-				// 1. Save detailed log
-				await currentDb.collection(this.logCollectionName).add({
-					...sanitizeForFirestore(logData),
-					timestamp: FieldValue.serverTimestamp()
-				});
+				const geoUpdate =
+					logData.country && logData.latitude != null && logData.longitude != null
+						? this.updateGeoSummary(logData)
+						: Promise.resolve();
 
-				// 2. Update Geo Summary (Pre-aggregation)
-				if (logData.country && logData.latitude != null && logData.longitude != null) {
-					await this.updateGeoSummary(logData);
-				}
-
-				// 3. Update Analytics Summary (Pre-aggregation)
-				await this.updateAnalyticsSummary(logData);
+				// Run log write + geo + analytics in parallel — none depend on each other
+				await Promise.all([
+					currentDb.collection(this.logCollectionName).add({
+						...sanitizeForFirestore(logData),
+						timestamp: FieldValue.serverTimestamp()
+					}),
+					geoUpdate,
+					this.updateAnalyticsSummary(logData)
+				]);
 			}
 		} catch (error) {
 			console.error('VisitorService: Error during increment', error);

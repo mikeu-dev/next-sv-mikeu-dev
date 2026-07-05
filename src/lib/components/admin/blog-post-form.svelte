@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import AIAssist from '$lib/components/admin/ai-assist.svelte';
+	import AIContentEnhancer from '$lib/components/admin/ai-content-enhancer.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
@@ -29,22 +30,20 @@
 	});
 
 	// Content specific to locales
-	let contentData = $state<
-		Record<string, { title: string; description: string; content: string; published: boolean }>
-	>({
-		en: {
-			title: '',
-			description: '',
-			content: '',
-			published: false
-		},
-		id: {
-			title: '',
-			description: '',
-			content: '',
-			published: false
+	let contentData = $state<Record<string, { title: string; description: string; content: string }>>(
+		{
+			en: {
+				title: '',
+				description: '',
+				content: ''
+			},
+			id: {
+				title: '',
+				description: '',
+				content: ''
+			}
 		}
-	});
+	);
 
 	let activeTab = $state<'en' | 'id'>('en');
 	let loading = $state(false);
@@ -60,14 +59,12 @@
 			contentData.en = {
 				title: initialData.locale === 'en' ? initialData.title || '' : '',
 				description: initialData.locale === 'en' ? initialData.description || '' : '',
-				content: initialData.locale === 'en' ? initialData.content || '' : '',
-				published: initialData.locale === 'en' ? initialData.published || false : false
+				content: initialData.locale === 'en' ? initialData.content || '' : ''
 			};
 			contentData.id = {
 				title: initialData.locale === 'id' ? initialData.title || '' : '',
 				description: initialData.locale === 'id' ? initialData.description || '' : '',
-				content: initialData.locale === 'id' ? initialData.content || '' : '',
-				published: initialData.locale === 'id' ? initialData.published || false : false
+				content: initialData.locale === 'id' ? initialData.content || '' : ''
 			};
 			activeTab = (initialData.locale as 'en' | 'id') || 'en';
 		}
@@ -90,8 +87,7 @@
 					contentData[otherLocale] = {
 						title: otherData.title,
 						description: otherData.description,
-						content: otherData.content,
-						published: otherData.published
+						content: otherData.content
 					};
 				} else {
 					// Other locale not found, status: res.status
@@ -182,7 +178,8 @@
 					...contentData.en,
 					slug: commonData.slug,
 					date: commonData.date,
-					locale: 'en'
+					locale: 'en',
+					published: commonData.published
 				};
 				// Id strategy: slug-locale
 				// const id = `${commonData.slug}-en`; // ID is now handled by the API based on slug and locale
@@ -208,7 +205,8 @@
 					...contentData.id,
 					slug: commonData.slug,
 					date: commonData.date,
-					locale: 'id'
+					locale: 'id',
+					published: commonData.published
 				};
 				promises.push(
 					fetch('/api/admin/blog', {
@@ -269,8 +267,8 @@
 				<input
 					type="text"
 					bind:value={aiPrompt}
-					placeholder="Tulis topik atau instruksi blog (misal: Tips belajar Svelte 5)..."
-					class="w-full rounded-lg border border-purple-200 bg-white px-4 py-2.5 text-sm focus:border-purple-500 focus:outline-none dark:border-purple-900/50 dark:bg-gray-950"
+					placeholder="Tulis topik atau instruksi blog (misal: keamanan API, optimasi query PostgreSQL, atau tren AI 2025)..."
+					class="w-full rounded-lg border border-purple-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-purple-500 focus:outline-none dark:border-purple-900/50 dark:bg-gray-950 dark:text-gray-100"
 				/>
 			</div>
 			<button
@@ -307,6 +305,20 @@
 		</p>
 	</div>
 
+	<!-- AI Content Enhancement -->
+	<AIContentEnhancer
+		locale={activeTab}
+		onApplyDraft={(draft) => {
+			if (draft.slug) commonData.slug = draft.slug;
+			if (draft.title_en) contentData.en.title = draft.title_en;
+			if (draft.title_id) contentData.id.title = draft.title_id;
+			if (draft.description_en) contentData.en.description = draft.description_en;
+			if (draft.description_id) contentData.id.description = draft.description_id;
+			if (draft.content_en) contentData.en.content = draft.content_en;
+			if (draft.content_id) contentData.id.content = draft.content_id;
+		}}
+	/>
+
 	<!-- Shared Fields -->
 	<div class="grid gap-6 md:grid-cols-2">
 		<!-- Main Info -->
@@ -319,7 +331,7 @@
 						type="text"
 						id="slug"
 						bind:value={commonData.slug}
-						class="w-full flex-1 rounded-l-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+						class="w-full flex-1 rounded-l-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 						placeholder="url-slug"
 					/>
 					<button
@@ -341,8 +353,30 @@
 					type="date"
 					id="date"
 					bind:value={commonData.date}
-					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 				/>
+			</div>
+		</div>
+
+		<!-- Status & Meta -->
+		<div class="flex flex-col justify-end pb-1">
+			<div
+				class="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950/40"
+			>
+				<input
+					type="checkbox"
+					id="published"
+					bind:checked={commonData.published}
+					class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+				/>
+				<div class="flex flex-col">
+					<label for="published" class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+						Publish Post (ID & EN)
+					</label>
+					<span class="text-xs text-gray-500">
+						Aktifkan untuk mempublikasikan postingan langsung ke halaman publik /blog
+					</span>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -389,7 +423,7 @@
 			id="title"
 			bind:value={contentData[activeTab].title}
 			oninput={generateSlug}
-			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 			placeholder="Enter post title"
 		/>
 
@@ -409,21 +443,9 @@
 			id="description"
 			bind:value={contentData[activeTab].description}
 			rows="3"
-			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 			placeholder="Short description for SEO and lists"
 		></textarea>
-
-		<div class="flex items-center gap-2">
-			<input
-				type="checkbox"
-				id="published"
-				bind:checked={contentData[activeTab].published}
-				class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-			/>
-			<label for="published" class="text-sm font-medium">
-				Publish ({activeTab.toUpperCase()} version)
-			</label>
-		</div>
 	</div>
 
 	<!-- Content Editor -->

@@ -45,6 +45,7 @@
 	});
 
 	let fallingConfetti = $state(false);
+	let confettiShown = false;
 	let scrollBtn = $state<HTMLElement | null>(null);
 	let liveStats = $state({ total: 0, today: 0 });
 	let lenis: Lenis;
@@ -93,9 +94,7 @@
 		window.addEventListener('scroll', handleScroll);
 
 		if ('serviceWorker' in navigator && !dev) {
-			navigator.serviceWorker.register('/service-worker.js', {
-				type: dev ? 'module' : 'classic'
-			});
+			navigator.serviceWorker.register('/service-worker.js', { type: 'classic' });
 		}
 
 		window.addEventListener('beforeinstallprompt', (e) => {
@@ -126,7 +125,8 @@
 	});
 
 	afterNavigate(() => {
-		if (page.url.pathname === '/') {
+		if (page.url.pathname === '/' && !confettiShown) {
+			confettiShown = true;
 			fallingConfetti = true;
 			playConfettiSound();
 			setTimeout(() => (fallingConfetti = false), 5000);
@@ -168,7 +168,7 @@
 <ModeWatcher defaultMode="light" />
 <Toaster />
 
-<div class="flex min-h-dvh flex-col">
+<div class="flex min-h-dvh flex-col overflow-x-clip">
 	{#if !isAdmin}
 		{#await data.resumeUrls}
 			<Navbar resolvedResumeUrls={{ en: '', id: '' }} />

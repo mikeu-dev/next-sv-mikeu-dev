@@ -5,9 +5,16 @@ import { renderMarkdown } from '$lib/server/utils/markdown';
 import { reactionService } from '$lib/server/services/reaction.service';
 
 export const load: PageServerLoad = async (event) => {
-	const { params, locals } = event;
+	const { params, locals, setHeaders } = event;
 	const locale = locals.paraglide.locale;
 	const slug = params.slug;
+
+	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
+	setHeaders({
+		'cache-control': locals.user
+			? 'private, no-store'
+			: 'public, s-maxage=10, stale-while-revalidate=30'
+	});
 
 	try {
 		const post = await blogService.getPostBySlug(slug, locale);

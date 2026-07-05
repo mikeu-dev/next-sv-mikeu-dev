@@ -1,9 +1,4 @@
-﻿<script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import * as Select from '$lib/components/ui/select';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-
+<script lang="ts">
 	import { page } from '$app/state';
 	import { auth } from '$lib/firebase/firebase.client';
 	import { toast } from 'svelte-sonner';
@@ -15,25 +10,24 @@
 	import { signOut } from 'firebase/auth';
 	import { authState } from '$lib/stores/auth.svelte';
 	import InstallButton from '../pwa/InstallButton.svelte';
-	import { fade } from 'svelte/transition';
 	import { getLocale, setLocale, localizeHref } from '$lib/paraglide/runtime';
-	import { setupGsapPendulum } from './navbar.svelte.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '$lib/utils/confetti-sound';
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
 	import { m } from '$lib/paraglide/messages';
-	import { Terminal, Command, Hash, Menu, X, ArrowUpRight } from '@lucide/svelte';
+	import { ArrowUpRight } from '@lucide/svelte';
 
 	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{
 		resolvedResumeUrls?: { en: string; id: string };
 	}>();
 
-	// --- State Management (Runes API) ---
 	let locale = $state(getLocale());
-	let isMobileMenuOpen = $state(false);
 
 	let navLinksData = $derived(navLinks[locale] || navLinks['en']);
+	let topLeftLinks = $derived(navLinksData.slice(0, 3));
+	let topRightLinks = $derived(navLinksData.slice(3));
+
 	let fallbackResumeUrl = $derived(
 		`https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${locale}).pdf`
 	);
@@ -41,38 +35,10 @@
 		(locale === 'id' ? resolvedResumeUrls.id : resolvedResumeUrls.en) || fallbackResumeUrl
 	);
 
-	let anchorElement: HTMLAnchorElement;
-	let headerElement: HTMLElement;
-	let devSpan: HTMLElement;
-
-	// Scroll Behavior
 	let lastScrollTop = 0;
 	let hideHeader = $state(false);
-	let scrollTimeout: ReturnType<typeof setTimeout>;
-
-	onMount(() => {
-		const handleScroll = () => {
-			const currentScroll = window.scrollY;
-
-			if (currentScroll > lastScrollTop && currentScroll > 50) {
-				hideHeader = true;
-			} else {
-				hideHeader = false;
-			}
-			lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-
-			clearTimeout(scrollTimeout);
-			scrollTimeout = setTimeout(() => {
-				hideHeader = false;
-			}, 150);
-		};
-
-		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
-	});
 
 	let confettiCannon = $state(false);
-
 	const makeConfettiCannon = async () => {
 		confettiCannon = false;
 		await tick();
@@ -80,27 +46,35 @@
 		playConfettiSound();
 	};
 
-	// --- Reactive Locale Sync ---
+	let isLoggedIn = $derived(Boolean(authState.user));
+	let currentPath = $derived(page.url.pathname || '');
+
 	$effect(() => {
 		if (locale) setLocale(locale);
 	});
 
-	// --- Matter.js Setup (Lifecycle Safe) ---
-	$effect(() => {
-		if (anchorElement && headerElement && devSpan) {
-			const cleanup = setupGsapPendulum(anchorElement, headerElement, devSpan);
-			return cleanup;
-		}
+	onMount(() => {
+		let scrollTimeout: ReturnType<typeof setTimeout>;
+		const handleScroll = () => {
+			const currentScroll = window.scrollY;
+			if (currentScroll > lastScrollTop && currentScroll > 50) {
+				hideHeader = true;
+			} else {
+				hideHeader = false;
+			}
+			lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+			clearTimeout(scrollTimeout);
+			scrollTimeout = setTimeout(() => {
+				hideHeader = false;
+			}, 150);
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+			clearTimeout(scrollTimeout);
+		};
 	});
-
-	// --- Computed / Derived State ---
-	let isLoggedIn = $derived(Boolean(authState.user));
-	let currentPath = $derived(page.url.pathname || '');
-
-	// --- UI Interaction Handlers ---
-	function toggleMobileMenu() {
-		isMobileMenuOpen = !isMobileMenuOpen;
-	}
 
 	async function handleSignOut() {
 		try {
@@ -126,284 +100,164 @@
 	/>
 {/if}
 
-<header
-	bind:this={headerElement}
-	class="fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-out"
-	class:translate-y-[-100%]={hideHeader}
->
-	<!-- Main Nav Container -->
+<!-- Invisible chrome: no bar, no background, no logo — just floating corner links -->
+<div class="pointer-events-none fixed inset-0 z-50 text-foreground">
+	<!-- Top-left nav links -->
 	<nav
-		class="relative z-10 border-b-2 border-foreground bg-background/80 px-6 py-4 backdrop-blur-xl lg:px-12"
+		aria-label="Main navigation"
+		class="nav-cluster pointer-events-auto absolute top-4 left-4 flex items-center gap-4 sm:top-6 sm:left-6 sm:gap-6"
+		class:nav-cluster-hidden-top={hideHeader}
 	>
-		<!-- Grain Texture Overlay (Subtle) -->
-		<div
-			class="pointer-events-none absolute inset-0 z-[-1] opacity-[0.02] mix-blend-overlay grayscale"
-			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
-		></div>
-
-		<div class="mx-auto flex max-w-screen-2xl items-center justify-between">
-			<!-- Branding (Pendulum Maintained) -->
+		{#each topLeftLinks as link (link.href)}
 			<a
-				href={localizeHref('/')}
-				bind:this={anchorElement}
-				class="group relative flex items-center gap-3"
+				href={localizeHref(link.href)}
+				class="nav-link relative font-mono text-[10px] font-black tracking-widest uppercase {currentPath ===
+				link.href
+					? 'text-primary'
+					: ''}"
 			>
-				<div
-					class="relative size-10 overflow-hidden border-2 border-foreground"
-					style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);"
-				>
-					<Avatar.Root class="size-full rounded-none!">
-						<Avatar.Image
-							src="https://github.com/mikeu-dev.png"
-							alt="@mikeu-dev"
-							class="rounded-none!"
-						/>
-						<Avatar.Fallback class="rounded-none!">RR</Avatar.Fallback>
-					</Avatar.Root>
-				</div>
-
-				<div class="flex flex-col">
-					<span class="font-poppins text-lg leading-none font-black tracking-tighter uppercase">
-						Mikeu<span class="text-primary">.</span>
-					</span>
-					<span
-						bind:this={devSpan}
-						class="mt-1 inline-block origin-bottom-right bg-primary px-3 py-0.5 font-mono text-[10px] font-black tracking-widest text-primary-foreground uppercase"
-						style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
-					>
-						Dev
-						<span class="absolute right-0.5 bottom-0.5 size-1 rounded-full bg-white"></span>
-					</span>
-				</div>
+				{link.label}
+				<span class="nav-underline"></span>
 			</a>
-
-			<!-- Desktop Navigation Links -->
-			<div class="hidden items-center gap-8 md:flex">
-				{#each navLinksData as link (link.href)}
-					<a
-						href={localizeHref(link.href)}
-						class="group relative font-mono text-[10px] font-black tracking-[0.2em] uppercase transition-colors hover:text-primary"
-						class:text-primary={currentPath === link.href}
-						class:text-foreground={currentPath !== link.href}
-					>
-						{link.label}
-						<span
-							class="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"
-							class:w-full={currentPath === link.href}
-						></span>
-					</a>
-				{/each}
-			</div>
-
-			<!-- Controls -->
-			<div class="hidden items-center gap-4 md:flex">
-				<!-- Theme Selector (Sharp) -->
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						class="size-10 border-2 border-foreground bg-background transition-all hover:bg-foreground hover:text-background"
-						style="clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);"
-					>
-						<div class="flex items-center justify-center">
-							<SunIcon class="size-4 scale-100 transition-transform dark:scale-0" />
-							<MoonIcon class="absolute size-4 scale-0 transition-transform dark:scale-100" />
-						</div>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content
-						align="end"
-						class="rounded-none! border-2 border-foreground font-mono text-[10px] font-black tracking-widest uppercase"
-					>
-						<DropdownMenu.Item
-							onclick={() => setMode('light')}
-							class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!"
-							>Light</DropdownMenu.Item
-						>
-						<DropdownMenu.Item
-							onclick={() => setMode('dark')}
-							class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!"
-							>Dark</DropdownMenu.Item
-						>
-						<DropdownMenu.Item
-							onclick={() => resetMode()}
-							class="cursor-pointer hover:bg-primary! hover:text-primary-foreground!"
-							>System</DropdownMenu.Item
-						>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
-				<!-- Locale Selector (Sharp) -->
-				<Select.Root type="single" bind:value={locale}>
-					<Select.Trigger
-						class="h-10 w-24 border-2 border-foreground bg-background font-mono text-[10px] font-black tracking-widest! uppercase"
-						style="clip-path: polygon(0 0, 85% 0, 100% 100%, 15% 100%);"
-					>
-						<div class="flex items-center gap-2">
-							{#if locale === 'id'}<Id class="size-3" />ID{:else}<GbNir class="size-3" />EN{/if}
-						</div>
-					</Select.Trigger>
-					<Select.Content
-						class="rounded-none! border-2 border-foreground font-mono text-[10px] font-black tracking-widest uppercase"
-					>
-						<Select.Item value="id" class="cursor-pointer">ID</Select.Item>
-						<Select.Item value="en" class="cursor-pointer">EN</Select.Item>
-					</Select.Content>
-				</Select.Root>
-
-				<div class="mx-2 h-8 w-0.5 bg-foreground/10"></div>
-
-				{#if isLoggedIn}
-					<Button
-						onclick={handleSignOut}
-						class="text-destructive-foreground bg-destructive hover:bg-foreground hover:text-background"
-						style="clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);"
-					>
-						Sign Out
-					</Button>
-				{:else}
-					<InstallButton />
-					<a
-						href={resumeUrl}
-						onclick={makeConfettiCannon}
-						download
-						class="resume-btn-origami inline-flex h-10 items-center justify-center bg-primary px-6 font-poppins text-[10px] font-black tracking-tighter text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
-					>
-						{m.nav_cv_button()}
-					</a>
-				{/if}
-			</div>
-
-			<!-- Mobile Toggle -->
-			<button
-				onclick={toggleMobileMenu}
-				class="flex size-10 items-center justify-center border-2 border-foreground md:hidden"
-				style="clip-path: polygon(0 0, 100% 15%, 100% 100%, 0 85%);"
-			>
-				{#if isMobileMenuOpen}<X class="size-5" />{:else}<Menu class="size-5" />{/if}
-			</button>
-		</div>
+		{/each}
 	</nav>
-</header>
 
-<!-- ===================== MOBILE MENU (BRUTALIST) ===================== -->
-{#if isMobileMenuOpen}
-	<div
-		transition:fade={{ duration: 300 }}
-		class="fixed inset-0 z-60 bg-background/95 backdrop-blur-2xl md:hidden"
+	<!-- Top-right nav links -->
+	<nav
+		aria-label="Main navigation"
+		class="nav-cluster pointer-events-auto absolute top-4 right-4 flex items-center gap-4 sm:top-6 sm:right-6 sm:gap-6"
+		class:nav-cluster-hidden-top={hideHeader}
 	>
-		<!-- Background Shards -->
-		<div class="pointer-events-none absolute inset-0 overflow-hidden">
-			<div
-				class="absolute -top-24 -left-24 size-96 bg-primary/10"
-				style="clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%);"
-			></div>
-			<div
-				class="absolute -right-48 -bottom-48 size-[500px] bg-foreground/5"
-				style="clip-path: polygon(20% 0, 100% 20%, 100% 100%, 0 100%);"
-			></div>
-		</div>
+		{#each topRightLinks as link (link.href)}
+			<a
+				href={localizeHref(link.href)}
+				class="nav-link relative font-mono text-[10px] font-black tracking-widest uppercase {currentPath ===
+				link.href
+					? 'text-primary'
+					: ''}"
+			>
+				{link.label}
+				<span class="nav-underline"></span>
+			</a>
+		{/each}
+	</nav>
 
-		<div class="relative flex h-full flex-col p-8">
-			<div class="flex items-center justify-between border-b-2 border-foreground pb-8">
-				<div
-					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-primary uppercase"
-				>
-					<Terminal class="size-3" /> SYSTEM_MENU_V2.0
-				</div>
-				<button
-					onclick={toggleMobileMenu}
-					class="flex size-10 items-center justify-center border-2 border-foreground"
-				>
-					<X class="size-5" />
-				</button>
-			</div>
-
-			<nav class="mt-12 flex flex-col gap-6">
-				{#each navLinksData as link (link.href)}
-					<a
-						href={localizeHref(link.href)}
-						onclick={toggleMobileMenu}
-						class="flex items-center justify-between border-b border-foreground/10 py-4 font-poppins text-4xl font-black tracking-tighter uppercase transition-all hover:translate-x-4 hover:text-primary"
-					>
-						<span>{link.label}</span>
-						<ArrowUpRight class="size-8" />
-					</a>
-				{/each}
-			</nav>
-
-			<div class="mt-auto grid grid-cols-2 gap-4 pb-12">
-				<div class="flex flex-col gap-4">
-					<div
-						class="flex items-center gap-2 font-mono text-[8px] font-black tracking-widest text-muted-foreground uppercase"
-					>
-						<Command class="size-2" /> CORE_SETTINGS
-					</div>
-					<div class="flex gap-2">
-						<button
-							onclick={() => setMode('light')}
-							class="flex size-10 items-center justify-center border border-foreground"
-							><SunIcon class="size-4" /></button
-						>
-						<button
-							onclick={() => setMode('dark')}
-							class="flex size-10 items-center justify-center border border-foreground"
-							><MoonIcon class="size-4" /></button
-						>
-					</div>
-				</div>
-				<div class="flex flex-col gap-4">
-					<div
-						class="flex items-center gap-2 font-mono text-[8px] font-black tracking-widest text-muted-foreground uppercase"
-					>
-						<Hash class="size-2" /> LOCALE_SYNC
-					</div>
-					<div class="flex gap-2">
-						<button
-							onclick={() => (locale = 'id')}
-							class="h-10 border border-foreground px-4 font-mono text-[10px] font-black"
-							class:bg-primary={locale === 'id'}
-							class:text-primary-foreground={locale === 'id'}>ID</button
-						>
-						<button
-							onclick={() => (locale = 'en')}
-							class="h-10 border border-foreground px-4 font-mono text-[10px] font-black"
-							class:bg-primary={locale === 'en'}
-							class:text-primary-foreground={locale === 'en'}>EN</button
-						>
-					</div>
-				</div>
-			</div>
-
-			<!-- Mobile Resume Button -->
-			<div class="mt-8">
-				<a
-					href={resumeUrl}
-					onclick={makeConfettiCannon}
-					download
-					class="resume-btn-origami flex h-14 w-full items-center justify-center bg-primary font-poppins text-xs font-black tracking-tighter text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:shadow-[6px_6px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
-				>
-					{m.nav_cv_button()}
-				</a>
-			</div>
-		</div>
+	<!-- Bottom-left: theme + locale -->
+	<div
+		class="nav-cluster pointer-events-auto absolute bottom-4 left-4 flex items-center gap-4 sm:bottom-6 sm:left-6"
+		class:nav-cluster-hidden-bottom={hideHeader}
+	>
+		<button onclick={() => setMode('light')} aria-label="Light mode" class="nav-link relative flex">
+			<SunIcon class="size-3.5" />
+			<span class="nav-underline"></span>
+		</button>
+		<button onclick={() => setMode('dark')} aria-label="Dark mode" class="nav-link relative flex">
+			<MoonIcon class="size-3.5" />
+			<span class="nav-underline"></span>
+		</button>
+		<button
+			onclick={() => resetMode()}
+			class="nav-link relative font-mono text-[10px] font-black tracking-widest uppercase"
+		>
+			Sys
+			<span class="nav-underline"></span>
+		</button>
+		<div class="h-3 w-px bg-foreground/20"></div>
+		<button
+			onclick={() => (locale = 'id')}
+			class="nav-link relative flex items-center gap-1 font-mono text-[10px] font-black uppercase {locale ===
+			'id'
+				? 'text-primary'
+				: ''}"
+		>
+			<Id class="size-3" /> ID
+			<span class="nav-underline"></span>
+		</button>
+		<button
+			onclick={() => (locale = 'en')}
+			class="nav-link relative flex items-center gap-1 font-mono text-[10px] font-black uppercase {locale ===
+			'en'
+				? 'text-primary'
+				: ''}"
+		>
+			<GbNir class="size-3" /> EN
+			<span class="nav-underline"></span>
+		</button>
 	</div>
-{/if}
+
+	<!-- Bottom-right: PWA install / resume / sign-out -->
+	<div
+		class="nav-cluster pointer-events-auto absolute right-4 bottom-4 flex items-center gap-4 sm:right-6 sm:bottom-6"
+		class:nav-cluster-hidden-bottom={hideHeader}
+	>
+		<InstallButton />
+		{#if isLoggedIn}
+			<button
+				onclick={handleSignOut}
+				class="nav-link relative font-mono text-[10px] font-black tracking-widest text-destructive uppercase"
+			>
+				Sign Out
+				<span class="nav-underline"></span>
+			</button>
+		{:else}
+			<a
+				href={resumeUrl}
+				onclick={makeConfettiCannon}
+				download
+				class="nav-link relative flex items-center gap-1.5 font-mono text-[10px] font-black tracking-widest uppercase"
+			>
+				{m.nav_cv_button()}
+				<ArrowUpRight class="size-3" />
+				<span class="nav-underline"></span>
+			</a>
+		{/if}
+	</div>
+</div>
 
 <style lang="postcss">
 	@reference "tailwindcss";
 
-	header {
-		perspective: 1000px;
+	.nav-cluster {
+		transition:
+			opacity 0.5s ease-out,
+			transform 0.5s ease-out;
 	}
 
-	nav {
-		transform-style: preserve-3d;
+	.nav-cluster-hidden-top {
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(-0.75rem);
 	}
 
-	.resume-btn-origami {
-		clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+	.nav-cluster-hidden-bottom {
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(0.75rem);
 	}
 
-	.resume-btn-origami:hover {
-		clip-path: polygon(0 0, 95% 5%, 100% 100%, 5% 95%);
+	.nav-link {
+		padding: 0;
+		padding-bottom: 2px;
+		background: transparent;
+		border: none;
+		color: inherit;
+		cursor: pointer;
+	}
+
+	.nav-underline {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 1px;
+		width: 100%;
+		background: currentColor;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.3s ease;
+	}
+
+	.nav-link:hover .nav-underline,
+	.nav-link:focus-visible .nav-underline {
+		transform: scaleX(1);
 	}
 </style>

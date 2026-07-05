@@ -1,8 +1,19 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import type { BlogHeading } from '$lib/server/utils/markdown';
 	import { onMount } from 'svelte';
 
-	let { headings = [] } = $props<{ headings: BlogHeading[] }>();
+	let {
+		headings = [],
+		title,
+		titleId = 'post-title'
+	}: { headings: BlogHeading[]; title?: string; titleId?: string } = $props();
+
+	// The markdown parser only collects H2/H3 from the article body, so the
+	// list would otherwise start mid-article with no way to jump back to the
+	// top — prepend the post title itself as the first, unindented entry.
+	let items = $derived<BlogHeading[]>(
+		title ? [{ depth: 2, text: title, id: titleId }, ...headings] : headings
+	);
 
 	let activeId = $state('');
 
@@ -18,8 +29,8 @@
 			{ rootMargin: '-100px 0% -80% 0%' }
 		);
 
-		headings.forEach((heading: BlogHeading) => {
-			const el = document.getElementById(heading.id);
+		items.forEach((item) => {
+			const el = document.getElementById(item.id);
 			if (el) observer.observe(el);
 		});
 
@@ -43,26 +54,29 @@
 	}
 </script>
 
-{#if headings.length > 0}
+{#if items.length > 0}
 	<nav class="hidden xl:block">
 		<div class="space-y-4">
-			<ul class="space-y-1">
-				{#each headings as heading (heading.id)}
-					<li class={`${heading.depth === 3 ? 'pl-4' : ''}`}>
+			<!-- Scrolls internally instead of growing past the viewport — the list
+			     sits inside a `sticky` box, so once it's genuinely pinned in place
+			     any overflow can no longer be reached by scrolling the page. -->
+			<ul class="max-h-[calc(100vh-14rem)] space-y-1 overflow-y-auto pr-1">
+				{#each items as item (item.id)}
+					<li class={`${item.depth === 3 ? 'pl-4' : ''}`}>
 						<button
-							onclick={() => scrollTo(heading.id)}
+							onclick={() => scrollTo(item.id)}
 							class={`group relative flex w-full items-center border-2 border-transparent px-3 py-2 text-left font-mono text-[10px] font-black tracking-widest uppercase transition-all ${
-								activeId === heading.id
+								activeId === item.id
 									? 'border-foreground bg-primary text-primary-foreground shadow-[3px_3px_0_var(--foreground)]'
-									: 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
+									: 'text-card-foreground/60 hover:bg-card-foreground/5 hover:text-card-foreground'
 							}`}
 						>
-							{#if activeId === heading.id}
+							{#if activeId === item.id}
 								<span class="mr-2">[X]</span>
 							{:else}
-								<span class="mr-2 text-foreground/20 group-hover:text-primary">[-]</span>
+								<span class="mr-2 text-card-foreground/30 group-hover:text-primary">[-]</span>
 							{/if}
-							{heading.text}
+							{item.text}
 						</button>
 					</li>
 				{/each}

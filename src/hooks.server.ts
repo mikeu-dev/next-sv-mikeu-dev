@@ -94,51 +94,50 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 		!building
 	) {
 		// Only track public pages and skip during build
-		try {
-			const uaString = event.request.headers.get('user-agent') || '';
-			const parser = new UAParser(uaString);
-			const browser = parser.getBrowser();
-			const os = parser.getOS();
-			const device = parser.getDevice();
+		// Set the cookie immediately so the response is not blocked
+		event.cookies.set(VISITOR_COOKIE, 'true', {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'lax',
+			maxAge: 60 * 60 * 24 // 1 day
+		});
 
-			let ip = '0.0.0.0';
+		// Fire-and-forget: tracking must never delay the response
+		(async () => {
 			try {
-				ip = event.getClientAddress();
-			} catch (e) {
-				console.warn('Could not get client address:', e);
+				const uaString = event.request.headers.get('user-agent') || '';
+				const parser = new UAParser(uaString);
+				const browser = parser.getBrowser();
+				const os = parser.getOS();
+				const device = parser.getDevice();
+
+				let ip = '0.0.0.0';
+				try {
+					ip = event.getClientAddress();
+				} catch (e) {
+					console.warn('Could not get client address:', e);
+				}
+
+				const geoData = await resolveGeo(event.request, ip);
+
+				await visitorService.increment({
+					ip,
+					browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
+					os: `${os.name || 'Unknown'} ${os.version || ''}`.trim(),
+					device: device.type || 'desktop',
+					referer: event.request.headers.get('referer') || null,
+					language: event.request.headers.get('accept-language') || null,
+					path: event.url.pathname,
+					country: geoData.country,
+					city: geoData.city,
+					region: geoData.region,
+					latitude: geoData.latitude,
+					longitude: geoData.longitude
+				});
+			} catch (error) {
+				console.error('Failed to track visitor', error);
 			}
-
-			// Resolve geo data from Vercel headers or fallback API
-			const geoData = await resolveGeo(event.request, ip);
-
-			const visitorData = {
-				ip,
-				browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
-				os: `${os.name || 'Unknown'} ${os.version || ''}`.trim(),
-				device: device.type || 'desktop',
-				referer: event.request.headers.get('referer') || null,
-				language: event.request.headers.get('accept-language') || null,
-				path: event.url.pathname,
-				// Geo fields
-				country: geoData.country,
-				city: geoData.city,
-				region: geoData.region,
-				latitude: geoData.latitude,
-				longitude: geoData.longitude
-			};
-
-			await visitorService.increment(visitorData);
-
-			// Set cookie for 24 hours
-			event.cookies.set(VISITOR_COOKIE, 'true', {
-				path: '/',
-				httpOnly: true,
-				sameSite: 'lax',
-				maxAge: 60 * 60 * 24 // 1 day
-			});
-		} catch (error) {
-			console.error('Failed to track visitor', error);
-		}
+		})();
 	}
 
 	return resolve(event);

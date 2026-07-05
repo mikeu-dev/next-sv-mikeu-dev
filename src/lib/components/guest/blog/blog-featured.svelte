@@ -49,6 +49,19 @@
 		const isHoverable = window.matchMedia('(pointer: fine)').matches;
 		let hoverTl: gsap.core.Timeline | null = null;
 
+		// GSAP's CSSPlugin only knows rotationX/Y/Z (rotation around the
+		// standard axes) — `rotate3d` isn't one of its property names, so
+		// tweening it directly warns "Invalid property rotate3d" and never
+		// animates. Tweening a plain number and writing the transform
+		// ourselves in onUpdate keeps the diagonal-axis flip GSAP can't
+		// express natively, while `flapState` staying alive across hover
+		// in/out lets a fast re-hover reverse smoothly from wherever the flap
+		// actually is instead of snapping.
+		const flapState = { deg: 0 };
+		const applyFlapRotation = (flap: Element | null) => {
+			if (flap) (flap as HTMLElement).style.transform = `rotate3d(1, -1, 0, ${flapState.deg}deg)`;
+		};
+
 		const handleMouseEnter = () => {
 			if (!isHoverable || !cardElement) return;
 
@@ -102,11 +115,12 @@
 
 			// 3. Fold corner flap 180 degrees
 			hoverTl.to(
-				flap,
+				flapState,
 				{
-					rotate3d: '1, -1, 0, 180',
+					deg: 180,
 					duration: 0.6,
-					ease: 'power2.inOut'
+					ease: 'power2.inOut',
+					onUpdate: () => applyFlapRotation(flap)
 				},
 				0
 			);
@@ -250,9 +264,10 @@
 			);
 
 			hoverTl.to(
-				flap,
+				flapState,
 				{
-					rotate3d: '1, -1, 0, 0'
+					deg: 0,
+					onUpdate: () => applyFlapRotation(flap)
 				},
 				0
 			);
@@ -324,7 +339,7 @@
 	<!-- 2. Main Origami Card (Layer 10) -->
 	<a
 		href={localizeHref(`/blog/${post.slug}`)}
-		class="featured-card-inner relative z-10 flex flex-col overflow-hidden border-2 border-foreground bg-card md:flex-row"
+		class="featured-card-inner relative z-10 flex flex-col overflow-hidden border-2 border-foreground bg-card text-card-foreground md:flex-row"
 	>
 		<!-- Origami Crease Lighting Overlay -->
 		<div class="origami-crease pointer-events-none absolute inset-0 z-20 opacity-35"></div>
@@ -371,7 +386,7 @@
 			<div class="mb-6 flex flex-wrap gap-3">
 				{#each post.tags || [] as tag (tag)}
 					<span
-						class="featured-tag flex items-center gap-1 border border-foreground/10 px-3 py-1.5 font-mono text-[9px] font-black tracking-widest text-primary uppercase"
+						class="featured-tag flex items-center gap-1 border border-foreground/10 px-3 py-1.5 font-mono text-[9px] font-black tracking-widest text-card-foreground uppercase dark:text-primary"
 					>
 						<Hash class="size-2.5" />
 						{tag}
@@ -391,7 +406,7 @@
 			</div>
 
 			<p
-				class="mt-8 line-clamp-3 font-mono text-xs leading-relaxed tracking-tight text-muted-foreground uppercase md:text-sm"
+				class="mt-8 line-clamp-3 font-mono text-xs leading-relaxed tracking-tight text-card-foreground/70 uppercase md:text-sm dark:text-muted-foreground"
 			>
 				// {post.description}
 			</p>
@@ -402,14 +417,14 @@
 			>
 				<div class="flex flex-wrap items-center gap-6">
 					<div
-						class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-foreground/50 uppercase"
+						class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-foreground/50"
 					>
 						<Calendar class="size-3.5" />
 						<span>{formattedDate}</span>
 					</div>
 					{#if post.readingTime}
 						<div
-							class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-foreground/50 uppercase"
+							class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-foreground/50"
 						>
 							<Clock class="size-3.5" />
 							<span>{post.readingTime} MIN_READ</span>

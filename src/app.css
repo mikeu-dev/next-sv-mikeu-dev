@@ -7,71 +7,93 @@
 
 :root {
 	--radius: 0.625rem;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.129 0.042 264.695);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.129 0.042 264.695);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.129 0.042 264.695);
-	--primary: oklch(0.208 0.042 265.755);
-	--primary-foreground: oklch(0.984 0.003 247.858);
-	--secondary: oklch(0.968 0.007 247.896);
-	--secondary-foreground: oklch(0.208 0.042 265.755);
-	--muted: oklch(0.968 0.007 247.896);
-	--muted-foreground: oklch(0.554 0.046 257.417);
-	--accent: oklch(0.968 0.007 247.896);
-	--accent-foreground: oklch(0.208 0.042 265.755);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.929 0.013 255.508);
-	--input: oklch(0.929 0.013 255.508);
-	--ring: oklch(0.704 0.04 256.788);
-	--chart-1: oklch(0.646 0.222 41.116);
-	--chart-2: oklch(0.6 0.118 184.704);
-	--chart-3: oklch(0.398 0.07 227.392);
-	--chart-4: oklch(0.828 0.189 84.429);
-	--chart-5: oklch(0.769 0.188 70.08);
-	--sidebar: oklch(0.984 0.003 247.858);
-	--sidebar-foreground: oklch(0.129 0.042 264.695);
-	--sidebar-primary: oklch(0.208 0.042 265.755);
-	--sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-accent: oklch(0.968 0.007 247.896);
-	--sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-	--sidebar-border: oklch(0.929 0.013 255.508);
-	--sidebar-ring: oklch(0.704 0.04 256.788);
+	/* Avocado Theme (Custom Palette) */
+	--background: #438468;
+	--foreground: #ffffff;
+	--card: #c7d796;
+	--card-foreground: #363200;
+	--popover: #c7d796;
+	--popover-foreground: #1a4435;
+	--primary: #fcec62;
+	--primary-foreground: #363200;
+	--secondary: #051a13;
+	--secondary-foreground: #ffffff;
+	--muted: #1a4435;
+	--muted-foreground: #c7d796;
+	--accent: #c7d796;
+	--accent-foreground: #1a4435;
+	--destructive: #8a5a54; /* Muted earthy red for errors */
+	--border: #051a13;
+	--input: #1a4435;
+	--ring: #fcec62;
+	--chart-1: #c7d796;
+	--chart-2: #fcec62;
+	--chart-3: #1a4435;
+	--chart-4: #051a13;
+	--chart-5: #ffffff;
+	--sidebar: #438468;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #fcec62;
+	--sidebar-primary-foreground: #363200;
+	--sidebar-accent: #c7d796;
+	--sidebar-accent-foreground: #1a4435;
+	--sidebar-border: #051a13;
+	--sidebar-ring: #fcec62;
+
+	/* Glossy "tape" gradient — the hero CTA's signature treatment, shared globally
+	   so other sections (e.g. the work section's CTA) can reuse the same brand
+	   look instead of inventing a separate button style. */
+	--tape-bg-grad:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
+		linear-gradient(135deg, #fff07c 0%, #fcec62 50%, #e5c300 100%);
+	--tape-color: #363200;
+	--tape-shadow: rgba(5, 26, 19, 0.4);
+	--tape-shadow-hover: rgba(5, 26, 19, 0.6);
 }
 
 .dark {
-	--background: oklch(0.129 0.042 264.695);
-	--foreground: oklch(0.984 0.003 247.858);
-	--card: oklch(0.208 0.042 265.755);
-	--card-foreground: oklch(0.984 0.003 247.858);
-	--popover: oklch(0.208 0.042 265.755);
-	--popover-foreground: oklch(0.984 0.003 247.858);
-	--primary: oklch(0.929 0.013 255.508);
-	--primary-foreground: oklch(0.208 0.042 265.755);
-	--secondary: oklch(0.279 0.041 260.031);
-	--secondary-foreground: oklch(0.984 0.003 247.858);
-	--muted: oklch(0.279 0.041 260.031);
-	--muted-foreground: oklch(0.704 0.04 256.788);
-	--accent: oklch(0.279 0.041 260.031);
-	--accent-foreground: oklch(0.984 0.003 247.858);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.551 0.027 264.364);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.208 0.042 265.755);
-	--sidebar-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-accent: oklch(0.279 0.041 260.031);
-	--sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.551 0.027 264.364);
+	/* Avocado Theme (Dark) — same brand hexes as light mode, remapped so the
+	   darkest existing brand color (--secondary in light mode) becomes the base
+	   surface here: dark and dominant, with a deliberate green tint rather than
+	   the generic grayscale-blue scaffold this used to fall back to. */
+	--background: #020d09;
+	--foreground: #ffffff;
+	--card: #10281e;
+	--card-foreground: #ffffff;
+	--popover: #10281e;
+	--popover-foreground: #ffffff;
+	--primary: #fcec62;
+	--primary-foreground: #363200;
+	--secondary: #438468;
+	--secondary-foreground: #ffffff;
+	--muted: #10281e;
+	--muted-foreground: #c7d796;
+	--accent: #10281e;
+	--accent-foreground: #c7d796;
+	--destructive: #8a5a54;
+	--border: rgba(255, 255, 255, 0.08);
+	--input: rgba(255, 255, 255, 0.1);
+	--ring: #fcec62;
+	--chart-1: #c7d796;
+	--chart-2: #fcec62;
+	--chart-3: #438468;
+	--chart-4: #10281e;
+	--chart-5: #ffffff;
+	--sidebar: #020d09;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #fcec62;
+	--sidebar-primary-foreground: #363200;
+	--sidebar-accent: #10281e;
+	--sidebar-accent-foreground: #c7d796;
+	--sidebar-border: rgba(255, 255, 255, 0.08);
+	--sidebar-ring: #fcec62;
+
+	--tape-bg-grad:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
+		linear-gradient(135deg, #f4f4f5 0%, #e2e2e8 50%, #b0b0b8 100%);
+	--tape-color: #18181b;
+	--tape-shadow: rgba(0, 0, 0, 0.8);
+	--tape-shadow-hover: rgba(0, 0, 0, 1);
 }
 
 @theme inline {
@@ -119,6 +141,15 @@
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
+	}
+
+	html {
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none; /* legacy Edge/IE */
+	}
+
+	html::-webkit-scrollbar {
+		display: none; /* Chrome, Safari, Chromium Edge */
 	}
 
 	body {

@@ -101,7 +101,7 @@
 			<article class="min-w-0">
 				<!-- Hero Section -->
 				<header
-					class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 md:p-16"
+					class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 text-card-foreground md:p-16"
 					style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
 				>
 					<div class="max-w-4xl space-y-8">
@@ -112,6 +112,7 @@
 								[KNOWLEDGE_NODE_v1.0]
 							</div>
 							<h1
+								id="post-title"
 								class="font-poppins text-4xl leading-tight font-black tracking-tighter uppercase italic md:text-7xl"
 							>
 								{data.meta.title}<span class="text-primary">_</span>
@@ -146,7 +147,7 @@
 							<div class="flex items-center gap-3 border-l-2 border-foreground/10 pl-8">
 								<Database class="size-4 text-muted-foreground" />
 								<span
-									class="font-mono text-[10px] font-black tracking-widest text-muted-foreground uppercase"
+									class="font-mono text-[10px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
 									>ID: BLOG-{data.meta.title.slice(0, 4).toUpperCase()}</span
 								>
 							</div>
@@ -178,14 +179,16 @@
 			</article>
 
 			<!-- Sidebar -->
-			<aside class="content-stagger hidden xl:block">
-				<div class="sticky top-32 space-y-12">
-					<div class="border-4 border-foreground bg-card p-6 shadow-[6px_6px_0_var(--foreground)]">
+			<aside class="hidden xl:block">
+				<div class="content-stagger sticky top-32 space-y-12">
+					<div
+						class="border-4 border-foreground bg-card p-6 text-card-foreground shadow-[6px_6px_0_var(--foreground)]"
+					>
 						<div class="mb-6 flex items-center gap-3 border-b-2 border-foreground/10 pb-3">
 							<BookOpen class="size-4 text-primary" />
 							<h4 class="font-poppins text-xs font-black tracking-widest uppercase">[NAV_HUD]</h4>
 						</div>
-						<TableOfContents headings={data.headings || []} />
+						<TableOfContents headings={data.headings || []} title={data.meta.title} />
 					</div>
 
 					<!-- System Status Widget -->

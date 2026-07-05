@@ -231,7 +231,7 @@
 						type="text"
 						bind:value={searchQuery}
 						placeholder="QUERY_ENGINE..."
-						class="h-14 w-full border-2 border-foreground bg-card px-4 pl-12 font-mono text-sm tracking-tight transition-all outline-none focus:bg-primary/5 focus:shadow-[4px_4px_0_var(--primary)]"
+						class="h-14 w-full border-2 border-foreground bg-card px-4 pl-12 font-mono text-sm tracking-tight text-card-foreground transition-all outline-none focus:bg-primary/5 focus:shadow-[4px_4px_0_var(--primary)]"
 					/>
 				</div>
 			</div>
@@ -243,13 +243,13 @@
 				>
 					<SlidersHorizontal class="size-3" /> [SORT_ENGINE]
 				</div>
-				<div class="flex items-center border-2 border-foreground bg-card p-1">
+				<div class="flex items-center border-2 border-foreground bg-card p-1 text-card-foreground">
 					<button
 						onclick={() => (sortBy = 'date')}
 						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy ===
 						'date'
 							? 'bg-foreground text-background'
-							: 'hover:bg-muted'}"
+							: 'hover:bg-muted hover:text-white'}"
 					>
 						[DATE]
 					</button>
@@ -258,14 +258,14 @@
 						class="flex-1 px-6 py-2.5 font-mono text-[10px] font-black tracking-widest uppercase transition-all {sortBy ===
 						'title'
 							? 'bg-foreground text-background'
-							: 'hover:bg-muted'}"
+							: 'hover:bg-muted hover:text-white'}"
 					>
 						[ALPHA]
 					</button>
 					<div class="mx-1 h-6 w-0.5 bg-foreground/20"></div>
 					<button
 						onclick={toggleSortDirection}
-						class="flex size-10 items-center justify-center transition-all hover:bg-primary hover:text-white"
+						class="flex size-10 items-center justify-center transition-all hover:bg-primary hover:text-primary-foreground"
 						title="Toggle Direction"
 					>
 						{#if sortDirection === 'asc'}
@@ -292,7 +292,7 @@
 						class="group relative flex items-center gap-3 border-2 border-foreground px-4 py-2 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedTag ===
 						tag.name
 							? 'bg-foreground text-background'
-							: 'bg-card'}"
+							: 'bg-card text-card-foreground'}"
 					>
 						<div class="relative z-10 flex items-center gap-2">
 							{#if 'iconName' in tag && tag.iconName}
@@ -378,7 +378,7 @@
 						selectedTag = 'All';
 						searchQuery = '';
 					}}
-					class="mt-10 border-2 border-foreground bg-foreground px-8 py-3 font-mono text-[10px] font-black tracking-widest text-background uppercase transition-all hover:bg-primary hover:text-white"
+					class="mt-10 border-2 border-foreground bg-foreground px-8 py-3 font-mono text-[10px] font-black tracking-widest text-background uppercase transition-all hover:bg-primary hover:text-primary-foreground"
 				>
 					[RESET_FILTERS]
 				</button>
@@ -396,7 +396,7 @@
 	}
 
 	input::placeholder {
-		color: oklch(from var(--muted-foreground) l c h / 40%);
+		color: oklch(from var(--card-foreground) l c h / 40%);
 	}
 
 	.container {

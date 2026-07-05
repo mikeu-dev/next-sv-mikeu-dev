@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import MarkdownRenderer from '../ui/markdown-renderer.svelte';
 
 	let { value = $bindable(''), placeholder = 'Write your content...', id = '' } = $props();
@@ -200,7 +200,7 @@
 				bind:value
 				{placeholder}
 				rows="12"
-				class="w-full resize-y border-0 bg-white p-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-900"
+				class="w-full resize-y border-0 bg-white p-4 font-mono text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-900 dark:text-gray-100"
 			></textarea>
 		{:else if value.trim()}
 			<MarkdownRenderer content={value} />

@@ -4,38 +4,56 @@ import { persistentCache } from '../utils/cache.util';
 import type { BlogPost } from '$lib/types';
 export type { BlogPost };
 
+// Shared global cache to avoid SvelteKit/Vite module reload duplicates in development
+const GLOBAL_CACHE_KEY = Symbol.for('mikeudev.blog.cache');
+const GLOBAL_LAST_FETCH_KEY = Symbol.for('mikeudev.blog.lastFetch');
+
+if (!(GLOBAL_CACHE_KEY in globalThis)) {
+	(globalThis as any)[GLOBAL_CACHE_KEY] = {};
+}
+if (!(GLOBAL_LAST_FETCH_KEY in globalThis)) {
+	(globalThis as any)[GLOBAL_LAST_FETCH_KEY] = {};
+}
+
+const getMemoryCache = (): Record<string, unknown> => (globalThis as any)[GLOBAL_CACHE_KEY];
+const getLastFetchCache = (): Record<string, number> => (globalThis as any)[GLOBAL_LAST_FETCH_KEY];
+const clearMemoryCache = () => {
+	const cache = getMemoryCache();
+	const lastFetch = getLastFetchCache();
+	for (const key in cache) delete cache[key];
+	for (const key in lastFetch) delete lastFetch[key];
+};
+
 export class BlogService {
 	private repository = new BlogRepository();
-
-	// In-memory cache
-	private static cache: Record<string, unknown> = {};
-	private static lastFetch: Record<string, number> = {};
 	private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
 	async getAllPosts() {
 		const now = Date.now();
 		const cacheKey = 'all_posts';
+		const cache = getMemoryCache();
+		const lastFetch = getLastFetchCache();
 
 		if (
-			BlogService.cache[cacheKey] &&
-			now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
+			cache[cacheKey] &&
+			now - (lastFetch[cacheKey] || 0) < this.CACHE_TTL
 		) {
-			return BlogService.cache[cacheKey] as BlogPost[];
+			return cache[cacheKey] as BlogPost[];
 		}
 
 		if (dev) {
 			const cached = persistentCache.get<BlogPost[]>(cacheKey);
 			if (cached) {
-				BlogService.cache[cacheKey] = cached;
-				BlogService.lastFetch[cacheKey] = now;
+				cache[cacheKey] = cached;
+				lastFetch[cacheKey] = now;
 				return cached;
 			}
 		}
 
 		try {
 			const posts = await this.repository.findAll();
-			BlogService.cache[cacheKey] = posts;
-			BlogService.lastFetch[cacheKey] = now;
+			cache[cacheKey] = posts;
+			lastFetch[cacheKey] = now;
 			if (dev) persistentCache.set(cacheKey, posts);
 			return posts;
 		} catch (error: unknown) {
@@ -80,23 +98,25 @@ export class BlogService {
 	) {
 		const now = Date.now();
 		const cacheKey = `posts_${locale}_${options.limit || 'all'}`;
+		const cache = getMemoryCache();
+		const lastFetch = getLastFetchCache();
 
 		// Simple caching for the main list
 		if (
 			!options.search &&
 			!options.lastDate &&
-			BlogService.cache[cacheKey] &&
-			now - (BlogService.lastFetch[cacheKey] || 0) < this.CACHE_TTL
+			cache[cacheKey] &&
+			now - (lastFetch[cacheKey] || 0) < this.CACHE_TTL
 		) {
-			return BlogService.cache[cacheKey] as { posts: BlogPost[]; nextCursor: string | null };
+			return cache[cacheKey] as { posts: BlogPost[]; nextCursor: string | null };
 		}
 
 		try {
 			const result = await this.repository.getPublishedByLocale(locale, options);
 
 			if (!options.search && !options.lastDate) {
-				BlogService.cache[cacheKey] = result;
-				BlogService.lastFetch[cacheKey] = now;
+				cache[cacheKey] = result;
+				lastFetch[cacheKey] = now;
 				if (dev) persistentCache.set(cacheKey, result);
 			}
 
@@ -130,7 +150,7 @@ export class BlogService {
 		} as Partial<BlogPost>);
 
 		// Invalidate caches
-		BlogService.cache = {};
+		clearMemoryCache();
 		if (dev) persistentCache.clear();
 
 		return { id, ...data, readingTime };
@@ -144,7 +164,7 @@ export class BlogService {
 		const result = await this.repository.update(id, updateData);
 
 		// Invalidate caches
-		BlogService.cache = {};
+		clearMemoryCache();
 		if (dev) persistentCache.clear();
 
 		return result;
@@ -153,7 +173,7 @@ export class BlogService {
 	async deletePost(id: string) {
 		await this.repository.delete(id);
 		// Invalidate caches
-		BlogService.cache = {};
+		clearMemoryCache();
 		if (dev) persistentCache.clear();
 		return true;
 	}

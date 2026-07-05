@@ -298,7 +298,7 @@
 				<div class="mt-8 flex flex-col gap-4 sm:flex-row">
 					<button
 						onclick={() => engine.resetBoard()}
-						class="flex flex-1 items-center justify-center gap-3 border-2 border-foreground bg-card px-8 py-4 font-mono text-[10px] font-black tracking-widest text-zinc-800 uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-primary hover:text-white hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none dark:text-zinc-300"
+						class="flex flex-1 items-center justify-center gap-3 border-2 border-foreground bg-card px-8 py-4 font-mono text-[10px] font-black tracking-widest text-zinc-800 uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-primary hover:text-primary-foreground hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none dark:text-zinc-300"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"

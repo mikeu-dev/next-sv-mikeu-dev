@@ -74,6 +74,19 @@
 		const isHoverable = window.matchMedia('(pointer: fine)').matches;
 		let hoverTl: gsap.core.Timeline | null = null;
 
+		// GSAP's CSSPlugin only knows rotationX/Y/Z (rotation around the
+		// standard axes) — `rotate3d` isn't one of its property names, so
+		// tweening it directly warns "Invalid property rotate3d" and never
+		// animates. Tweening a plain number and writing the transform
+		// ourselves in onUpdate keeps the diagonal-axis flip GSAP can't
+		// express natively, while `flapState` staying alive across hover
+		// in/out lets a fast re-hover reverse smoothly from wherever the flap
+		// actually is instead of snapping.
+		const flapState = { deg: 0 };
+		const applyFlapRotation = (flap: Element | null) => {
+			if (flap) (flap as HTMLElement).style.transform = `rotate3d(1, -1, 0, ${flapState.deg}deg)`;
+		};
+
 		const handleMouseEnter = () => {
 			if (!isHoverable || !cardElement) return;
 
@@ -124,11 +137,12 @@
 
 			// Fold top-right origami corner flap 180 degrees back along diagonal
 			hoverTl.to(
-				flap,
+				flapState,
 				{
-					rotate3d: '1, -1, 0, 180',
+					deg: 180,
 					duration: 0.6,
-					ease: 'power2.inOut'
+					ease: 'power2.inOut',
+					onUpdate: () => applyFlapRotation(flap)
 				},
 				0
 			);
@@ -181,11 +195,12 @@
 			);
 
 			hoverTl.to(
-				flap,
+				flapState,
 				{
-					rotate3d: '1, -1, 0, 0',
+					deg: 0,
 					duration: 0.6,
-					ease: 'power2.inOut'
+					ease: 'power2.inOut',
+					onUpdate: () => applyFlapRotation(flap)
 				},
 				0
 			);

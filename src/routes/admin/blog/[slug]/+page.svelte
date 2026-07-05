@@ -40,7 +40,9 @@
 		<p class="text-muted-foreground">Edit existing blog post</p>
 	</div>
 
-	<div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+	<div
+		class="rounded-lg border border-gray-200 bg-white p-6 text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
+	>
 		{#if loading}
 			<div class="flex justify-center py-12">Loading...</div>
 		{:else if post}

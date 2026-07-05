@@ -205,7 +205,7 @@
 
 					<div class="stagger-item space-y-8">
 						<div
-							class="max-w-2xl font-mono text-sm leading-relaxed tracking-wider text-muted-foreground uppercase md:text-base"
+							class="max-w-2xl font-mono text-sm leading-relaxed tracking-wider text-card-foreground/80 uppercase md:text-base dark:text-muted-foreground"
 						>
 							// <!-- eslint-disable-next-line svelte/no-at-html-tags -->
 							{@html m.about_desc_first_part()}
@@ -267,7 +267,7 @@
 							[SVELTE_EXPERT]
 						</div>
 						<div
-							class="absolute -bottom-4 -left-4 border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black text-white shadow-[4px_4px_0_var(--foreground)]"
+							class="absolute -bottom-4 -left-4 border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black text-primary-foreground shadow-[4px_4px_0_var(--foreground)]"
 						>
 							[GIS_ENGINEER]
 						</div>
@@ -336,20 +336,20 @@
 							>
 								<button
 									onclick={() => toggleJourney(i)}
-									class={`group/card relative w-full border-4 p-8 text-left transition-all duration-500 md:text-inherit ${isExpanded ? 'border-foreground bg-card shadow-[8px_8px_0_var(--primary)]' : 'border-foreground/10 bg-transparent hover:border-foreground/30'}`}
+									class={`group/card relative w-full border-4 p-8 text-left transition-all duration-500 md:text-inherit ${isExpanded ? 'border-foreground bg-card text-card-foreground shadow-[8px_8px_0_var(--primary)]' : 'border-foreground/10 bg-transparent hover:border-foreground/30'}`}
 									style={isExpanded ? '' : `clip-path: polygon(0 0, 100% 2%, 98% 100%, 2% 98%);`}
 								>
 									<div class="space-y-4">
 										<div class={`flex items-center gap-4 ${i % 2 === 0 ? 'md:justify-end' : ''}`}>
 											<span
-												class={`px-3 py-1 font-mono text-xs font-black tracking-widest ${isExpanded ? 'bg-primary text-white' : 'bg-foreground/5 text-foreground/40'}`}
+												class={`px-3 py-1 font-mono text-xs font-black tracking-widest ${isExpanded ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-foreground/40'}`}
 											>
 												[{item.year}]
 											</span>
 										</div>
 
 										<h3
-											class={`font-poppins text-3xl font-black tracking-tighter uppercase italic ${isExpanded ? 'text-foreground' : 'text-foreground/30'}`}
+											class={`font-poppins text-3xl font-black tracking-tighter uppercase italic ${isExpanded ? 'text-card-foreground' : 'text-foreground/30'}`}
 										>
 											{item.title}
 										</h3>
@@ -359,7 +359,7 @@
 										>
 											<div class="space-y-6 overflow-hidden">
 												<p
-													class="font-mono text-sm leading-relaxed tracking-tight text-muted-foreground uppercase"
+													class="font-mono text-sm leading-relaxed tracking-tight text-card-foreground/70 uppercase dark:text-muted-foreground"
 												>
 													// {item.description}
 												</p>
@@ -404,10 +404,10 @@
 			>
 				<div class="grid grid-cols-1 gap-20 lg:grid-cols-12">
 					<!-- Fact Header -->
-					<div class="space-y-10 lg:col-span-5">
+					<div class="space-y-10 text-card-foreground lg:col-span-5">
 						<div class="stagger-item">
 							<div
-								class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black text-white uppercase"
+								class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black text-primary-foreground uppercase"
 							>
 								[SYSTEM_JUICE]
 							</div>
@@ -419,7 +419,7 @@
 						</div>
 
 						<p
-							class="font-mono text-sm leading-relaxed tracking-wider text-muted-foreground uppercase"
+							class="font-mono text-sm leading-relaxed tracking-wider text-card-foreground/70 uppercase dark:text-muted-foreground"
 						>
 							// {m.about_fun_facts_desc_long()}
 						</p>

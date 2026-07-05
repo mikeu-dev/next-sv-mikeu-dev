@@ -5,8 +5,15 @@ import { blogService } from '$lib/server/services/blog.service';
 
 export const prerender = false;
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
+
+	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
+	setHeaders({
+		'cache-control': locals.user
+			? 'private, no-store'
+			: 'public, s-maxage=10, stale-while-revalidate=30'
+	});
 
 	// Projects fetch is the same for both, but we fetch it once.
 	// Skills and Blog are locale-specific.

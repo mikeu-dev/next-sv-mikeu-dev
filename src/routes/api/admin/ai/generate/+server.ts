@@ -1,7 +1,26 @@
-﻿import { json, type RequestHandler } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 import { geminiService } from '$lib/server/services/gemini.service';
+import { checkRateLimit } from '$lib/server/middleware/rate-limit';
+import type { ContentEnhancementAction } from '$lib/types/ai-content.types';
 
-export const POST: RequestHandler = async ({ request }) => {
+const AI_RATE_LIMIT = { maxRequests: 20, windowMs: 60_000 }; // 20 req/min per session
+
+const VALID_ENHANCEMENT_ACTIONS: readonly ContentEnhancementAction[] = [
+	'fixGrammar',
+	'improveReadability',
+	'adjustAudience',
+	'optimizeSeo',
+	'addExplanation',
+	'summarize',
+	'translateContent',
+	'suggestImprovements'
+];
+
+export const POST: RequestHandler = async (event) => {
+	const rateLimitResult = checkRateLimit(event, AI_RATE_LIMIT);
+	if (rateLimitResult) return rateLimitResult;
+
+	const { request } = event;
 	try {
 		const { action, payload } = await request.json();
 
@@ -43,18 +62,70 @@ export const POST: RequestHandler = async ({ request }) => {
 				result = await geminiService.suggestTags(payload.title, payload.description || '');
 				break;
 
-			case 'analyzeRepo':
+			case 'analyzeRepo': {
 				if (!payload.repoUrl) {
 					return json({ error: 'Missing repoUrl for repository analysis' }, { status: 400 });
 				}
-				result = await geminiService.analyzeRepo(payload.repoUrl);
+				// Validate URL before passing to AI to prevent SSRF / prompt injection
+				let parsedUrl: URL;
+				try {
+					parsedUrl = new URL(payload.repoUrl);
+				} catch {
+					return json({ error: 'Invalid URL format' }, { status: 400 });
+				}
+				if (parsedUrl.protocol !== 'https:') {
+					return json({ error: 'Only HTTPS URLs are allowed' }, { status: 400 });
+				}
+				result = await geminiService.analyzeRepo(parsedUrl.toString());
 				break;
+			}
+
 			case 'generateBlogFromPrompt':
 				if (!payload.prompt) {
 					return json({ error: 'Missing prompt for blog generation' }, { status: 400 });
 				}
 				result = await geminiService.generateBlogFromPrompt(payload.prompt);
 				break;
+
+			case 'fetchArticle': {
+				if (!payload.url) {
+					return json({ error: 'Missing url for article fetching' }, { status: 400 });
+				}
+				let articleUrl: URL;
+				try {
+					articleUrl = new URL(payload.url);
+				} catch {
+					return json({ error: 'Invalid URL format' }, { status: 400 });
+				}
+				if (articleUrl.protocol !== 'https:' && articleUrl.protocol !== 'http:') {
+					return json({ error: 'Only HTTP/HTTPS URLs are allowed' }, { status: 400 });
+				}
+				result = await geminiService.fetchArticleContent(articleUrl.toString());
+				break;
+			}
+
+			case 'enhanceContent': {
+				if (!payload.content || !payload.enhancementAction) {
+					return json(
+						{ error: 'Missing content or enhancementAction for content enhancement' },
+						{ status: 400 }
+					);
+				}
+				if (
+					!VALID_ENHANCEMENT_ACTIONS.includes(payload.enhancementAction as ContentEnhancementAction)
+				) {
+					return json(
+						{ error: `Invalid enhancement action: ${payload.enhancementAction}` },
+						{ status: 400 }
+					);
+				}
+				result = await geminiService.enhanceContent(
+					payload.content,
+					payload.enhancementAction as ContentEnhancementAction,
+					payload.options ?? {}
+				);
+				break;
+			}
 
 			default:
 				return json({ error: `Unknown action: ${action}` }, { status: 400 });

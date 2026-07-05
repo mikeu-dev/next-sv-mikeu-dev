@@ -51,6 +51,19 @@
 		const isHoverable = window.matchMedia('(pointer: fine)').matches;
 		let hoverTl: gsap.core.Timeline | null = null;
 
+		// GSAP's CSSPlugin only knows rotationX/Y/Z (rotation around the
+		// standard axes) — it doesn't parse an arbitrary-axis `rotate3d()`
+		// function inside a `transform` string, so tweening that directly
+		// warns "Invalid property rotate3d" and never animates. Tweening a
+		// plain number and writing the transform ourselves in onUpdate keeps
+		// the diagonal-axis flip GSAP can't express natively, while `flapState`
+		// staying alive across hover in/out lets a fast re-hover reverse
+		// smoothly from wherever the flap actually is instead of snapping.
+		const flapState = { deg: 0 };
+		const applyFlapRotation = (flap: Element | null) => {
+			if (flap) (flap as HTMLElement).style.transform = `rotate3d(1, -1, 0, ${flapState.deg}deg)`;
+		};
+
 		const handleMouseEnter = () => {
 			if (!isHoverable || !cardElement) return;
 
@@ -106,11 +119,12 @@
 
 			// 3. Fold corner flap 180 degrees back along diagonal!
 			hoverTl.to(
-				flap,
+				flapState,
 				{
-					transform: 'rotate3d(1, -1, 0, 180deg)',
+					deg: 180,
 					duration: 0.6,
-					ease: 'power2.inOut'
+					ease: 'power2.inOut',
+					onUpdate: () => applyFlapRotation(flap)
 				},
 				0
 			);
@@ -267,9 +281,10 @@
 			);
 
 			hoverTl.to(
-				flap,
+				flapState,
 				{
-					transform: 'rotate3d(1, -1, 0, 0deg)'
+					deg: 0,
+					onUpdate: () => applyFlapRotation(flap)
 				},
 				0
 			);
@@ -331,7 +346,7 @@
 
 	<!-- 2. Main Origami Card (Layer 10) -->
 	<div
-		class="project-card-inner relative z-10 flex h-full flex-col overflow-hidden border-2 border-foreground bg-card"
+		class="project-card-inner relative z-10 flex h-full flex-col overflow-hidden border-2 border-foreground bg-card text-card-foreground"
 	>
 		<!-- Origami Crease Lighting Overlay -->
 		<div class="origami-crease pointer-events-none absolute inset-0 z-20 opacity-35"></div>
@@ -397,7 +412,7 @@
 						href={project.demoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="action-btn flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white transition-all hover:border-primary hover:bg-primary lg:backdrop-blur-md"
+						class="action-btn flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground lg:backdrop-blur-md"
 						title={m.project_button_demo()}
 					>
 						<ExternalLink class="size-5" />
@@ -408,7 +423,7 @@
 						href={project.repoUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="action-btn flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white transition-all hover:border-primary hover:bg-primary lg:backdrop-blur-md"
+						class="action-btn flex size-10 items-center justify-center border-2 border-white bg-black/50 text-white transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground lg:backdrop-blur-md"
 						title={m.project_button_view_code()}
 					>
 						<Github class="size-5" />
@@ -469,7 +484,7 @@
 			</div>
 
 			<p
-				class="mt-4 line-clamp-3 font-mono text-xs leading-relaxed text-muted-foreground/80 uppercase"
+				class="mt-4 line-clamp-3 font-mono text-xs leading-relaxed text-card-foreground/70 uppercase dark:text-muted-foreground"
 			>
 				{project.description}
 			</p>
@@ -477,7 +492,7 @@
 			<!-- Footer Action -->
 			<div class="mt-auto flex items-center justify-between border-t border-foreground/10 pt-6">
 				<div
-					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-primary uppercase"
+					class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-card-foreground uppercase dark:text-primary"
 				>
 					<span>[EXPLORE_DETAILS]</span>
 					<div class="footer-line h-0.5 w-8 bg-primary/30"></div>

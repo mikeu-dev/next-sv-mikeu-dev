@@ -6,24 +6,12 @@
 	let { data } = $props();
 </script>
 
-{#await data.skills}
-	<div class="space-y-4 py-20 text-center">
-		<Skeleton class="mx-auto h-12 w-3/4" />
-		<Skeleton class="mx-auto h-6 w-1/2" />
-		<div class="flex justify-center gap-2">
-			<Skeleton class="h-8 w-20 rounded-full" />
-			<Skeleton class="h-8 w-20 rounded-full" />
-			<Skeleton class="h-8 w-20 rounded-full" />
-		</div>
-	</div>
-{:then skills}
-	<HeroSection {skills} />
-{/await}
+<HeroSection />
 
 <div id="work">
 	<SectionLoader rootMargin="400px">
 		{#snippet fallback()}
-			<div class="container grid grid-cols-1 gap-6 py-20 md:grid-cols-2 lg:grid-cols-3">
+			<div class="container mx-auto grid grid-cols-1 gap-6 py-20 md:grid-cols-2 lg:grid-cols-3">
 				<Skeleton class="h-64 w-full" />
 				<Skeleton class="h-64 w-full" />
 				<Skeleton class="h-64 w-full" />
@@ -37,7 +25,7 @@
 
 <SectionLoader rootMargin="400px">
 	{#snippet fallback()}
-		<div class="container space-y-4 py-20">
+		<div class="container mx-auto space-y-4 py-20">
 			<Skeleton class="h-10 w-48" />
 			<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 				<Skeleton class="h-40 w-full" />
@@ -55,7 +43,7 @@
 <SectionLoader rootMargin="300px">
 	{#snippet fallback()}
 		<div
-			class="flex h-[65vh] min-h-[500px] w-full animate-pulse items-center justify-center bg-muted/5"
+			class="flex h-[65vh] min-h-125 w-full animate-pulse items-center justify-center bg-muted/5"
 		>
 			<div class="h-1.5 w-1.5 animate-pulse bg-primary"></div>
 		</div>

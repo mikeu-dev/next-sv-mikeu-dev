@@ -21,6 +21,9 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# MCP config (may contain API keys)
+.mcp.json
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
