@@ -28,13 +28,16 @@ export interface ContentEnhancementOptions {
 
 /**
  * The shape returned by the `enhanceContent` service method.
- * `suggestImprovements` populates `suggestions`; all other
- * actions populate `content`.
+ * Dual-language outputs enable populating both ID & EN versions at once.
  */
 export interface ContentEnhancementResult {
-	readonly title?: string;
-	readonly description?: string;
-	readonly content: string;
+	readonly title_en?: string;
+	readonly title_id?: string;
+	readonly description_en?: string;
+	readonly description_id?: string;
+	readonly content_en?: string;
+	readonly content_id?: string;
+	readonly slug?: string;
 	readonly suggestions?: string[];
 }
 
@@ -59,48 +62,48 @@ export const ENHANCEMENT_ACTIONS: readonly EnhancementActionDescriptor[] = [
 		key: 'fixGrammar',
 		label: 'Perbaiki Tata Bahasa',
 		emoji: '✍️',
-		description: 'Fix grammar, typo, dan tanda baca'
+		description: 'Fix grammar, spelling, & punctuation (ID & EN)'
 	},
 	{
 		key: 'improveReadability',
 		label: 'Tingkatkan Keterbacaan',
 		emoji: '📖',
-		description: 'Restruktur kalimat & paragraf agar lebih mudah dibaca'
+		description: 'Restructure sentences and enhance readability (ID & EN)'
 	},
 	{
 		key: 'adjustAudience',
 		label: 'Sesuaikan Target Audiens',
 		emoji: '🎯',
-		description: 'Sesuaikan tone & kompleksitas untuk audiens tertentu'
+		description: 'Tailor vocabulary & tone for specific target groups (ID & EN)'
 	},
 	{
 		key: 'optimizeSeo',
 		label: 'Optimasi SEO',
 		emoji: '🔍',
-		description: 'Optimalkan keyword, heading, dan meta description'
+		description: 'Audit heading structure, keywords, & generate meta tags (ID & EN)'
 	},
 	{
 		key: 'addExplanation',
 		label: 'Tambahkan Penjelasan',
 		emoji: '➕',
-		description: 'Elaborate bagian yang kurang detail'
+		description: 'Expand brief areas and clarify complex technical details (ID & EN)'
 	},
 	{
 		key: 'summarize',
 		label: 'Ringkas Artikel',
 		emoji: '📋',
-		description: 'Buat ringkasan concise dari artikel'
+		description: 'Generate structured concise summaries (ID & EN)'
 	},
 	{
 		key: 'translateContent',
 		label: 'Terjemahkan',
 		emoji: '🌐',
-		description: 'Terjemahkan konten ke bahasa lain'
+		description: 'Translate and optimize across both English & Indonesian versions'
 	},
 	{
 		key: 'suggestImprovements',
 		label: 'Saran Perbaikan',
 		emoji: '💡',
-		description: 'Berikan saran perbaikan beserta alasannya'
+		description: 'Analyze article and list actionable recommendations with reasoning'
 	}
 ] as const;

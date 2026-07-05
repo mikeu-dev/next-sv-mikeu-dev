@@ -23,12 +23,18 @@
 
 	interface Props {
 		readonly locale: 'en' | 'id';
-		readonly onApplyTitle?: (title: string) => void;
-		readonly onApplyDescription?: (description: string) => void;
-		readonly onApplyContent?: (content: string) => void;
+		readonly onApplyDraft?: (draft: {
+			slug?: string;
+			title_en?: string;
+			title_id?: string;
+			description_en?: string;
+			description_id?: string;
+			content_en?: string;
+			content_id?: string;
+		}) => void;
 	}
 
-	const { locale, onApplyTitle, onApplyDescription, onApplyContent }: Props = $props();
+	const { locale, onApplyDraft }: Props = $props();
 
 	// --- State ---
 	let articleUrl = $state('');
@@ -45,6 +51,7 @@
 	let copied = $state(false);
 
 	let panelExpanded = $state(true);
+	let activePreviewTab = $state<'en' | 'id'>('en');
 
 	// --- Derived ---
 	const hasArticle = $derived(fetchedArticle !== null);
@@ -54,6 +61,11 @@
 				? fetchedArticle.content.substring(0, 300) + '...'
 				: fetchedArticle.content
 			: ''
+	);
+
+	const canApply = $derived(
+		enhancementResult !== null &&
+			(enhancementResult.content_en !== undefined || enhancementResult.content_id !== undefined)
 	);
 
 	const AUDIENCE_OPTIONS: readonly { readonly value: TargetAudience; readonly label: string }[] = [
@@ -125,9 +137,7 @@
 						enhancementAction: action,
 						options: {
 							locale,
-							targetAudience: action === 'adjustAudience' ? selectedAudience : undefined,
-							targetLocale:
-								action === 'translateContent' ? (locale === 'en' ? 'id' : 'en') : undefined
+							targetAudience: action === 'adjustAudience' ? selectedAudience : undefined
 						}
 					}
 				})
@@ -155,26 +165,34 @@
 	function applyToForm(): void {
 		if (!enhancementResult) return;
 
-		if (enhancementResult.title && onApplyTitle) {
-			onApplyTitle(enhancementResult.title);
-		}
-		if (enhancementResult.description && onApplyDescription) {
-			onApplyDescription(enhancementResult.description);
-		}
-		if (enhancementResult.content && onApplyContent) {
-			onApplyContent(enhancementResult.content);
+		if (onApplyDraft) {
+			onApplyDraft({
+				slug: enhancementResult.slug,
+				title_en: enhancementResult.title_en,
+				title_id: enhancementResult.title_id,
+				description_en: enhancementResult.description_en,
+				description_id: enhancementResult.description_id,
+				content_en: enhancementResult.content_en,
+				content_id: enhancementResult.content_id
+			});
 		}
 
-		toast.success('Applied to form!');
+		toast.success('Applied draft to English and Indonesian versions!');
 		enhancementResult = null;
 	}
 
 	async function copyResult(): Promise<void> {
 		if (!enhancementResult) return;
 
-		const text = enhancementResult.suggestions
-			? enhancementResult.content + '\n\n' + enhancementResult.suggestions.join('\n')
-			: enhancementResult.content;
+		let text = '';
+		if (enhancementResult.suggestions) {
+			text =
+				(enhancementResult.content_en || '') + '\n\n' + enhancementResult.suggestions.join('\n');
+		} else {
+			text =
+				`--- ENGLISH ---\nTitle: ${enhancementResult.title_en || ''}\nDesc: ${enhancementResult.description_en || ''}\n\n${enhancementResult.content_en || ''}\n\n` +
+				`--- INDONESIAN ---\nTitle: ${enhancementResult.title_id || ''}\nDesc: ${enhancementResult.description_id || ''}\n\n${enhancementResult.content_id || ''}`;
+		}
 
 		await navigator.clipboard.writeText(text);
 		copied = true;
@@ -315,7 +333,7 @@
 			{#if hasArticle}
 				<div transition:fade={{ duration: 150 }}>
 					<p class="mb-2 text-xs font-medium text-teal-600/80 dark:text-teal-400/60">
-						Pilih aksi enhancement:
+						Pilih aksi enhancement (Membuat Draf ID & EN sekaligus):
 					</p>
 					<div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
 						{#each ENHANCEMENT_ACTIONS as action (action.key)}
@@ -383,7 +401,7 @@
 					<!-- Result Header -->
 					<div class="flex items-center justify-between">
 						<h3 class="text-sm font-semibold text-teal-700 dark:text-teal-300">
-							✨ Hasil Enhancement
+							✨ Hasil Enhancement (Draf Siap)
 						</h3>
 						<div class="flex items-center gap-1.5">
 							<button
@@ -411,40 +429,66 @@
 						</div>
 					</div>
 
-					<!-- SEO Result (title + description) -->
-					{#if enhancementResult.title || enhancementResult.description}
+					<!-- Metadata Preview (EN & ID Titles / Descriptions / Slug) -->
+					{#if enhancementResult.title_en || enhancementResult.title_id || enhancementResult.description_en || enhancementResult.description_id}
 						<div
-							class="space-y-2 rounded-md border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/20 dark:bg-blue-900/10"
+							class="space-y-2 rounded-md border border-teal-100 bg-teal-50/20 p-3 dark:border-teal-900/20 dark:bg-teal-950/10"
 						>
-							{#if enhancementResult.title}
-								<div>
-									<span class="text-[10px] font-semibold tracking-wider text-blue-500 uppercase"
-										>SEO Title</span
+							{#if enhancementResult.slug}
+								<div class="mb-2 border-b border-teal-100 pb-1.5 dark:border-teal-900/20">
+									<span class="text-[9px] font-bold tracking-wider text-teal-600 uppercase"
+										>URL Slug</span
 									>
-									<p class="text-sm font-medium text-gray-800 dark:text-gray-200">
-										{enhancementResult.title}
+									<p class="font-mono text-xs text-gray-800 dark:text-gray-200">
+										{enhancementResult.slug}
 									</p>
 								</div>
 							{/if}
-							{#if enhancementResult.description}
-								<div>
-									<span class="text-[10px] font-semibold tracking-wider text-blue-500 uppercase"
-										>Meta Description</span
-									>
-									<p class="text-xs text-gray-600 dark:text-gray-400">
-										{enhancementResult.description}
-									</p>
-								</div>
-							{/if}
+							<div class="grid gap-3 md:grid-cols-2">
+								{#if enhancementResult.title_en || enhancementResult.description_en}
+									<div class="space-y-1">
+										<span class="text-[9px] font-bold tracking-wider text-teal-600 uppercase"
+											>🇬🇧 English Version</span
+										>
+										{#if enhancementResult.title_en}
+											<h4 class="text-xs font-semibold text-gray-800 dark:text-gray-200">
+												{enhancementResult.title_en}
+											</h4>
+										{/if}
+										{#if enhancementResult.description_en}
+											<p class="text-[11px] text-gray-600 dark:text-gray-400">
+												{enhancementResult.description_en}
+											</p>
+										{/if}
+									</div>
+								{/if}
+								{#if enhancementResult.title_id || enhancementResult.description_id}
+									<div class="space-y-1">
+										<span class="text-[9px] font-bold tracking-wider text-teal-600 uppercase"
+											>🇮🇩 Indonesian Version</span
+										>
+										{#if enhancementResult.title_id}
+											<h4 class="text-xs font-semibold text-gray-800 dark:text-gray-200">
+												{enhancementResult.title_id}
+											</h4>
+										{/if}
+										{#if enhancementResult.description_id}
+											<p class="text-[11px] text-gray-600 dark:text-gray-400">
+												{enhancementResult.description_id}
+											</p>
+										{/if}
+									</div>
+								{/if}
+							</div>
 						</div>
 					{/if}
 
 					<!-- Suggestions List -->
 					{#if enhancementResult.suggestions && enhancementResult.suggestions.length > 0}
 						<div class="space-y-2">
-							{#if enhancementResult.content}
+							{#if enhancementResult.content_en}
 								<p class="text-xs text-gray-600 dark:text-gray-400">
-									{enhancementResult.content}
+									{enhancementResult.content_en}
 								</p>
 							{/if}
 							<div
@@ -458,31 +502,58 @@
 							</div>
 						</div>
 					{:else}
-						<!-- Content Preview -->
-						<div class="max-h-72 overflow-y-auto">
-							<pre
-								class="text-xs leading-relaxed whitespace-pre-wrap text-gray-700 dark:text-gray-300">{enhancementResult.content}</pre>
+						<!-- Content Preview (Tabs for EN and ID content preview) -->
+						<div class="space-y-2">
+							<div class="flex gap-2 border-b border-gray-200 text-xs dark:border-gray-800">
+								<button
+									type="button"
+									onclick={() => (activePreviewTab = 'en')}
+									class="pb-1 font-medium transition-colors {activePreviewTab === 'en'
+										? 'border-b-2 border-teal-500 text-teal-600'
+										: 'text-gray-400'}"
+								>
+									🇬🇧 English Preview
+								</button>
+								<button
+									type="button"
+									onclick={() => (activePreviewTab = 'id')}
+									class="pb-1 font-medium transition-colors {activePreviewTab === 'id'
+										? 'border-b-2 border-teal-500 text-teal-600'
+										: 'text-gray-400'}"
+								>
+									🇮🇩 Indonesian Preview
+								</button>
+							</div>
+							<div class="max-h-72 overflow-y-auto rounded bg-gray-50 p-2 dark:bg-gray-950/40">
+								<pre
+									class="text-xs leading-relaxed whitespace-pre-wrap text-gray-700 dark:text-gray-300">{activePreviewTab ===
+									'en'
+										? enhancementResult.content_en
+										: enhancementResult.content_id}</pre>
+							</div>
 						</div>
 					{/if}
 
 					<!-- Apply Button -->
-					<div class="flex justify-end gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
-						<button
-							type="button"
-							onclick={applyToForm}
-							class="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-teal-700"
-						>
-							<ArrowDownToLine class="h-4 w-4" />
-							Apply to Form ({locale.toUpperCase()})
-						</button>
-					</div>
+					{#if canApply}
+						<div class="flex justify-end gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
+							<button
+								type="button"
+								onclick={applyToForm}
+								class="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-teal-700"
+							>
+								<ArrowDownToLine class="h-4 w-4" />
+								Apply Draft (ID & EN)
+							</button>
+						</div>
+					{/if}
 				</div>
 			{/if}
 
 			<!-- Helper text -->
 			<p class="text-[10px] text-teal-600/60 dark:text-teal-400/40">
-				* Paste URL artikel/news → Fetch → Pilih aksi AI. Hasil bisa di-apply langsung ke form pada
-				tab {locale.toUpperCase()} yang aktif.
+				* Paste URL artikel/news → Fetch → Pilih aksi AI. Hasil draf (ID & EN, Slug, serta
+				Banner/Media tersemat) akan langsung terisi pada form sekaligus.
 			</p>
 		</div>
 	{/if}

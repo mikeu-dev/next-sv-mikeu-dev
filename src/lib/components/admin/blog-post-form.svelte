@@ -311,9 +311,15 @@
 	<!-- AI Content Enhancement -->
 	<AIContentEnhancer
 		locale={activeTab}
-		onApplyTitle={(val) => (contentData[activeTab].title = val)}
-		onApplyDescription={(val) => (contentData[activeTab].description = val)}
-		onApplyContent={(val) => (contentData[activeTab].content = val)}
+		onApplyDraft={(draft) => {
+			if (draft.slug) commonData.slug = draft.slug;
+			if (draft.title_en) contentData.en.title = draft.title_en;
+			if (draft.title_id) contentData.id.title = draft.title_id;
+			if (draft.description_en) contentData.en.description = draft.description_en;
+			if (draft.description_id) contentData.id.description = draft.description_id;
+			if (draft.content_en) contentData.en.content = draft.content_en;
+			if (draft.content_id) contentData.id.content = draft.content_id;
+		}}
 	/>
 
 	<!-- Shared Fields -->

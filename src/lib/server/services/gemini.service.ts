@@ -325,6 +325,7 @@ Return ONLY a valid JSON object with this structure:
 
 	/**
 	 * Enhances article content using one of 8 AI actions.
+	 * Returns a complete localized draft (ID & EN) with slug, thumbnail, and media embeds.
 	 */
 	async enhanceContent(
 		content: string,
@@ -338,30 +339,28 @@ Return ONLY a valid JSON object with this structure:
 			const response = await result.response;
 			const text = response.text().trim();
 
-			// For suggestImprovements, parse structured JSON
+			// Parse JSON response
+			const jsonMatch = text.match(/\{[\s\S]*\}/);
+			if (jsonMatch) {
+				const parsed = JSON.parse(jsonMatch[0]) as ContentEnhancementResult;
+				return parsed;
+			}
+
+			// Fallback if not valid JSON
 			if (action === 'suggestImprovements') {
-				const jsonMatch = text.match(/\{[\s\S]*\}/);
-				if (jsonMatch) {
-					const parsed = JSON.parse(jsonMatch[0]) as ContentEnhancementResult;
-					return parsed;
-				}
-				// Fallback: treat entire response as suggestions text
 				return {
-					content: text,
+					content_en: text,
 					suggestions: text.split('\n').filter((line: string) => line.trim())
 				};
 			}
 
-			// For optimizeSeo, parse JSON with title + description + content
-			if (action === 'optimizeSeo') {
-				const jsonMatch = text.match(/\{[\s\S]*\}/);
-				if (jsonMatch) {
-					const parsed = JSON.parse(jsonMatch[0]) as ContentEnhancementResult;
-					return parsed;
-				}
-			}
-
-			return { content: text };
+			return {
+				content_en: text,
+				content_id: text,
+				title_en: 'Enhanced Draft (EN)',
+				title_id: 'Enhanced Draft (ID)',
+				slug: 'enhanced-draft'
+			};
 		} catch (error) {
 			console.error(`Gemini enhanceContent (${action}) error:`, error);
 			throw new Error(`Failed to enhance content with action "${action}".`);
@@ -370,32 +369,132 @@ Return ONLY a valid JSON object with this structure:
 
 	/**
 	 * Builds a tailored prompt string for each enhancement action.
+	 * Generates dual language outputs and embeds media.
 	 */
 	private buildEnhancementPrompt(
 		content: string,
 		action: ContentEnhancementAction,
 		options: ContentEnhancementOptions
 	): string {
-		const locale = options.locale ?? 'en';
-		const lang = locale === 'id' ? 'Indonesian' : 'English';
-		const targetLang = (options.targetLocale ?? (locale === 'en' ? 'id' : 'en')) === 'id' ? 'Indonesian' : 'English';
+		const targetAudience = options.targetAudience ?? 'general';
 
-		const prompts: Record<ContentEnhancementAction, string> = {
-			fixGrammar: `You are a professional editor. Fix all grammar, spelling, punctuation, and typographical errors in the following ${lang} article. Preserve the original meaning, structure, and markdown formatting. Return ONLY the corrected text:\n\n"${content}"`,
+		const instructions = `
+You are a senior tech editor, content strategist, and translator. You are given the text of an article.
+You must generate a complete, high-quality, professional blog post draft based on the requested enhancement action.
 
-			improveReadability: `You are a content readability expert. Rewrite the following ${lang} article to dramatically improve readability:\n- Break long paragraphs into shorter ones\n- Use simpler sentence structures where possible\n- Add transition words between sections\n- Improve flow and logical progression\n- Keep all original information intact\n- Preserve markdown formatting\n\nReturn ONLY the improved text:\n\n"${content}"`,
+CRITICAL REQUIREMENTS:
+1. **Dual Language**: You MUST output the results for BOTH languages: English (EN) and Indonesian (ID).
+2. **Title & Description**: Generate engaging, SEO-optimized titles and descriptions for both versions.
+3. **URL Slug**: Create a clean, url-friendly slug based on the English title.
+4. **Hero Thumbnail Banner**:
+   - At the VERY TOP of both 'content_en' and 'content_id' markdown bodies, you MUST insert a premium, high-quality Unsplash image as a hero banner / blog thumbnail.
+   - Use the markdown syntax: ![Hero Banner](https://images.unsplash.com/photo-[PHOTO_ID]?auto=format&fit=crop&w=800&q=80)
+   - Choose a photo ID from Unsplash that matches the tech topic of the article (e.g. laptop, coding, database, security, server, mobile dev).
+5. **Inline Media / Video Placeholder**:
+   - Inside both content bodies (e.g. after the introduction or under a key heading), embed a placeholder for a video player or illustration.
+   - Example markdown: [![Watch Video Tutorial](https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) or [![Watch Demo Video](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) or a high-quality illustration.
+6. **No Placeholders**: Write the full complete content without skipping sections or leaving draft placeholders.
+7. **JSON Output**: You MUST return ONLY a valid JSON object matching the following structure:
+{
+  "title_en": "English Title",
+  "title_id": "Indonesian Title",
+  "description_en": "SEO Description English",
+  "description_id": "SEO Description Indonesian",
+  "content_en": "Full English Markdown content, starting with the Unsplash Hero Banner at the top and including inline video/image placeholders...",
+  "content_id": "Full Indonesian Markdown content, starting with the Unsplash Hero Banner at the top and including inline video/image placeholders...",
+  "slug": "url-friendly-slug-en"
+}
+`;
 
-			adjustAudience: `You are a content strategist. Rewrite the following article for a **${options.targetAudience ?? 'general'}** audience in ${lang}:\n- Adjust technical complexity accordingly\n- Change tone and vocabulary to match the target reader\n- Add or simplify explanations as needed\n- Preserve the core message and markdown formatting\n\nAudience descriptions:\n- developer: technical, use jargon freely, include code context\n- non-technical: avoid jargon, use analogies, explain concepts simply\n- manager: focus on business impact, ROI, strategic implications\n- student: educational tone, step-by-step, define terms\n- general: balanced, accessible, engaging\n\nReturn ONLY the rewritten text:\n\n"${content}"`,
+		if (action === 'suggestImprovements') {
+			return `You are a senior content editor. Analyze the following article and provide detailed improvement suggestions.
+Return a JSON object with this structure:
+{
+  "content_en": "Overall quality assessment of the article...",
+  "suggestions": [
+    "🔍 **Issue**: [description] — **Why**: [reason] — **Fix**: [recommendation]",
+    "...more suggestions"
+  ]
+}
 
-			optimizeSeo: `You are an SEO expert and content strategist. Analyze and optimize the following ${lang} article for search engines:\n- Identify the primary keyword and ensure natural keyword density (1-2%)\n- Optimize heading hierarchy (H2, H3)\n- Suggest a compelling SEO title (max 60 chars)\n- Suggest a meta description (max 155 chars)\n- Add internal linking opportunities as [suggested link text](placeholder)\n- Improve readability score\n- Preserve markdown formatting\n\nReturn a JSON object with this structure:\n{\n  "title": "SEO-optimized title",\n  "description": "Meta description",\n  "content": "Full optimized article in markdown"\n}\n\nArticle:\n"${content}"`,
+Article:
+"${content}"`;
+		}
 
-			addExplanation: `You are a technical writer. Review the following ${lang} article and identify sections that lack sufficient explanation, context, or detail. Then rewrite the article with:\n- Added explanations for complex concepts\n- Examples or analogies where helpful\n- Expanded sections that feel rushed\n- Additional context for jargon or acronyms\n- Preserve existing content and markdown formatting\n\nReturn ONLY the expanded text:\n\n"${content}"`,
+		const prompts: Record<Exclude<ContentEnhancementAction, 'suggestImprovements'>, string> = {
+			fixGrammar: `Action: **Perbaiki Tata Bahasa (Fix Grammar)**.
+Analyze the article and correct any grammatical errors, spelling mistakes, punctuation, and wording.
+Make both the EN and ID versions grammatically perfect while keeping the content and tone aligned.
+${instructions}
 
-			summarize: `You are a professional content summarizer. Create a concise, well-structured summary of the following ${lang} article:\n- Capture all key points and main arguments\n- Use bullet points for clarity\n- Include a 2-3 sentence executive summary at the top\n- Keep the summary to roughly 20-30% of the original length\n- Write in ${lang}\n- Use markdown formatting\n\nReturn ONLY the summary:\n\n"${content}"`,
+Original Article Content:
+"${content}"`,
 
-			translateContent: `You are a professional translator. Translate the following article to ${targetLang}. Requirements:\n- Maintain the original meaning, tone, and intent\n- Use natural, fluent ${targetLang} — not literal translation\n- Preserve all markdown formatting, code blocks, and links\n- Adapt idioms and cultural references appropriately\n\nReturn ONLY the translated text:\n\n"${content}"`,
+			improveReadability: `Action: **Tingkatkan Keterbacaan (Improve Readability)**.
+Rewrite the content to make it much easier to read.
+- Break long paragraphs into shorter ones.
+- Use simpler sentence structures.
+- Use clear transitions.
+- Maintain flow and logical progression.
+Generate the enhanced readable version for both English and Indonesian.
+${instructions}
 
-			suggestImprovements: `You are a senior content editor and strategist. Analyze the following ${lang} article and provide detailed improvement suggestions. For each suggestion:\n- Identify the specific issue\n- Explain WHY it's a problem\n- Provide a concrete recommendation\n\nReturn a JSON object with this structure:\n{\n  "content": "A brief overall assessment of the article (2-3 sentences)",\n  "suggestions": [\n    "🔍 **Issue**: [description] — **Why**: [reason] — **Fix**: [recommendation]",\n    "...more suggestions"\n  ]\n}\n\nArticle:\n"${content}"`
+Original Article Content:
+"${content}"`,
+
+			adjustAudience: `Action: **Sesuaikan Target Audiens (Adjust Target Audience)**.
+Rewrite the article specifically tailored for a **${targetAudience}** audience.
+Audience descriptions:
+- developer: highly technical, use code examples/jargon freely, skip basic handholding.
+- non-technical: avoid jargon, use clear analogies, explain concepts simply.
+- manager: focus on business value, efficiency, ROI, and high-level strategy.
+- student: educational, step-by-step, clear explanations of terms.
+- general: balanced, engaging, accessible to anyone in tech.
+Tailor both the English and Indonesian versions to this audience.
+${instructions}
+
+Original Article Content:
+"${content}"`,
+
+			optimizeSeo: `Action: **Optimasi SEO (SEO Optimization)**.
+Optimize the article structure for search engines:
+- Make sure heading hierarchy (H2, H3) is clean and logical.
+- Use relevant keywords naturally.
+- Generate highly compelling SEO titles and meta descriptions for both languages.
+- Optimize images' alt text for accessibility and search indices.
+${instructions}
+
+Original Article Content:
+"${content}"`,
+
+			addExplanation: `Action: **Tambahkan Penjelasan (Add Explanations)**.
+Review the article, find sections that lack context, detail, or clear explanations, and expand them.
+- Add examples, analogies, or detailed definitions where helpful.
+- Explain technical terms or background context that may be missing.
+Generate the expanded version for both English and Indonesian.
+${instructions}
+
+Original Article Content:
+"${content}"`,
+
+			summarize: `Action: **Ringkas Artikel (Summarize)**.
+Generate a structured, concise summary of the article.
+- Include a 2-3 sentence executive summary.
+- Use clean bullet points for the key takeaways and main arguments.
+- Keep the summary to roughly 20-30% of the original article's length.
+Generate the summary in both English and Indonesian.
+${instructions}
+
+Original Article Content:
+"${content}"`,
+
+			translateContent: `Action: **Terjemahkan (Translate)**.
+Provide a high-quality, natural translation.
+Ensure both the English (EN) and Indonesian (ID) versions are premium and sound native (avoid literal translating style).
+${instructions}
+
+Original Article Content:
+"${content}"`
 		};
 
 		return prompts[action];
