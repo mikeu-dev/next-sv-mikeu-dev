@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
+	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 	interface Props {
@@ -25,6 +26,8 @@
 
 	onMount(() => {
 		if (!container) return;
+
+		gsap.registerPlugin(ScrollTrigger);
 
 		const observer = new IntersectionObserver(
 			(entries) => {
