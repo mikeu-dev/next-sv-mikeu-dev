@@ -351,7 +351,7 @@
 	<!-- 2. Main Origami Card (Layer 10) -->
 	<a
 		href={localizeHref(`/blog/${post.slug}`)}
-		class="blog-card-inner relative z-10 flex h-full flex-col overflow-hidden border-2 border-foreground bg-card"
+		class="blog-card-inner relative z-10 flex h-full flex-col overflow-hidden border-2 border-foreground bg-card text-card-foreground"
 	>
 		<!-- Origami Crease Lighting Overlay -->
 		<div class="origami-crease pointer-events-none absolute inset-0 z-20 opacity-35"></div>
@@ -406,7 +406,7 @@
 			<div class="mb-4 flex flex-wrap gap-3">
 				{#each post.tags || [] as tag (tag)}
 					<span
-						class="blog-tag flex items-center gap-1 border border-foreground/10 px-2.5 py-1 font-mono text-[9px] font-black tracking-widest text-primary uppercase"
+						class="blog-tag flex items-center gap-1 border border-foreground/10 px-2.5 py-1 font-mono text-[9px] font-black tracking-widest text-card-foreground uppercase dark:text-primary"
 					>
 						<Hash class="size-2" />
 						{tag}
@@ -426,7 +426,7 @@
 			</div>
 
 			<p
-				class="mt-4 line-clamp-2 font-mono text-xs leading-relaxed text-muted-foreground/80 uppercase"
+				class="mt-4 line-clamp-2 font-mono text-xs leading-relaxed text-card-foreground/70 uppercase dark:text-muted-foreground"
 			>
 				{post.description}
 			</p>
@@ -435,7 +435,7 @@
 			<div class="mt-auto flex items-center justify-between border-t border-foreground/10 pt-6">
 				{#if post.readingTime}
 					<div
-						class="flex items-center gap-2 font-mono text-[10px] font-black text-foreground/50 uppercase"
+						class="flex items-center gap-2 font-mono text-[10px] font-black text-card-foreground/60 uppercase dark:text-foreground/50"
 					>
 						<Clock class="size-3" />
 						<span>{post.readingTime} MIN_READ</span>

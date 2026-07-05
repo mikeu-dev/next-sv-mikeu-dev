@@ -97,7 +97,7 @@
 
 		<!-- Hero Section -->
 		<header
-			class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 md:p-16"
+			class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 text-card-foreground md:p-16"
 			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
 		>
 			<div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
@@ -116,7 +116,7 @@
 					</div>
 
 					<p
-						class="hero-stagger font-mono text-sm leading-relaxed tracking-wider text-muted-foreground uppercase md:text-lg"
+						class="hero-stagger font-mono text-sm leading-relaxed tracking-wider text-card-foreground/70 uppercase md:text-lg dark:text-muted-foreground"
 					>
 						// {project.description}
 					</p>
@@ -133,7 +133,7 @@
 					<div class="space-y-6 border-l-2 border-foreground/10 pl-8">
 						<div class="space-y-1">
 							<p
-								class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+								class="font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
 							>
 								[KERNEL_ID]
 							</p>
@@ -141,7 +141,7 @@
 						</div>
 						<div class="space-y-1">
 							<p
-								class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+								class="font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
 							>
 								[DEPLOY_STATUS]
 							</p>
@@ -162,7 +162,7 @@
 				style="clip-path: polygon(0 1%, 100% 0, 99% 100%, 1% 99%);"
 			>
 				<div
-					class="absolute -top-4 -left-4 border-2 border-foreground bg-primary px-3 py-1 font-mono text-[10px] font-black text-white"
+					class="absolute -top-4 -left-4 border-2 border-foreground bg-primary px-3 py-1 font-mono text-[10px] font-black text-primary-foreground"
 				>
 					[VISUAL_DATA_STREAM]
 				</div>
@@ -223,7 +223,7 @@
 			<aside class="content-stagger space-y-12">
 				<!-- Project Links -->
 				<div
-					class="group relative border-4 border-foreground bg-card p-8 transition-all hover:shadow-[8px_8px_0_var(--primary)]"
+					class="group relative border-4 border-foreground bg-card p-8 text-card-foreground transition-all hover:shadow-[8px_8px_0_var(--primary)]"
 				>
 					<div class="mb-8 flex items-center justify-between border-b-2 border-foreground/10 pb-4">
 						<h3 class="font-poppins text-lg font-black uppercase italic">[ACCESS_PANEL]</h3>
@@ -265,14 +265,14 @@
 							</div>
 							<div class="min-w-0 flex-1">
 								<p
-									class="mb-3 font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+									class="mb-3 font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
 								>
 									[TECH_STACK_INVENTORY]
 								</p>
 								<div class="flex flex-wrap gap-2">
 									{#each project.tags || [] as tag (tag.name)}
 										<span
-											class="border border-foreground/20 bg-background px-3 py-1 font-mono text-[10px] font-black uppercase transition-colors hover:bg-primary hover:text-white"
+											class="border border-foreground/20 bg-background px-3 py-1 font-mono text-[10px] font-black uppercase transition-colors hover:bg-primary hover:text-primary-foreground"
 										>
 											{tag.name}
 										</span>
@@ -289,7 +289,7 @@
 							</div>
 							<div>
 								<p
-									class="mb-1 font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
+									class="mb-1 font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
 								>
 									[TEMPORAL_MARK]
 								</p>

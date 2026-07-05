@@ -179,12 +179,12 @@
 						name="q"
 						value={data.search}
 						placeholder="INITIATE_SEARCH..."
-						class="h-14 w-full border-2 border-foreground bg-card px-4 pl-12 font-mono text-sm tracking-tight transition-all outline-none focus:bg-primary/5 focus:shadow-[4px_4px_0_var(--primary)]"
+						class="h-14 w-full border-2 border-foreground bg-card px-4 pl-12 font-mono text-sm tracking-tight text-card-foreground transition-all outline-none focus:bg-primary/5 focus:shadow-[4px_4px_0_var(--primary)]"
 					/>
 					{#if data.search}
 						<a
 							href="/blog"
-							class="absolute top-1/2 right-4 -translate-y-1/2 border border-foreground/20 p-1 transition-colors hover:bg-primary hover:text-white"
+							class="absolute top-1/2 right-4 -translate-y-1/2 border border-foreground/20 p-1 transition-colors hover:bg-primary hover:text-primary-foreground"
 						>
 							<X class="size-4" />
 						</a>
@@ -230,7 +230,7 @@
 						class="group relative flex items-center gap-3 border-2 border-foreground px-5 py-2.5 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedCategory ===
 						category
 							? 'bg-foreground text-background'
-							: 'bg-card'}"
+							: 'bg-card text-card-foreground'}"
 					>
 						<span class="relative z-10 font-mono text-[10px] font-black tracking-widest uppercase">
 							{category}
@@ -301,7 +301,7 @@
 					</div>
 					<a
 						href="/blog"
-						class="mt-10 border-2 border-foreground bg-foreground px-8 py-3 font-mono text-[10px] font-black tracking-widest text-background uppercase transition-all hover:bg-primary hover:text-white"
+						class="mt-10 border-2 border-foreground bg-foreground px-8 py-3 font-mono text-[10px] font-black tracking-widest text-background uppercase transition-all hover:bg-primary hover:text-primary-foreground"
 					>
 						[RESET_SEARCH]
 					</a>
@@ -324,6 +324,6 @@
 	}
 
 	input::placeholder {
-		color: oklch(from var(--muted-foreground) l c h / 30%);
+		color: oklch(from var(--card-foreground) l c h / 40%);
 	}
 </style>

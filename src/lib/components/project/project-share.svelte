@@ -83,7 +83,7 @@
 
 		<button
 			onclick={handleWebShare}
-			class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 hover:bg-primary hover:text-white sm:hidden"
+			class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:hidden"
 			title="Share"
 		>
 			<Share2 class="size-4" />

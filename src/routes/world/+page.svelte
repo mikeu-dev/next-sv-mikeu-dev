@@ -26,7 +26,7 @@
 				style="clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);"
 			></div>
 			<p class="mt-8 text-[12px] tracking-[0.3em] text-[#fafafa] uppercase">LOADING FOLDED_WORLD</p>
-			<p class="mt-2 text-[10px] text-[#555]">Preparing 3D visualization engine...</p>
+			<p class="mt-2 text-[10px] text-muted-foreground">Preparing 3D visualization engine...</p>
 		</div>
 	{:then module}
 		<module.default
@@ -42,7 +42,7 @@
 					FOLDED<br />WORLD
 				</h1>
 				<div class="my-6 h-[3px] w-20 bg-[#ff3333]"></div>
-				<p class="mb-8 text-[12px] tracking-widest text-[#888]">
+				<p class="mb-8 text-[12px] tracking-widest text-muted-foreground">
 					{data.stats.total} total visitors from {data.geoNodes.length} locations
 				</p>
 				<div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2">
