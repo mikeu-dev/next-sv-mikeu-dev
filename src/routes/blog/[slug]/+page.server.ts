@@ -5,9 +5,14 @@ import { renderMarkdown } from '$lib/server/utils/markdown';
 import { reactionService } from '$lib/server/services/reaction.service';
 
 export const load: PageServerLoad = async (event) => {
-	const { params, locals } = event;
+	const { params, locals, setHeaders } = event;
 	const locale = locals.paraglide.locale;
 	const slug = params.slug;
+
+	// Disable CDN and browser caching for the article detail in production
+	setHeaders({
+		'cache-control': 'private, no-cache, no-store, must-revalidate'
+	});
 
 	try {
 		const post = await blogService.getPostBySlug(slug, locale);
