@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { page } from '$app/stores';
 	import BlogPostForm from '$lib/components/admin/blog-post-form.svelte';
 
@@ -19,7 +19,9 @@
 		<p class="text-muted-foreground">Write a new blog post</p>
 	</div>
 
-	<div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+	<div
+		class="rounded-lg border border-gray-200 bg-white p-6 text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
+	>
 		<BlogPostForm {initialData} />
 	</div>
 </div>

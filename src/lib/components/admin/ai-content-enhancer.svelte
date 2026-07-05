@@ -241,7 +241,7 @@
 						bind:value={articleUrl}
 						onkeydown={handleUrlKeydown}
 						placeholder="Paste article/news URL (e.g. https://dev.to/...)"
-						class="w-full rounded-lg border border-teal-200 bg-white py-2.5 pr-4 pl-10 text-sm focus:border-teal-500 focus:outline-none dark:border-teal-900/50 dark:bg-gray-950"
+						class="w-full rounded-lg border border-teal-200 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 focus:border-teal-500 focus:outline-none dark:border-teal-900/50 dark:bg-gray-950 dark:text-gray-100"
 						disabled={fetchingArticle}
 					/>
 				</div>
