@@ -1,6 +1,12 @@
-﻿import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai';
+import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai';
 import { Octokit } from 'octokit';
 import { env } from '../config/env';
+import type {
+	ContentEnhancementAction,
+	ContentEnhancementOptions,
+	ContentEnhancementResult,
+	FetchedArticle
+} from '$lib/types/ai-content.types';
 
 export interface ProjectMetadata {
 	title_id: string;
@@ -241,6 +247,158 @@ Return ONLY a valid JSON object with this structure:
 			console.error('Gemini blog generation error:', error);
 			throw new Error('Failed to generate blog post draft using Gemini AI.');
 		}
+	}
+
+	/**
+	 * Fetches and extracts readable text content from an article URL.
+	 * Server-side only — avoids CORS issues.
+	 */
+	async fetchArticleContent(url: string): Promise<FetchedArticle> {
+		try {
+			const parsedUrl = new URL(url);
+			if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+				throw new Error('Only HTTP/HTTPS URLs are allowed');
+			}
+
+			const response = await fetch(url, {
+				headers: {
+					'User-Agent':
+						'Mozilla/5.0 (compatible; BlogEnhancer/1.0; +https://mikeu.dev)',
+					Accept: 'text/html,application/xhtml+xml'
+				},
+				signal: AbortSignal.timeout(15_000)
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`);
+			}
+
+			const html = await response.text();
+
+			// Extract title from <title> tag
+			const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+			const title = titleMatch ? titleMatch[1].trim() : 'Untitled Article';
+
+			// Strip HTML to get plain text content
+			const textContent = html
+				// Remove script and style blocks entirely
+				.replace(/<script[\s\S]*?<\/script>/gi, '')
+				.replace(/<style[\s\S]*?<\/style>/gi, '')
+				// Remove nav, header, footer, aside
+				.replace(/<(nav|header|footer|aside)[\s\S]*?<\/\1>/gi, '')
+				// Convert common block elements to newlines
+				.replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, '\n')
+				.replace(/<br\s*\/?>/gi, '\n')
+				// Strip remaining HTML tags
+				.replace(/<[^>]+>/g, '')
+				// Decode common HTML entities
+				.replace(/&amp;/g, '&')
+				.replace(/&lt;/g, '<')
+				.replace(/&gt;/g, '>')
+				.replace(/&quot;/g, '"')
+				.replace(/&#39;/g, "'")
+				.replace(/&nbsp;/g, ' ')
+				// Collapse whitespace
+				.replace(/[ \t]+/g, ' ')
+				.replace(/\n{3,}/g, '\n\n')
+				.trim();
+
+			// Truncate to ~8000 chars to stay within Gemini context limits
+			const truncated =
+				textContent.length > 8000 ? textContent.substring(0, 8000) + '\n\n[...truncated]' : textContent;
+
+			return {
+				title,
+				content: truncated,
+				url: parsedUrl.toString()
+			};
+		} catch (error) {
+			console.error('Article fetch error:', error);
+			if (error instanceof Error && error.name === 'AbortError') {
+				throw new Error('Request timed out while fetching the article.');
+			}
+			throw new Error(
+				error instanceof Error ? error.message : 'Failed to fetch article content.'
+			);
+		}
+	}
+
+	/**
+	 * Enhances article content using one of 8 AI actions.
+	 */
+	async enhanceContent(
+		content: string,
+		action: ContentEnhancementAction,
+		options: ContentEnhancementOptions = {}
+	): Promise<ContentEnhancementResult> {
+		const prompt = this.buildEnhancementPrompt(content, action, options);
+
+		try {
+			const result = await this.model.generateContent(prompt);
+			const response = await result.response;
+			const text = response.text().trim();
+
+			// For suggestImprovements, parse structured JSON
+			if (action === 'suggestImprovements') {
+				const jsonMatch = text.match(/\{[\s\S]*\}/);
+				if (jsonMatch) {
+					const parsed = JSON.parse(jsonMatch[0]) as ContentEnhancementResult;
+					return parsed;
+				}
+				// Fallback: treat entire response as suggestions text
+				return {
+					content: text,
+					suggestions: text.split('\n').filter((line: string) => line.trim())
+				};
+			}
+
+			// For optimizeSeo, parse JSON with title + description + content
+			if (action === 'optimizeSeo') {
+				const jsonMatch = text.match(/\{[\s\S]*\}/);
+				if (jsonMatch) {
+					const parsed = JSON.parse(jsonMatch[0]) as ContentEnhancementResult;
+					return parsed;
+				}
+			}
+
+			return { content: text };
+		} catch (error) {
+			console.error(`Gemini enhanceContent (${action}) error:`, error);
+			throw new Error(`Failed to enhance content with action "${action}".`);
+		}
+	}
+
+	/**
+	 * Builds a tailored prompt string for each enhancement action.
+	 */
+	private buildEnhancementPrompt(
+		content: string,
+		action: ContentEnhancementAction,
+		options: ContentEnhancementOptions
+	): string {
+		const locale = options.locale ?? 'en';
+		const lang = locale === 'id' ? 'Indonesian' : 'English';
+		const targetLang = (options.targetLocale ?? (locale === 'en' ? 'id' : 'en')) === 'id' ? 'Indonesian' : 'English';
+
+		const prompts: Record<ContentEnhancementAction, string> = {
+			fixGrammar: `You are a professional editor. Fix all grammar, spelling, punctuation, and typographical errors in the following ${lang} article. Preserve the original meaning, structure, and markdown formatting. Return ONLY the corrected text:\n\n"${content}"`,
+
+			improveReadability: `You are a content readability expert. Rewrite the following ${lang} article to dramatically improve readability:\n- Break long paragraphs into shorter ones\n- Use simpler sentence structures where possible\n- Add transition words between sections\n- Improve flow and logical progression\n- Keep all original information intact\n- Preserve markdown formatting\n\nReturn ONLY the improved text:\n\n"${content}"`,
+
+			adjustAudience: `You are a content strategist. Rewrite the following article for a **${options.targetAudience ?? 'general'}** audience in ${lang}:\n- Adjust technical complexity accordingly\n- Change tone and vocabulary to match the target reader\n- Add or simplify explanations as needed\n- Preserve the core message and markdown formatting\n\nAudience descriptions:\n- developer: technical, use jargon freely, include code context\n- non-technical: avoid jargon, use analogies, explain concepts simply\n- manager: focus on business impact, ROI, strategic implications\n- student: educational tone, step-by-step, define terms\n- general: balanced, accessible, engaging\n\nReturn ONLY the rewritten text:\n\n"${content}"`,
+
+			optimizeSeo: `You are an SEO expert and content strategist. Analyze and optimize the following ${lang} article for search engines:\n- Identify the primary keyword and ensure natural keyword density (1-2%)\n- Optimize heading hierarchy (H2, H3)\n- Suggest a compelling SEO title (max 60 chars)\n- Suggest a meta description (max 155 chars)\n- Add internal linking opportunities as [suggested link text](placeholder)\n- Improve readability score\n- Preserve markdown formatting\n\nReturn a JSON object with this structure:\n{\n  "title": "SEO-optimized title",\n  "description": "Meta description",\n  "content": "Full optimized article in markdown"\n}\n\nArticle:\n"${content}"`,
+
+			addExplanation: `You are a technical writer. Review the following ${lang} article and identify sections that lack sufficient explanation, context, or detail. Then rewrite the article with:\n- Added explanations for complex concepts\n- Examples or analogies where helpful\n- Expanded sections that feel rushed\n- Additional context for jargon or acronyms\n- Preserve existing content and markdown formatting\n\nReturn ONLY the expanded text:\n\n"${content}"`,
+
+			summarize: `You are a professional content summarizer. Create a concise, well-structured summary of the following ${lang} article:\n- Capture all key points and main arguments\n- Use bullet points for clarity\n- Include a 2-3 sentence executive summary at the top\n- Keep the summary to roughly 20-30% of the original length\n- Write in ${lang}\n- Use markdown formatting\n\nReturn ONLY the summary:\n\n"${content}"`,
+
+			translateContent: `You are a professional translator. Translate the following article to ${targetLang}. Requirements:\n- Maintain the original meaning, tone, and intent\n- Use natural, fluent ${targetLang} — not literal translation\n- Preserve all markdown formatting, code blocks, and links\n- Adapt idioms and cultural references appropriately\n\nReturn ONLY the translated text:\n\n"${content}"`,
+
+			suggestImprovements: `You are a senior content editor and strategist. Analyze the following ${lang} article and provide detailed improvement suggestions. For each suggestion:\n- Identify the specific issue\n- Explain WHY it's a problem\n- Provide a concrete recommendation\n\nReturn a JSON object with this structure:\n{\n  "content": "A brief overall assessment of the article (2-3 sentences)",\n  "suggestions": [\n    "🔍 **Issue**: [description] — **Why**: [reason] — **Fix**: [recommendation]",\n    "...more suggestions"\n  ]\n}\n\nArticle:\n"${content}"`
+		};
+
+		return prompts[action];
 	}
 }
 

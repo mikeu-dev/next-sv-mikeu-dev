@@ -2,6 +2,7 @@
 	import { toast } from 'svelte-sonner';
 	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
 	import AIAssist from '$lib/components/admin/ai-assist.svelte';
+	import AIContentEnhancer from '$lib/components/admin/ai-content-enhancer.svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
@@ -306,6 +307,14 @@
 			* AI akan membuat Judul, Deskripsi, Slug, dan Konten lengkap (ID & EN) beserta gambar & meme.
 		</p>
 	</div>
+
+	<!-- AI Content Enhancement -->
+	<AIContentEnhancer
+		locale={activeTab}
+		onApplyTitle={(val) => (contentData[activeTab].title = val)}
+		onApplyDescription={(val) => (contentData[activeTab].description = val)}
+		onApplyContent={(val) => (contentData[activeTab].content = val)}
+	/>
 
 	<!-- Shared Fields -->
 	<div class="grid gap-6 md:grid-cols-2">
