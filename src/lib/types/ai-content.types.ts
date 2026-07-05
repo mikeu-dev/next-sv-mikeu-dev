@@ -24,6 +24,8 @@ export interface ContentEnhancementOptions {
 	readonly locale?: 'en' | 'id';
 	readonly targetAudience?: TargetAudience;
 	readonly targetLocale?: 'en' | 'id';
+	readonly sourceImages?: string[];
+	readonly sourceVideos?: string[];
 }
 
 /**
@@ -46,6 +48,8 @@ export interface FetchedArticle {
 	readonly title: string;
 	readonly content: string;
 	readonly url: string;
+	readonly images: string[];
+	readonly videos: string[];
 }
 
 /** Descriptor for each action button rendered in the UI. */

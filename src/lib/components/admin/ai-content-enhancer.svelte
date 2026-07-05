@@ -137,7 +137,9 @@
 						enhancementAction: action,
 						options: {
 							locale,
-							targetAudience: action === 'adjustAudience' ? selectedAudience : undefined
+							targetAudience: action === 'adjustAudience' ? selectedAudience : undefined,
+							sourceImages: fetchedArticle.images,
+							sourceVideos: fetchedArticle.videos
 						}
 					}
 				})

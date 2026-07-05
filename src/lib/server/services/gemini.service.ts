@@ -250,7 +250,7 @@ Return ONLY a valid JSON object with this structure:
 	}
 
 	/**
-	 * Fetches and extracts readable text content from an article URL.
+	 * Fetches and extracts readable text content, image URLs, and video embeds from an article URL.
 	 * Server-side only — avoids CORS issues.
 	 */
 	async fetchArticleContent(url: string): Promise<FetchedArticle> {
@@ -263,8 +263,8 @@ Return ONLY a valid JSON object with this structure:
 			const response = await fetch(url, {
 				headers: {
 					'User-Agent':
-						'Mozilla/5.0 (compatible; BlogEnhancer/1.0; +https://mikeu.dev)',
-					Accept: 'text/html,application/xhtml+xml'
+						'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+					Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 				},
 				signal: AbortSignal.timeout(15_000)
 			});
@@ -275,30 +275,76 @@ Return ONLY a valid JSON object with this structure:
 
 			const html = await response.text();
 
-			// Extract title from <title> tag
+			// 1. Extract title from <title> tag
 			const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
 			const title = titleMatch ? titleMatch[1].trim() : 'Untitled Article';
 
-			// Strip HTML to get plain text content
+			// 2. Extract OpenGraph Image
+			const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+			                     html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+			const ogImage = ogImageMatch ? ogImageMatch[1] : null;
+
+			// 3. Extract Image Tags
+			const imgMatches = [...html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)];
+			const extractedImages = imgMatches
+				.map(m => m[1])
+				.filter(src => src && (src.startsWith('http') || src.startsWith('//') || src.startsWith('/')));
+
+			// Resolve paths
+			const resolvedImages = extractedImages.map(imgUrl => {
+				if (imgUrl.startsWith('//')) return `${parsedUrl.protocol}${imgUrl}`;
+				if (imgUrl.startsWith('/')) return `${parsedUrl.origin}${imgUrl}`;
+				return imgUrl;
+			});
+
+			if (ogImage) {
+				const resolvedOg = ogImage.startsWith('//') ? `${parsedUrl.protocol}${ogImage}` :
+				                   ogImage.startsWith('/') ? `${parsedUrl.origin}${ogImage}` : ogImage;
+				if (!resolvedImages.includes(resolvedOg)) {
+					resolvedImages.unshift(resolvedOg);
+				}
+			}
+
+			// Clean and filter images (skip small icons/trackers)
+			const cleanImages = resolvedImages.filter(src => {
+				const lowercase = src.toLowerCase();
+				return !lowercase.includes('icon') &&
+				       !lowercase.includes('logo') &&
+				       !lowercase.includes('avatar') &&
+				       !lowercase.includes('tracker') &&
+				       !lowercase.includes('pixel');
+			});
+
+			const uniqueImages = [...new Set(cleanImages)].slice(0, 10);
+
+			// 4. Extract YouTube & Vimeo video iframe embeds
+			const iframeMatches = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)];
+			const extractedVideos = iframeMatches
+				.map(m => m[1])
+				.filter(src => src && (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')));
+
+			const resolvedVideos = extractedVideos.map(vidUrl => {
+				if (vidUrl.startsWith('//')) return `https:${vidUrl}`;
+				return vidUrl;
+			});
+
+			const uniqueVideos = [...new Set(resolvedVideos)].slice(0, 5);
+
+			// 5. Strip HTML to get plain text content
 			const textContent = html
-				// Remove script and style blocks entirely
 				.replace(/<script[\s\S]*?<\/script>/gi, '')
+				.replace(/<style[\s\S]*?<\/script>/gi, '') // fix tag match
 				.replace(/<style[\s\S]*?<\/style>/gi, '')
-				// Remove nav, header, footer, aside
 				.replace(/<(nav|header|footer|aside)[\s\S]*?<\/\1>/gi, '')
-				// Convert common block elements to newlines
 				.replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, '\n')
 				.replace(/<br\s*\/?>/gi, '\n')
-				// Strip remaining HTML tags
 				.replace(/<[^>]+>/g, '')
-				// Decode common HTML entities
 				.replace(/&amp;/g, '&')
 				.replace(/&lt;/g, '<')
 				.replace(/&gt;/g, '>')
 				.replace(/&quot;/g, '"')
 				.replace(/&#39;/g, "'")
 				.replace(/&nbsp;/g, ' ')
-				// Collapse whitespace
 				.replace(/[ \t]+/g, ' ')
 				.replace(/\n{3,}/g, '\n\n')
 				.trim();
@@ -310,7 +356,9 @@ Return ONLY a valid JSON object with this structure:
 			return {
 				title,
 				content: truncated,
-				url: parsedUrl.toString()
+				url: parsedUrl.toString(),
+				images: uniqueImages,
+				videos: uniqueVideos
 			};
 		} catch (error) {
 			console.error('Article fetch error:', error);
@@ -377,6 +425,16 @@ Return ONLY a valid JSON object with this structure:
 		options: ContentEnhancementOptions
 	): string {
 		const targetAudience = options.targetAudience ?? 'general';
+		const sourceImages = options.sourceImages ?? [];
+		const sourceVideos = options.sourceVideos ?? [];
+
+		const imagesText = sourceImages.length > 0
+			? `Here are the verified image URLs extracted directly from the source article:\n${sourceImages.map((src, i) => `- Image ${i + 1}: ${src}`).join('\n')}`
+			: 'No verified image URLs extracted from the source article.';
+
+		const videosText = sourceVideos.length > 0
+			? `Here are the verified video URLs/embeds extracted directly from the source article:\n${sourceVideos.map((src, i) => `- Video ${i + 1}: ${src}`).join('\n')}`
+			: 'No verified video URLs/embeds extracted from the source article.';
 
 		const instructions = `
 You are a senior tech editor, content strategist, and translator. You are given the text of an article.
@@ -387,12 +445,15 @@ CRITICAL REQUIREMENTS:
 2. **Title & Description**: Generate engaging, SEO-optimized titles and descriptions for both versions.
 3. **URL Slug**: Create a clean, url-friendly slug based on the English title.
 4. **Hero Thumbnail Banner**:
-   - At the VERY TOP of both 'content_en' and 'content_id' markdown bodies, you MUST insert a premium, high-quality Unsplash image as a hero banner / blog thumbnail.
-   - Use the markdown syntax: ![Hero Banner](https://images.unsplash.com/photo-[PHOTO_ID]?auto=format&fit=crop&w=800&q=80)
-   - Choose a photo ID from Unsplash that matches the tech topic of the article (e.g. laptop, coding, database, security, server, mobile dev).
-5. **Inline Media / Video Placeholder**:
-   - Inside both content bodies (e.g. after the introduction or under a key heading), embed a placeholder for a video player or illustration.
-   - Example markdown: [![Watch Video Tutorial](https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) or [![Watch Demo Video](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) or a high-quality illustration.
+   - At the VERY TOP of both 'content_en' and 'content_id' markdown bodies, you MUST insert a premium hero banner / blog thumbnail image.
+   - PRIORITIZE using the first relevant image URL from the source images listed below.
+   - If no source images are available (or they are not suitable), select a high-quality Unsplash image: ![Hero Banner](https://images.unsplash.com/photo-[PHOTO_ID]?auto=format&fit=crop&w=800&q=80) related to the tech topic.
+5. **Inline Media / Video Placeholder / Pinterest Link**:
+   - Inside both content bodies (e.g. after the introduction or under a key heading), embed a placeholder for a video player, illustration, or a relevant Pinterest search link.
+   - If verified videos are listed below, embed the first video directly using markdown preview link or iframe.
+   - If no videos are available, embed a Pinterest board or search link overlay:
+     [![Explore related design ideas on Pinterest](https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80)](https://id.pinterest.com/search/pins/?q=[ENCODED_TOPIC_KEYWORDS])
+     where [ENCODED_TOPIC_KEYWORDS] is a URL-encoded keyword search relevant to the article context (e.g. system+architecture, ui+design, devops+setup).
 6. **No Placeholders**: Write the full complete content without skipping sections or leaving draft placeholders.
 7. **JSON Output**: You MUST return ONLY a valid JSON object matching the following structure:
 {
@@ -400,8 +461,8 @@ CRITICAL REQUIREMENTS:
   "title_id": "Indonesian Title",
   "description_en": "SEO Description English",
   "description_id": "SEO Description Indonesian",
-  "content_en": "Full English Markdown content, starting with the Unsplash Hero Banner at the top and including inline video/image placeholders...",
-  "content_id": "Full Indonesian Markdown content, starting with the Unsplash Hero Banner at the top and including inline video/image placeholders...",
+  "content_en": "Full English Markdown content, starting with the Hero Banner at the top and including inline video/Pinterest search links...",
+  "content_id": "Full Indonesian Markdown content, starting with the Hero Banner at the top and including inline video/Pinterest search links...",
   "slug": "url-friendly-slug-en"
 }
 `;
@@ -427,6 +488,10 @@ Analyze the article and correct any grammatical errors, spelling mistakes, punct
 Make both the EN and ID versions grammatically perfect while keeping the content and tone aligned.
 ${instructions}
 
+Source Media Assets:
+${imagesText}
+${videosText}
+
 Original Article Content:
 "${content}"`,
 
@@ -438,6 +503,10 @@ Rewrite the content to make it much easier to read.
 - Maintain flow and logical progression.
 Generate the enhanced readable version for both English and Indonesian.
 ${instructions}
+
+Source Media Assets:
+${imagesText}
+${videosText}
 
 Original Article Content:
 "${content}"`,
@@ -453,6 +522,10 @@ Audience descriptions:
 Tailor both the English and Indonesian versions to this audience.
 ${instructions}
 
+Source Media Assets:
+${imagesText}
+${videosText}
+
 Original Article Content:
 "${content}"`,
 
@@ -464,6 +537,10 @@ Optimize the article structure for search engines:
 - Optimize images' alt text for accessibility and search indices.
 ${instructions}
 
+Source Media Assets:
+${imagesText}
+${videosText}
+
 Original Article Content:
 "${content}"`,
 
@@ -473,6 +550,10 @@ Review the article, find sections that lack context, detail, or clear explanatio
 - Explain technical terms or background context that may be missing.
 Generate the expanded version for both English and Indonesian.
 ${instructions}
+
+Source Media Assets:
+${imagesText}
+${videosText}
 
 Original Article Content:
 "${content}"`,
@@ -485,6 +566,10 @@ Generate a structured, concise summary of the article.
 Generate the summary in both English and Indonesian.
 ${instructions}
 
+Source Media Assets:
+${imagesText}
+${videosText}
+
 Original Article Content:
 "${content}"`,
 
@@ -492,6 +577,10 @@ Original Article Content:
 Provide a high-quality, natural translation.
 Ensure both the English (EN) and Indonesian (ID) versions are premium and sound native (avoid literal translating style).
 ${instructions}
+
+Source Media Assets:
+${imagesText}
+${videosText}
 
 Original Article Content:
 "${content}"`
