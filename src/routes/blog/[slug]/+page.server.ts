@@ -5,7 +5,7 @@ import { renderMarkdown } from '$lib/server/utils/markdown';
 import { reactionService } from '$lib/server/services/reaction.service';
 
 export const load: PageServerLoad = async (event) => {
-	const { params, locals, setHeaders } = event;
+	const { params, locals, setHeaders, cookies } = event;
 	const locale = locals.paraglide.locale;
 	const slug = params.slug;
 
@@ -33,8 +33,26 @@ export const load: PageServerLoad = async (event) => {
 		// Get related posts
 		const relatedPosts = await blogService.getRelatedPosts(slug, post.tags || [], locale);
 
-		// Track view and get reactions (non-blocking if possible, but for simplicity we'll wait)
-		const reactions = await reactionService.trackView(slug);
+		// Track view and get reactions
+		const viewedCookie = cookies.get('viewed_posts') || '';
+		const viewedPosts = viewedCookie ? viewedCookie.split(',') : [];
+
+		let reactions;
+		if (viewedPosts.includes(slug)) {
+			reactions = await reactionService.getReactions(slug);
+		} else {
+			reactions = await reactionService.trackView(slug);
+			viewedPosts.push(slug);
+			if (viewedPosts.length > 50) {
+				viewedPosts.shift();
+			}
+			cookies.set('viewed_posts', viewedPosts.join(','), {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'lax',
+				maxAge: 60 * 60 * 24 // 24 hours
+			});
+		}
 
 		return {
 			slug,
