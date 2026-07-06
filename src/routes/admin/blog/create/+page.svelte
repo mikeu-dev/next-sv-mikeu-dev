@@ -9,7 +9,8 @@
 		description: '',
 		date: new Date().toISOString().split('T')[0],
 		published: false,
-		content: ''
+		content: '',
+		thumbnailUrl: ''
 	});
 </script>
 
