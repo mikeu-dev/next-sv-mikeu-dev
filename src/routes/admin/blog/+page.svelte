@@ -92,8 +92,8 @@
 <div class="container mx-auto p-6">
 	<div class="mb-6 flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold">Blog Posts</h1>
-			<p class="text-muted-foreground">Manage your blog content</p>
+			<h1 class="text-3xl font-bold text-white">Blog Posts</h1>
+			<p class="text-gray-200 dark:text-gray-400">Manage your blog content</p>
 		</div>
 		<div class="flex gap-2">
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
@@ -115,16 +115,16 @@
 			<button
 				onclick={() => (activeTab = 'en')}
 				class="px-4 py-2 font-medium transition-colors {activeTab === 'en'
-					? 'border-b-2 border-blue-600 text-blue-600'
-					: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+					? 'border-b-2 border-primary text-primary'
+					: 'text-gray-200 hover:text-white dark:text-gray-400 dark:hover:text-gray-200'}"
 			>
 				ðŸ‡¬ðŸ‡§ English
 			</button>
 			<button
 				onclick={() => (activeTab = 'id')}
 				class="px-4 py-2 font-medium transition-colors {activeTab === 'id'
-					? 'border-b-2 border-blue-600 text-blue-600'
-					: 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}"
+					? 'border-b-2 border-primary text-primary'
+					: 'text-gray-200 hover:text-white dark:text-gray-400 dark:hover:text-gray-200'}"
 			>
 				ðŸ‡®ðŸ‡© Indonesia
 			</button>
@@ -138,7 +138,7 @@
 
 		<!-- Status Filter -->
 		<div class="flex items-center gap-2">
-			<span class="text-sm font-medium text-muted-foreground">Status:</span>
+			<span class="text-sm font-medium text-gray-200 dark:text-gray-400">Status:</span>
 			<div class="flex gap-1">
 				<button
 					onclick={() => (filterStatus = 'all')}
@@ -170,7 +170,7 @@
 
 	<!-- Results Count -->
 	{#if !loading && posts.length > 0}
-		<div class="mb-4 text-sm text-muted-foreground">
+		<div class="mb-4 text-sm text-gray-200 dark:text-gray-400">
 			{#if filteredPosts().length > 0}
 				Showing {(currentPage - 1) * pageSize + 1}-{Math.min(
 					currentPage * pageSize,
@@ -184,11 +184,11 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-12">
-			<div class="text-muted-foreground">Loading posts...</div>
+			<div class="text-gray-200 dark:text-gray-400">Loading posts...</div>
 		</div>
 	{:else if posts.length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
-			<p class="mb-4 text-muted-foreground">No posts yet</p>
+			<p class="mb-4 text-gray-200 dark:text-gray-400">No posts yet</p>
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<button
 				onclick={() => {
@@ -202,12 +202,12 @@
 		</div>
 	{:else if filteredPosts().length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
-			<p class="mb-4 text-muted-foreground">No posts match the selected filters</p>
+			<p class="mb-4 text-gray-200 dark:text-gray-400">No posts match the selected filters</p>
 			<button
 				onclick={() => {
 					filterStatus = 'all';
 				}}
-				class="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+				class="rounded-lg border border-gray-300 px-4 py-2 text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
 			>
 				Clear Filters
 			</button>
@@ -216,7 +216,7 @@
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each paginatedPosts() as post (post.id)}
 				<div
-					class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+					class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
 				>
 					<div class="flex-1 p-4">
 						<div class="mb-2 flex items-start justify-between gap-2">
@@ -244,11 +244,11 @@
 							{post.title}
 						</h3>
 
-						<p class="mb-4 line-clamp-3 text-sm text-muted-foreground">
+						<p class="mb-4 line-clamp-3 text-sm text-gray-500 dark:text-gray-400">
 							{post.description}
 						</p>
 
-						<div class="mb-4 text-xs text-muted-foreground">
+						<div class="mb-4 text-xs text-gray-500 dark:text-gray-400">
 							{post.date} &bull; {post.slug}
 						</div>
 					</div>
@@ -281,7 +281,7 @@
 				<button
 					onclick={() => (currentPage = Math.max(1, currentPage - 1))}
 					disabled={currentPage === 1}
-					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
+					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
 				>
 					Previous
 				</button>
@@ -291,7 +291,7 @@
 						onclick={() => (currentPage = i + 1)}
 						class="h-9 w-9 rounded-lg text-sm {currentPage === i + 1
 							? 'bg-blue-600 text-white'
-							: 'border border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800'}"
+							: 'border border-gray-300 text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800'}"
 					>
 						{i + 1}
 					</button>
@@ -300,7 +300,7 @@
 				<button
 					onclick={() => (currentPage = Math.min(totalPages, currentPage + 1))}
 					disabled={currentPage === totalPages}
-					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
+					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
 				>
 					Next
 				</button>
