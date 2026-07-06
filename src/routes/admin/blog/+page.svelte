@@ -19,8 +19,9 @@
 	let loading = $state(true);
 	let activeTab = $state<'en' | 'id'>('en');
 	let filterStatus = $state<'all' | 'published' | 'draft'>('all');
+	let currentPage = $state(1);
+	const pageSize = 9;
 
-	// Computed filtered posts
 	// Computed filtered posts
 	let filteredPosts = $derived(() => {
 		let result = [...posts]; // Create a copy first to avoid mutation of state
@@ -36,6 +37,20 @@
 
 		// Use toSorted() if available or sort copy
 		return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	});
+
+	let totalPages = $derived(Math.max(1, Math.ceil(filteredPosts().length / pageSize)));
+
+	let paginatedPosts = $derived(() => {
+		const start = (currentPage - 1) * pageSize;
+		return filteredPosts().slice(start, start + pageSize);
+	});
+
+	// Reset to first page whenever the visible set changes
+	$effect(() => {
+		activeTab;
+		filterStatus;
+		currentPage = 1;
 	});
 
 	onMount(async () => {
@@ -156,7 +171,14 @@
 	<!-- Results Count -->
 	{#if !loading && posts.length > 0}
 		<div class="mb-4 text-sm text-muted-foreground">
-			Showing {filteredPosts().length} of {posts.length} posts
+			{#if filteredPosts().length > 0}
+				Showing {(currentPage - 1) * pageSize + 1}-{Math.min(
+					currentPage * pageSize,
+					filteredPosts().length
+				)} of {filteredPosts().length} posts
+			{:else}
+				Showing 0 of {posts.length} posts
+			{/if}
 		</div>
 	{/if}
 
@@ -192,7 +214,7 @@
 		</div>
 	{:else}
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-			{#each filteredPosts() as post (post.id)}
+			{#each paginatedPosts() as post (post.id)}
 				<div
 					class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
 				>
@@ -252,5 +274,37 @@
 				</div>
 			{/each}
 		</div>
+
+		<!-- Pagination -->
+		{#if totalPages > 1}
+			<div class="mt-8 flex items-center justify-center gap-2">
+				<button
+					onclick={() => (currentPage = Math.max(1, currentPage - 1))}
+					disabled={currentPage === 1}
+					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
+				>
+					Previous
+				</button>
+
+				{#each Array(totalPages) as _, i (i)}
+					<button
+						onclick={() => (currentPage = i + 1)}
+						class="h-9 w-9 rounded-lg text-sm {currentPage === i + 1
+							? 'bg-blue-600 text-white'
+							: 'border border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800'}"
+					>
+						{i + 1}
+					</button>
+				{/each}
+
+				<button
+					onclick={() => (currentPage = Math.min(totalPages, currentPage + 1))}
+					disabled={currentPage === totalPages}
+					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
+				>
+					Next
+				</button>
+			</div>
+		{/if}
 	{/if}
 </div>
