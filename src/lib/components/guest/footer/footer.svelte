@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import { onMount } from 'svelte';
@@ -6,10 +6,31 @@
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { Database, Activity, Cpu } from '@lucide/svelte';
 	import { localizeHref } from '$lib/paraglide/runtime';
+	import { origamiClipPath, randomOrigamiClipPath } from '$lib/utils/origami-shape';
+	import { tornPaperClipPath } from '$lib/utils/torn-paper-shape';
 
 	let { socials = [], visitorStats = { total: 0, today: 0 } } = $props();
 
 	let footerElement = $state<HTMLElement>();
+
+	// Static, seeded shapes — computed once so the torn/folded silhouette is
+	// identical between SSR and hydration instead of reshuffling like
+	// `Math.random()` would (same reasoning as the rest of the origami system).
+	const topTearClipPath = tornPaperClipPath('footer-top-tear', { segments: 36, jitter: 40 });
+	const bottomTearClipPath = tornPaperClipPath('footer-bottom-tear', { segments: 24, jitter: 16 });
+	const logoClipPath = origamiClipPath({
+		tl: 0,
+		tr: { x: 18, y: 10 },
+		br: 10,
+		bl: { x: 10, y: 16 }
+	});
+	const statsClipPath = origamiClipPath({ tl: 0, tr: { x: 8, y: 3 }, br: 5, bl: { x: 3, y: 8 } });
+	const statsShadowClipPath = origamiClipPath({
+		tl: { x: 8, y: 3 },
+		tr: 5,
+		br: { x: 3, y: 8 },
+		bl: 0
+	});
 
 	onMount(() => {
 		gsap.registerPlugin(ScrollTrigger);
@@ -31,26 +52,45 @@
 	});
 </script>
 
-<footer
-	bind:this={footerElement}
-	class="relative overflow-hidden border-t-2 border-foreground bg-background py-12"
->
+<footer bind:this={footerElement} class="relative overflow-hidden bg-background py-12">
+	<!-- Torn Paper Top Edge — a thin ragged scar, not a slab, as if this sheet was ripped from the page above -->
+	<div
+		class="pointer-events-none absolute inset-x-0 top-0 z-10 h-1.5 bg-foreground"
+		style="clip-path: {topTearClipPath};"
+	></div>
+
+	<!-- Decorative Origami Shards -->
+	<div
+		class="pointer-events-none absolute -top-16 -right-16 z-0 size-72 bg-primary/5 dark:bg-primary/10"
+		style="clip-path: polygon(0% 15%, 100% 0%, 85% 100%, 15% 85%);"
+	></div>
+	<div
+		class="pointer-events-none absolute -bottom-20 -left-20 z-0 size-64 bg-foreground/5"
+		style="clip-path: polygon(15% 0%, 100% 15%, 85% 85%, 0% 100%);"
+	></div>
+
 	<!-- Grain Texture Overlay -->
 	<div
 		class="pointer-events-none absolute inset-0 z-50 opacity-[0.03] mix-blend-overlay contrast-150 grayscale"
 		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
 	></div>
 
-	<div class="relative container mx-auto px-6">
+	<div class="relative z-10 container mx-auto px-6">
 		<div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
 			<!-- Branding & Nav -->
 			<div class="footer-stagger flex flex-col gap-8">
 				<div class="flex items-center gap-3">
-					<div
-						class="flex size-10 items-center justify-center bg-primary text-xl font-black text-primary-foreground"
-						style="clip-path: polygon(10% 0, 100% 15%, 90% 100%, 0 85%);"
-					>
-						M
+					<div class="relative size-10 shrink-0">
+						<div
+							class="absolute inset-0 translate-x-1 translate-y-1 bg-foreground"
+							style="clip-path: {logoClipPath};"
+						></div>
+						<div
+							class="relative flex size-10 items-center justify-center border-2 border-foreground bg-primary text-xl font-black text-primary-foreground"
+							style="clip-path: {logoClipPath};"
+						>
+							M
+						</div>
 					</div>
 					<h3 class="font-poppins text-2xl font-black tracking-tighter uppercase">
 						Mikeu<span class="text-primary">.</span>Dev
@@ -104,24 +144,34 @@
 				<!-- Social Grid -->
 				<div class="flex flex-wrap gap-4">
 					{#each socials as link (link.href)}
+						{@const clip = randomOrigamiClipPath(link.href, {
+							minCut: 10,
+							maxCut: 22,
+							sharpChance: 0,
+							family: 'notch'
+						})}
 						<Tooltip.Provider>
 							<Tooltip.Root>
-								<Tooltip.Trigger>
-									<a
-										href={link.href}
-										target="_blank"
-										rel="noopener noreferrer"
-										aria-label={link.label}
-										class="social-box group relative flex size-12 items-center justify-center border-2 border-foreground transition-all hover:bg-primary hover:text-primary-foreground"
-										style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);"
-									>
-										<Icon iconName={link.iconName} src={link.icon} size={20} />
-										<!-- Glitch Shard Effect -->
-										<div
-											class="pointer-events-none absolute inset-0 -z-10 translate-x-1 translate-y-1 bg-primary opacity-0 transition-transform group-hover:opacity-20"
-										></div>
-									</a>
-								</Tooltip.Trigger>
+								<div class="group relative size-12">
+									<!-- Hard shadow sibling — clip-path clips its own box-shadow too,
+									     so the "shadow" has to be a same-shaped element behind it. -->
+									<div
+										class="pointer-events-none absolute inset-0 bg-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+										style="clip-path: {clip}; transform: translate(5px, 5px);"
+									></div>
+									<Tooltip.Trigger>
+										<a
+											href={link.href}
+											target="_blank"
+											rel="noopener noreferrer"
+											aria-label={link.label}
+											class="social-box relative flex size-12 items-center justify-center border-2 border-foreground bg-background transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
+											style="clip-path: {clip};"
+										>
+											<Icon iconName={link.iconName} src={link.icon} size={20} />
+										</a>
+									</Tooltip.Trigger>
+								</div>
 								<Tooltip.Content>
 									<p class="font-mono text-[9px] font-black tracking-widest uppercase">
 										{link.label}
@@ -132,10 +182,15 @@
 					{/each}
 				</div>
 
-				<!-- Diagnostic Stats -->
-				<div class="w-full lg:w-auto">
+				<!-- Diagnostic Stats — folded paper panel -->
+				<div class="relative w-full lg:w-auto">
 					<div
-						class="grid grid-cols-2 gap-4 border-2 border-foreground/10 bg-foreground/2 p-4 lg:min-w-64 lg:grid-cols-1"
+						class="pointer-events-none absolute inset-0 translate-x-1.5 translate-y-1.5 border-2 border-foreground"
+						style="clip-path: {statsShadowClipPath};"
+					></div>
+					<div
+						class="relative grid grid-cols-2 gap-4 border-2 border-foreground bg-foreground/5 p-4 lg:min-w-64 lg:grid-cols-1"
+						style="clip-path: {statsClipPath};"
 					>
 						<div class="flex flex-col gap-1">
 							<span
@@ -168,9 +223,12 @@
 		</div>
 
 		<!-- Final Metadata Footer -->
-		<div
-			class="mt-20 flex flex-col items-center justify-between gap-6 border-t-2 border-foreground/10 pt-8 md:flex-row"
-		>
+		<div class="relative mt-20 flex flex-col items-center justify-between gap-6 pt-8 md:flex-row">
+			<div
+				class="pointer-events-none absolute inset-x-0 top-0 h-3 bg-foreground/15"
+				style="clip-path: {bottomTearClipPath};"
+			></div>
+
 			<div
 				class="flex items-center gap-4 font-mono text-[9px] font-black tracking-[0.3em] text-foreground/30 uppercase"
 			>
@@ -196,11 +254,6 @@
 	@reference "tailwindcss";
 
 	.social-box {
-		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-	}
-
-	.social-box:hover {
-		transform: translate(-4px, -4px);
-		box-shadow: 6px 6px 0 var(--foreground);
+		transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 	}
 </style>
