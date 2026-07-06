@@ -26,7 +26,12 @@ const clearMemoryCache = () => {
 
 export class BlogService {
 	private repository = new BlogRepository();
-	private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+	// Short-lived: this cache is per-process (globalThis), so on Vercel it never
+	// sees invalidation from admin mutations handled by a different function
+	// instance. Keeping the TTL short bounds worst-case staleness after a
+	// create/update/delete; the CDN cache-control header on guest routes is
+	// what actually protects the Firestore free tier.
+	private readonly CACHE_TTL = 60 * 1000; // 60 seconds
 
 	async getAllPosts() {
 		const now = Date.now();
