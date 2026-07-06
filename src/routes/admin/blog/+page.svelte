@@ -48,8 +48,7 @@
 
 	// Reset to first page whenever the visible set changes
 	$effect(() => {
-		activeTab;
-		filterStatus;
+		const _ = [activeTab, filterStatus];
 		currentPage = 1;
 	});
 
