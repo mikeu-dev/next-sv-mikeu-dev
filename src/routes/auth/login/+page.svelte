@@ -163,7 +163,7 @@
 			<button
 				type="submit"
 				disabled={loading}
-				class="login-stagger group relative mt-4 flex h-14 w-full items-center justify-center gap-3 bg-primary font-poppins text-sm font-black tracking-tighter text-primary-foreground uppercase transition-all hover:bg-foreground hover:text-background active:scale-[0.98] disabled:opacity-50"
+				class="login-stagger group relative mt-4 flex h-14 w-full items-center justify-center gap-3 bg-primary font-poppins text-sm font-black tracking-tighter text-primary-foreground uppercase transition-colors hover:bg-foreground hover:text-background active:scale-[0.98] disabled:opacity-50"
 				style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
 			>
 				{loading ? 'INITIALIZING_SESSION...' : 'INITIATE_HANDSHAKE'}
