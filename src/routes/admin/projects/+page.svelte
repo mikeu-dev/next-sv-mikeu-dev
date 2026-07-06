@@ -7,7 +7,7 @@
 
 	let projects = $state<Project[]>([]);
 	let loading = $state(true);
-	let displayLang = $state<'en' | 'id'>('en');
+	let displayLang = $state<'en' | 'id'>('id');
 	let filterStatus = $state<'all' | 'published' | 'draft'>('all');
 	let filterPinned = $state<'all' | 'pinned' | 'unpinned'>('all');
 

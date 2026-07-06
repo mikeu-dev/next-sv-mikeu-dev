@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const formData = await request.formData();
 		const file = formData.get('file') as File | null;
-		const locale = (formData.get('locale') as string) || 'en';
+		const locale = (formData.get('locale') as string) || 'id';
 
 		if (!file || !(file instanceof File)) {
 			return json({ error: 'No file uploaded' }, { status: 400 });

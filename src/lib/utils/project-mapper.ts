@@ -28,7 +28,7 @@ export function getLocalizedTag(tag: Tag | SerializedTag | unknown): Tag {
 	return tag as Tag;
 }
 
-export function getLocalizedProject(project: Project, locale: string = 'en'): LocalizedProject {
+export function getLocalizedProject(project: Project, locale: string = 'id'): LocalizedProject {
 	const isEn = locale === 'en';
 
 	const localizedProject: LocalizedProject = {

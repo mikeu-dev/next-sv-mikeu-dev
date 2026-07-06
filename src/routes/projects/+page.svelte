@@ -36,7 +36,7 @@
 	let isLoadingMore = $state(false);
 
 	// Transform projects to localized version
-	let rawInitialProjects = $derived(projects[locale] || projects['en'] || []);
+	let rawInitialProjects = $derived(projects[locale] || projects['id'] || []);
 
 	// Maintain a dynamic list of projects for "Load More"
 	let projectsList = $state<Project[]>([]);

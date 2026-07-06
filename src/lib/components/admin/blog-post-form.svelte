@@ -47,7 +47,7 @@
 		}
 	);
 
-	let activeTab = $state<'en' | 'id'>('en');
+	let activeTab = $state<'en' | 'id'>('id');
 	let loading = $state(false);
 	let drafting = $state(false);
 	let aiPrompt = $state('');

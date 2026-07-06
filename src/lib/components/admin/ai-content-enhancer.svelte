@@ -51,7 +51,7 @@
 	let copied = $state(false);
 
 	let panelExpanded = $state(true);
-	let activePreviewTab = $state<'en' | 'id'>('en');
+	let activePreviewTab = $state<'en' | 'id'>('id');
 
 	// --- Derived ---
 	const hasArticle = $derived(fetchedArticle !== null);

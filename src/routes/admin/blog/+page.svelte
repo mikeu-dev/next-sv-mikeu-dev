@@ -17,7 +17,7 @@
 
 	let posts = $state<BlogPost[]>([]);
 	let loading = $state(true);
-	let activeTab = $state<'en' | 'id'>('en');
+	let activeTab = $state<'en' | 'id'>('id');
 	let filterStatus = $state<'all' | 'published' | 'draft'>('all');
 	let currentPage = $state(1);
 	const pageSize = 9;
