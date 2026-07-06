@@ -4,12 +4,13 @@
 
 	let initialData = $derived({
 		slug: $page.url.searchParams.get('slug') || '',
-		locale: $page.url.searchParams.get('locale') || 'en',
+		locale: $page.url.searchParams.get('locale') || 'id',
 		title: $page.url.searchParams.get('title') || '',
 		description: '',
 		date: new Date().toISOString().split('T')[0],
 		published: false,
-		content: ''
+		content: '',
+		thumbnailUrl: ''
 	});
 </script>
 

@@ -6,7 +6,7 @@
 
 	let skills = $state<{ items: string[] }>({ items: [] });
 	let loading = $state(true);
-	let lang = $state<'en' | 'id'>('en');
+	let lang = $state<'en' | 'id'>('id');
 
 	onMount(async () => {
 		await loadData();

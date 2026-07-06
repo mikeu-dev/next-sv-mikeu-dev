@@ -29,7 +29,7 @@ export const load: LayoutServerLoad = async (event) => {
 			}))
 			.catch(() => ({ en: '', id: '' })),
 		user: locals.user,
-		locale: locals.paraglide?.locale || 'en',
+		locale: locals.paraglide?.locale || 'id',
 		flags: {
 			showExperimentalFeature: await showExperimentalFeature()
 		}

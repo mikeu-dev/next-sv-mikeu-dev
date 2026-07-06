@@ -6,7 +6,7 @@ const techStackService = new TechStackService();
 
 export async function GET({ url }) {
 	try {
-		const lang = (url.searchParams.get('lang') || 'en') as 'en' | 'id';
+		const lang = (url.searchParams.get('lang') || 'id') as 'en' | 'id';
 		const data = await techStackService.getTechStack(lang);
 		return json(data);
 	} catch (error: unknown) {

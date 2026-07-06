@@ -13,6 +13,7 @@
 		date: string;
 		published: boolean;
 		content: string;
+		thumbnailUrl?: string;
 		[key: string]: unknown;
 	}
 

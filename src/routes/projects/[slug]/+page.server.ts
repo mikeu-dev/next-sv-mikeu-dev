@@ -6,7 +6,7 @@ import { projectReactionService } from '$lib/server/services/project-reaction.se
 
 export const prerender = false;
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, cookies }) => {
 	const projectsService = new ProjectsService(new ProjectsRepository());
 	const { slug } = params;
 
@@ -23,7 +23,25 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 
 	// Track view and get reactions
-	const reactions = await projectReactionService.trackView(slug);
+	const viewedCookie = cookies.get('viewed_projects') || '';
+	const viewedProjects = viewedCookie ? viewedCookie.split(',') : [];
+
+	let reactions;
+	if (viewedProjects.includes(slug)) {
+		reactions = await projectReactionService.getReactions(slug);
+	} else {
+		reactions = await projectReactionService.trackView(slug);
+		viewedProjects.push(slug);
+		if (viewedProjects.length > 50) {
+			viewedProjects.shift();
+		}
+		cookies.set('viewed_projects', viewedProjects.join(','), {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'lax',
+			maxAge: 60 * 60 * 24 // 24 hours
+		});
+	}
 
 	// Get related projects (same tags)
 	let relatedProjects: import('$lib/types').Project[] = [];

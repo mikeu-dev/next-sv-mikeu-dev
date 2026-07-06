@@ -6,7 +6,7 @@ import { blogService } from '$lib/server/services/blog.service';
 export const prerender = false;
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
-	const locale = (locals.paraglide?.locale || 'en') as 'en' | 'id';
+	const locale = (locals.paraglide?.locale || 'id') as 'en' | 'id';
 
 	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
 	setHeaders({

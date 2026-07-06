@@ -24,7 +24,7 @@
 
 	let locale = $state(getLocale());
 
-	let navLinksData = $derived(navLinks[locale] || navLinks['en']);
+	let navLinksData = $derived(navLinks[locale] || navLinks['id']);
 	let topLeftLinks = $derived(navLinksData.slice(0, 3));
 	let topRightLinks = $derived(navLinksData.slice(3));
 

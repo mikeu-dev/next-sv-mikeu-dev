@@ -15,6 +15,7 @@
 		date: string;
 		published: boolean;
 		content: string;
+		thumbnailUrl?: string;
 	}
 
 	let { initialData = null, isEditing = false } = $props<{
@@ -26,7 +27,8 @@
 	let commonData = $state({
 		slug: '',
 		date: new Date().toISOString().split('T')[0],
-		published: false
+		published: false,
+		thumbnailUrl: ''
 	});
 
 	// Content specific to locales
@@ -45,7 +47,7 @@
 		}
 	);
 
-	let activeTab = $state<'en' | 'id'>('en');
+	let activeTab = $state<'en' | 'id'>('id');
 	let loading = $state(false);
 	let drafting = $state(false);
 	let aiPrompt = $state('');
@@ -55,6 +57,7 @@
 			commonData.slug = initialData.slug || '';
 			commonData.date = initialData.date || new Date().toISOString().split('T')[0];
 			commonData.published = initialData.published || false;
+			commonData.thumbnailUrl = initialData.thumbnailUrl || '';
 
 			contentData.en = {
 				title: initialData.locale === 'en' ? initialData.title || '' : '',
@@ -179,7 +182,8 @@
 					slug: commonData.slug,
 					date: commonData.date,
 					locale: 'en',
-					published: commonData.published
+					published: commonData.published,
+					thumbnailUrl: commonData.thumbnailUrl
 				};
 				// Id strategy: slug-locale
 				// const id = `${commonData.slug}-en`; // ID is now handled by the API based on slug and locale
@@ -206,7 +210,8 @@
 					slug: commonData.slug,
 					date: commonData.date,
 					locale: 'id',
-					published: commonData.published
+					published: commonData.published,
+					thumbnailUrl: commonData.thumbnailUrl
 				};
 				promises.push(
 					fetch('/api/admin/blog', {
@@ -355,6 +360,28 @@
 					bind:value={commonData.date}
 					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
 				/>
+			</div>
+
+			<!-- Thumbnail (Global) -->
+			<div>
+				<label for="thumbnailUrl" class="mb-1 block text-sm font-medium"
+					>Thumbnail (Image URL)</label
+				>
+				<input
+					type="url"
+					id="thumbnailUrl"
+					bind:value={commonData.thumbnailUrl}
+					class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+					placeholder="https://example.com/image.jpg"
+				/>
+				<p class="mt-1 text-xs text-muted-foreground">Shared between languages</p>
+				{#if commonData.thumbnailUrl}
+					<img
+						src={commonData.thumbnailUrl}
+						alt="Thumbnail preview"
+						class="mt-2 h-32 w-full rounded-lg border border-gray-200 object-cover dark:border-gray-800"
+					/>
+				{/if}
 			</div>
 		</div>
 

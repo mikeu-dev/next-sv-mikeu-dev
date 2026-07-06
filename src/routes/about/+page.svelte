@@ -16,7 +16,7 @@
 	let initialLocale = $state(getLocale());
 
 	let techstackRaw = $derived(
-		(data?.techStack?.[initialLocale] || data?.techStack?.['en'] || []) as TechStackCategory[]
+		(data?.techStack?.[initialLocale] || data?.techStack?.['id'] || []) as TechStackCategory[]
 	);
 	let techstack = $derived(
 		techstackRaw.map((category) => ({
@@ -26,7 +26,7 @@
 	);
 
 	let myJourney = $derived(
-		(data?.journey?.[initialLocale] || data?.journey?.['en'] || []) as JourneyItem[]
+		(data?.journey?.[initialLocale] || data?.journey?.['id'] || []) as JourneyItem[]
 	);
 
 	let container: HTMLElement;
