@@ -22,6 +22,7 @@
 	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
 	import Icon from '$lib/components/ui/icon.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
+	import SEO from '$lib/components/seo/seo.svelte';
 	import type { SocialLink } from '$lib/types';
 
 	type ActionData = {
@@ -113,6 +114,8 @@
 		};
 	});
 </script>
+
+<SEO title="Contact" description="Get in touch with me" />
 
 {#if confettiCannon}
 	<ConfettiCannon

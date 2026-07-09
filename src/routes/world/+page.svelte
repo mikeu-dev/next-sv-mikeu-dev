@@ -1,15 +1,14 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import type { PageData } from './$types';
 	import { m } from '$lib/paraglide/messages';
+	import SEO from '$lib/components/seo/seo.svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>
 
+<SEO title={m.world_title()} description={m.world_description()} />
+
 <svelte:head>
-	<title>{m.world_title()} â€” Interactive Visitor Map | mikeu.dev</title>
-	<meta name="description" content={m.world_description()} />
-	<meta property="og:title" content={m.world_title()} />
-	<meta property="og:description" content={m.world_description()} />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"

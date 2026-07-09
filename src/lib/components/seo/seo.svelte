@@ -187,12 +187,6 @@
 	<meta property="og:image:secure_url" content={finalImage} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<meta property="og:image:type" content="image/png" />
-
-	<!-- WhatsApp/Square Thumbnail (300x300) -->
-	<meta property="og:image" content="{siteUrl}/images/og-default.png" />
-	<meta property="og:image:width" content="300" />
-	<meta property="og:image:height" content="300" />
 
 	{#if type === 'article' && article?.publishedTime}
 		<meta property="article:published_time" content={article.publishedTime} />
