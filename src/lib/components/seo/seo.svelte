@@ -175,25 +175,28 @@
 	{/each}
 	<link rel="alternate" hreflang="x-default" href={alternatesData.xDefault} />
 
-	<!-- Open Graph / Facebook -->
+	<!-- Open Graph / Facebook & WhatsApp -->
 	<meta property="og:site_name" content="Mikeu Dev" />
 	<meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
 	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:title" content={finalTitle} />
 	<meta property="og:description" content={finalDescription} />
 
-	<!-- Primary OG Image (1200x630) -->
+	<!-- Image to display -->
 	<meta property="og:image" content={finalImage} />
 	<meta property="og:image:secure_url" content={finalImage} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
+
+	<!-- Type and Size for WhatsApp compatibility -->
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta property="og:image:width" content="300" />
+	<meta property="og:image:height" content="300" />
 
 	{#if type === 'article' && article?.publishedTime}
 		<meta property="article:published_time" content={article.publishedTime} />
 	{/if}
 
 	<!-- Microsoft / Microsoft Apps -->
-	<meta name="msapplication-TileImage" content="{siteUrl}/images/og-default.png" />
+	<meta name="msapplication-TileImage" content={finalImage} />
 	<meta name="msapplication-TileColor" content="#0f172a" />
 
 	<!-- Twitter -->
