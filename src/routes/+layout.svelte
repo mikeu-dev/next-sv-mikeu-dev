@@ -164,7 +164,6 @@
 	<FallingConfetti />
 {/if}
 
-<SEO />
 <ModeWatcher defaultMode="light" />
 <Toaster />
 

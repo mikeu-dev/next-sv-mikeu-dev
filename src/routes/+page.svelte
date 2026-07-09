@@ -2,9 +2,12 @@
 	import HeroSection from '../lib/components/guest/sections/hero/hero.svelte';
 	import Skeleton from '$lib/components/ui/skeleton.svelte';
 	import SectionLoader from '$lib/components/ui/section-loader.svelte';
+	import SEO from '$lib/components/seo/seo.svelte';
 
 	let { data } = $props();
 </script>
+
+<SEO />
 
 <HeroSection />
 

@@ -7,6 +7,7 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
 	import { m } from '$lib/paraglide/messages';
+	import SEO from '$lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -169,6 +170,8 @@
 		return () => ctx.revert();
 	});
 </script>
+
+<SEO title={m.projects_title()} description={m.projects_subtitle()} />
 
 <div class="relative mt-28 min-h-screen space-y-24 pb-32">
 	<!-- Industrial Background Element -->

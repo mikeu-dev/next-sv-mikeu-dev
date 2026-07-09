@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import type { PageData } from './$types';
 	import type { TechStackCategory, JourneyItem } from '$lib/types';
 	import { onMount } from 'svelte';
@@ -10,6 +10,7 @@
 	import { Mail, Coffee, Gamepad2, Music, CheckCircle2, ArrowRight, Hash } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import SkillPlayground from '$lib/components/about/skill-playground.svelte';
+	import SEO from '$lib/components/seo/seo.svelte';
 	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
 
 	let { data }: { data: PageData } = $props();
@@ -158,6 +159,14 @@
 		expandedIndex = expandedIndex === index ? -1 : index;
 	}
 </script>
+
+<SEO
+	title={m.about_begin_first_part()}
+	description={m
+		.about_desc_first_part()
+		.replace(/<[^>]*>?/gm, '')
+		.substring(0, 150)}
+/>
 
 <div bind:this={container} class="relative mt-28 min-h-screen space-y-24 pb-32">
 	<!-- Industrial Background -->
