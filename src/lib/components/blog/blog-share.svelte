@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { Share2, Linkedin, Link, MessageCircle, Twitter } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { m } from '$lib/paraglide/messages';
@@ -12,7 +12,7 @@
 		{
 			name: 'WhatsApp',
 			icon: MessageCircle,
-			href: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(url)}`,
+			href: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(url + '?v=' + Date.now())}`,
 			color: 'hover:bg-green-500 hover:text-white',
 			bg: 'bg-green-500/10 text-green-600'
 		},
