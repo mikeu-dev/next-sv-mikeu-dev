@@ -28,17 +28,26 @@
 
 	// Use dynamic OG image if no specific image is provided
 	const finalImage = $derived.by(() => {
+		let imgUrl = `${siteUrl}/images/og-default.png`;
+
 		if (image) {
-			// If it's already an absolute URL, return it
-			if (image.startsWith('http')) return image;
-			// If it's a relative URL starting with /, prepend the site URL
-			if (image.startsWith('/')) return `${siteUrl}${image}`;
-			// Otherwise return as is
-			return image;
+			if (image.startsWith('http')) {
+				imgUrl = image;
+			} else if (image.startsWith('/')) {
+				imgUrl = `${siteUrl}${image}`;
+			} else {
+				imgUrl = image;
+			}
 		}
-		// Fallback to static PNG for better compatibility with WhatsApp/Social Media
-		// SVG images (from /api/og) are often not supported by link crawlers
-		return `${siteUrl}/images/og-default.png`;
+
+		// Proxy through wsrv.nl to compress and resize the image on the fly.
+		// This guarantees the image is a lightweight JPEG (< 100KB) and exactly 1200x630,
+		// which prevents strict social crawlers (like WhatsApp) from silently dropping large/heavy images.
+		if (imgUrl.startsWith('http') && !imgUrl.includes('localhost')) {
+			return `https://wsrv.nl/?url=${encodeURIComponent(imgUrl)}&w=1200&h=630&fit=cover&output=jpg&q=80`;
+		}
+
+		return imgUrl;
 	});
 
 	// Construct canonical URL using hardcoded domain to avoid non-www issues
@@ -186,10 +195,9 @@
 	<meta property="og:image" content={finalImage} />
 	<meta property="og:image:secure_url" content={finalImage} />
 
-	<!-- Type and Size for WhatsApp compatibility -->
-	<meta property="og:image:type" content="image/jpeg" />
-	<meta property="og:image:width" content="300" />
-	<meta property="og:image:height" content="300" />
+	<!-- Standard dimensions for social media (Facebook/Twitter/LinkedIn) -->
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
 
 	{#if type === 'article' && article?.publishedTime}
 		<meta property="article:published_time" content={article.publishedTime} />
