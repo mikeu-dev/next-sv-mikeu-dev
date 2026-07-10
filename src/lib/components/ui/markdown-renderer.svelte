@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { marked } from 'marked';
 
 	let { content = '', isRendered = false } = $props<{ content: string; isRendered?: boolean }>();
@@ -69,7 +69,6 @@
 	}
 
 	:global(.prose p) {
-		@apply mb-6 font-mono text-sm leading-relaxed tracking-tight uppercase;
-		color: var(--muted-foreground);
+		@apply mb-6 font-mono text-sm leading-relaxed tracking-tight;
 	}
 </style>
