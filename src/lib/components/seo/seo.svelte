@@ -178,7 +178,7 @@
 	<!-- Open Graph / Facebook & WhatsApp -->
 	<meta property="og:site_name" content="Mikeu Dev" />
 	<meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
-	<meta property="og:url" content={canonicalUrl} />
+	<meta property="og:url" content={canonicalUrl + page.url.search} />
 	<meta property="og:title" content={finalTitle} />
 	<meta property="og:description" content={finalDescription} />
 
