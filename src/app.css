@@ -173,7 +173,7 @@
 @layer utilities {
 	.prose {
 		--tw-prose-headings: var(--foreground);
-		--tw-prose-body: oklch(0.45 0.02 264);
+		--tw-prose-body: oklch(from var(--foreground) l c h / 90%);
 		--tw-prose-links: var(--primary);
 		--tw-prose-bold: var(--foreground);
 		--tw-prose-quotes: var(--primary);
@@ -186,7 +186,7 @@
 
 	.dark .prose {
 		--tw-prose-headings: var(--foreground);
-		--tw-prose-body: oklch(0.8 0.02 264);
+		--tw-prose-body: oklch(from var(--foreground) l c h / 90%);
 		--tw-prose-links: var(--primary);
 		--tw-prose-bold: var(--foreground);
 		--tw-prose-quotes: var(--primary);
