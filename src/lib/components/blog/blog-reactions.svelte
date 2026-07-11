@@ -105,9 +105,7 @@
 			<span class="font-bold">{likes}</span>
 		</button>
 
-		<div
-			class="flex items-center gap-2 px-3 py-2 text-card-foreground/60 dark:text-muted-foreground"
-		>
+		<div class="flex items-center gap-2 px-3 py-2 text-muted-foreground">
 			<Eye class="size-5" />
 			<span class="font-medium">{views} {m.blog_views()}</span>
 		</div>
