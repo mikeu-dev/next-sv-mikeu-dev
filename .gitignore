@@ -49,3 +49,4 @@ src/lib/posts/
 .cache
 .eslintcache
 .prettiercache
+docs/*
