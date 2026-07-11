@@ -42,7 +42,7 @@
 			}
 
 			const registration = await navigator.serviceWorker.ready;
-			const applicationServerKey = urlB64ToUint8Array(env.PUBLIC_VAPID_KEY);
+			const applicationServerKey = urlB64ToUint8Array(env.PUBLIC_VAPID_KEY || '');
 
 			const subscription = await registration.pushManager.subscribe({
 				userVisibleOnly: true,

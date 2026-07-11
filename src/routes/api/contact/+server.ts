@@ -7,7 +7,7 @@ import { contactSchema } from '$lib/server/schemas/contact.schema';
 import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
 import { logError } from '$lib/server/utils/logger';
 import { z } from 'zod';
-import { PushSubscriptionService } from '@/lib/server/services/push-subscription.service';
+import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
 
 const contactsService = new ContactsService();
 const pushService = new PushSubscriptionService();

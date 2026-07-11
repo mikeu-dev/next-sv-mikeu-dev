@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { PushSubscriptionService } from '@/lib/server/services/push-subscription.service';
+import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
 import type { RequestHandler } from './$types';
 import { logError } from '$lib/server/utils/logger';
 
