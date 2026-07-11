@@ -58,7 +58,7 @@
 	}
 
 	:global(.prose h2) {
-		@apply sticky top-20 z-30 mt-16 mb-8 scroll-mt-24 border-b-2 border-l-4 py-3 pl-6 text-3xl font-black tracking-tighter uppercase italic;
+		@apply sticky top-0 z-30 mt-16 mb-8 scroll-mt-24 border-b-2 border-l-4 py-3 pl-6 text-3xl font-black tracking-tighter uppercase italic;
 		border-left-color: var(--primary);
 		border-bottom-color: var(--foreground);
 		background-color: var(--background);
