@@ -117,9 +117,7 @@
 			disabled={hasLiked || isLoading}
 			class="cursor-pointer text-sm italic transition-colors select-none enabled:hover:text-primary disabled:cursor-default"
 		>
-			<p
-				class="text-card-foreground/60 transition-colors group-hover:text-primary dark:text-muted-foreground"
-			>
+			<p class="text-muted-foreground transition-colors group-hover:text-primary">
 				{hasLiked ? m.blog_reaction_thanks() : m.blog_reaction_question()}
 			</p>
 		</button>
