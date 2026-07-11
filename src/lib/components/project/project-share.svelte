@@ -56,7 +56,8 @@
 </script>
 
 <div class="flex items-center gap-3">
-	<span class="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+	<span
+		class="text-xs font-bold tracking-wider text-card-foreground/60 uppercase dark:text-muted-foreground"
 		>{m.blog_share()}</span
 	>
 
@@ -83,7 +84,7 @@
 
 		<button
 			onclick={handleWebShare}
-			class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:hidden"
+			class="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:hidden"
 			title="Share"
 		>
 			<Share2 class="size-4" />

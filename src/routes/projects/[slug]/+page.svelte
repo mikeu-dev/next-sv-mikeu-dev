@@ -97,7 +97,7 @@
 
 		<!-- Hero Section -->
 		<header
-			class="header-origami relative mb-20 border-x-4 border-foreground bg-card/50 p-8 text-card-foreground md:p-16"
+			class="header-origami relative mb-20 border-x-4 border-foreground bg-card p-8 text-card-foreground md:p-16 dark:bg-card dark:text-card-foreground"
 			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
 		>
 			<div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
