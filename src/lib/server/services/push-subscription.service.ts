@@ -27,7 +27,7 @@ export class PushSubscriptionService {
 		return this.repository.saveSubscription(subscription);
 	}
 
-	async notifyAll(payload: any): Promise<void> {
+	async notifyAll(payload: unknown): Promise<void> {
 		try {
 			const subscriptions = await this.repository.getAllSubscriptions();
 			if (!subscriptions || subscriptions.length === 0) return;
@@ -37,9 +37,10 @@ export class PushSubscriptionService {
 			const promises = subscriptions.map(async (sub) => {
 				try {
 					await webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payloadString);
-				} catch (error: any) {
+				} catch (error: unknown) {
 					// If subscription is invalid/expired (HTTP 410 or 404), delete it
-					if (error.statusCode === 410 || error.statusCode === 404) {
+					const err = error as { statusCode?: number };
+					if (err.statusCode === 410 || err.statusCode === 404) {
 						if (sub.id) await this.repository.delete(sub.id);
 					} else {
 						logError('PushSubscriptionService:notifyAll:send', error);
