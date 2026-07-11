@@ -15,6 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import type { PageData } from './$types';
+	import PushNotificationToggle from '$lib/components/admin/push-notification-toggle.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -347,6 +348,8 @@
 					</div>
 				</div>
 			</div>
+
+			<PushNotificationToggle />
 		</div>
 	</div>
 </div>

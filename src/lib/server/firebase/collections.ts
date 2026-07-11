@@ -1,4 +1,4 @@
-﻿export const COLLECTIONS = {
+export const COLLECTIONS = {
 	USERS: 'users',
 	PROJECTS: 'projects',
 	CATEGORIES: 'categories',
@@ -12,5 +12,6 @@
 	ERROR_LOGS: 'error_logs',
 	CUSTOM_ICONS: 'custom_icons',
 	BLOG_REACTIONS: 'blog_reactions',
-	PROJECT_REACTIONS: 'project_reactions'
+	PROJECT_REACTIONS: 'project_reactions',
+	PUSH_SUBSCRIPTIONS: 'push_subscriptions'
 };
