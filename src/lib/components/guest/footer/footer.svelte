@@ -101,8 +101,8 @@
 					<p
 						class="max-w-md font-mono text-xs leading-loose font-black tracking-widest text-muted-foreground uppercase"
 					>
-						[ARCHIVE_SYSTEM_V2.0] // BUILT_WITH_PRECISION // CRAFTED_IN_INDONESIA.
-						EVERY_PIXEL_MATTERS. EVERY_LINE_COUNTS.
+						SOFTWARE ENGINEER AS FULLSTACK, SPECIALIZING IN SCALABLE APPLICATIONS & GEOSPATIAL (GIS)
+						SOLUTIONS. OPEN FOR COLLABORATION.
 					</p>
 
 					<nav
