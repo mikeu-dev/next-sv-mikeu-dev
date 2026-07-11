@@ -281,39 +281,47 @@ Return ONLY a valid JSON object with this structure:
 			const title = titleMatch ? titleMatch[1].trim() : 'Untitled Article';
 
 			// 2. Extract OpenGraph Image
-			const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-			                     html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+			const ogImageMatch =
+				html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+				html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
 			const ogImage = ogImageMatch ? ogImageMatch[1] : null;
 
 			// 3. Extract Image Tags
 			const imgMatches = [...html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)];
 			const extractedImages = imgMatches
-				.map(m => m[1])
-				.filter(src => src && (src.startsWith('http') || src.startsWith('//') || src.startsWith('/')));
+				.map((m) => m[1])
+				.filter(
+					(src) => src && (src.startsWith('http') || src.startsWith('//') || src.startsWith('/'))
+				);
 
 			// Resolve paths
-			const resolvedImages = extractedImages.map(imgUrl => {
+			const resolvedImages = extractedImages.map((imgUrl) => {
 				if (imgUrl.startsWith('//')) return `${parsedUrl.protocol}${imgUrl}`;
 				if (imgUrl.startsWith('/')) return `${parsedUrl.origin}${imgUrl}`;
 				return imgUrl;
 			});
 
 			if (ogImage) {
-				const resolvedOg = ogImage.startsWith('//') ? `${parsedUrl.protocol}${ogImage}` :
-				                   ogImage.startsWith('/') ? `${parsedUrl.origin}${ogImage}` : ogImage;
+				const resolvedOg = ogImage.startsWith('//')
+					? `${parsedUrl.protocol}${ogImage}`
+					: ogImage.startsWith('/')
+						? `${parsedUrl.origin}${ogImage}`
+						: ogImage;
 				if (!resolvedImages.includes(resolvedOg)) {
 					resolvedImages.unshift(resolvedOg);
 				}
 			}
 
 			// Clean and filter images (skip small icons/trackers)
-			const cleanImages = resolvedImages.filter(src => {
+			const cleanImages = resolvedImages.filter((src) => {
 				const lowercase = src.toLowerCase();
-				return !lowercase.includes('icon') &&
-				       !lowercase.includes('logo') &&
-				       !lowercase.includes('avatar') &&
-				       !lowercase.includes('tracker') &&
-				       !lowercase.includes('pixel');
+				return (
+					!lowercase.includes('icon') &&
+					!lowercase.includes('logo') &&
+					!lowercase.includes('avatar') &&
+					!lowercase.includes('tracker') &&
+					!lowercase.includes('pixel')
+				);
 			});
 
 			const uniqueImages = [...new Set(cleanImages)].slice(0, 10);
@@ -321,10 +329,14 @@ Return ONLY a valid JSON object with this structure:
 			// 4. Extract YouTube & Vimeo video iframe embeds
 			const iframeMatches = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)];
 			const extractedVideos = iframeMatches
-				.map(m => m[1])
-				.filter(src => src && (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')));
+				.map((m) => m[1])
+				.filter(
+					(src) =>
+						src &&
+						(src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com'))
+				);
 
-			const resolvedVideos = extractedVideos.map(vidUrl => {
+			const resolvedVideos = extractedVideos.map((vidUrl) => {
 				if (vidUrl.startsWith('//')) return `https:${vidUrl}`;
 				return vidUrl;
 			});
@@ -352,7 +364,9 @@ Return ONLY a valid JSON object with this structure:
 
 			// Truncate to ~8000 chars to stay within Gemini context limits
 			const truncated =
-				textContent.length > 8000 ? textContent.substring(0, 8000) + '\n\n[...truncated]' : textContent;
+				textContent.length > 8000
+					? textContent.substring(0, 8000) + '\n\n[...truncated]'
+					: textContent;
 
 			return {
 				title,
@@ -366,9 +380,7 @@ Return ONLY a valid JSON object with this structure:
 			if (error instanceof Error && error.name === 'AbortError') {
 				throw new Error('Request timed out while fetching the article.');
 			}
-			throw new Error(
-				error instanceof Error ? error.message : 'Failed to fetch article content.'
-			);
+			throw new Error(error instanceof Error ? error.message : 'Failed to fetch article content.');
 		}
 	}
 
@@ -429,13 +441,15 @@ Return ONLY a valid JSON object with this structure:
 		const sourceImages = options.sourceImages ?? [];
 		const sourceVideos = options.sourceVideos ?? [];
 
-		const imagesText = sourceImages.length > 0
-			? `Here are the verified image URLs extracted directly from the source article:\n${sourceImages.map((src, i) => `- Image ${i + 1}: ${src}`).join('\n')}`
-			: 'No verified image URLs extracted from the source article.';
+		const imagesText =
+			sourceImages.length > 0
+				? `Here are the verified image URLs extracted directly from the source article:\n${sourceImages.map((src, i) => `- Image ${i + 1}: ${src}`).join('\n')}`
+				: 'No verified image URLs extracted from the source article.';
 
-		const videosText = sourceVideos.length > 0
-			? `Here are the verified video URLs/embeds extracted directly from the source article:\n${sourceVideos.map((src, i) => `- Video ${i + 1}: ${src}`).join('\n')}`
-			: 'No verified video URLs/embeds extracted from the source article.';
+		const videosText =
+			sourceVideos.length > 0
+				? `Here are the verified video URLs/embeds extracted directly from the source article:\n${sourceVideos.map((src, i) => `- Video ${i + 1}: ${src}`).join('\n')}`
+				: 'No verified video URLs/embeds extracted from the source article.';
 
 		const instructions = `
 You are a senior tech editor, content strategist, and translator. You are given the text of an article.

@@ -39,10 +39,7 @@ export class BlogService {
 		const cache = getMemoryCache();
 		const lastFetch = getLastFetchCache();
 
-		if (
-			cache[cacheKey] &&
-			now - (lastFetch[cacheKey] || 0) < this.CACHE_TTL
-		) {
+		if (cache[cacheKey] && now - (lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
 			return cache[cacheKey] as BlogPost[];
 		}
 
