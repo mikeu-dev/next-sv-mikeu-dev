@@ -17,8 +17,8 @@
 
 	// Sync with props
 	$effect(() => {
-		likes = reactions.likes;
-		views = reactions.views;
+		likes = reactions?.likes ?? 0;
+		views = reactions?.views ?? 0;
 	});
 
 	onMount(() => {
