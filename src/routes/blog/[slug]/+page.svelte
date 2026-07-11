@@ -4,7 +4,7 @@
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import { ArrowLeft, Clock, Calendar, Database, BookOpen, Coffee } from '@lucide/svelte';
-	import { PUBLIC_TRAKTEER_URL } from '$env/static/public';
+	import { env } from '$env/dynamic/public';
 	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
 	import ReadingProgress from '$lib/components/blog/reading-progress.svelte';
 	import TableOfContents from '$lib/components/blog/table-of-contents.svelte';
@@ -207,7 +207,7 @@
 							{m.blog_support_desc()}
 						</p>
 						<a
-							href={PUBLIC_TRAKTEER_URL}
+							href={env.PUBLIC_TRAKTEER_URL || '#'}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="tape-cta flex w-full items-center justify-center gap-2 px-4 py-2.5 font-mono text-[11px] font-black tracking-wide uppercase"
