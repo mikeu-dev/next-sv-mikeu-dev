@@ -43,8 +43,11 @@
 		// Proxy through wsrv.nl to compress and resize the image on the fly.
 		// This guarantees the image is a lightweight JPEG (< 100KB) and exactly 1200x630,
 		// which prevents strict social crawlers (like WhatsApp) from silently dropping large/heavy images.
+		// The "/og-image.jpg" path (rather than bare "/") is required for WhatsApp: its crawler
+		// decides whether to render an image based on a recognizable file extension in the URL,
+		// not just the Content-Type header, so an extensionless proxy URL gets silently ignored.
 		if (imgUrl.startsWith('http') && !imgUrl.includes('localhost')) {
-			return `https://wsrv.nl/?url=${encodeURIComponent(imgUrl)}&w=1200&h=630&fit=cover&output=jpg&q=80`;
+			return `https://wsrv.nl/og-image.jpg?url=${encodeURIComponent(imgUrl)}&w=1200&h=630&fit=cover&output=jpg&q=80`;
 		}
 
 		return imgUrl;
@@ -194,6 +197,10 @@
 	<!-- Image to display -->
 	<meta property="og:image" content={finalImage} />
 	<meta property="og:image:secure_url" content={finalImage} />
+
+	<!-- Explicit type is required for WhatsApp: unlike Facebook/Twitter it won't trust the
+	     Content-Type response header alone to decide whether the og:image is renderable. -->
+	<meta property="og:image:type" content="image/jpeg" />
 
 	<!-- Standard dimensions for social media (Facebook/Twitter/LinkedIn) -->
 	<meta property="og:image:width" content="1200" />
