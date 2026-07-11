@@ -213,6 +213,7 @@ Requirements:
    - Use **Bold text** strategically for emphasis.
    - Use **Lists (ul/ol)** to break up long sections.
    - For technical topics, include high-quality, formatted **Code Blocks** in the topic's own language/tooling (never default to Svelte examples).
+   - For any comparison, before/after, feature matrix, spec sheet, or other tabular data, use a real **GFM Markdown table** (pipe syntax with a header separator row, e.g. "| Column A | Column B |" followed by "| --- | --- |"). Never represent tabular data as ASCII art or a box-drawing diagram inside a code block — it will not render as a table.
 4. **Meme Instruction**: Include 2-3 technical "memes" or jokes relevant to the article's own topic. These can be funny observations, sarcastic remarks about "legacy code", or relatable developer struggles.
 5. **Image Instruction**: Include 2-3 relevant images using Markdown syntax: ![Descriptive Alt Text](https://loremflickr.com/800/600/tech,coding,humor).
 6. **SEO Auditing & Visibility**:
@@ -455,7 +456,8 @@ CRITICAL REQUIREMENTS:
      [![Explore related design ideas on Pinterest](https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80)](https://id.pinterest.com/search/pins/?q=[ENCODED_TOPIC_KEYWORDS])
      where [ENCODED_TOPIC_KEYWORDS] is a URL-encoded keyword search relevant to the article context (e.g. system+architecture, ui+design, devops+setup).
 6. **No Placeholders**: Write the full complete content without skipping sections or leaving draft placeholders.
-7. **JSON Output**: You MUST return ONLY a valid JSON object matching the following structure:
+7. **Tabular Data**: For any comparison, before/after, feature matrix, spec sheet, or other tabular data, use a real **GFM Markdown table** (pipe syntax with a header separator row, e.g. "| Column A | Column B |" followed by "| --- | --- |"). Never represent tabular data as ASCII art or a box-drawing diagram inside a code block — it will not render as a table.
+8. **JSON Output**: You MUST return ONLY a valid JSON object matching the following structure:
 {
   "title_en": "English Title",
   "title_id": "Indonesian Title",

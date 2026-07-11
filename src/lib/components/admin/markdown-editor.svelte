@@ -48,6 +48,12 @@
 		insertMarkdown('\n```\n', '\n```\n');
 	}
 
+	function insertTable() {
+		insertMarkdown(
+			'\n| Column A | Column B | Column C |\n| --- | --- | --- |\n| Row 1 | Row 1 | Row 1 |\n| Row 2 | Row 2 | Row 2 |\n'
+		);
+	}
+
 	function insertLink() {
 		insertMarkdown('[', '](url)');
 	}
@@ -136,6 +142,14 @@
 			title="Code Block"
 		>
 			{'{ }'}
+		</button>
+		<button
+			type="button"
+			onclick={insertTable}
+			class="rounded px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+			title="Table"
+		>
+			⊞ Table
 		</button>
 
 		<div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
