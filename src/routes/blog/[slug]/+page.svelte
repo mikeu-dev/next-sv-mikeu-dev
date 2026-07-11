@@ -2,7 +2,9 @@
 	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
 	import type { PageData } from './$types';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-	import { ArrowLeft, Clock, Calendar, Database, BookOpen } from '@lucide/svelte';
+	import { m } from '$lib/paraglide/messages';
+	import { ArrowLeft, Clock, Calendar, Database, BookOpen, Coffee } from '@lucide/svelte';
+	import { env } from '$env/dynamic/public';
 	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
 	import ReadingProgress from '$lib/components/blog/reading-progress.svelte';
 	import TableOfContents from '$lib/components/blog/table-of-contents.svelte';
@@ -191,23 +193,28 @@
 						<TableOfContents headings={data.headings || []} title={data.meta.title} />
 					</div>
 
-					<!-- System Status Widget -->
+					<!-- Support CTA -->
 					<div class="border-4 border-foreground bg-foreground/5 p-6">
-						<div class="space-y-4">
-							<div class="flex items-center justify-between">
-								<span class="font-mono text-[9px] font-black uppercase">SYNC_STATUS</span>
-								<span class="font-mono text-[9px] font-black text-green-500 uppercase">ONLINE</span>
-							</div>
-							<div class="h-1 bg-foreground/10">
-								<div class="h-full w-full animate-pulse bg-primary"></div>
-							</div>
-							<p class="font-mono text-[8px] tracking-tight text-muted-foreground uppercase">
-								// KNOWLEDGE_STREAM_ACTIVE_ID: 0x{Math.random()
-									.toString(16)
-									.slice(2, 8)
-									.toUpperCase()}
-							</p>
+						<div class="mb-4 flex items-center gap-3 border-b-2 border-foreground/10 pb-3">
+							<Coffee class="size-4 text-primary" />
+							<h4 class="font-poppins text-xs font-black tracking-widest uppercase">
+								[SUPPORT_NODE]
+							</h4>
 						</div>
+						<p
+							class="mb-5 font-mono text-[10px] leading-relaxed tracking-tight text-muted-foreground uppercase"
+						>
+							{m.blog_support_desc()}
+						</p>
+						<a
+							href={env.PUBLIC_TRAKTEER_URL || '#'}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="tape-cta flex w-full items-center justify-center gap-2 px-4 py-2.5 font-mono text-[11px] font-black tracking-wide uppercase"
+						>
+							<Coffee class="size-4" />
+							{m.blog_support_cta()}
+						</a>
 					</div>
 				</div>
 			</aside>
@@ -221,5 +228,22 @@
 	.header-origami {
 		transform-style: preserve-3d;
 		perspective: 1000px;
+	}
+
+	/* Same glossy tape treatment as the hero/work/blog-list CTAs — reuses the global
+	   --tape-* tokens from app.css so the sidebar support CTA reads as one brand. */
+	.tape-cta {
+		background: var(--tape-bg-grad);
+		color: var(--tape-color);
+		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
+		box-shadow: 0 6px 12px var(--tape-shadow);
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.3s ease;
+	}
+
+	.tape-cta:hover {
+		box-shadow: 0 10px 16px var(--tape-shadow-hover);
+		transform: translateY(-2px);
 	}
 </style>

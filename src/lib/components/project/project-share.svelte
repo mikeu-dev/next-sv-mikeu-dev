@@ -14,21 +14,21 @@
 			icon: MessageCircle,
 			href: `https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(url + '?v=' + Date.now())}`,
 			color: 'hover:bg-green-500 hover:text-white',
-			bg: 'bg-green-500/10 text-green-600'
+			bg: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400'
 		},
 		{
 			name: 'Twitter',
 			icon: Twitter,
 			href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
 			color: 'hover:bg-sky-500 hover:text-white',
-			bg: 'bg-sky-500/10 text-sky-600'
+			bg: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-400'
 		},
 		{
 			name: 'LinkedIn',
 			icon: Linkedin,
 			href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
 			color: 'hover:bg-blue-600 hover:text-white',
-			bg: 'bg-blue-600/10 text-blue-600'
+			bg: 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400'
 		}
 	]);
 
@@ -56,7 +56,8 @@
 </script>
 
 <div class="flex items-center gap-3">
-	<span class="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+	<span
+		class="text-xs font-bold tracking-wider text-card-foreground/60 uppercase dark:text-muted-foreground"
 		>{m.blog_share()}</span
 	>
 
@@ -83,7 +84,7 @@
 
 		<button
 			onclick={handleWebShare}
-			class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:hidden"
+			class="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:hidden"
 			title="Share"
 		>
 			<Share2 class="size-4" />

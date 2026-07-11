@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { Heart, Eye } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { onMount, tick } from 'svelte';
@@ -17,8 +17,8 @@
 
 	// Sync with props
 	$effect(() => {
-		likes = reactions.likes;
-		views = reactions.views;
+		likes = reactions?.likes ?? 0;
+		views = reactions?.views ?? 0;
 	});
 
 	onMount(() => {
@@ -92,20 +92,22 @@
 			disabled={hasLiked || isLoading}
 			class={`group flex items-center gap-2 rounded-full px-5 py-2.5 transition-all duration-300 ${
 				hasLiked
-					? 'bg-primary/10 text-primary shadow-sm shadow-primary/5'
-					: 'bg-muted hover:bg-primary/5 hover:text-primary hover:shadow-lg hover:shadow-primary/10'
+					? 'bg-primary text-primary-foreground shadow-sm shadow-primary/5'
+					: 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary hover:shadow-lg hover:shadow-primary/10'
 			}`}
 			aria-label="Like this post"
 		>
 			<Heart
 				class={`size-5 transition-transform duration-300 ${
-					hasLiked ? 'scale-110 fill-primary' : 'group-hover:scale-125'
+					hasLiked ? 'scale-110 fill-primary-foreground' : 'group-hover:scale-125'
 				}`}
 			/>
 			<span class="font-bold">{likes}</span>
 		</button>
 
-		<div class="flex items-center gap-2 px-3 py-2 text-muted-foreground">
+		<div
+			class="flex items-center gap-2 px-3 py-2 text-card-foreground/60 dark:text-muted-foreground"
+		>
 			<Eye class="size-5" />
 			<span class="font-medium">{views} {m.blog_views()}</span>
 		</div>
@@ -117,7 +119,9 @@
 			disabled={hasLiked || isLoading}
 			class="cursor-pointer text-sm italic transition-colors select-none enabled:hover:text-primary disabled:cursor-default"
 		>
-			<p class="text-muted-foreground transition-colors group-hover:text-primary">
+			<p
+				class="text-card-foreground/60 transition-colors group-hover:text-primary dark:text-muted-foreground"
+			>
 				{hasLiked ? m.blog_reaction_thanks() : m.blog_reaction_question()}
 			</p>
 		</button>

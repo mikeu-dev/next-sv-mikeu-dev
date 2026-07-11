@@ -58,8 +58,10 @@
 	}
 
 	:global(.prose h2) {
-		@apply mt-16 mb-8 scroll-mt-24 border-l-4 pl-6 text-3xl font-black tracking-tighter uppercase italic;
-		border-color: var(--primary);
+		@apply sticky top-0 z-30 mt-16 mb-8 scroll-mt-24 border-b-2 border-l-4 py-3 pl-6 text-3xl font-black tracking-tighter uppercase italic;
+		border-left-color: var(--primary);
+		border-bottom-color: var(--foreground);
+		background-color: var(--background);
 		font-family: var(--font-poppins);
 	}
 
@@ -70,5 +72,31 @@
 
 	:global(.prose p) {
 		@apply mb-6 font-mono text-sm leading-relaxed tracking-tight;
+	}
+
+	:global(.prose table) {
+		@apply my-10 w-full border-collapse overflow-hidden;
+		border-width: 2px;
+		border-color: var(--foreground);
+		box-shadow: 4px 4px 0 var(--foreground);
+	}
+
+	:global(.prose thead) {
+		background-color: var(--primary);
+	}
+
+	:global(.prose th) {
+		@apply px-4 py-3 text-left font-mono text-xs font-black tracking-widest uppercase;
+		color: var(--primary-foreground);
+		border-bottom: 2px solid var(--foreground);
+	}
+
+	:global(.prose td) {
+		@apply px-4 py-3 font-mono text-sm;
+		border-top: 1px solid oklch(from var(--foreground) l c h / 15%);
+	}
+
+	:global(.prose tbody tr:nth-child(even)) {
+		background-color: oklch(from var(--foreground) l c h / 4%);
 	}
 </style>
