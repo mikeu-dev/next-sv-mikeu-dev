@@ -1,4 +1,4 @@
-﻿/// <reference types="@sveltejs/kit" />
+/// <reference types="@sveltejs/kit" />
 /// <reference lib="webworker" />
 
 import { build, files, version } from '$service-worker';
@@ -84,4 +84,26 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 	}
 
 	event.respondWith(respond());
+});
+
+// --- Push Notification Handlers ---
+
+self.addEventListener('push', (event: PushEvent) => {
+	const data = event.data ? event.data.json() : {};
+	const title = data.title || 'Notifikasi Baru';
+	const options = {
+		body: data.body || 'Ada pesan baru yang masuk',
+		icon: '/favicon.png',
+		badge: '/favicon.png',
+		data: {
+			url: data.url || '/admin'
+		}
+	};
+
+	event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event: NotificationEvent) => {
+	event.notification.close();
+	event.waitUntil(self.clients.openWindow(event.notification.data.url));
 });

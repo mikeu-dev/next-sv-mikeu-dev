@@ -9,14 +9,16 @@ const GLOBAL_CACHE_KEY = Symbol.for('mikeudev.blog.cache');
 const GLOBAL_LAST_FETCH_KEY = Symbol.for('mikeudev.blog.lastFetch');
 
 if (!(GLOBAL_CACHE_KEY in globalThis)) {
-	(globalThis as any)[GLOBAL_CACHE_KEY] = {};
+	(globalThis as Record<symbol, unknown>)[GLOBAL_CACHE_KEY] = {};
 }
 if (!(GLOBAL_LAST_FETCH_KEY in globalThis)) {
-	(globalThis as any)[GLOBAL_LAST_FETCH_KEY] = {};
+	(globalThis as Record<symbol, unknown>)[GLOBAL_LAST_FETCH_KEY] = {};
 }
 
-const getMemoryCache = (): Record<string, unknown> => (globalThis as any)[GLOBAL_CACHE_KEY];
-const getLastFetchCache = (): Record<string, number> => (globalThis as any)[GLOBAL_LAST_FETCH_KEY];
+const getMemoryCache = (): Record<string, unknown> =>
+	(globalThis as Record<symbol, Record<string, unknown>>)[GLOBAL_CACHE_KEY];
+const getLastFetchCache = (): Record<string, number> =>
+	(globalThis as Record<symbol, Record<string, number>>)[GLOBAL_LAST_FETCH_KEY];
 const clearMemoryCache = () => {
 	const cache = getMemoryCache();
 	const lastFetch = getLastFetchCache();
@@ -39,10 +41,7 @@ export class BlogService {
 		const cache = getMemoryCache();
 		const lastFetch = getLastFetchCache();
 
-		if (
-			cache[cacheKey] &&
-			now - (lastFetch[cacheKey] || 0) < this.CACHE_TTL
-		) {
+		if (cache[cacheKey] && now - (lastFetch[cacheKey] || 0) < this.CACHE_TTL) {
 			return cache[cacheKey] as BlogPost[];
 		}
 
@@ -70,7 +69,7 @@ export class BlogService {
 	async getPostByTitle(title: string) {
 		try {
 			return await this.repository.getByTitle(title);
-		} catch (error) {
+		} catch (_error) {
 			console.error('BlogService: Quota exceeded while fetching post by title');
 			return null;
 		}

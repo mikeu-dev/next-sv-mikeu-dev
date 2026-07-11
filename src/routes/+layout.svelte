@@ -6,7 +6,6 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import Navbar from '@/lib/components/guest/navbar/navbar.svelte';
 	import Footer from '@/lib/components/guest/footer/footer.svelte';
-	import SEO from '@/lib/components/seo/seo.svelte';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
 	import { onNavigate, afterNavigate } from '$app/navigation';

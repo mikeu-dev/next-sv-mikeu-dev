@@ -1,4 +1,4 @@
-﻿export const prerender = false;
+export const prerender = false;
 
 import { json } from '@sveltejs/kit';
 import { ContactsService } from '@/lib/server/services/contacts.service';
@@ -7,8 +7,10 @@ import { contactSchema } from '$lib/server/schemas/contact.schema';
 import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
 import { logError } from '$lib/server/utils/logger';
 import { z } from 'zod';
+import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
 
 const contactsService = new ContactsService();
+const pushService = new PushSubscriptionService();
 
 export const POST: RequestHandler = async (event) => {
 	// Rate limiting - 3 requests per 5 minutes
@@ -22,6 +24,18 @@ export const POST: RequestHandler = async (event) => {
 		const validatedData = contactSchema.parse(body);
 
 		const contact = await contactsService.createContact(validatedData);
+
+		// Send Web Push Notification to Admin in background
+		pushService
+			.notifyAll({
+				title: 'Pesan Baru: ' + (validatedData.name || 'Seseorang'),
+				body:
+					validatedData.message.length > 50
+						? validatedData.message.substring(0, 50) + '...'
+						: validatedData.message,
+				url: '/admin/contacts'
+			})
+			.catch(console.error);
 
 		return json(
 			{ message: 'Contact created successfully', contactId: contact.id },
