@@ -91,13 +91,20 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 self.addEventListener('push', (event: PushEvent) => {
 	const data = event.data ? event.data.json() : {};
 	const title = data.title || 'Notifikasi Baru';
-	const options = {
+	const options: NotificationOptions = {
 		body: data.body || 'Ada pesan baru yang masuk',
-		icon: '/favicon.png',
-		badge: '/favicon.png',
+		icon: '/icons/icon-192x192.png',
+		badge: '/icons/icon-192x192.png',
+		vibrate: [100, 50, 100],
+		tag: 'mikeu-dev-notification',
+		renotify: true,
 		data: {
 			url: data.url || '/admin'
-		}
+		},
+		actions: [
+			{ action: 'open', title: 'Buka Pesan' },
+			{ action: 'close', title: 'Tutup' }
+		]
 	};
 
 	event.waitUntil(self.registration.showNotification(title, options));
@@ -105,5 +112,19 @@ self.addEventListener('push', (event: PushEvent) => {
 
 self.addEventListener('notificationclick', (event: NotificationEvent) => {
 	event.notification.close();
-	event.waitUntil(self.clients.openWindow(event.notification.data.url));
+
+	if (event.action !== 'close') {
+		event.waitUntil(
+			self.clients.matchAll({ type: 'window' }).then((windowClients) => {
+				for (const client of windowClients) {
+					if (client.url === event.notification.data.url && 'focus' in client) {
+						return client.focus();
+					}
+				}
+				if (self.clients.openWindow) {
+					return self.clients.openWindow(event.notification.data.url);
+				}
+			})
+		);
+	}
 });
