@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '@/lib/components/ui/button/button.svelte';
-	import { applyAction, enhance } from '$app/forms';
+	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import { m } from '$lib/paraglide/messages';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';

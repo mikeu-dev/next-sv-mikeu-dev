@@ -95,6 +95,7 @@ self.addEventListener('push', (event: PushEvent) => {
 		body: data.body || 'Ada pesan baru yang masuk',
 		icon: '/icons/icon-192x192.png',
 		badge: '/icons/icon-192x192.png',
+		// @ts-expect-error - vibrate is supported by the Notification API but might be missing in TS lib
 		vibrate: [100, 50, 100],
 		tag: 'mikeu-dev-notification',
 		renotify: true,
