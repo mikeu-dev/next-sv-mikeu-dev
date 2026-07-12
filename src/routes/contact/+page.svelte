@@ -259,17 +259,25 @@
 						method="POST"
 						use:enhance={() => {
 							isSubmitting = true;
-							return async ({ result }) => {
+							return async ({ result, update }) => {
 								isSubmitting = false;
+								let isSuccess = false;
+
 								if (result.type === 'success') {
 									const data = result.data as ActionData;
-									toast.success(data.message ?? m.contact_form_success());
-									await triggerConfetti();
+									if (data?.success === false) {
+										toast.error(data?.message ?? m.contact_form_failure());
+									} else {
+										isSuccess = true;
+										toast.success(data?.message ?? m.contact_form_success());
+										await triggerConfetti();
+									}
 								} else if (result.type === 'failure') {
 									const data = result.data as ActionData;
-									toast.error(data.message ?? m.contact_form_failure());
+									toast.error(data?.message ?? m.contact_form_failure());
 								}
-								await applyAction(result);
+
+								await update({ reset: isSuccess });
 							};
 						}}
 						class="space-y-6"
