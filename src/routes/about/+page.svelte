@@ -14,7 +14,18 @@
 	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
 
 	let { data }: { data: PageData } = $props();
-	let initialLocale = $state(getLocale());
+	let locale = $state(getLocale());
+
+	let resumeUrl = $state('');
+
+	$effect(() => {
+		const fallback = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${locale}).pdf`;
+		data.resumeUrls.then((urls) => {
+			resumeUrl = (locale === 'id' ? urls.id : urls.en) || fallback;
+		});
+	});
+
+	let initialLocale = locale;
 
 	let techstackRaw = $derived(
 		(data?.techStack?.[initialLocale] || data?.techStack?.['id'] || []) as TechStackCategory[]
@@ -224,7 +235,14 @@
 							<button
 								class="group relative border-4 border-foreground bg-primary px-8 py-4 font-mono text-xs font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none"
 							>
-								{m.about_hero_resume()}
+								<a
+									href={resumeUrl}
+									download
+									class="group relative border-4 border-foreground bg-primary px-8 py-4 font-mono text-xs font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+									>{m.about_hero_resume()}<ArrowRight
+										class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
+									/></a
+								>
 								<ArrowRight
 									class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
 								/>
