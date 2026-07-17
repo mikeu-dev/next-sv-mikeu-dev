@@ -22,7 +22,7 @@
 	const allPosts = $derived([...(data.posts as BlogPost[]), ...loadedPosts]);
 	const nextCursor = $derived(nextCursorState !== undefined ? nextCursorState : data.nextCursor);
 
-	// Reset client-loaded pagination state when server data changes (e.g. on new search query)
+	// Reset client-loaded pagination state when server data changes (e.g. on new search query or category change)
 	$effect(() => {
 		// Dependency tracker for server data changes
 		const _ = data.posts;
@@ -30,23 +30,16 @@
 		nextCursorState = undefined;
 	});
 
-	// State for category filtering
-	let selectedCategory = $state('All');
+	// Category filtering state derived from URL tag query parameter
+	const selectedCategory = $derived(data.tag || 'All');
 
-	// Get unique categories from currently loaded posts
-	const categories = $derived([
-		'All',
-		...new Set(allPosts.flatMap((post: BlogPost) => post.tags || []))
-	]);
+	// List of all unique categories returned from the server to keep selection chips persistent
+	const categories = $derived(['All', ...(data.tags || [])]);
 
-	// Filtered posts
-	const filteredPosts = $derived(
-		selectedCategory === 'All'
-			? allPosts
-			: allPosts.filter((post: BlogPost) => post.tags?.includes(selectedCategory))
-	);
+	// Filtered posts (already filtered server-side)
+	const filteredPosts = $derived(allPosts);
 
-	// Featured post (only if not searching)
+	// Featured post (only if not searching and no active tag filter)
 	const featuredPost = $derived(!data.search && selectedCategory === 'All' ? allPosts[0] : null);
 	const gridPosts = $derived(
 		featuredPost
@@ -59,7 +52,9 @@
 
 		isLoadingMore = true;
 		try {
-			const res = await fetch(`/api/blog?lastDate=${nextCursor}&q=${data.search || ''}`);
+			const res = await fetch(
+				`/api/blog?lastDate=${nextCursor}&q=${data.search || ''}&tag=${data.tag || ''}`
+			);
 			const result = await res.json();
 
 			if (result.posts && result.posts.length > 0) {
@@ -231,8 +226,8 @@
 			</div>
 			<div class="flex flex-wrap gap-3">
 				{#each categories as category (category)}
-					<button
-						onclick={() => (selectedCategory = category)}
+					<a
+						href={category === 'All' ? '/blog' : `/blog?tag=${encodeURIComponent(category)}`}
 						class="group relative flex items-center gap-3 border-2 border-foreground px-5 py-2.5 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedCategory ===
 						category
 							? 'bg-foreground text-background'
@@ -245,7 +240,7 @@
 						{#if selectedCategory === category}
 							<div class="absolute inset-0 -z-10 translate-x-1 translate-y-1 bg-primary"></div>
 						{/if}
-					</button>
+					</a>
 				{/each}
 			</div>
 		</div>

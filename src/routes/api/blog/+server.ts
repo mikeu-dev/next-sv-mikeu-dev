@@ -7,12 +7,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const limit = Number(url.searchParams.get('limit')) || 12;
 	const lastDate = url.searchParams.get('lastDate') || undefined;
 	const search = url.searchParams.get('q') || undefined;
+	const tag = url.searchParams.get('tag') || undefined;
 
 	try {
 		const result = await blogService.getPublishedPostsByLocale(locale, {
 			limit,
 			lastDate,
-			search
+			search,
+			tag
 		});
 
 		return json(result);
