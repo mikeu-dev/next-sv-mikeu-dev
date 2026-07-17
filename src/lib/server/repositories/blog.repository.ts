@@ -1,4 +1,4 @@
-﻿import { BaseRepository } from '../core/base.repository';
+import { BaseRepository } from '../core/base.repository';
 import { COLLECTIONS } from '../firebase/collections';
 import type { BlogPost } from '$lib/types';
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
@@ -14,7 +14,7 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 
 	async getPublishedByLocale(
 		locale: string,
-		options: { limit?: number; lastDate?: string; search?: string } = {}
+		options: { limit?: number; lastDate?: string; search?: string; tag?: string } = {}
 	): Promise<{ posts: BlogPost[]; nextCursor: string | null }> {
 		const col = this.getCollection();
 		if (!col) return { posts: [], nextCursor: null };
@@ -31,19 +31,35 @@ export class BlogRepository extends BaseRepository<BlogPost> {
 				.where('title', '<=', options.search + '\uf8ff');
 		}
 
-		if (options.lastDate) {
+		// If a tag is specified, we fetch all posts matching search/locale,
+		// and filter/paginate in-memory to prevent requiring composite indexes.
+		const limitApplied = !options.tag && options.limit;
+		if (options.lastDate && !options.tag) {
 			query = query.startAfter(options.lastDate);
 		}
-
-		if (options.limit) {
-			query = query.limit(options.limit);
+		if (limitApplied) {
+			query = query.limit(options.limit!);
 		}
 
 		const snapshot = await query.get();
-		const posts = snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
+		let posts = snapshot.docs.map((doc: QueryDocumentSnapshot) => ({
 			...this.toPOJO(doc.data()),
 			id: doc.id
 		})) as BlogPost[];
+
+		// Apply tag filter and pagination in memory if tag is requested
+		if (options.tag) {
+			posts = posts.filter((post) => post.tags?.includes(options.tag!));
+			if (options.lastDate) {
+				const startIndex = posts.findIndex((p) => p.date === options.lastDate);
+				if (startIndex !== -1) {
+					posts = posts.slice(startIndex + 1);
+				}
+			}
+			if (options.limit) {
+				posts = posts.slice(0, options.limit);
+			}
+		}
 
 		const lastPost = posts[posts.length - 1];
 		return {

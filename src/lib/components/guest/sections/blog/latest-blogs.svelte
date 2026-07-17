@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import BlogClippingTile from './blog-clipping-tile.svelte';
+	import BlogFeatured from '$lib/components/guest/blog/blog-featured.svelte';
 	import type { BlogPost } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
@@ -35,18 +36,21 @@
 				ease: 'power3.out'
 			});
 
-			gsap.from('.blog-item', {
-				y: 30,
-				opacity: 0,
-				duration: 0.6,
-				stagger: 0.1,
-				ease: 'power3.out',
-				scrollTrigger: {
-					trigger: '.blog-list',
-					start: 'top 85%',
-					toggleActions: 'play none none none'
-				}
-			});
+			// Animate only the small grid blog items since the Featured Post handles its own animation
+			if (posts.length > 1) {
+				gsap.from('.blog-item', {
+					y: 30,
+					opacity: 0,
+					duration: 0.6,
+					stagger: 0.1,
+					ease: 'power3.out',
+					scrollTrigger: {
+						trigger: '.blog-list',
+						start: 'top 85%',
+						toggleActions: 'play none none none'
+					}
+				});
+			}
 		}, sectionEl);
 
 		return () => ctx.revert();
@@ -92,14 +96,24 @@
 		</div>
 
 		{#if posts.length > 0}
-			<div
-				class="blog-list grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 lg:grid-cols-3"
-			>
-				{#each posts as post (post.slug)}
-					<div class="aspect-4/5">
-						<BlogClippingTile {post} />
+			<div class="space-y-16">
+				<!-- Highlighted Featured Post -->
+				<div class="w-full">
+					<BlogFeatured post={posts[0]} animateOnScroll={true} />
+				</div>
+
+				<!-- Grid of secondary recent posts -->
+				{#if posts.length > 1}
+					<div
+						class="blog-list grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 lg:grid-cols-2"
+					>
+						{#each posts.slice(1) as post (post.slug)}
+							<div class="blog-item aspect-4/5">
+								<BlogClippingTile {post} />
+							</div>
+						{/each}
 					</div>
-				{/each}
+				{/if}
 			</div>
 		{:else}
 			<div class="blog-header-stagger py-24 text-center">

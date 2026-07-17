@@ -69,7 +69,7 @@ export class BlogService {
 	async getPostByTitle(title: string) {
 		try {
 			return await this.repository.getByTitle(title);
-		} catch (_error) {
+		} catch {
 			console.error('BlogService: Quota exceeded while fetching post by title');
 			return null;
 		}
@@ -98,10 +98,10 @@ export class BlogService {
 
 	async getPublishedPostsByLocale(
 		locale: string,
-		options: { limit?: number; lastDate?: string; search?: string } = {}
+		options: { limit?: number; lastDate?: string; search?: string; tag?: string } = {}
 	) {
 		const now = Date.now();
-		const cacheKey = `posts_${locale}_${options.limit || 'all'}`;
+		const cacheKey = `posts_${locale}_${options.limit || 'all'}_${options.tag || ''}`;
 		const cache = getMemoryCache();
 		const lastFetch = getLastFetchCache();
 

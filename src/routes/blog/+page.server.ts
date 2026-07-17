@@ -6,6 +6,7 @@ export const prerender = false;
 export const load: PageServerLoad = async ({ locals, url, setHeaders }) => {
 	const locale = locals.paraglide.locale;
 	const search = url.searchParams.get('q') || '';
+	const tag = url.searchParams.get('tag') || '';
 
 	// Set short CDN cache to protect Firebase Free Tier, disable when logged in
 	setHeaders({
@@ -14,10 +15,26 @@ export const load: PageServerLoad = async ({ locals, url, setHeaders }) => {
 			: 'public, s-maxage=10, stale-while-revalidate=30'
 	});
 
-	const { posts, nextCursor } = await blogService.getPublishedPostsByLocale(locale, {
-		limit: 12,
-		search: search || undefined
-	});
+	const [postsResult, allPostsForTags] = await Promise.all([
+		blogService.getPublishedPostsByLocale(locale, {
+			limit: 12,
+			search: search || undefined,
+			tag: tag || undefined
+		}),
+		blogService.getAllPosts().catch(() => [])
+	]);
 
-	return { posts, search, nextCursor };
+	const allTags = Array.from(
+		new Set(
+			allPostsForTags.filter((p) => p.published && p.locale === locale).flatMap((p) => p.tags || [])
+		)
+	);
+
+	return {
+		posts: postsResult.posts,
+		tags: allTags,
+		tag,
+		search,
+		nextCursor: postsResult.nextCursor
+	};
 };
