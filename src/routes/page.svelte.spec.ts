@@ -9,9 +9,9 @@ describe('/+page.svelte', () => {
 			target: document.body,
 			props: {
 				data: {
-					skills: Promise.resolve(['Svelte', 'TypeScript']),
-					projects: Promise.resolve([]),
-					latestPosts: Promise.resolve([]),
+					skills: ['Svelte', 'TypeScript'],
+					projects: [],
+					latestPosts: [],
 					socials: Promise.resolve([]),
 					visitorStats: Promise.resolve({ total: 0, today: 0 }),
 					resumeUrls: Promise.resolve({ en: '', id: '' }),

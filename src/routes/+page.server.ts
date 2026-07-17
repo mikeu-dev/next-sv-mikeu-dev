@@ -15,22 +15,15 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 			: 'public, s-maxage=10, stale-while-revalidate=30'
 	});
 
-	// Projects fetch is the same for both, but we fetch it once.
-	// Skills and Blog are locale-specific.
-	// We stream the data to allow the page to start rendering immediately.
+	const [projects, skillsResult, latestPostsResult] = await Promise.all([
+		projectsService.findAll().catch(() => []),
+		skillsService.getSkills(locale).catch(() => null),
+		blogService.getPublishedPostsByLocale(locale).catch(() => null)
+	]);
 
 	return {
-		projects: projectsService
-			.findAll()
-			.then((projects) => projects || [])
-			.catch(() => []),
-		skills: skillsService
-			.getSkills(locale)
-			.then((skills) => (skills as { items: string[] })?.items || [])
-			.catch(() => []),
-		latestPosts: blogService
-			.getPublishedPostsByLocale(locale)
-			.then((posts) => posts?.posts.slice(0, 3) || [])
-			.catch(() => [])
+		projects,
+		skills: (skillsResult as { items: string[] })?.items || [],
+		latestPosts: latestPostsResult?.posts.slice(0, 3) || []
 	};
 };

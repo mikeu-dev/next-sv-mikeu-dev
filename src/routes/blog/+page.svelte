@@ -14,14 +14,20 @@
 	let { data }: { data: PageData } = $props();
 
 	// Reactive state for posts and pagination
-	let allPosts = $state<BlogPost[]>([]);
-	let nextCursor = $state<string | null | undefined>(null);
+	let loadedPosts = $state<BlogPost[]>([]);
+	let nextCursorState = $state<string | null | undefined>(undefined);
 	let isLoadingMore = $state(false);
 
-	// Sync with server data on initial load or when data changes (e.g. search)
+	// Derived state combining server-loaded data and client-loaded pages
+	const allPosts = $derived([...(data.posts as BlogPost[]), ...loadedPosts]);
+	const nextCursor = $derived(nextCursorState !== undefined ? nextCursorState : data.nextCursor);
+
+	// Reset client-loaded pagination state when server data changes (e.g. on new search query)
 	$effect(() => {
-		allPosts = data.posts as BlogPost[];
-		nextCursor = data.nextCursor;
+		// Dependency tracker for server data changes
+		const _ = data.posts;
+		loadedPosts = [];
+		nextCursorState = undefined;
 	});
 
 	// State for category filtering
@@ -57,10 +63,10 @@
 			const result = await res.json();
 
 			if (result.posts && result.posts.length > 0) {
-				allPosts = [...allPosts, ...result.posts];
-				nextCursor = result.nextCursor;
+				loadedPosts = [...loadedPosts, ...result.posts];
+				nextCursorState = result.nextCursor;
 			} else {
-				nextCursor = null;
+				nextCursorState = null;
 			}
 		} catch (err) {
 			console.error('Error loading more posts:', err);
