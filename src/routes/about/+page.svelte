@@ -217,7 +217,7 @@
 							><span class="text-primary">_</span>
 						</h1>
 						<div
-							class="mt-2 flex items-center gap-2 font-mono text-xs font-black text-foreground/40 uppercase"
+							class="mt-2 flex items-center gap-2 font-mono text-xs font-black text-muted-foreground uppercase"
 						>
 							<Hash class="size-3" /> ALIAS: {m.common_alias_name()}
 						</div>
@@ -225,7 +225,7 @@
 
 					<div class="stagger-item space-y-8">
 						<div
-							class="max-w-2xl font-mono text-sm leading-relaxed tracking-wider text-card-foreground/80 uppercase md:text-base dark:text-muted-foreground"
+							class="max-w-2xl font-mono text-sm leading-relaxed tracking-wider text-card-foreground uppercase md:text-base dark:text-muted-foreground"
 						>
 							// <!-- eslint-disable-next-line svelte/no-at-html-tags -->
 							{@html m.about_desc_first_part()}
@@ -369,14 +369,14 @@
 									<div class="space-y-4">
 										<div class={`flex items-center gap-4 ${i % 2 === 0 ? 'md:justify-end' : ''}`}>
 											<span
-												class={`px-3 py-1 font-mono text-xs font-black tracking-widest ${isExpanded ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-foreground/40'}`}
+												class={`px-3 py-1 font-mono text-xs font-black tracking-widest ${isExpanded ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-muted-foreground'}`}
 											>
 												[{item.year}]
 											</span>
 										</div>
 
 										<h3
-											class={`font-poppins text-3xl font-black tracking-tighter uppercase italic ${isExpanded ? 'text-card-foreground' : 'text-foreground/30'}`}
+											class={`font-poppins text-3xl font-black tracking-tighter uppercase italic ${isExpanded ? 'text-card-foreground' : 'text-muted-foreground'}`}
 										>
 											{item.title}
 										</h3>
@@ -386,7 +386,7 @@
 										>
 											<div class="space-y-6 overflow-hidden">
 												<p
-													class="font-mono text-sm leading-relaxed tracking-tight text-card-foreground/70 uppercase dark:text-muted-foreground"
+													class="font-mono text-sm leading-relaxed tracking-tight text-card-foreground uppercase dark:text-muted-foreground"
 												>
 													// {item.description}
 												</p>
@@ -446,7 +446,7 @@
 						</div>
 
 						<p
-							class="font-mono text-sm leading-relaxed tracking-wider text-card-foreground/70 uppercase dark:text-muted-foreground"
+							class="font-mono text-sm leading-relaxed tracking-wider text-card-foreground uppercase dark:text-muted-foreground"
 						>
 							// {m.about_fun_facts_desc_long()}
 						</p>

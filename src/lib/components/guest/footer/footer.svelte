@@ -230,13 +230,13 @@
 			></div>
 
 			<div
-				class="flex items-center gap-4 font-mono text-[9px] font-black tracking-[0.3em] text-foreground/30 uppercase"
+				class="flex items-center gap-4 font-mono text-[9px] font-black tracking-[0.3em] text-muted-foreground uppercase"
 			>
 				<Cpu class="size-3" />
 				<p>PROTOCOL: MIKEU_PORTFOLIO_V5.0</p>
 			</div>
 
-			<p class="font-mono text-[10px] font-black tracking-widest text-foreground/40 uppercase">
+			<p class="font-mono text-[10px] font-black tracking-widest text-muted-foreground uppercase">
 				&copy; {new Date().getFullYear()} MIKEU_DEV // ALL_RIGHTS_RESERVED.
 			</p>
 
