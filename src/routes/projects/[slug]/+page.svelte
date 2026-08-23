@@ -9,6 +9,7 @@
 	import ProjectShare from '$lib/components/project/project-share.svelte';
 
 	import { getLocalizedProject } from '$lib/utils/project-mapper';
+	import { optimizeImage } from '$lib/utils/image.util';
 	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
@@ -183,7 +184,7 @@
 						{#each project.imagesUrl as url (url)}
 							<SplideSlide>
 								<img
-									src={url}
+									src={optimizeImage(url, { width: 1200, quality: 80 })}
 									alt={project.title}
 									class="aspect-video w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
 								/>
@@ -192,7 +193,7 @@
 					</Splide>
 				{:else}
 					<img
-						src={project.thumbnailUrl}
+						src={optimizeImage(project.thumbnailUrl, { width: 1200, quality: 80 })}
 						alt={project.title}
 						class="aspect-video w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
 					/>

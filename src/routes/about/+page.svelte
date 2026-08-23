@@ -7,6 +7,7 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import { getLocalizedTag } from '$lib/utils/project-mapper';
+	import { optimizeImage } from '$lib/utils/image.util';
 	import { Mail, Coffee, Gamepad2, Music, CheckCircle2, ArrowRight, Hash } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import SkillPlayground from '$lib/components/about/skill-playground.svelte';
@@ -282,7 +283,7 @@
 						></div>
 
 						<img
-							src="https://github.com/mikeu-dev.png"
+							src={optimizeImage('https://github.com/mikeu-dev.png', { width: 400, quality: 80 })}
 							alt={m.common_author_name()}
 							class="h-full w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
 						/>
