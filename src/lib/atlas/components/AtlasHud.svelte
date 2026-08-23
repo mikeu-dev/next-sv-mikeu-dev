@@ -2,6 +2,7 @@
 	import { atlasStore } from '../core/AtlasState.svelte';
 	import { ATLAS_SCENES } from '../narrative/manifest/scenes.manifest';
 	import type { AtlasEngine } from '../core/AtlasEngine';
+	import { ArrowLeft } from '@lucide/svelte';
 
 	interface Props {
 		engine: AtlasEngine;
@@ -71,12 +72,12 @@
 		</div>
 	</div>
 
-	<!-- Right Telemetry: Scale Bar Graphic & Status Tag -->
+	<!-- Right Telemetry: Scale Bar Graphic & Navigation -->
 	<div
-		class="hidden items-center gap-6 font-mono text-[10px] tracking-widest text-[#94a3b8] uppercase sm:flex"
+		class="pointer-events-auto flex items-center gap-4 font-mono text-[10px] tracking-widest text-[#94a3b8] uppercase sm:gap-6"
 	>
 		<!-- Dynamic Graphic Scale Bar -->
-		<div class="flex flex-col items-end gap-1">
+		<div class="hidden flex-col items-end gap-1 sm:flex">
 			<div class="flex items-center gap-1">
 				<span class="h-2 w-px bg-[#94a3b8]"></span>
 				<span class="h-px w-14 bg-[#94a3b8]"></span>
@@ -86,13 +87,14 @@
 			<span class="text-[8px] text-[#64748b]">SCALE {atlasStore.scaleLabel}</span>
 		</div>
 
-		<!-- System Operational Status Badge -->
-		<div
-			class="flex items-center gap-1.5 rounded-xs border border-[#10b981]/40 bg-[#111620] px-2.5 py-1 text-[9px] font-bold text-[#10b981]"
+		<!-- Back to Portfolio Root CTA -->
+		<a
+			href="/"
+			class="flex items-center gap-1.5 rounded-xs border border-[#1e293b] bg-[#111620] px-3 py-1.5 text-[9px] font-bold text-[#f8fafc] transition-colors hover:border-[#10b981] hover:text-[#10b981]"
 		>
-			<span class="size-1.5 rounded-full bg-[#10b981]"></span>
-			<span>SYS_READY</span>
-		</div>
+			<ArrowLeft class="size-3" />
+			<span>PORTFOLIO</span>
+		</a>
 	</div>
 </header>
 

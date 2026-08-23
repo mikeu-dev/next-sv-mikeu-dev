@@ -31,7 +31,7 @@
 		<defs>
 			<!-- Cartographic Dot Grid -->
 			<pattern id="atlas-dot-grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-				<circle cx="20" cy="20" r="1.2" fill="rgba(148, 163, 184, 0.15)" />
+				<circle cx="20" cy="20" r="1.2" fill="rgba(148, 163, 184, 0.12)" />
 			</pattern>
 
 			<!-- Cartographic Contour Isolines -->
@@ -39,17 +39,25 @@
 				<circle
 					cx="100"
 					cy="100"
-					r="80"
+					r="90"
 					fill="none"
-					stroke="rgba(16, 185, 129, 0.04)"
+					stroke="rgba(16, 185, 129, 0.05)"
 					stroke-width="0.75"
 				/>
 				<circle
 					cx="100"
 					cy="100"
-					r="50"
+					r="60"
 					fill="none"
-					stroke="rgba(16, 185, 129, 0.03)"
+					stroke="rgba(14, 165, 233, 0.04)"
+					stroke-width="0.5"
+				/>
+				<circle
+					cx="100"
+					cy="100"
+					r="30"
+					fill="none"
+					stroke="rgba(139, 92, 246, 0.03)"
 					stroke-width="0.5"
 				/>
 			</pattern>
@@ -57,12 +65,20 @@
 			<!-- Radial Vignette Shadow -->
 			<radialGradient id="atlas-vignette" cx="50%" cy="50%" r="50%">
 				<stop offset="0%" stop-color="transparent" />
-				<stop offset="70%" stop-color="transparent" />
-				<stop offset="100%" stop-color="rgba(10, 13, 18, 0.88)" />
+				<stop offset="65%" stop-color="transparent" />
+				<stop offset="100%" stop-color="rgba(10, 13, 18, 0.92)" />
 			</radialGradient>
 
 			<!-- Glow Filters -->
 			<filter id="beacon-glow-emerald" x="-50%" y="-50%" width="200%" height="200%">
+				<feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+				<feMerge>
+					<feMergeNode in="blur" />
+					<feMergeNode in="SourceGraphic" />
+				</feMerge>
+			</filter>
+
+			<filter id="glow-sky" x="-50%" y="-50%" width="200%" height="200%">
 				<feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
 				<feMerge>
 					<feMergeNode in="blur" />
@@ -70,8 +86,8 @@
 				</feMerge>
 			</filter>
 
-			<filter id="node-glow-sky" x="-50%" y="-50%" width="200%" height="200%">
-				<feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+			<filter id="glow-violet" x="-50%" y="-50%" width="200%" height="200%">
+				<feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
 				<feMerge>
 					<feMergeNode in="blur" />
 					<feMergeNode in="SourceGraphic" />
@@ -105,17 +121,185 @@
 
 		<!-- Spatial Camera Viewport Layer (GPU Matrix Transformed) -->
 		<g transform={atlasStore.svgMatrixTransform} class="transition-transform duration-75 ease-out">
-			<!-- 1. Regional Polygon Boundary (Kab. Purwakarta) -->
-			<path
-				d="M 420 380 L 580 370 L 630 460 L 590 580 L 490 620 L 390 540 L 380 430 Z"
-				fill="rgba(16, 185, 129, 0.06)"
-				stroke="#10b981"
-				stroke-width="1.25"
-				stroke-dasharray="4 2"
-				class="transition-all duration-500"
-			/>
+			<!-- ========================================================================= -->
+			<!-- 4 TERRITORY QUADRANT BOUNDARIES (TERRITORIES CLUSTER 0.32 - 0.52)         -->
+			<!-- ========================================================================= -->
 
-			<!-- 2. System Network Edges & Data Flow Connections -->
+			<!-- Territory 01: Geospatial & Environmental GIS (Top-Left, Emerald) -->
+			<g class="territory-cluster-gis transition-opacity duration-300">
+				<!-- Territory Area Wash -->
+				<rect
+					x="80"
+					y="80"
+					width="380"
+					height="360"
+					rx="6"
+					fill="rgba(16, 185, 129, 0.03)"
+					stroke="#10b981"
+					stroke-width="1"
+					stroke-dasharray="6 4"
+					opacity={atlasStore.activeSceneIndex === 2 ? 0.9 : 0.4}
+				/>
+				<!-- Territory Header Plate -->
+				<g transform="translate(100, 110)">
+					<rect
+						x="0"
+						y="0"
+						width="220"
+						height="24"
+						rx="2"
+						fill="#111620"
+						stroke="#10b981"
+						stroke-width="1"
+					/>
+					<text
+						x="8"
+						y="16"
+						fill="#10b981"
+						font-family="JetBrains Mono"
+						font-size="9"
+						font-weight="700"
+						letter-spacing="0.08em"
+					>
+						[TERRITORY 01: GEOSPATIAL GIS]
+					</text>
+				</g>
+			</g>
+
+			<!-- Territory 02: Enterprise Core & Distributed WMS (Top-Right, Sky Blue) -->
+			<g class="territory-cluster-erp transition-opacity duration-300">
+				<rect
+					x="540"
+					y="80"
+					width="380"
+					height="360"
+					rx="6"
+					fill="rgba(14, 165, 233, 0.03)"
+					stroke="#0ea5e9"
+					stroke-width="1"
+					stroke-dasharray="6 4"
+					opacity={atlasStore.activeSceneIndex === 2 ? 0.9 : 0.4}
+				/>
+				<g transform="translate(560, 110)">
+					<rect
+						x="0"
+						y="0"
+						width="220"
+						height="24"
+						rx="2"
+						fill="#111620"
+						stroke="#0ea5e9"
+						stroke-width="1"
+					/>
+					<text
+						x="8"
+						y="16"
+						fill="#0ea5e9"
+						font-family="JetBrains Mono"
+						font-size="9"
+						font-weight="700"
+						letter-spacing="0.08em"
+					>
+						[TERRITORY 02: ENTERPRISE WMS]
+					</text>
+				</g>
+			</g>
+
+			<!-- Territory 03: Machine Intelligence & Vision AI (Bottom-Left, Violet) -->
+			<g class="territory-cluster-ai transition-opacity duration-300">
+				<rect
+					x="80"
+					y="540"
+					width="380"
+					height="360"
+					rx="6"
+					fill="rgba(139, 92, 246, 0.03)"
+					stroke="#8b5cf6"
+					stroke-width="1"
+					stroke-dasharray="6 4"
+					opacity={atlasStore.activeSceneIndex === 2 ? 0.9 : 0.4}
+				/>
+				<g transform="translate(100, 570)">
+					<rect
+						x="0"
+						y="0"
+						width="220"
+						height="24"
+						rx="2"
+						fill="#111620"
+						stroke="#8b5cf6"
+						stroke-width="1"
+					/>
+					<text
+						x="8"
+						y="16"
+						fill="#8b5cf6"
+						font-family="JetBrains Mono"
+						font-size="9"
+						font-weight="700"
+						letter-spacing="0.08em"
+					>
+						[TERRITORY 03: VISION AI MESH]
+					</text>
+				</g>
+			</g>
+
+			<!-- Territory 04: High-Throughput Pipelines & Infra (Bottom-Right, Amber) -->
+			<g class="territory-cluster-infra transition-opacity duration-300">
+				<rect
+					x="540"
+					y="540"
+					width="380"
+					height="360"
+					rx="6"
+					fill="rgba(245, 158, 11, 0.03)"
+					stroke="#f59e0b"
+					stroke-width="1"
+					stroke-dasharray="6 4"
+					opacity={atlasStore.activeSceneIndex === 2 ? 0.9 : 0.4}
+				/>
+				<g transform="translate(560, 570)">
+					<rect
+						x="0"
+						y="0"
+						width="220"
+						height="24"
+						rx="2"
+						fill="#111620"
+						stroke="#f59e0b"
+						stroke-width="1"
+					/>
+					<text
+						x="8"
+						y="16"
+						fill="#f59e0b"
+						font-family="JetBrains Mono"
+						font-size="9"
+						font-weight="700"
+						letter-spacing="0.08em"
+					>
+						[TERRITORY 04: HIGH-SCALE INFRA]
+					</text>
+				</g>
+			</g>
+
+			<!-- ========================================================================= -->
+			<!-- GEOMETRY VECTORS, MORPHING POLYGON & CAREER TRAJECTORY PATHS              -->
+			<!-- ========================================================================= -->
+
+			{#each atlasStore.activePaths as path (path.id)}
+				<path
+					d={path.d}
+					stroke={path.strokeColor}
+					stroke-width={path.strokeWidth}
+					fill="none"
+					stroke-dasharray={path.dashArray}
+					opacity={path.opacity ?? 1}
+					class="transition-all duration-300"
+				/>
+			{/each}
+
+			<!-- System Network Edges & Data Flow Connections -->
 			{#each atlasStore.activeEdges as edge (edge.id)}
 				{@const sourceNode = atlasStore.activeNodes.find((n) => n.id === edge.sourceNodeId)}
 				{@const targetNode = atlasStore.activeNodes.find((n) => n.id === edge.targetNodeId)}
@@ -135,7 +319,7 @@
 						<circle
 							cx={(sourceNode.position.x + targetNode.position.x) / 2}
 							cy={(sourceNode.position.y + targetNode.position.y) / 2}
-							r="2"
+							r="2.5"
 							fill={edge.strokeColor ?? '#38bdf8'}
 							class="animate-pulse"
 						/>
@@ -143,46 +327,154 @@
 				{/if}
 			{/each}
 
-			<!-- 3. Dynamic Trajectory & Topological Paths -->
-			{#each atlasStore.activePaths as path (path.id)}
-				<path
-					d={path.d}
-					stroke={path.strokeColor}
-					stroke-width={path.strokeWidth}
-					fill="none"
-					stroke-dasharray={path.dashArray}
-					opacity={path.opacity ?? 1}
-					class="transition-all duration-300"
-				/>
-			{/each}
+			<!-- ========================================================================= -->
+			<!-- FRAME 00 / 01 / 02: ORIGIN BEACON PURWAKARTA (500, 500)                   -->
+			<!-- ========================================================================= -->
 
-			<!-- 4. Point State 1: Active Beacon (Origin Point Purwakarta) -->
-			<g transform="translate(500, 500)">
+			<g transform="translate(500, 500)" class="origin-beacon-center">
+				<!-- Concentric Radar Rings -->
 				<circle
-					r="16"
+					r="42"
 					fill="none"
 					stroke="#10b981"
-					stroke-width="0.8"
-					opacity="0.3"
+					stroke-width="0.5"
+					opacity="0.2"
 					class="origin-center animate-ping"
 				/>
-				<circle r="8" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.7" />
-				<circle r="3.5" fill="#10b981" filter="url(#beacon-glow-emerald)" />
+				<circle r="24" fill="none" stroke="#10b981" stroke-width="0.75" opacity="0.4" />
+				<circle r="10" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.8" />
+				<circle r="4" fill="#10b981" filter="url(#beacon-glow-emerald)" />
 
-				<!-- Beacon Crosshair Marker -->
-				<line x1="-12" y1="0" x2="-5" y2="0" stroke="#10b981" stroke-width="0.75" />
-				<line x1="5" y1="0" x2="12" y2="0" stroke="#10b981" stroke-width="0.75" />
-				<line x1="0" y1="-12" x2="0" y2="-5" stroke="#10b981" stroke-width="0.75" />
-				<line x1="0" y1="5" x2="0" y2="12" stroke="#10b981" stroke-width="0.75" />
+				<!-- Reticle Axis Crosshair Lines -->
+				<line x1="-30" y1="0" x2="-8" y2="0" stroke="#10b981" stroke-width="0.75" />
+				<line x1="8" y1="0" x2="30" y2="0" stroke="#10b981" stroke-width="0.75" />
+				<line x1="0" y1="-30" x2="0" y2="-8" stroke="#10b981" stroke-width="0.75" />
+				<line x1="0" y1="8" x2="0" y2="30" stroke="#10b981" stroke-width="0.75" />
+
+				<!-- Origin Coordinate Labels -->
+				<text
+					x="0"
+					y="-38"
+					fill="#10b981"
+					font-family="JetBrains Mono"
+					font-size="9"
+					font-weight="700"
+					text-anchor="middle"
+					letter-spacing="0.08em"
+				>
+					00° 31' 12.4"S 107° 26' 32.1"E
+				</text>
+				<text
+					x="0"
+					y="48"
+					fill="#94a3b8"
+					font-family="JetBrains Mono"
+					font-size="8"
+					font-weight="600"
+					text-anchor="middle"
+					letter-spacing="0.05em"
+				>
+					BASE SPATIAL ANCHOR // PURWAKARTA, ID
+				</text>
+
+				<!-- Hero Name Display (Awakens during Zoom 4.5x -> 2.8x) -->
+				{#if atlasStore.camera.zoom > 2.0}
+					<g transform="translate(0, 78)">
+						<text
+							x="0"
+							y="0"
+							fill="#f8fafc"
+							font-family="Outfit"
+							font-size="22"
+							font-weight="800"
+							text-anchor="middle"
+							letter-spacing="0.1em"
+						>
+							RIKI RUSWANDI
+						</text>
+						<text
+							x="0"
+							y="16"
+							fill="#38bdf8"
+							font-family="JetBrains Mono"
+							font-size="8.5"
+							font-weight="600"
+							text-anchor="middle"
+							letter-spacing="0.12em"
+						>
+							FULLSTACK & SYSTEMS ENGINEER
+						</text>
+					</g>
+				{/if}
 			</g>
 
-			<!-- 5. Point State 2 & 3: Route Junctions & Evidence Anchors -->
+			<!-- ========================================================================= -->
+			<!-- CAREER TIMELINE WAYPOINT NODES (2022 - 2026)                              -->
+			<!-- ========================================================================= -->
+
+			<!-- 2022 Milestone Node -->
+			<g transform="translate(420, 380)" class="timeline-waypoint">
+				<circle r="4" fill="#10b981" />
+				<text
+					x="-10"
+					y="-12"
+					fill="#10b981"
+					font-family="JetBrains Mono"
+					font-size="8"
+					font-weight="700">2022: GIS FOUNDATION</text
+				>
+			</g>
+
+			<!-- 2023 Milestone Node -->
+			<g transform="translate(580, 370)" class="timeline-waypoint">
+				<circle r="4" fill="#10b981" />
+				<text
+					x="12"
+					y="-10"
+					fill="#10b981"
+					font-family="JetBrains Mono"
+					font-size="8"
+					font-weight="700">2023: SIPEDO WEBMAP</text
+				>
+			</g>
+
+			<!-- 2024-2025 Milestone Node -->
+			<g transform="translate(720, 360)" class="timeline-waypoint">
+				<circle r="4" fill="#0ea5e9" />
+				<text
+					x="12"
+					y="-10"
+					fill="#0ea5e9"
+					font-family="JetBrains Mono"
+					font-size="8"
+					font-weight="700">2024-2025: WMS ENTERPRISE</text
+				>
+			</g>
+
+			<!-- 2026 Milestone Node -->
+			<g transform="translate(280, 680)" class="timeline-waypoint">
+				<circle r="4" fill="#8b5cf6" />
+				<text
+					x="-12"
+					y="20"
+					fill="#8b5cf6"
+					font-family="JetBrains Mono"
+					font-size="8"
+					font-weight="700"
+					text-anchor="end">2026: AI VISION AUTOMATION</text
+				>
+			</g>
+
+			<!-- ========================================================================= -->
+			<!-- INTERACTIVE ARTIFACT ANCHOR NODES (SIPEDO, WMS, VISION QA)                -->
+			<!-- ========================================================================= -->
+
 			{#each atlasStore.activeNodes as node (node.id)}
 				<g
 					transform={`translate(${node.position.x}, ${node.position.y})`}
 					class="cursor-pointer transition-transform duration-200 hover:scale-110"
 				>
-					<!-- Evidence Anchor (Square Technical Reticle) -->
+					<!-- Evidence Anchor Box -->
 					<g
 						role="button"
 						tabindex="0"
@@ -190,40 +482,40 @@
 						onkeydown={(e) => e.key === 'Enter' && handleEvidenceClick(node.evidenceId)}
 					>
 						<rect
-							x="-9"
-							y="-9"
-							width="18"
-							height="18"
+							x="-11"
+							y="-11"
+							width="22"
+							height="22"
 							fill={node.domain === 'gis'
-								? 'rgba(16, 185, 129, 0.15)'
+								? 'rgba(16, 185, 129, 0.2)'
 								: node.domain === 'erp'
-									? 'rgba(14, 165, 233, 0.15)'
-									: 'rgba(139, 92, 246, 0.15)'}
+									? 'rgba(14, 165, 233, 0.2)'
+									: 'rgba(139, 92, 246, 0.2)'}
 							stroke={node.domain === 'gis'
 								? '#10b981'
 								: node.domain === 'erp'
 									? '#0ea5e9'
 									: '#8b5cf6'}
-							stroke-width="1"
+							stroke-width="1.2"
 							stroke-dasharray="3 3"
-							rx="1"
+							rx="2"
 						/>
 
-						<!-- Inner Core -->
+						<!-- Inner Pulsing Core -->
 						<circle
-							r="3.5"
+							r="4"
 							fill={node.domain === 'gis'
 								? '#10b981'
 								: node.domain === 'erp'
 									? '#0ea5e9'
 									: '#8b5cf6'}
-							filter="url(#node-glow-sky)"
+							filter={node.domain === 'gis' ? 'url(#beacon-glow-emerald)' : 'url(#glow-sky)'}
 						/>
 					</g>
 
 					<!-- Tactical Node Plate (Click to View Project Overview) -->
 					<g
-						transform="translate(18, -10)"
+						transform="translate(20, -12)"
 						role="button"
 						tabindex="0"
 						onclick={() => handleDomainProjectClick(node.domain)}
@@ -231,10 +523,10 @@
 						class="cursor-pointer hover:opacity-90"
 					>
 						<rect
-							x="-4"
-							y="-4"
-							width="170"
-							height="28"
+							x="-6"
+							y="-6"
+							width="180"
+							height="32"
 							fill="#111620"
 							stroke={node.domain === 'gis'
 								? '#10b981'
@@ -242,23 +534,23 @@
 									? '#0ea5e9'
 									: '#8b5cf6'}
 							stroke-width="1"
-							rx="2"
-							opacity="0.95"
+							rx="3"
+							opacity="0.96"
 						/>
 						<text
-							x="3"
-							y="6"
+							x="4"
+							y="7"
 							fill="#f8fafc"
 							font-family="JetBrains Mono"
-							font-size="8.5"
+							font-size="9"
 							font-weight="700"
 							letter-spacing="0.05em"
 						>
 							{node.label}
 						</text>
 						<text
-							x="3"
-							y="17"
+							x="4"
+							y="19"
 							fill="#94a3b8"
 							font-family="JetBrains Mono"
 							font-size="7.5"

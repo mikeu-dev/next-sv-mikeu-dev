@@ -13,11 +13,11 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 			{
 				type: 'enter',
 				startProgress: 0.0,
-				endProgress: 0.25,
+				endProgress: 0.35,
 				beats: [
 					{
 						startProgress: 0.0,
-						endProgress: 0.25,
+						endProgress: 0.35,
 						narrativeText: '00° 31\' 12.4"S  107° 26\' 32.1"E',
 						subtitle: 'PURWAKARTA REGIONAL ORIGIN POINT',
 						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 4.5 }]
@@ -26,12 +26,12 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 			},
 			{
 				type: 'build',
-				startProgress: 0.25,
-				endProgress: 0.6,
+				startProgress: 0.35,
+				endProgress: 0.7,
 				beats: [
 					{
-						startProgress: 0.25,
-						endProgress: 0.6,
+						startProgress: 0.35,
+						endProgress: 0.7,
 						narrativeText: 'RIKI RUSWANDI',
 						subtitle: 'FULLSTACK & SYSTEMS ENGINEER',
 						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 2.8 }]
@@ -40,15 +40,15 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 			},
 			{
 				type: 'hold',
-				startProgress: 0.6,
+				startProgress: 0.7,
 				endProgress: 1.0,
 				beats: [
 					{
-						startProgress: 0.6,
+						startProgress: 0.7,
 						endProgress: 1.0,
 						narrativeText: 'KABUPATEN PURWAKARTA',
 						subtitle: 'GEOGRAPHIC ORIGIN & SPATIAL ANCHOR',
-						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 1.3 }]
+						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 1.6 }]
 					}
 				]
 			}
@@ -61,47 +61,47 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 		verb: 'trace',
 		startGlobalProgress: 0.15,
 		endGlobalProgress: 0.32,
-		cameraTarget: { x: 580, y: 480, zoom: 1.1, rotation: 0 },
+		cameraTarget: { x: 580, y: 460, zoom: 1.2, rotation: 0 },
 		phases: [
 			{
 				type: 'enter',
 				startProgress: 0.0,
-				endProgress: 0.3,
+				endProgress: 0.35,
 				beats: [
 					{
 						startProgress: 0.0,
-						endProgress: 0.3,
+						endProgress: 0.35,
 						narrativeText: '2022 — 2023: FOUNDATIONS',
 						subtitle: 'GEOSPATIAL SYSTEMS & REGIONAL MAPPING',
-						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 1.2 }]
+						actions: [{ type: 'focus', target: { x: 450, y: 420 }, zoom: 1.3 }]
 					}
 				]
 			},
 			{
 				type: 'build',
-				startProgress: 0.3,
-				endProgress: 0.7,
+				startProgress: 0.35,
+				endProgress: 0.75,
 				beats: [
 					{
-						startProgress: 0.3,
-						endProgress: 0.7,
+						startProgress: 0.35,
+						endProgress: 0.75,
 						narrativeText: '2024 — 2025: ENTERPRISE CORE',
 						subtitle: 'HIGH-THROUGHPUT WMS & LOGISTICS LEDGERS',
-						actions: [{ type: 'focus', target: { x: 620, y: 450 }, zoom: 1.05 }]
+						actions: [{ type: 'focus', target: { x: 650, y: 400 }, zoom: 1.15 }]
 					}
 				]
 			},
 			{
 				type: 'hold',
-				startProgress: 0.7,
+				startProgress: 0.75,
 				endProgress: 1.0,
 				beats: [
 					{
-						startProgress: 0.7,
+						startProgress: 0.75,
 						endProgress: 1.0,
-						narrativeText: '2026: DISTRIBUTED & AI SYSTEMS',
+						narrativeText: '2026: AI AUTOMATION',
 						subtitle: 'COMPUTER VISION INSPECTION & AUTOMATION',
-						actions: [{ type: 'focus', target: { x: 650, y: 420 }, zoom: 1.0 }]
+						actions: [{ type: 'focus', target: { x: 420, y: 560 }, zoom: 1.1 }]
 					}
 				]
 			}
@@ -138,9 +138,9 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 					{
 						startProgress: 0.35,
 						endProgress: 0.7,
-						narrativeText: 'TERRITORY A: GEOSPATIAL PLATFORMS',
+						narrativeText: 'TERRITORY 01: GEOSPATIAL PLATFORMS',
 						subtitle: 'SIPEDO PURWAKARTA & MULTI-LAYER VECTORS',
-						actions: [{ type: 'focus', target: { x: 420, y: 460 }, zoom: 1.2 }]
+						actions: [{ type: 'focus', target: { x: 280, y: 260 }, zoom: 1.25 }]
 					}
 				]
 			},
@@ -152,9 +152,9 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 					{
 						startProgress: 0.7,
 						endProgress: 1.0,
-						narrativeText: 'TERRITORY B: ENTERPRISE LOGISTICS',
-						subtitle: 'REALTIME WMS & PRODUCTION ASSEMBLY CORE',
-						actions: [{ type: 'focus', target: { x: 650, y: 400 }, zoom: 1.2 }]
+						narrativeText: 'TERRITORY 02: ENTERPRISE & AI MESH',
+						subtitle: 'HIGH-THROUGHPUT LEDGERS & DEFECT DETECTION',
+						actions: [{ type: 'focus', target: { x: 720, y: 260 }, zoom: 1.25 }]
 					}
 				]
 			}
@@ -167,47 +167,47 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 		verb: 'morph',
 		startGlobalProgress: 0.52,
 		endGlobalProgress: 0.72,
-		cameraTarget: { x: 500, y: 500, zoom: 1.15, rotation: 0 },
+		cameraTarget: { x: 500, y: 480, zoom: 1.25, rotation: 0 },
 		phases: [
 			{
 				type: 'enter',
 				startProgress: 0.0,
-				endProgress: 0.3,
+				endProgress: 0.35,
 				beats: [
 					{
 						startProgress: 0.0,
-						endProgress: 0.3,
-						narrativeText: 'THE TOPOLOGY TRANSFORMATION',
-						subtitle: 'FROM GEOGRAPHIC BOUNDARIES TO DISTRIBUTED SYSTEMS',
-						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 1.1 }]
+						endProgress: 0.35,
+						narrativeText: 'TOPOLOGICAL RECONSTRUCTION',
+						subtitle: 'GEOMETRY MORPHING TO DISTRIBUTED TOPOLOGY',
+						actions: [{ type: 'focus', target: { x: 500, y: 480 }, zoom: 1.25 }]
 					}
 				]
 			},
 			{
 				type: 'build',
-				startProgress: 0.3,
-				endProgress: 0.7,
+				startProgress: 0.35,
+				endProgress: 0.75,
 				beats: [
 					{
-						startProgress: 0.3,
-						endProgress: 0.7,
-						narrativeText: 'EDGE ROUTER & SPATIAL ENGINE',
-						subtitle: 'LOW LATENCY QUERY MESH & REALTIME WEBSOCKETS',
-						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 1.25 }]
+						startProgress: 0.35,
+						endProgress: 0.75,
+						narrativeText: 'SYSTEMS ARCHITECTURE MESH',
+						subtitle: 'CLIENT -> EDGE GATEWAY -> SPATIAL POSTGIS',
+						actions: [{ type: 'focus', target: { x: 500, y: 480 }, zoom: 1.3 }]
 					}
 				]
 			},
 			{
 				type: 'hold',
-				startProgress: 0.7,
+				startProgress: 0.75,
 				endProgress: 1.0,
 				beats: [
 					{
-						startProgress: 0.7,
+						startProgress: 0.75,
 						endProgress: 1.0,
-						narrativeText: 'DATA STREAMING PIPELINES',
-						subtitle: 'POSTGIS CLUSTERING & REDIS ATOMIC LOCKS',
-						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 1.15 }]
+						narrativeText: 'DETERMINISTIC DATA STREAMS',
+						subtitle: 'REAL-TIME TRANSACTION FLOW & SUB-50MS LATENCY',
+						actions: [{ type: 'focus', target: { x: 500, y: 480 }, zoom: 1.25 }]
 					}
 				]
 			}
@@ -220,7 +220,7 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 		verb: 'examine',
 		startGlobalProgress: 0.72,
 		endGlobalProgress: 0.88,
-		cameraTarget: { x: 440, y: 500, zoom: 1.05, rotation: 0 },
+		cameraTarget: { x: 460, y: 500, zoom: 1.1, rotation: 0 },
 		phases: [
 			{
 				type: 'enter',
@@ -230,23 +230,37 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 					{
 						startProgress: 0.0,
 						endProgress: 0.4,
-						narrativeText: 'VERIFIED PRODUCTION ARTIFACTS',
-						subtitle: 'BENCHMARKS • PRODUCTION QUERIES • METRICS',
-						actions: [{ type: 'focus', target: { x: 440, y: 500 }, zoom: 1.05 }]
+						narrativeText: 'VERIFIED PRODUCTION EVIDENCE',
+						subtitle: 'METRICS • POSTGIS QUERIES • STATE MACHINES',
+						actions: [{ type: 'focus', target: { x: 460, y: 500 }, zoom: 1.1 }]
+					}
+				]
+			},
+			{
+				type: 'build',
+				startProgress: 0.4,
+				endProgress: 0.8,
+				beats: [
+					{
+						startProgress: 0.4,
+						endProgress: 0.8,
+						narrativeText: 'KNOWLEDGE GRAPH DRILLDOWN',
+						subtitle: 'CLICK ANY ANCHOR NODE TO INSPECT CODE ARTIFACTS',
+						actions: [{ type: 'focus', target: { x: 460, y: 500 }, zoom: 1.15 }]
 					}
 				]
 			},
 			{
 				type: 'hold',
-				startProgress: 0.4,
+				startProgress: 0.8,
 				endProgress: 1.0,
 				beats: [
 					{
-						startProgress: 0.4,
+						startProgress: 0.8,
 						endProgress: 1.0,
-						narrativeText: 'DEEP ARTIFACT DRILLDOWN',
-						subtitle: 'CLICK ANY ANCHOR NODE TO INSPECT EVIDENCE',
-						actions: [{ type: 'focus', target: { x: 440, y: 500 }, zoom: 1.05 }]
+						narrativeText: 'HIGH-IMPACT DELIVERABLES',
+						subtitle: 'GOVERNMENT GIS & ENTERPRISE MANUFACTURING',
+						actions: [{ type: 'focus', target: { x: 460, y: 500 }, zoom: 1.1 }]
 					}
 				]
 			}
@@ -269,8 +283,8 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 					{
 						startProgress: 0.0,
 						endProgress: 0.5,
-						narrativeText: 'SYSTEM TERMINAL READY',
-						subtitle: '100% SPATIAL NODES UNLOCKED',
+						narrativeText: 'THE NEXT HORIZON',
+						subtitle: 'READY FOR HIGH-SCALE DISTRIBUTED INITIATIVES',
 						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 0.95 }]
 					}
 				]
@@ -283,8 +297,8 @@ export const ATLAS_SCENES: readonly AtlasScene[] = [
 					{
 						startProgress: 0.5,
 						endProgress: 1.0,
-						narrativeText: 'YOU ARE HERE',
-						subtitle: "LET'S ENGINEER WHAT'S NEXT",
+						narrativeText: 'ATLAS TERMINAL READY',
+						subtitle: 'INITIATE CONTACT // DOWNLOAD ENGINEERING DOSSIER',
 						actions: [{ type: 'focus', target: { x: 500, y: 500 }, zoom: 0.95 }]
 					}
 				]
