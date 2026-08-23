@@ -15,25 +15,25 @@
 
 	<!-- Slide-over Drawer Panel -->
 	<aside
-		class="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-xl flex-col border-l border-[#1e293b] bg-[#0f141d] p-6 text-background shadow-2xl transition-transform duration-300 sm:p-8"
+		class="fixed top-0 right-0 bottom-0 z-50 flex w-full max-w-xl flex-col border-l border-[#1e293b] bg-[#0f141d] p-6 text-[#f8fafc] shadow-2xl transition-transform duration-300 sm:p-8"
 	>
 		<!-- Drawer Header -->
 		<div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
 			<div class="flex flex-col">
 				<div
-					class="flex items-center gap-2 font-mono text-[9px] font-bold tracking-widest text-emerald uppercase"
+					class="flex items-center gap-2 font-mono text-[9px] font-bold tracking-widest text-[#10b981] uppercase"
 				>
 					<CheckCircle2 class="size-3.5" />
 					<span>EVIDENCE ARTIFACT VERIFIED</span>
 				</div>
-				<h2 class="mt-1 font-sans text-xl font-bold tracking-tight text-background">
+				<h2 class="mt-1 font-sans text-xl font-bold tracking-tight text-[#f8fafc]">
 					{atlasStore.activeEvidence.title}
 				</h2>
 			</div>
 
 			<button
 				onclick={() => atlasStore.closeEvidence()}
-				class="rounded-md border border-[#1e293b] bg-[#161e2b] p-2 text-[#94a3b8] transition-colors hover:border-[#38bdf8] hover:text-background"
+				class="rounded-md border border-[#1e293b] bg-[#161e2b] p-2 text-[#94a3b8] transition-colors hover:border-[#38bdf8] hover:text-[#f8fafc]"
 				aria-label="Close evidence drawer"
 			>
 				<X class="size-4" />
@@ -55,7 +55,7 @@
 						</span>
 					</div>
 
-					<h3 class="mt-2 font-sans text-base font-bold text-background">
+					<h3 class="mt-2 font-sans text-base font-bold text-[#f8fafc]">
 						{artifact.title}
 					</h3>
 
@@ -68,9 +68,9 @@
 						<div
 							class="mt-4 flex items-center gap-3 rounded border border-[#1e293b] bg-[#161e2b] p-3"
 						>
-							<Gauge class="size-5 text-emerald" />
+							<Gauge class="size-5 text-[#10b981]" />
 							<div class="flex flex-col">
-								<span class="font-mono text-lg font-extrabold text-emerald">
+								<span class="font-mono text-lg font-extrabold text-[#10b981]">
 									{artifact.metricValue}
 								</span>
 								<span class="font-mono text-[9px] tracking-wider text-[#64748b] uppercase">
@@ -105,7 +105,7 @@
 		<div class="border-t border-[#1e293b] pt-4">
 			<button
 				onclick={() => atlasStore.closeEvidence()}
-				class="w-full rounded border border-emerald bg-emerald/10 py-2.5 font-mono text-xs font-bold tracking-widest text-emerald uppercase transition-colors hover:bg-emerald hover:text-[#0a0d12]"
+				class="w-full rounded border border-[#10b981] bg-[#10b981]/10 py-2.5 font-mono text-xs font-bold tracking-widest text-[#10b981] uppercase transition-colors hover:bg-[#10b981] hover:text-[#0a0d12]"
 			>
 				RETURN TO SPATIAL RECONNAISSANCE
 			</button>

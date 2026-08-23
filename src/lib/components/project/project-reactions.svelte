@@ -87,21 +87,21 @@
 			disabled={hasLiked || isLoading}
 			class={`group flex items-center gap-2 rounded-full px-5 py-2.5 transition-all duration-300 ${
 				hasLiked
-					? 'text-primary-foreground shadow-primary/5 bg-emerald shadow-sm'
-					: 'bg-muted text-muted-foreground hover:text-primary hover:shadow-primary/10 hover:bg-emerald/10 hover:shadow-lg'
+					? 'bg-primary text-primary-foreground shadow-sm shadow-primary/5'
+					: 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary hover:shadow-lg hover:shadow-primary/10'
 			}`}
 			aria-label="Like this project"
 		>
 			<Heart
 				class={`size-5 transition-transform duration-300 ${
-					hasLiked ? 'fill-primary-foreground scale-110' : 'group-hover:scale-125'
+					hasLiked ? 'scale-110 fill-primary-foreground' : 'group-hover:scale-125'
 				}`}
 			/>
 			<span class="font-bold">{likes}</span>
 		</button>
 
 		<div
-			class="text-card-foreground/60 dark:text-muted-foreground flex items-center gap-2 px-3 py-2"
+			class="flex items-center gap-2 px-3 py-2 text-card-foreground/60 dark:text-muted-foreground"
 		>
 			<Eye class="size-5" />
 			<span class="font-medium">{views} {m.blog_views()}</span>
@@ -112,10 +112,10 @@
 		<button
 			onclick={handleLike}
 			disabled={hasLiked || isLoading}
-			class="enabled:hover:text-primary cursor-pointer text-sm italic transition-colors select-none disabled:cursor-default"
+			class="cursor-pointer text-sm italic transition-colors select-none enabled:hover:text-primary disabled:cursor-default"
 		>
 			<p
-				class="text-card-foreground/60 group-hover:text-primary dark:text-muted-foreground transition-colors"
+				class="text-card-foreground/60 transition-colors group-hover:text-primary dark:text-muted-foreground"
 			>
 				{hasLiked ? m.blog_reaction_thanks() : m.blog_reaction_question()}
 			</p>

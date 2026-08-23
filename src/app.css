@@ -5,58 +5,44 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Theme definition (Tailwind v4) */
-@theme inline {
-	/* Radius */
-	--radius: 0.625rem;
-	--radius-sm: calc(var(--radius) - 4px);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) + 4px);
-
-	/* Colors */
-	/* Light mode base */
-	--color-background: #f8fafc; /* Light slate */
-	--color-foreground: #020617; /* Navy base */
-	--color-border: #e2e8f0;
-	--color-ring: #06b6d4;
-
-	/* Emerald & Cyan */
-	--color-emerald: #10b981;
-	--color-cyan: #06b6d4;
-
-	/* Gradients */
-	--background-hero-light: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
-	--gradient-emerald-cyan: linear-gradient(to right, #10b981, #06b6d4);
-
-	/* Typography tokens */
-	--font-poppins: 'Poppins', sans-serif;
-	--font-inter: 'Inter', sans-serif;
-}
-
-/* Dark mode overrides */
-.dark {
-	--color-background: #020617; /* Navy dark */
-	--color-foreground: #f8fafc; /* Light text */
-	--color-border: #1e293b;
-	--background-hero-dark: linear-gradient(135deg, #0f766e 0%, #0599b1 100%);
-}
-
-/* Custom utility classes for gradients */
-@layer utilities {
-	.bg-hero-gradient {
-		background: var(--background-hero-light);
-	}
-	.dark .bg-hero-gradient {
-		background: var(--background-hero-dark);
-	}
-	.bg-emerald-cyan {
-		background: var(--gradient-emerald-cyan);
-	}
-}
-
-/* Existing tape gradient (kept) */
 :root {
+	--radius: 0.625rem;
+	/* Avocado Theme (Custom Palette) */
+	--background: #438468;
+	--foreground: #ffffff;
+	--card: #c7d796;
+	--card-foreground: #363200;
+	--popover: #c7d796;
+	--popover-foreground: #1a4435;
+	--primary: #fcec62;
+	--primary-foreground: #363200;
+	--secondary: #051a13;
+	--secondary-foreground: #ffffff;
+	--muted: #1a4435;
+	--muted-foreground: #c7d796;
+	--accent: #c7d796;
+	--accent-foreground: #1a4435;
+	--destructive: #8a5a54; /* Muted earthy red for errors */
+	--border: #051a13;
+	--input: #1a4435;
+	--ring: #fcec62;
+	--chart-1: #c7d796;
+	--chart-2: #fcec62;
+	--chart-3: #1a4435;
+	--chart-4: #051a13;
+	--chart-5: #ffffff;
+	--sidebar: #438468;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #fcec62;
+	--sidebar-primary-foreground: #363200;
+	--sidebar-accent: #c7d796;
+	--sidebar-accent-foreground: #1a4435;
+	--sidebar-border: #051a13;
+	--sidebar-ring: #fcec62;
+
+	/* Glossy "tape" gradient — the hero CTA's signature treatment, shared globally
+	   so other sections (e.g. the work section's CTA) can reuse the same brand
+	   look instead of inventing a separate button style. */
 	--tape-bg-grad:
 		linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 25%),
 		linear-gradient(135deg, #fff07c 0%, #fcec62 50%, #e5c300 100%);
@@ -65,10 +51,96 @@
 	--tape-shadow-hover: rgba(5, 26, 19, 0.6);
 }
 
-/* Base styles */
+.dark {
+	/* Avocado Theme (Dark) — same brand hexes as light mode, remapped so the
+	   darkest existing brand color (--secondary in light mode) becomes the base
+	   surface here: dark and dominant, with a deliberate green tint rather than
+	   the generic grayscale-blue scaffold this used to fall back to. */
+	--background: #020d09;
+	--foreground: #ffffff;
+	--card: #10281e;
+	--card-foreground: #ffffff;
+	--popover: #10281e;
+	--popover-foreground: #ffffff;
+	--primary: #fcec62;
+	--primary-foreground: #363200;
+	--secondary: #438468;
+	--secondary-foreground: #ffffff;
+	--muted: #10281e;
+	--muted-foreground: #c7d796;
+	--accent: #10281e;
+	--accent-foreground: #c7d796;
+	--destructive: #8a5a54;
+	--border: rgba(255, 255, 255, 0.08);
+	--input: rgba(255, 255, 255, 0.1);
+	--ring: #fcec62;
+	--chart-1: #c7d796;
+	--chart-2: #fcec62;
+	--chart-3: #438468;
+	--chart-4: #10281e;
+	--chart-5: #ffffff;
+	--sidebar: #020d09;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #fcec62;
+	--sidebar-primary-foreground: #363200;
+	--sidebar-accent: #10281e;
+	--sidebar-accent-foreground: #c7d796;
+	--sidebar-border: rgba(255, 255, 255, 0.08);
+	--sidebar-ring: #fcec62;
+
+	--tape-bg-grad:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
+		linear-gradient(135deg, #f4f4f5 0%, #e2e2e8 50%, #b0b0b8 100%);
+	--tape-color: #18181b;
+	--tape-shadow: rgba(0, 0, 0, 0.8);
+	--tape-shadow-hover: rgba(0, 0, 0, 1);
+}
+
+@theme inline {
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+
+	/* Custom Typography Tokens */
+	--font-poppins: 'Poppins', sans-serif;
+	--font-inter: 'Inter', sans-serif;
+}
+
 @layer base {
 	* {
-		@apply border border-zinc-200 outline-none;
+		@apply border-border outline-ring/50;
 	}
 
 	html {
@@ -84,7 +156,6 @@
 		@apply bg-background text-foreground;
 		font-family: var(--font-inter);
 	}
-
 	h1,
 	h2,
 	h3,
@@ -93,22 +164,21 @@
 	h6 {
 		font-family: var(--font-poppins);
 	}
-
 	button {
 		@apply cursor-pointer;
 	}
 }
 
-/* Prose styling */
+/* Custom Prose Styling for Premium Blog Feel */
 @layer utilities {
 	.prose {
 		--tw-prose-headings: var(--foreground);
 		--tw-prose-body: oklch(from var(--foreground) l c h / 90%);
-		--tw-prose-links: var(--color-emerald);
+		--tw-prose-links: var(--primary);
 		--tw-prose-bold: var(--foreground);
-		--tw-prose-quotes: var(--color-emerald);
+		--tw-prose-quotes: var(--primary);
 		--tw-prose-counters: var(--muted-foreground);
-		--tw-prose-bullets: var(--color-emerald);
+		--tw-prose-bullets: var(--primary);
 		--tw-prose-hr: var(--border);
 		--tw-prose-th-borders: var(--border);
 		--tw-prose-td-borders: var(--border);
@@ -117,13 +187,62 @@
 	.dark .prose {
 		--tw-prose-headings: var(--foreground);
 		--tw-prose-body: oklch(from var(--foreground) l c h / 90%);
-		--tw-prose-links: var(--color-emerald);
+		--tw-prose-links: var(--primary);
 		--tw-prose-bold: var(--foreground);
-		--tw-prose-quotes: var(--color-emerald);
+		--tw-prose-quotes: var(--primary);
 		--tw-prose-counters: var(--muted-foreground);
-		--tw-prose-bullets: var(--color-emerald);
+		--tw-prose-bullets: var(--primary);
 		--tw-prose-hr: var(--border);
 		--tw-prose-th-borders: var(--border);
 		--tw-prose-td-borders: var(--border);
+	}
+
+	.prose :where(h1, h2, h3, h4) {
+		font-family: var(--font-poppins);
+		font-weight: 800;
+		letter-spacing: -0.025em;
+	}
+
+	.prose :where(p, li) {
+		line-height: 1.8;
+	}
+
+	.prose blockquote {
+		font-style: italic;
+		border-left-width: 4px;
+		border-left-color: var(--primary);
+		background-color: oklch(from var(--primary) l c h / 5%);
+		padding: 1.5rem;
+		border-radius: 0.5rem;
+	}
+
+	.prose img {
+		@apply mx-auto rounded-xl shadow-md;
+	}
+}
+
+/* View Transitions API Animations */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 0.5s;
+}
+
+::view-transition-old(root) {
+	animation: 0.3s cubic-bezier(0.4, 0, 1, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+	animation: 0.5s cubic-bezier(0, 0, 0.2, 1) both fade-in;
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes fade-out {
+	to {
+		opacity: 0;
 	}
 }

@@ -32,7 +32,7 @@
 />
 
 <!-- Root Viewport Wrapper -->
-<div class="atlas-root relative min-h-screen bg-[#0a0d12] text-background">
+<div class="atlas-root relative min-h-screen bg-[#0a0d12] text-[#f8fafc]">
 	<!-- Scroll Track (Creates 4000px virtual scroll distance for smooth scrubbing) -->
 	<div
 		bind:this={scrollContainer}

@@ -242,11 +242,11 @@
 				class="hero-name relative z-50 mt-2 font-poppins text-6xl font-bold tracking-tight text-white italic drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] sm:text-7xl md:text-8xl"
 			>
 				{m.common_alias_name()}
-				<span class="hero-dot absolute top-2 -right-4 inline-block size-3 rounded-full bg-emerald"
+				<span class="hero-dot absolute top-2 -right-4 inline-block size-3 rounded-full bg-primary"
 				></span>
 				<span
 					bind:this={devTagEl}
-					class="hero-dev-tag text-primary-foreground absolute -right-2 -bottom-2 inline-block bg-emerald px-3 py-1 font-mono text-xs font-black tracking-widest uppercase not-italic sm:-right-4 sm:-bottom-3 sm:text-sm"
+					class="hero-dev-tag absolute -right-2 -bottom-2 inline-block bg-primary px-3 py-1 font-mono text-xs font-black tracking-widest text-primary-foreground uppercase not-italic sm:-right-4 sm:-bottom-3 sm:text-sm"
 					style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
 				>
 					Dev
@@ -329,8 +329,8 @@
 
 	:root {
 		--hero-shadow: 0 16px 28px rgba(0, 0, 0, 0.3);
-		--hero-paper-grad: linear-gradient(135deg, #242323 0%, #deeaec 100%);
-		--mouse-glow: rgba(255, 255, 255, 0.15);
+		--hero-paper-grad: linear-gradient(135deg, #215542 0%, #1a4435 55%, #0c2019 100%);
+		--mouse-glow: rgba(252, 236, 98, 0.1);
 
 		/* Glossy Badges — the subtitle's "tape label" treatment */
 		--badge-bg-grad:
