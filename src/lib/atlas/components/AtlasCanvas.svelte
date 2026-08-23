@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { atlasStore } from '../core/AtlasState.svelte';
 	import type { AtlasEngine } from '../core/AtlasEngine';
+	import type { TerritoryDomain } from '../core/types';
 	import '../styles/atlas.css';
 
 	interface Props {
@@ -9,10 +10,14 @@
 
 	let { engine }: Props = $props();
 
-	function handleNodeClick(evidenceId?: string) {
+	function handleEvidenceClick(evidenceId?: string) {
 		if (evidenceId) {
 			engine.inspectNodeEvidence(evidenceId);
 		}
+	}
+
+	function handleDomainProjectClick(domain: TerritoryDomain) {
+		engine.inspectProjectByDomain(domain);
 	}
 </script>
 
@@ -175,49 +180,67 @@
 			{#each atlasStore.activeNodes as node (node.id)}
 				<g
 					transform={`translate(${node.position.x}, ${node.position.y})`}
-					class="cursor-pointer transition-transform duration-200 hover:scale-125"
-					onclick={() => handleNodeClick(node.evidenceId)}
-					role="button"
-					tabindex="0"
-					onkeydown={(e) => e.key === 'Enter' && handleNodeClick(node.evidenceId)}
+					class="cursor-pointer transition-transform duration-200 hover:scale-110"
 				>
 					<!-- Evidence Anchor (Square Technical Reticle) -->
-					<rect
-						x="-9"
-						y="-9"
-						width="18"
-						height="18"
-						fill={node.domain === 'gis'
-							? 'rgba(16, 185, 129, 0.15)'
-							: node.domain === 'erp'
-								? 'rgba(14, 165, 233, 0.15)'
-								: 'rgba(139, 92, 246, 0.15)'}
-						stroke={node.domain === 'gis'
-							? '#10b981'
-							: node.domain === 'erp'
-								? '#0ea5e9'
-								: '#8b5cf6'}
-						stroke-width="1"
-						stroke-dasharray="3 3"
-						rx="1"
-					/>
+					<g
+						role="button"
+						tabindex="0"
+						onclick={() => handleEvidenceClick(node.evidenceId)}
+						onkeydown={(e) => e.key === 'Enter' && handleEvidenceClick(node.evidenceId)}
+					>
+						<rect
+							x="-9"
+							y="-9"
+							width="18"
+							height="18"
+							fill={node.domain === 'gis'
+								? 'rgba(16, 185, 129, 0.15)'
+								: node.domain === 'erp'
+									? 'rgba(14, 165, 233, 0.15)'
+									: 'rgba(139, 92, 246, 0.15)'}
+							stroke={node.domain === 'gis'
+								? '#10b981'
+								: node.domain === 'erp'
+									? '#0ea5e9'
+									: '#8b5cf6'}
+							stroke-width="1"
+							stroke-dasharray="3 3"
+							rx="1"
+						/>
 
-					<!-- Inner Core -->
-					<circle
-						r="3.5"
-						fill={node.domain === 'gis' ? '#10b981' : node.domain === 'erp' ? '#0ea5e9' : '#8b5cf6'}
-						filter="url(#node-glow-sky)"
-					/>
+						<!-- Inner Core -->
+						<circle
+							r="3.5"
+							fill={node.domain === 'gis'
+								? '#10b981'
+								: node.domain === 'erp'
+									? '#0ea5e9'
+									: '#8b5cf6'}
+							filter="url(#node-glow-sky)"
+						/>
+					</g>
 
-					<!-- Tactical Node Plate -->
-					<g transform="translate(18, -10)">
+					<!-- Tactical Node Plate (Click to View Project Overview) -->
+					<g
+						transform="translate(18, -10)"
+						role="button"
+						tabindex="0"
+						onclick={() => handleDomainProjectClick(node.domain)}
+						onkeydown={(e) => e.key === 'Enter' && handleDomainProjectClick(node.domain)}
+						class="cursor-pointer hover:opacity-90"
+					>
 						<rect
 							x="-4"
 							y="-4"
 							width="170"
 							height="28"
 							fill="#111620"
-							stroke="#1e293b"
+							stroke={node.domain === 'gis'
+								? '#10b981'
+								: node.domain === 'erp'
+									? '#0ea5e9'
+									: '#8b5cf6'}
 							stroke-width="1"
 							rx="2"
 							opacity="0.95"
@@ -236,12 +259,12 @@
 						<text
 							x="3"
 							y="17"
-							fill="#64748b"
+							fill="#94a3b8"
 							font-family="JetBrains Mono"
 							font-size="7.5"
 							letter-spacing="0.02em"
 						>
-							{node.subtitle ?? 'CLICK TO INSPECT'}
+							{node.subtitle ?? 'CLICK FOR OVERVIEW'}
 						</text>
 					</g>
 				</g>

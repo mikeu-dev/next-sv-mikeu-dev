@@ -6,6 +6,7 @@
 	import AtlasCanvas from '$lib/atlas/components/AtlasCanvas.svelte';
 	import AtlasHud from '$lib/atlas/components/AtlasHud.svelte';
 	import AtlasStoryOverlay from '$lib/atlas/components/AtlasStoryOverlay.svelte';
+	import AtlasCard from '$lib/atlas/components/AtlasCard.svelte';
 	import EvidenceDrawer from '$lib/atlas/components/EvidenceDrawer.svelte';
 
 	const engine = new AtlasEngine();
@@ -44,7 +45,10 @@
 		<!-- 3. Heads-Up Display (HUD) Telemetry Overlay -->
 		<AtlasHud {engine} />
 
-		<!-- 4. Deep Inspection Evidence Drawer Panel -->
+		<!-- 4. Project Card Overview Modal -->
+		<AtlasCard />
+
+		<!-- 5. Deep Inspection Evidence Drawer Panel -->
 		<EvidenceDrawer />
 	</div>
 </div>

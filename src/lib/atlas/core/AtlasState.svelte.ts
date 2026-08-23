@@ -2,6 +2,8 @@ import type {
 	CameraState,
 	AtlasScene,
 	AtlasEvidence,
+	AtlasProject,
+	TerritoryDomain,
 	AtlasPath,
 	AtlasNode,
 	AtlasEdge
@@ -15,8 +17,13 @@ export class AtlasStateStore {
 	activeBeatNarrative = $state<string>('00° 31\' 12.4"S  107° 26\' 32.1"E');
 	activeBeatSubtitle = $state<string>('PURWAKARTA REGIONAL ORIGIN POINT');
 	camera = $state<CameraState>({ x: 500, y: 500, zoom: 4.5, rotation: 0 });
+
+	// Interactive modal & drawer states
 	isEvidenceDrawerOpen = $state<boolean>(false);
 	activeEvidence = $state<AtlasEvidence | null>(null);
+	activeProject = $state<AtlasProject | null>(null);
+	isProjectCardOpen = $state<boolean>(false);
+	activeDomainFilter = $state<TerritoryDomain | 'all'>('all');
 
 	// Rendered dynamic entities
 	activePaths = $state<AtlasPath[]>([]);
@@ -68,6 +75,20 @@ export class AtlasStateStore {
 	closeEvidence(): void {
 		this.isEvidenceDrawerOpen = false;
 		this.activeEvidence = null;
+	}
+
+	openProject(project: AtlasProject): void {
+		this.activeProject = project;
+		this.isProjectCardOpen = true;
+	}
+
+	closeProject(): void {
+		this.isProjectCardOpen = false;
+		this.activeProject = null;
+	}
+
+	setDomainFilter(domain: TerritoryDomain | 'all'): void {
+		this.activeDomainFilter = domain;
 	}
 }
 

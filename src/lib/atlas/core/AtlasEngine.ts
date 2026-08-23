@@ -1,8 +1,20 @@
-import type { AtlasScene, AtlasPoint, AtlasPath, AtlasNode, AtlasEdge } from './types';
+import type {
+	AtlasScene,
+	AtlasPoint,
+	AtlasPath,
+	AtlasNode,
+	AtlasEdge,
+	TerritoryDomain
+} from './types';
 import { CameraEngine } from '../camera/CameraEngine';
 import { atlasStore } from './AtlasState.svelte';
 import { ATLAS_SCENES } from '../narrative/manifest/scenes.manifest';
-import { ATLAS_PROJECTS } from '../narrative/manifest/projects.data';
+import {
+	ATLAS_PROJECTS,
+	SIPEDO_PROJECT_MANIFEST,
+	WMS_PROJECT_MANIFEST,
+	VISION_AI_MANIFEST
+} from '../narrative/manifest/projects.data';
 import { PathMorpher } from '../morph/PathMorpher';
 import { PathSimplifier } from '../geometry/PathSimplifier';
 
@@ -114,7 +126,7 @@ export class AtlasEngine {
 				position: { x: 500, y: 500 },
 				domain: 'gis',
 				isPrimary: true,
-				evidenceId: 'ev-sipedo-spatial-index'
+				evidenceId: 'ev-sipedo-indexing'
 			},
 			{
 				id: 'node-wms-hub',
@@ -234,6 +246,20 @@ export class AtlasEngine {
 				atlasStore.openEvidence(found);
 				return;
 			}
+		}
+	}
+
+	public inspectProjectByDomain(domain: TerritoryDomain): void {
+		const projectMap: Record<TerritoryDomain, typeof SIPEDO_PROJECT_MANIFEST> = {
+			gis: SIPEDO_PROJECT_MANIFEST,
+			erp: WMS_PROJECT_MANIFEST,
+			ai: VISION_AI_MANIFEST,
+			infra: SIPEDO_PROJECT_MANIFEST
+		};
+
+		const project = projectMap[domain];
+		if (project) {
+			atlasStore.openProject(project);
 		}
 	}
 
