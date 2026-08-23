@@ -105,7 +105,7 @@
 						<span>TECHNOLOGY STACK ARCHITECTURE</span>
 					</div>
 					<div class="mt-2.5 flex flex-wrap gap-1.5">
-						{#each atlasStore.activeProject.stack as tech}
+						{#each atlasStore.activeProject.stack as tech (tech)}
 							<span
 								class="rounded border border-[#1e293b] bg-[#161e2b] px-2.5 py-1 font-mono text-[10px] text-[#cbd5e1]"
 							>
