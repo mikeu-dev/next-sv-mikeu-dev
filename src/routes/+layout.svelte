@@ -149,7 +149,6 @@
 		as="style"
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 	/>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<link
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 		rel="stylesheet"
