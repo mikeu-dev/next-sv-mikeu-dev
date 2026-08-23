@@ -151,7 +151,8 @@
 
 <div class="folded-world-container" class:minimal bind:this={containerEl}>
 	<!-- Three.js Canvas -->
-	<canvas bind:this={canvasEl} class="folded-world-canvas"></canvas>
+	<canvas bind:this={canvasEl} class="folded-world-canvas" aria-label={m.world_description()}
+	></canvas>
 
 	<!-- Loading State -->
 	{#if engine.state.loading && !minimal}
