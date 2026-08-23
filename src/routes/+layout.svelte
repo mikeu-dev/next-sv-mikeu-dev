@@ -143,16 +143,25 @@
 	<link rel="preconnect" href="https://googleads.g.doubleclick.net" />
 	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
-	<!-- Preload Critical Fonts -->
+	<!-- Preload Critical Fonts (non-blocking) -->
 	<link
 		rel="preload"
 		as="style"
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 	/>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<link
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
 		rel="stylesheet"
+		media="print"
+		onload={(e) => ((e.currentTarget as HTMLLinkElement).media = 'all')}
 	/>
+	<noscript>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+			rel="stylesheet"
+		/>
+	</noscript>
 
 	<meta name="google-adsense-account" content="ca-pub-6698556269439251" />
 </svelte:head>
