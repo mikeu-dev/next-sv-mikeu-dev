@@ -5,7 +5,6 @@
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import { ArrowRight, Terminal, Command, Hash, Sparkles } from '@lucide/svelte';
-	import FoldedWorld from './folded-world.svelte';
 	import SectionLoader from '$lib/components/ui/section-loader.svelte';
 
 	let sectionEl = $state<HTMLElement>();
@@ -279,13 +278,19 @@
 					<div class="h-1.5 w-1.5 animate-pulse bg-primary"></div>
 				</div>
 			{/snippet}
-			<FoldedWorld nodes={[]} totalVisitors={0} minimal={true} />
+			{#await import('./folded-world.svelte') then module}
+				<module.default nodes={[]} totalVisitors={0} minimal={true} />
+			{:catch}
+				<div class="flex h-full w-full items-center justify-center bg-muted/5">
+					<div class="h-1.5 w-1.5 bg-primary"></div>
+				</div>
+			{/await}
 		</SectionLoader>
 	</div>
 
 	<!-- Technical HUD Watermark Overlays -->
 	<div
-		class="pointer-events-none absolute inset-x-0 top-6 z-10 container mx-auto flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/20 uppercase"
+		class="pointer-events-none absolute inset-x-0 top-6 z-10 container mx-auto flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/40 uppercase"
 	>
 		<div class="flex items-center gap-2">
 			<Terminal class="size-3" />
@@ -381,7 +386,7 @@
 
 	<!-- Bottom Technical Overlay -->
 	<div
-		class="pointer-events-none absolute inset-x-0 bottom-6 z-10 container mx-auto flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/20 uppercase"
+		class="pointer-events-none absolute inset-x-0 bottom-6 z-10 container mx-auto flex justify-between font-mono text-[8px] font-black tracking-[0.3em] text-foreground/40 uppercase"
 	>
 		<span>GEOMETRY: POLYGONAL_GLOBE // ACC-01</span>
 		<div class="hidden items-center gap-1 sm:flex">
