@@ -12,6 +12,10 @@
 	const engine = new AtlasEngine();
 	let scrollContainer: HTMLElement;
 
+	function handleRestartTrajectory() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
 	onMount(() => {
 		if (!scrollContainer) return;
 		const cleanupScroll = initializeAtlasScrollTrigger(scrollContainer, engine);
@@ -40,7 +44,7 @@
 		</div>
 
 		<!-- 2. Interactive Story Narrative Layer -->
-		<AtlasStoryOverlay />
+		<AtlasStoryOverlay onRestart={handleRestartTrajectory} />
 
 		<!-- 3. Heads-Up Display (HUD) Telemetry Overlay -->
 		<AtlasHud {engine} />
