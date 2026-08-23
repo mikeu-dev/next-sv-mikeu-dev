@@ -329,8 +329,8 @@
 
 	:root {
 		--hero-shadow: 0 16px 28px rgba(0, 0, 0, 0.3);
-		--hero-paper-grad: linear-gradient(135deg, #0f766e 0%, #06b6d4 100%);
-		--mouse-glow: rgba(6, 182, 212, 0.15);
+		--hero-paper-grad: linear-gradient(135deg, #242323 0%, #deeaec 100%);
+		--mouse-glow: rgba(255, 255, 255, 0.15);
 
 		/* Glossy Badges — the subtitle's "tape label" treatment */
 		--badge-bg-grad:
