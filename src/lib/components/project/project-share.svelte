@@ -57,7 +57,7 @@
 
 <div class="flex items-center gap-3">
 	<span
-		class="text-xs font-bold tracking-wider text-card-foreground/60 uppercase dark:text-muted-foreground"
+		class="text-card-foreground/60 dark:text-muted-foreground text-xs font-bold tracking-wider uppercase"
 		>{m.blog_share()}</span
 	>
 
@@ -76,7 +76,7 @@
 
 		<button
 			onclick={copyLink}
-			class="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all duration-300 hover:bg-foreground hover:text-background"
+			class="bg-muted text-muted-foreground flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-foreground hover:text-background"
 			title={m.blog_copy_link()}
 		>
 			<Link class="size-4" />
@@ -84,7 +84,7 @@
 
 		<button
 			onclick={handleWebShare}
-			class="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:hidden"
+			class="bg-muted text-muted-foreground hover:text-primary-foreground flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-emerald sm:hidden"
 			title="Share"
 		>
 			<Share2 class="size-4" />

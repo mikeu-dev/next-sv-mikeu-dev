@@ -339,7 +339,7 @@
 	<!-- 2. Main Origami Card (Layer 10) -->
 	<a
 		href={localizeHref(`/blog/${post.slug}`)}
-		class="featured-card-inner relative z-10 flex flex-col overflow-hidden border-2 border-foreground bg-card text-card-foreground md:flex-row"
+		class="featured-card-inner bg-card text-card-foreground relative z-10 flex flex-col overflow-hidden border-2 border-foreground md:flex-row"
 	>
 		<!-- Origami Crease Lighting Overlay -->
 		<div class="origami-crease pointer-events-none absolute inset-0 z-20 opacity-35"></div>
@@ -349,11 +349,11 @@
 			class="origami-flap-container pointer-events-none absolute top-0 right-0 z-30 size-16 overflow-visible"
 		>
 			<div
-				class="absolute inset-0 bg-primary/20"
+				class="absolute inset-0 bg-emerald/20"
 				style="clip-path: polygon(100% 0, 100% 100%, 0 0);"
 			></div>
 			<div
-				class="origami-flap absolute inset-0 origin-top-left border-b-2 border-l-2 border-foreground bg-card"
+				class="origami-flap bg-card absolute inset-0 origin-top-left border-b-2 border-l-2 border-foreground"
 				style="clip-path: polygon(100% 0, 100% 100%, 0 0); transform-style: preserve-3d; transform: rotate3d(1, -1, 0, 0deg);"
 			></div>
 		</div>
@@ -368,12 +368,12 @@
 				alt={post.title}
 				class="featured-image h-full w-full object-cover grayscale transition-all duration-700 ease-out"
 			/>
-			<div class="absolute inset-0 bg-primary/10 opacity-0 transition-opacity"></div>
+			<div class="absolute inset-0 bg-emerald/10 opacity-0 transition-opacity"></div>
 
 			<!-- Featured Label -->
 			<div class="absolute top-6 left-6 z-20">
 				<div
-					class="flex items-center gap-1 bg-primary px-4 py-1.5 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase shadow-[4px_4px_0_var(--foreground)]"
+					class="flex items-center gap-1 bg-emerald px-4 py-1.5 font-mono text-[10px] font-black tracking-[0.2em] text-white uppercase shadow-[4px_4px_0_var(--foreground)]"
 				>
 					<Sparkles class="size-3.5" /> [FEATURED_ENTRY]
 				</div>
@@ -381,12 +381,12 @@
 		</div>
 
 		<!-- Content Section -->
-		<div class="relative z-10 flex flex-col justify-center bg-card p-8 md:w-1/2 md:p-12 lg:p-16">
+		<div class="bg-card relative z-10 flex flex-col justify-center p-8 md:w-1/2 md:p-12 lg:p-16">
 			<!-- Tags -->
 			<div class="mb-6 flex flex-wrap gap-3">
 				{#each post.tags || [] as tag (tag)}
 					<span
-						class="featured-tag flex items-center gap-1 border border-foreground/10 px-3 py-1.5 font-mono text-[9px] font-black tracking-widest text-card-foreground uppercase dark:text-primary"
+						class="featured-tag text-card-foreground dark:text-primary flex items-center gap-1 border border-foreground/10 px-3 py-1.5 font-mono text-[9px] font-black tracking-widest uppercase"
 					>
 						<Hash class="size-2.5" />
 						{tag}
@@ -396,17 +396,17 @@
 
 			<div class="flex items-start justify-between gap-6">
 				<h2
-					class="font-poppins text-3xl leading-tight font-black tracking-tighter transition-colors group-hover:text-primary md:text-5xl lg:text-6xl"
+					class="group-hover:text-primary font-poppins text-3xl leading-tight font-black tracking-tighter transition-colors md:text-5xl lg:text-6xl"
 				>
 					{post.title}
 				</h2>
 				<div class="featured-arrow shrink-0 md:mt-2">
-					<ArrowUpRight class="size-8 text-primary" />
+					<ArrowUpRight class="text-primary size-8" />
 				</div>
 			</div>
 
 			<p
-				class="mt-8 line-clamp-3 font-mono text-xs leading-relaxed tracking-tight text-card-foreground/70 uppercase md:text-sm dark:text-muted-foreground"
+				class="text-card-foreground/70 dark:text-muted-foreground mt-8 line-clamp-3 font-mono text-xs leading-relaxed tracking-tight uppercase md:text-sm"
 			>
 				// {post.description}
 			</p>
@@ -417,14 +417,14 @@
 			>
 				<div class="flex flex-wrap items-center gap-6">
 					<div
-						class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-foreground/50"
+						class="text-card-foreground/60 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase dark:text-foreground/50"
 					>
 						<Calendar class="size-3.5" />
 						<span>{formattedDate}</span>
 					</div>
 					{#if post.readingTime}
 						<div
-							class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-foreground/50"
+							class="text-card-foreground/60 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase dark:text-foreground/50"
 						>
 							<Clock class="size-3.5" />
 							<span>{post.readingTime} MIN_READ</span>
@@ -433,10 +433,10 @@
 				</div>
 
 				<div
-					class="footer-cta flex items-center gap-2 font-mono text-[10px] font-black text-primary opacity-0 transition-opacity"
+					class="footer-cta text-primary flex items-center gap-2 font-mono text-[10px] font-black opacity-0 transition-opacity"
 				>
 					<span>VIEW_ARCHIVE_ENTRY</span>
-					<div class="footer-line h-0.5 w-12 bg-primary/30"></div>
+					<div class="footer-line h-0.5 w-12 bg-emerald/30"></div>
 				</div>
 			</div>
 		</div>

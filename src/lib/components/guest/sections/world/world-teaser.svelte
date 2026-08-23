@@ -275,8 +275,8 @@
 	<div class="absolute inset-0 z-0">
 		<SectionLoader class="h-full w-full">
 			{#snippet fallback()}
-				<div class="flex h-full w-full items-center justify-center bg-muted/5">
-					<div class="h-1.5 w-1.5 animate-pulse bg-primary"></div>
+				<div class="bg-muted/5 flex h-full w-full items-center justify-center">
+					<div class="h-1.5 w-1.5 animate-pulse bg-emerald"></div>
 				</div>
 			{/snippet}
 			<FoldedWorld nodes={[]} totalVisitors={0} minimal={true} />
@@ -303,7 +303,7 @@
 	>
 		<!-- Floating Origami Shards -->
 		<div
-			class="teaser-shard pointer-events-none absolute -top-12 -left-12 size-48 bg-primary/5 dark:bg-primary/10"
+			class="teaser-shard pointer-events-none absolute -top-12 -left-12 size-48 bg-emerald/5 dark:bg-emerald/10"
 			style="clip-path: polygon(15% 0%, 100% 10%, 85% 90%, 0% 100%);"
 		></div>
 		<div
@@ -333,18 +333,18 @@
 					class="origami-flap-container pointer-events-none absolute top-0 right-0 z-30 size-16 overflow-visible"
 				>
 					<div
-						class="absolute inset-0 bg-primary/20"
+						class="absolute inset-0 bg-emerald/20"
 						style="clip-path: polygon(100% 0, 100% 100%, 0 0);"
 					></div>
 					<div
-						class="origami-flap absolute inset-0 origin-top-left border-b-2 border-l-2 border-foreground bg-card"
+						class="origami-flap bg-card absolute inset-0 origin-top-left border-b-2 border-l-2 border-foreground"
 						style="clip-path: polygon(100% 0, 100% 100%, 0 0); transform-style: preserve-3d; transform: rotate3d(1, -1, 0, 0deg);"
 					></div>
 				</div>
 
 				<div class="relative z-10 flex flex-col items-center">
 					<div
-						class="mb-4 flex items-center gap-1.5 bg-primary px-3 py-1 font-mono text-[9px] font-black tracking-widest text-primary-foreground uppercase shadow-[2px_2px_0_var(--foreground)]"
+						class="text-primary-foreground mb-4 flex items-center gap-1.5 bg-emerald px-3 py-1 font-mono text-[9px] font-black tracking-widest uppercase shadow-[2px_2px_0_var(--foreground)]"
 					>
 						<Sparkles class="size-3" /> [SYS_PORTAL: READY]
 					</div>
@@ -356,7 +356,7 @@
 					</h2>
 
 					<p
-						class="mt-6 max-w-xl font-mono text-xs leading-relaxed text-muted-foreground uppercase"
+						class="text-muted-foreground mt-6 max-w-xl font-mono text-xs leading-relaxed uppercase"
 					>
 						{m.world_teaser_subtitle()}<br />
 						// {m.world_teaser_desc()}
@@ -365,7 +365,7 @@
 					<!-- Folded Style CTA Button -->
 					<a
 						href={localizeHref('/world')}
-						class="teaser-button group mt-10 inline-flex h-16 items-center justify-center border-2 border-foreground bg-primary px-10 text-primary-foreground transition-all duration-300"
+						class="teaser-button group text-primary-foreground mt-10 inline-flex h-16 items-center justify-center border-2 border-foreground bg-emerald px-10 transition-all duration-300"
 					>
 						<span class="font-poppins text-sm font-black tracking-widest uppercase">
 							{m.world_teaser_button()}

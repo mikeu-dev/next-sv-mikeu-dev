@@ -70,7 +70,7 @@
 
 	<!-- Origami shard decorations — same language as the work section's. -->
 	<div
-		class="origami-shard-blog pointer-events-none absolute -top-24 -right-24 size-96 bg-primary/5 dark:bg-primary/10"
+		class="origami-shard-blog pointer-events-none absolute -top-24 -right-24 size-96 bg-emerald/5 dark:bg-emerald/10"
 		style="clip-path: polygon(20% 0%, 100% 20%, 80% 100%, 0% 80%);"
 	></div>
 	<div
@@ -81,7 +81,7 @@
 	<div class="max-w-screen-4xl relative mx-auto px-6">
 		<div class="blog-header-stagger mb-12 text-left md:mb-16">
 			<div
-				class="mb-4 flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase md:mb-6"
+				class="text-primary mb-4 flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] uppercase md:mb-6"
 			>
 				<Terminal class="size-3" /> ARCHIVE_SCAN: RECENT_ENTRIES
 			</div>
@@ -90,7 +90,7 @@
 					class="text-primary">.</span
 				>
 			</h2>
-			<p class="mt-4 max-w-lg font-mono text-sm text-muted-foreground">
+			<p class="text-muted-foreground mt-4 max-w-lg font-mono text-sm">
 				{m.blog_subtitle()}
 			</p>
 		</div>
@@ -122,7 +122,7 @@
 				>
 					<Hash class="size-8 text-foreground/20" />
 				</div>
-				<p class="font-mono text-sm font-black tracking-widest text-muted-foreground uppercase">
+				<p class="text-muted-foreground font-mono text-sm font-black tracking-widest uppercase">
 					{m.blog_empty()}
 				</p>
 			</div>
