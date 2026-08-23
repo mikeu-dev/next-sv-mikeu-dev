@@ -8,7 +8,7 @@
 		type ViewMode,
 		type PlanetStyle
 	} from './folded-world.types';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { mode } from 'mode-watcher';
 	import gsap from 'gsap';
 

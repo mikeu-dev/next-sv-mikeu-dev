@@ -1,10 +1,10 @@
 ﻿<script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Contact } from '$lib/types';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
+	import type { Contact } from '#lib/types.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
 	import { toast } from 'svelte-sonner';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	let contacts: Contact[] = [];
 	let loading = true;
@@ -118,8 +118,10 @@
 								</td>
 								<td class="p-4 text-right align-middle">
 									<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-									<a href="{base}/admin/contacts/{contact.id}" class="text-primary hover:underline"
-										>View</a
+
+									<a
+										href="{resolve('')}/admin/contacts/{contact.id}"
+										class="text-primary hover:underline">View</a
 									>
 								</td>
 							</tr>

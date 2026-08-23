@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { ArrowUpRight } from '@lucide/svelte';
-	import type { LocalizedProject } from '$lib/utils/project-mapper';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { optimizeImage } from '$lib/utils/image.util';
-	import { randomOrigamiClipPath } from '$lib/utils/origami-shape';
-	import { puzzlePiecePath, type PuzzleEdgeState } from '$lib/utils/puzzle-shape';
+	import type { LocalizedProject } from '#lib/utils/project-mapper.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { optimizeImage } from '#lib/utils/image.util.js';
+	import { randomOrigamiClipPath } from '#lib/utils/origami-shape.js';
+	import { puzzlePiecePath, type PuzzleEdgeState } from '#lib/utils/puzzle-shape.js';
 
 	let {
 		project,

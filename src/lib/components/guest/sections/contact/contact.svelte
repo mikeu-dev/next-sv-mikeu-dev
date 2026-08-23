@@ -3,8 +3,8 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowRight, Hash, Command, MessageSquare } from '@lucide/svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 
 	let contactSection = $state<HTMLElement>();
 	let shardsContainer = $state<HTMLElement>();

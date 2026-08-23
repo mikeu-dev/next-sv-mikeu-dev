@@ -1,14 +1,14 @@
-﻿import { ProjectsService } from '$lib/server/services/projects.service';
-import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
-import { blogService } from '$lib/server/services/blog.service';
-import { ContactsService } from '$lib/server/services/contacts.service';
-import type { Contact } from '$lib/types';
-import type { BlogPost } from '$lib/types';
-import { TechStackService } from '$lib/server/services/techstack.service';
-import { VisitorService } from '$lib/server/services/visitor.service';
-import { SkillsService } from '$lib/server/services/skills.service';
+﻿import { ProjectsService } from '#lib/server/services/projects.service.js';
+import { ProjectsRepository } from '#lib/server/repositories/projects.repository.js';
+import { blogService } from '#lib/server/services/blog.service.js';
+import { ContactsService } from '#lib/server/services/contacts.service.js';
+import type { Contact } from '#lib/types.js';
+import type { BlogPost } from '#lib/types.js';
+import { TechStackService } from '#lib/server/services/techstack.service.js';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
+import { SkillsService } from '#lib/server/services/skills.service.js';
 import type { PageServerLoad } from './$types';
-import type { TechStackData } from '$lib/server/repositories/techstack.repository';
+import type { TechStackData } from '#lib/server/repositories/techstack.repository.js';
 
 export const load: PageServerLoad = async () => {
 	const projectsService = new ProjectsService(new ProjectsRepository());

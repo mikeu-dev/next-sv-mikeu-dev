@@ -1,8 +1,8 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { SocialsService } from '$lib/server/services/socials.service';
-import { logError } from '$lib/server/utils/logger';
-import { env } from '$lib/server/config/env';
+import { SocialsService } from '#lib/server/services/socials.service.js';
+import { logError } from '#lib/server/utils/logger.js';
+import { env } from '#lib/server/config/env.js';
 
 const socialsService = new SocialsService();
 

@@ -1,8 +1,8 @@
 ﻿<script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { auth } from '$lib/firebase/firebase.client';
+	import { auth } from '#lib/firebase/firebase.client.js';
 	import { signInWithEmailAndPassword } from 'firebase/auth';
-	import SEO from '$lib/components/seo/seo.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { Terminal, ShieldCheck, Lock, Fingerprint, Command } from '@lucide/svelte';

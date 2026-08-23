@@ -1,6 +1,6 @@
 ﻿import { BaseRepository } from '../core/base.repository';
 import { COLLECTIONS } from '../firebase/collections';
-import type { JourneyItem } from '$lib/types';
+import type { JourneyItem } from '#lib/types.js';
 
 export interface JourneyData {
 	items: JourneyItem[];

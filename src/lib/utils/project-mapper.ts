@@ -1,5 +1,5 @@
-﻿import type { Project, Tag, SerializedTag } from '$lib/types';
-import { getIconByName } from '$lib/icons/registry';
+﻿import type { Project, Tag, SerializedTag } from '#lib/types.js';
+import { getIconByName } from '#lib/icons/registry.js';
 
 // We no longer build a manual map here to allow tree-shaking
 

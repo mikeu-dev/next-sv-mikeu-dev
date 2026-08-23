@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import type { PageData } from './$types';
-	import type { BlogPost } from '$lib/types';
-	import BlogCard from '$lib/components/guest/blog/blog-card.svelte';
-	import BlogFeatured from '$lib/components/guest/blog/blog-featured.svelte';
-	import SEO from '$lib/components/seo/seo.svelte';
+	import type { BlogPost } from '#lib/types.js';
+	import BlogCard from '#lib/components/guest/blog/blog-card.svelte';
+	import BlogFeatured from '#lib/components/guest/blog/blog-featured.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';

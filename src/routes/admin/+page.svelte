@@ -13,9 +13,9 @@
 		Globe
 	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
-	import PushNotificationToggle from '$lib/components/admin/push-notification-toggle.svelte';
+	import PushNotificationToggle from '#lib/components/admin/push-notification-toggle.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -26,7 +26,7 @@
 			icon: FolderKanban,
 			color: 'text-blue-600',
 			bg: 'bg-blue-100 dark:bg-blue-900/20',
-			href: `${base}/admin/projects`
+			href: resolve(`admin/projects`)
 		},
 		{
 			label: 'Total Articles',
@@ -34,7 +34,7 @@
 			icon: FileText,
 			color: 'text-green-600',
 			bg: 'bg-green-100 dark:bg-green-900/20',
-			href: `${base}/admin/blog`
+			href: resolve(`admin/blog`)
 		},
 		{
 			label: 'Total Messages',
@@ -42,7 +42,7 @@
 			icon: MessageSquare,
 			color: 'text-orange-600',
 			bg: 'bg-orange-100 dark:bg-orange-900/20',
-			href: `${base}/admin/contacts`
+			href: resolve(`admin/contacts`)
 		},
 		{
 			label: 'Tech Stack Items',
@@ -50,7 +50,7 @@
 			icon: Layers,
 			color: 'text-purple-600',
 			bg: 'bg-purple-100 dark:bg-purple-900/20',
-			href: `${base}/admin/techstack`
+			href: resolve(`admin/techstack`)
 		},
 		{
 			label: 'Total Visitors',
@@ -58,7 +58,7 @@
 			icon: Users,
 			color: 'text-pink-600',
 			bg: 'bg-pink-100 dark:bg-pink-900/20',
-			href: `${base}/admin/analytics`
+			href: resolve(`admin/analytics`)
 		}
 	]);
 </script>
@@ -75,7 +75,7 @@
 				class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/projects/create`);
+					goto(resolve(`admin/projects/create`));
 				}}
 			>
 				<Plus class="h-4 w-4" /> New Project
@@ -84,7 +84,7 @@
 				class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/blog/create`);
+					goto(resolve(`admin/blog/create`));
 				}}
 			>
 				<Plus class="h-4 w-4" /> New Post
@@ -128,7 +128,7 @@
 						class="text-sm font-medium text-primary hover:underline"
 						onclick={() => {
 							// eslint-disable-next-line svelte/no-navigation-without-resolve
-							goto(`${base}/admin/contacts`);
+							goto(resolve(`admin/contacts`));
 						}}
 					>
 						View all
@@ -290,7 +290,7 @@
 						class="text-sm font-medium text-primary hover:underline"
 						onclick={() => {
 							// eslint-disable-next-line svelte/no-navigation-without-resolve
-							goto(`${base}/admin/blog`);
+							goto(resolve(`admin/blog`));
 						}}
 					>
 						View all
@@ -301,10 +301,12 @@
 						<div class="space-y-6">
 							{#each data.recent.posts as post (post.id)}
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-								<a href={`${base}/admin/blog/${post.id}`} class="group block">
+
+								<a href={resolve(`admin/blog/${post.id}`)} class="group block">
 									<p class="line-clamp-1 font-medium transition-colors group-hover:text-primary">
 										{post.title}
 									</p>
+
 									<div class="mt-1 flex items-center justify-between">
 										<span class="text-xs text-muted-foreground"
 											>{post.date ? new Date(post.date).toLocaleDateString() : 'No date'}</span
@@ -336,7 +338,7 @@
 							class="group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"
 							onclick={() => {
 								// eslint-disable-next-line svelte/no-navigation-without-resolve
-								goto(`${base}/admin/skills`);
+								goto(resolve(`admin/skills`));
 							}}
 						>
 							<span>Manage Skills</span>

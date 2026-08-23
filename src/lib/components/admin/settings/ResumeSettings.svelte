@@ -1,8 +1,8 @@
 ﻿<script lang="ts">
-	import { Separator } from '$lib/components/ui/separator';
+	import { Separator } from '#lib/components/ui/separator/index.js';
 	import { toast } from 'svelte-sonner';
 	import { Upload, FileText, ExternalLink, CheckCircle, Loader2 } from '@lucide/svelte';
-	import type { ResumeSettings } from '$lib/server/schemas/settings.schema';
+	import type { ResumeSettings } from '#lib/server/schemas/settings.schema.js';
 	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props<{

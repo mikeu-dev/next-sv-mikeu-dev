@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import SEO from '$lib/components/seo/seo.svelte';
-	import { AtlasEngine } from '$lib/atlas/core/AtlasEngine';
-	import { initializeAtlasScrollTrigger } from '$lib/atlas/narrative/ScrollAdapter';
-	import AtlasCanvas from '$lib/atlas/components/AtlasCanvas.svelte';
-	import AtlasHud from '$lib/atlas/components/AtlasHud.svelte';
-	import AtlasStoryOverlay from '$lib/atlas/components/AtlasStoryOverlay.svelte';
-	import AtlasCard from '$lib/atlas/components/AtlasCard.svelte';
-	import EvidenceDrawer from '$lib/atlas/components/EvidenceDrawer.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
+	import { AtlasEngine } from '#lib/atlas/core/AtlasEngine.js';
+	import { initializeAtlasScrollTrigger } from '#lib/atlas/narrative/ScrollAdapter.js';
+	import AtlasCanvas from '#lib/atlas/components/AtlasCanvas.svelte';
+	import AtlasHud from '#lib/atlas/components/AtlasHud.svelte';
+	import AtlasStoryOverlay from '#lib/atlas/components/AtlasStoryOverlay.svelte';
+	import AtlasCard from '#lib/atlas/components/AtlasCard.svelte';
+	import EvidenceDrawer from '#lib/atlas/components/EvidenceDrawer.svelte';
 
 	const engine = new AtlasEngine();
 	let scrollContainer: HTMLElement;

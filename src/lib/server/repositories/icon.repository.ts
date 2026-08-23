@@ -1,6 +1,6 @@
 ﻿import { BaseRepository } from '../core/base.repository';
 import { COLLECTIONS } from '../firebase/collections';
-import type { DynamicIcon } from '$lib/types';
+import type { DynamicIcon } from '#lib/types.js';
 
 export class IconRepository extends BaseRepository<DynamicIcon> {
 	constructor() {

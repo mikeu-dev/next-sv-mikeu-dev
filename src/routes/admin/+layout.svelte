@@ -1,13 +1,13 @@
 ﻿<script lang="ts">
 	import { authState } from '@/lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
-	import Sidebar from '$lib/components/admin/sidebar.svelte';
-	import Footer from '$lib/components/guest/footer/footer.svelte';
-	import SEO from '$lib/components/seo/seo.svelte';
-	import { base } from '$app/paths';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import Sidebar from '#lib/components/admin/sidebar.svelte';
+	import Footer from '#lib/components/guest/footer/footer.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
+	import { resolve } from '$app/paths';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 
 	let { data, children } = $props();
 
@@ -35,7 +35,7 @@
 			>
 				<div class="ml-auto flex items-center gap-4">
 					<a
-						href={localizeHref(`${base}/`)}
+						href={localizeHref(resolve(`/`.slice(1)))}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -54,9 +54,10 @@
 							stroke-linejoin="round"
 							class="lucide lucide-external-link"
 						>
-							<path d="M15 3h6v6" />
-							<path d="M10 14 21 3" />
-							<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+							<path d="M15 3h6v6"></path>
+							<path d="M10 14 21 3"></path>
+
+							<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
 						</svg>
 					</a>
 					<div class="h-4 w-px bg-border"></div>

@@ -1,3 +1,6 @@
+import { mdsvex } from 'mdsvex';
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import devtoolsJson from 'vite-plugin-devtools-json';
@@ -32,7 +35,15 @@ export default defineConfig({
 		]
 	},
 	plugins: [
-		sveltekit(),
+		sveltekit({
+			// Consult https://svelte.dev/docs/kit/integrations
+			// for more information about preprocessors
+			preprocess: [vitePreprocess(), mdsvex({ extensions: ['.svx'] })],
+			extensions: ['.svelte', '.svx'],
+			adapter: adapter({ runtime: 'nodejs22.x', memory: 1024, regions: ['sin1'] }),
+			alias: { '@/*': 'src/*', '@lib/*': 'src/lib/*' },
+			paths: { relative: false }
+		}),
 		tailwindcss(),
 		devtoolsJson(),
 		paraglideVitePlugin({

@@ -1,6 +1,6 @@
 ﻿import { JourneyRepository } from '../repositories/journey.repository';
-import type { JourneyItem } from '$lib/types';
-import { dev } from '$app/environment';
+import type { JourneyItem } from '#lib/types.js';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
 
 export class JourneyService {
@@ -52,6 +52,7 @@ export class JourneyService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`JourneyService: Quota exceeded while fetching journey for ${lang}`);
+
 				return (
 					persistentCache.get<{ items: JourneyItem[] }>(cacheKey) ||
 					(JourneyService.cache[cacheKey] as { items: JourneyItem[] }) || { items: [] }

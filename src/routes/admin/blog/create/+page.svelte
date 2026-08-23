@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import BlogPostForm from '$lib/components/admin/blog-post-form.svelte';
+	import { page } from '$app/state';
+	import BlogPostForm from '#lib/components/admin/blog-post-form.svelte';
 
 	let initialData = $derived({
-		slug: $page.url.searchParams.get('slug') || '',
-		locale: $page.url.searchParams.get('locale') || 'id',
-		title: $page.url.searchParams.get('title') || '',
+		slug: page.url.searchParams.get('slug') || '',
+		locale: page.url.searchParams.get('locale') || 'id',
+		title: page.url.searchParams.get('title') || '',
 		description: '',
 		date: new Date().toISOString().split('T')[0],
 		published: false,

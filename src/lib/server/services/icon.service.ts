@@ -1,6 +1,6 @@
 ﻿import { IconRepository } from '../repositories/icon.repository';
-import type { DynamicIcon } from '$lib/types';
-import { dev } from '$app/environment';
+import type { DynamicIcon } from '#lib/types.js';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
 
 export class IconService {

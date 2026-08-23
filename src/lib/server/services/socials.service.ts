@@ -1,5 +1,5 @@
 import { SocialsRepository } from '../repositories/socials.repository';
-import type { Socials } from '$lib/types';
+import type { Socials } from '#lib/types.js';
 import { sanitizeForFirestore } from '../utils/firestore';
 import { persistentCache } from '../utils/cache.util';
 

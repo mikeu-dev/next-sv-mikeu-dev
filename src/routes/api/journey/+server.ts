@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
-import { JourneyService } from '$lib/server/services/journey.service';
-import { logError } from '$lib/server/utils/logger';
+import { JourneyService } from '#lib/server/services/journey.service.js';
+import { logError } from '#lib/server/utils/logger.js';
 
 const journeyService = new JourneyService();
 

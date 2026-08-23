@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { auth } from '$lib/firebase/firebase.client';
+	import { auth } from '#lib/firebase/firebase.client.js';
 	import { toast } from 'svelte-sonner';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
@@ -8,14 +8,14 @@
 	import GbNir from 'svelte-flags/GbNir.svelte';
 	import { resetMode, setMode } from 'mode-watcher';
 	import { signOut } from 'firebase/auth';
-	import { authState } from '$lib/stores/auth.svelte';
+	import { authState } from '#lib/stores/auth.svelte.js';
 	import InstallButton from '../pwa/InstallButton.svelte';
-	import { getLocale, setLocale, localizeHref } from '$lib/paraglide/runtime';
+	import { getLocale, setLocale, localizeHref } from '#lib/paraglide/runtime.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
-	import { playConfettiSound } from '$lib/utils/confetti-sound';
+	import { playConfettiSound } from '#lib/utils/confetti-sound.js';
 	import { onMount, tick } from 'svelte';
 	import { navLinks } from '@/lib/config/navlinks';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { ArrowUpRight } from '@lucide/svelte';
 
 	let { resolvedResumeUrls = { en: '', id: '' } } = $props<{

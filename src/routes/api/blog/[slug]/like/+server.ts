@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { reactionService } from '$lib/server/services/reaction.service';
+import { reactionService } from '#lib/server/services/reaction.service.js';
 
 export const POST: RequestHandler = async ({ params }) => {
 	const { slug } = params;

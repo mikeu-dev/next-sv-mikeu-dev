@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 	import { page } from '$app/state';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import {
 		LayoutDashboard,
 		FolderGit2,
@@ -16,8 +16,8 @@
 		Activity,
 		BarChart3
 	} from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { cn } from '$lib/utils';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { cn } from '#lib/utils.js';
 	import { fade } from 'svelte/transition';
 
 	let isOpen = $state(false);
@@ -62,15 +62,15 @@
 	)}
 >
 	<div class="flex h-16 items-center justify-center border-b px-6">
-		<a href="{base}/admin" class="flex items-center gap-2 text-xl font-bold">
-			<span>Admin Panel</span>
-		</a>
+		<a href="{resolve('')}/admin" class="flex items-center gap-2 text-xl font-bold"
+			><span>Admin Panel</span></a
+		>
 	</div>
 
 	<nav class="flex flex-col gap-1 p-4">
 		{#each links as link (link.href)}
 			<a
-				href={`${base}${link.href}`}
+				href={resolve(`${link.href}`.slice(1))}
 				onclick={() => (isOpen = false)}
 				class={cn(
 					'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',

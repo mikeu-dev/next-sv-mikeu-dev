@@ -1,8 +1,8 @@
 ﻿<script lang="ts">
-	import * as Tabs from '$lib/components/ui/tabs';
-	import GeneralSettings from '$lib/components/admin/settings/GeneralSettings.svelte';
-	import ProfileSettings from '$lib/components/admin/settings/ProfileSettings.svelte';
-	import ResumeSettings from '$lib/components/admin/settings/ResumeSettings.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.js';
+	import GeneralSettings from '#lib/components/admin/settings/GeneralSettings.svelte';
+	import ProfileSettings from '#lib/components/admin/settings/ProfileSettings.svelte';
+	import ResumeSettings from '#lib/components/admin/settings/ResumeSettings.svelte';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();

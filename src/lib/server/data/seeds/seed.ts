@@ -1,4 +1,4 @@
-﻿import { env } from '$lib/server/config/env';
+﻿import { env } from '#lib/server/config/env.js';
 import { db, auth } from '@/lib/server/firebase/firebase.server';
 
 if (!env.OWNER_EMAIL) {

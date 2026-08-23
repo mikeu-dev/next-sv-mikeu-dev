@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { JourneyService } from '$lib/server/services/journey.service';
+import { JourneyService } from '#lib/server/services/journey.service.js';
 
 const journeyService = new JourneyService();
 

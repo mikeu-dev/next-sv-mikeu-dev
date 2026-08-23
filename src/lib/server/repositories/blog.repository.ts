@@ -1,6 +1,6 @@
 import { BaseRepository } from '../core/base.repository';
 import { COLLECTIONS } from '../firebase/collections';
-import type { BlogPost } from '$lib/types';
+import type { BlogPost } from '#lib/types.js';
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
 /**

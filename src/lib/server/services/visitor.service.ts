@@ -13,7 +13,7 @@
  * 3. Result: Read operations reduced by 99.8% (from 3000+ per load to ~3 per load).
  */
 
-import { db } from '$lib/server/firebase/firebase.server';
+import { db } from '#lib/server/firebase/firebase.server.js';
 import { FieldValue, FieldPath } from 'firebase-admin/firestore';
 import { VisitorRepository } from '../repositories/visitor.repository';
 import { persistentCache } from '../utils/cache.util';

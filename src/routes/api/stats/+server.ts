@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { VisitorService } from '$lib/server/services/visitor.service';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
 
 export async function GET() {
 	const visitorService = new VisitorService();

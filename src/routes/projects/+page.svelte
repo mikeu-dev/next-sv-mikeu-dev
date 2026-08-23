@@ -2,12 +2,12 @@
 	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
 	import ProjectSkeleton from '@/lib/components/guest/card/project-skeleton.svelte';
 	import type { PageData } from './$types';
-	import type { Project } from '$lib/types';
+	import type { Project } from '#lib/types.js';
 	import Icon from '@/lib/components/ui/icon.svelte';
-	import { getLocale } from '$lib/paraglide/runtime';
-	import { getLocalizedProject } from '$lib/utils/project-mapper';
-	import { m } from '$lib/paraglide/messages';
-	import SEO from '$lib/components/seo/seo.svelte';
+	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { getLocalizedProject } from '#lib/utils/project-mapper.js';
+	import { m } from '#lib/paraglide/messages.js';
+	import SEO from '#lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -21,7 +21,7 @@
 		SlidersHorizontal,
 		Plus
 	} from '@lucide/svelte';
-	import type { Tag } from '$lib/types';
+	import type { Tag } from '#lib/types.js';
 
 	interface FilterTag extends Partial<Tag> {
 		name: string;

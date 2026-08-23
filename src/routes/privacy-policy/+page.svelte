@@ -1,9 +1,9 @@
 ﻿<script lang="ts">
-	import SEO from '$lib/components/seo/seo.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 	const lastUpdated = '7 April 2026';
 
 	onMount(() => {

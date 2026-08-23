@@ -1,8 +1,8 @@
 import type { LayoutServerLoad } from './$types';
-import { socialsService } from '$lib/server/services/socials.service';
-import { visitorService } from '$lib/server/services/visitor.service';
-import { settingsService } from '$lib/server/services/settings.service';
-import { showExperimentalFeature } from '$lib/flags';
+import { socialsService } from '#lib/server/services/socials.service.js';
+import { visitorService } from '#lib/server/services/visitor.service.js';
+import { settingsService } from '#lib/server/services/settings.service.js';
+import { showExperimentalFeature } from '#lib/flags.js';
 
 export const load: LayoutServerLoad = async (event) => {
 	const { locals } = event;

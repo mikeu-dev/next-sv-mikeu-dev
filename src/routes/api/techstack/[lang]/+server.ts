@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { TechStackService } from '$lib/server/services/techstack.service';
+import { TechStackService } from '#lib/server/services/techstack.service.js';
 
 const techStackService = new TechStackService();
 

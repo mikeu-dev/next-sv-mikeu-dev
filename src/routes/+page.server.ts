@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { skillsService } from '$lib/server/services/skills.service';
-import { projectsService } from '$lib/server/services/projects.service';
-import { blogService } from '$lib/server/services/blog.service';
+import { skillsService } from '#lib/server/services/skills.service.js';
+import { projectsService } from '#lib/server/services/projects.service.js';
+import { blogService } from '#lib/server/services/blog.service.js';
 
 export const prerender = false;
 

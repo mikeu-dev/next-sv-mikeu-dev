@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -71,7 +71,7 @@
 				<button
 					onclick={() => {
 						// eslint-disable-next-line svelte/no-navigation-without-resolve
-						goto(`${base}/admin/skills/edit/${lang}`);
+						goto(resolve(`admin/skills/edit/${lang}`));
 					}}
 					class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 				>

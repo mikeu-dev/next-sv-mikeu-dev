@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Project } from '$lib/types';
+import type { Project } from '#lib/types.js';
 import { ProjectsService } from '../../../../lib/server/services/projects.service';
 import { ProjectsRepository } from '../../../../lib/server/repositories/projects.repository';
 import { HttpException } from '../../../../lib/server/exceptions/http.exception';
-import { projectUpdateSchema } from '$lib/server/schemas/project.schema';
-import { logError } from '$lib/server/utils/logger';
-import { env } from '$lib/server/config/env';
+import { projectUpdateSchema } from '#lib/server/schemas/project.schema.js';
+import { logError } from '#lib/server/utils/logger.js';
+import { env } from '#lib/server/config/env.js';
 import { z } from 'zod';
 
 const projectsService = new ProjectsService(new ProjectsRepository());

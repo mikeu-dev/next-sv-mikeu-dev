@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { BlogPost } from '$lib/types';
-	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+	import type { BlogPost } from '#lib/types.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 	import { ArrowUpRight, Calendar } from '@lucide/svelte';
-	import { optimizeImage } from '$lib/utils/image.util';
-	import { tornPaperClipPath } from '$lib/utils/torn-paper-shape';
-	import { seededRandom } from '$lib/utils/seeded-random';
+	import { optimizeImage } from '#lib/utils/image.util.js';
+	import { tornPaperClipPath } from '#lib/utils/torn-paper-shape.js';
+	import { seededRandom } from '#lib/utils/seeded-random.js';
 
 	let { post }: { post: BlogPost } = $props();
 

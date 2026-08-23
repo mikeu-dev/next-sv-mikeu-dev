@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { scale } from 'svelte/transition';
-	import * as m from '$lib/paraglide/messages';
+	import * as m from '#lib/paraglide/messages.js';
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import { SkillEngine } from './skill-playground-engine.svelte.js';
 	import {

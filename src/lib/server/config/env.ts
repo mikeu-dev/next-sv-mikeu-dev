@@ -69,6 +69,7 @@ export function checkRequiredEnvVars(): boolean {
 		'GITHUB_REPO'
 	];
 
+	// @migration-task Rewrite dynamic env lookup manually.
 	const missing = required.filter((key) => !dynamicPrivateEnv[key]);
 
 	if (missing.length > 0) {

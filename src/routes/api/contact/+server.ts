@@ -3,11 +3,11 @@ export const prerender = false;
 import { json } from '@sveltejs/kit';
 import { ContactsService } from '@/lib/server/services/contacts.service';
 import type { RequestHandler } from './$types';
-import { contactSchema } from '$lib/server/schemas/contact.schema';
-import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
-import { logError } from '$lib/server/utils/logger';
+import { contactSchema } from '#lib/server/schemas/contact.schema.js';
+import { checkRateLimit, RateLimitPresets } from '#lib/server/middleware/rate-limit.js';
+import { logError } from '#lib/server/utils/logger.js';
 import { z } from 'zod';
-import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
+import { PushSubscriptionService } from '#lib/server/services/push-subscription.service.js';
 
 const contactsService = new ContactsService();
 const pushService = new PushSubscriptionService();

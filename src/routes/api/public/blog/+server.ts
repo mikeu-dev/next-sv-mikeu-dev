@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { blogService } from '$lib/server/services/blog.service';
-import type { BlogPost } from '$lib/types';
+import { blogService } from '#lib/server/services/blog.service.js';
+import type { BlogPost } from '#lib/types.js';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {

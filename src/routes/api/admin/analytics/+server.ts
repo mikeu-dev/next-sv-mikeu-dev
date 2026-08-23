@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { VisitorService } from '$lib/server/services/visitor.service';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
 
 export const GET: RequestHandler = async () => {
 	try {

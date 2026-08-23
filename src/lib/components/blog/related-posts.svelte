@@ -1,7 +1,7 @@
 ﻿<script lang="ts">
-	import type { BlogPost } from '$lib/types';
-	import BlogCard from '$lib/components/guest/blog/blog-card.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import type { BlogPost } from '#lib/types.js';
+	import BlogCard from '#lib/components/guest/blog/blog-card.svelte';
+	import { m } from '#lib/paraglide/messages.js';
 
 	let { posts = [] } = $props<{ posts: BlogPost[] }>();
 </script>

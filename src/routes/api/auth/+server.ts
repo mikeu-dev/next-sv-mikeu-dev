@@ -3,9 +3,9 @@
 import { json } from '@sveltejs/kit';
 import { AuthService } from '../../../lib/server/services/auth.service';
 import { HttpException } from '../../../lib/server/exceptions/http.exception';
-import { UserService } from '$lib/server/services/user.service';
-import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
-import { logError } from '$lib/server/utils/logger';
+import { UserService } from '#lib/server/services/user.service.js';
+import { checkRateLimit, RateLimitPresets } from '#lib/server/middleware/rate-limit.js';
+import { logError } from '#lib/server/utils/logger.js';
 import type { RequestEvent } from '@sveltejs/kit';
 
 const authService = new AuthService();

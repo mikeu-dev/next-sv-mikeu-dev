@@ -1,7 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { geminiService } from '$lib/server/services/gemini.service';
-import { checkRateLimit } from '$lib/server/middleware/rate-limit';
-import type { ContentEnhancementAction } from '$lib/types/ai-content.types';
+import { geminiService } from '#lib/server/services/gemini.service.js';
+import { checkRateLimit } from '#lib/server/middleware/rate-limit.js';
+import type { ContentEnhancementAction } from '#lib/types/ai-content.types.js';
 
 const AI_RATE_LIMIT = { maxRequests: 20, windowMs: 60_000 }; // 20 req/min per session
 

@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
-import { VisitorService } from '$lib/server/services/visitor.service';
-import type { GeoVisitorResponse } from '$lib/components/guest/sections/world/folded-world.types';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
+import type { GeoVisitorResponse } from '#lib/components/guest/sections/world/folded-world.types.js';
 
 /**
  * GET /api/visitors/geo

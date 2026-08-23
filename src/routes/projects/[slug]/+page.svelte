@@ -4,17 +4,17 @@
 	import Icon from '@/lib/components/ui/icon.svelte';
 	import SEO from '@/lib/components/seo/seo.svelte';
 	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
-	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
-	import ProjectReactions from '$lib/components/project/project-reactions.svelte';
-	import ProjectShare from '$lib/components/project/project-share.svelte';
+	import Breadcrumb from '#lib/components/ui/breadcrumb.svelte';
+	import ProjectReactions from '#lib/components/project/project-reactions.svelte';
+	import ProjectShare from '#lib/components/project/project-share.svelte';
 
-	import { getLocalizedProject } from '$lib/utils/project-mapper';
-	import { optimizeImage } from '$lib/utils/image.util';
-	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+	import { getLocalizedProject } from '#lib/utils/project-mapper.js';
+	import { optimizeImage } from '#lib/utils/image.util.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
-	import type { Project } from '$lib/types';
+	import type { Project } from '#lib/types.js';
 
 	interface ProjectPageData {
 		project: Project;

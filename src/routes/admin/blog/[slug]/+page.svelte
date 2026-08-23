@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import BlogPostForm from '$lib/components/admin/blog-post-form.svelte';
+	import { page } from '$app/state';
+	import BlogPostForm from '#lib/components/admin/blog-post-form.svelte';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -17,7 +17,7 @@
 		[key: string]: unknown;
 	}
 
-	let id = $derived($page.params.slug); // Note: We created directory named [slug] but usually refer to it as ID
+	let id = $derived(page.params.slug); // Note: We created directory named [slug] but usually refer to it as ID
 	let post = $state<BlogPost | null>(null);
 	let loading = $state(true);
 

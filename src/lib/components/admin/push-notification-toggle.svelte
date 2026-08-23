@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Bell, BellRing, Loader2 } from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import { env } from '$env/dynamic/public';
+	import { PUBLIC_VAPID_KEY } from '$app/env/public';
 	import { toast } from 'svelte-sonner';
 
 	let isSubscribed = $state(false);
@@ -42,8 +42,7 @@
 			}
 
 			const registration = await navigator.serviceWorker.ready;
-			const applicationServerKey = urlB64ToUint8Array(env.PUBLIC_VAPID_KEY || '');
-
+			const applicationServerKey = urlB64ToUint8Array(PUBLIC_VAPID_KEY || '');
 			const subscription = await registration.pushManager.subscribe({
 				userVisibleOnly: true,
 				applicationServerKey

@@ -1,7 +1,7 @@
 ﻿<script lang="ts">
 	import iconsData from 'simple-icons/icons.json';
 	import { Linkedin } from '@lucide/svelte';
-	import Icon from '$lib/components/ui/icon.svelte';
+	import Icon from '#lib/components/ui/icon.svelte';
 	import type { Component } from 'svelte';
 
 	let { value = $bindable(), color = '#000000', id = '' } = $props();

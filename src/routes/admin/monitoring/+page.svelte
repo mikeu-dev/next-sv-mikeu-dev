@@ -12,10 +12,10 @@
 		ChevronUp,
 		Clock
 	} from '@lucide/svelte';
-	import type { AppErrorLog } from '$lib/server/services/monitoring.service';
-	import { Button } from '$lib/components/ui/button';
+	import type { AppErrorLog } from '#lib/server/services/monitoring.service.js';
+	import { Button } from '#lib/components/ui/button/index.js';
 	import { toast } from 'svelte-sonner';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.js';
 	import { slide } from 'svelte/transition';
 
 	let logs = $state<AppErrorLog[]>([]);

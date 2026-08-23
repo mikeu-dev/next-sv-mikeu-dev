@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { SkillsService } from '$lib/server/services/skills.service';
+import { SkillsService } from '#lib/server/services/skills.service.js';
 
 const skillsService = new SkillsService();
 

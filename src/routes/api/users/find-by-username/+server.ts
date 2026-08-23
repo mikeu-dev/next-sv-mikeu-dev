@@ -1,8 +1,8 @@
 ﻿export const prerender = false;
 
 import { json } from '@sveltejs/kit';
-import { UserService } from '$lib/server/services/user.service';
-import { HttpException } from '$lib/server/exceptions/http.exception';
+import { UserService } from '#lib/server/services/user.service.js';
+import { HttpException } from '#lib/server/exceptions/http.exception.js';
 
 const userService = new UserService();
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BlogHeading } from '$lib/server/utils/markdown';
+	import type { BlogHeading } from '#lib/server/utils/markdown.js';
 	import { onMount } from 'svelte';
 
 	let {

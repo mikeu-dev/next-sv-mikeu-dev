@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
-import { TechStackService } from '$lib/server/services/techstack.service';
-import { logError } from '$lib/server/utils/logger';
+import { TechStackService } from '#lib/server/services/techstack.service.js';
+import { logError } from '#lib/server/utils/logger.js';
 
 const techStackService = new TechStackService();
 

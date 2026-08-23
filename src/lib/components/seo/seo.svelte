@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { locales, baseLocale } from '$lib/paraglide/runtime';
-	import * as m from '$lib/paraglide/messages';
+	import { locales, baseLocale } from '#lib/paraglide/runtime.js';
+	import * as m from '#lib/paraglide/messages.js';
 
 	type Props = {
 		title?: string;

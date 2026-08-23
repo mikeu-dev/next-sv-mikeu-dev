@@ -1,6 +1,6 @@
 ﻿import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 const firebaseConfig = {
 	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

@@ -1,5 +1,5 @@
-﻿import { browser } from '$app/environment';
-import type { DynamicIcon } from '$lib/types';
+import { browser } from '$app/env';
+import type { DynamicIcon } from '#lib/types.js';
 import { SvelteSet } from 'svelte/reactivity';
 
 let registry = $state<Record<string, DynamicIcon>>({});

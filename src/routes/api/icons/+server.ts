@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
-import { IconService } from '$lib/server/services/icon.service';
-import { logError } from '$lib/server/utils/logger';
+import { IconService } from '#lib/server/services/icon.service.js';
+import { logError } from '#lib/server/utils/logger.js';
 
 const iconService = new IconService();
 

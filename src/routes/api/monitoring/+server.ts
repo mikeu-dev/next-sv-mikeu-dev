@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { monitoringService } from '$lib/server/services/monitoring.service';
+import { monitoringService } from '#lib/server/services/monitoring.service.js';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {

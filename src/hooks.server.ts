@@ -1,16 +1,15 @@
-import type { Handle } from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
-import { paraglideMiddleware } from '$lib/paraglide/server';
-import { AuthService } from '$lib/server/services/auth.service';
 import { redirect } from '@sveltejs/kit';
-import { env } from '$lib/server/config/env';
-import { logWarning } from '$lib/server/utils/logger';
-import { VisitorService } from '$lib/server/services/visitor.service';
+import { sequence, type Handle } from '@sveltejs/kit/hooks';
+import { paraglideMiddleware } from '#lib/paraglide/server.js';
+import { AuthService } from '#lib/server/services/auth.service.js';
+import { env } from '#lib/server/config/env.js';
+import { logWarning } from '#lib/server/utils/logger.js';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
 import { UAParser } from 'ua-parser-js';
-import { building } from '$app/environment';
+import { building } from '$app/env';
 import { createHandle } from '@vercel/flags/sveltekit';
-import { FLAGS_SECRET } from '$env/static/private';
-import * as flags from '$lib/flags';
+import { FLAGS_SECRET } from '$app/env/private';
+import * as flags from '#lib/flags.js';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
@@ -85,7 +84,7 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		}
 	);
 
-import { resolveGeo } from '$lib/server/services/geo.service';
+import { resolveGeo } from '#lib/server/services/geo.service.js';
 
 /**
  * Visitor tracking middleware
@@ -223,7 +222,7 @@ const handlePublicApi: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-import { monitoringService } from '$lib/server/services/monitoring.service';
+import { monitoringService } from '#lib/server/services/monitoring.service.js';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	console.log(`[Hooks] Start handling request: ${event.url.pathname}`);
@@ -241,7 +240,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-export const handleError: import('@sveltejs/kit').HandleServerError = async ({
+export const handleError: import('@sveltejs/kit/hooks').HandleServerError = async ({
 	error,
 	event,
 	status,

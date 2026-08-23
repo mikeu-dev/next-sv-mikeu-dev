@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { TechStackService } from '$lib/server/services/techstack.service';
-import { JourneyService } from '$lib/server/services/journey.service';
+import { TechStackService } from '#lib/server/services/techstack.service.js';
+import { JourneyService } from '#lib/server/services/journey.service.js';
 
 export const prerender = false;
 

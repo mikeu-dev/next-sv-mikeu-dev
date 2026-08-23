@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
-import { SkillsService } from '$lib/server/services/skills.service';
-import { logError } from '$lib/server/utils/logger';
+import { SkillsService } from '#lib/server/services/skills.service.js';
+import { logError } from '#lib/server/utils/logger.js';
 
 const skillsService = new SkillsService();
 

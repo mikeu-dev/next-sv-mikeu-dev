@@ -1,8 +1,8 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { visitorService } from '$lib/server/services/visitor.service';
-import { monitoringService } from '$lib/server/services/monitoring.service';
-import { env } from '$env/dynamic/private';
+import { visitorService } from '#lib/server/services/visitor.service.js';
+import { monitoringService } from '#lib/server/services/monitoring.service.js';
+import { CRON_SECRET } from '$app/env/private';
 
 /**
  * System Cleanup Endpoint
@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const cronSecret = request.headers.get('x-vercel-cron'); // Auto-set by Vercel Cron
 
 	// If not called by Vercel Cron and no secret provided, block it
-	if (!cronSecret && env.CRON_SECRET && authHeader !== `Bearer ${env.CRON_SECRET}`) {
+	if (!cronSecret && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 

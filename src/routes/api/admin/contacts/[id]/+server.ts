@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { ContactsService } from '@/lib/server/services/contacts.service';
 import type { RequestHandler } from './$types';
-import { logError } from '$lib/server/utils/logger';
-import { env } from '$lib/server/config/env';
+import { logError } from '#lib/server/utils/logger.js';
+import { env } from '#lib/server/config/env.js';
 
 const contactsService = new ContactsService();
 

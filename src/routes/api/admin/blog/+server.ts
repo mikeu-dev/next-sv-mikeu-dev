@@ -1,6 +1,6 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import { blogService } from '$lib/server/services/blog.service';
+import { blogService } from '#lib/server/services/blog.service.js';
 
 export async function GET({ url }: RequestEvent) {
 	try {

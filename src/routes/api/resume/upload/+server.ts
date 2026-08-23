@@ -1,7 +1,7 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { GitHubStorageService } from '$lib/server/services/github-storage.service';
-import { settingsService } from '$lib/server/services/settings.service';
+import { GitHubStorageService } from '#lib/server/services/github-storage.service.js';
+import { settingsService } from '#lib/server/services/settings.service.js';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['application/pdf'];

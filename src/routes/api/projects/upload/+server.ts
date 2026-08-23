@@ -1,12 +1,12 @@
 ﻿import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import { GitHubStorageService } from '$lib/server/services/github-storage.service';
+import { GitHubStorageService } from '#lib/server/services/github-storage.service.js';
 import busboy from 'busboy';
 import type { Readable } from 'stream';
-import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
-import { validateFile, generateSafeFilename } from '$lib/server/utils/file-validation';
-import { logError } from '$lib/server/utils/logger';
-import { env } from '$lib/server/config/env';
+import { checkRateLimit, RateLimitPresets } from '#lib/server/middleware/rate-limit.js';
+import { validateFile, generateSafeFilename } from '#lib/server/utils/file-validation.js';
+import { logError } from '#lib/server/utils/logger.js';
+import { env } from '#lib/server/config/env.js';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];

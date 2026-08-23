@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
+import { PushSubscriptionService } from '#lib/server/services/push-subscription.service.js';
 import type { RequestHandler } from './$types';
-import { logError } from '$lib/server/utils/logger';
+import { logError } from '#lib/server/utils/logger.js';
 
 const pushService = new PushSubscriptionService();
 

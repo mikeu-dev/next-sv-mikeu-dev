@@ -1,5 +1,5 @@
 ﻿import { json } from '@sveltejs/kit';
-import { seedBlogPosts } from '$lib/server/services/migration/blog-seeder';
+import { seedBlogPosts } from '#lib/server/services/migration/blog-seeder';
 import type { RequestHandler } from './$types';
 
 /**
