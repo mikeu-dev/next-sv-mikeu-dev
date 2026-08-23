@@ -3,7 +3,7 @@
 	import { toast } from 'svelte-sonner';
 	import { Upload, FileText, ExternalLink, CheckCircle, Loader2 } from '@lucide/svelte';
 	import type { ResumeSettings } from '#lib/server/schemas/settings.schema.js';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 
 	let { data } = $props<{
 		data: ResumeSettings;
@@ -48,7 +48,7 @@
 			}
 
 			toast.success(`Resume (${locale.toUpperCase()}) uploaded successfully!`);
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			toast.error(`Upload failed: ${(error as Error).message}`);
 		} finally {

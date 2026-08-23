@@ -75,12 +75,16 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(
 		event.request,
 		({ request, locale }: { request: Request; locale: string }) => {
-			event.request = request;
 			event.locals.paraglide = { locale };
 
-			return resolve(event, {
-				transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
-			});
+			// event.request is readonly in SvelteKit 3 — pass the locale-decorated
+			// request via a shallow-cloned event instead of reassigning it.
+			return resolve(
+				{ ...event, request },
+				{
+					transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
+				}
+			);
 		}
 	);
 
@@ -243,18 +247,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 export const handleError: import('@sveltejs/kit/hooks').HandleServerError = async ({
 	error,
 	event,
-	status,
-	message
+	kind
 }) => {
 	const errorId = crypto.randomUUID();
+	// `error` is only `{ status, message }` for 'app'/'framework'/'validation' kinds; for 'unknown' it's whatever was thrown.
+	const status = kind === 'unknown' ? 500 : error.status;
+	const message =
+		kind === 'unknown' ? (error instanceof Error ? error.message : 'Unknown error') : error.message;
+
 	// Log to console for CI/CD debugging
 	console.error(`[handleError] Error at ${event.url.pathname}:`, error);
 
 	// Log the error to Firestore
 	await monitoringService.logError({
 		type: 'server',
-		message: error instanceof Error ? error.message : message,
-		stack: error instanceof Error ? error.stack : undefined,
+		message,
+		stack: kind === 'unknown' && error instanceof Error ? error.stack : undefined,
 		url: event.url.toString(),
 		userAgent: event.request.headers.get('user-agent') || undefined,
 		locale: event.locals.paraglide?.locale,
@@ -268,7 +276,7 @@ export const handleError: import('@sveltejs/kit/hooks').HandleServerError = asyn
 
 	// For debugging purposes, we'll show the real error even in production temporarily
 	return {
-		message: error instanceof Error ? error.message : message,
+		message,
 		errorId
 	};
 };

@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestEvent } from '@sveltejs/kit';
+﻿import type { RequestEvent } from '@sveltejs/kit';
 import type { Project } from '#lib/types.js';
 import { ProjectsService } from '../../../lib/server/services/projects.service';
 import { ProjectsRepository } from '../../../lib/server/repositories/projects.repository';
@@ -30,24 +29,24 @@ export async function GET({ url }: RequestEvent) {
 			orderBy,
 			orderDirection
 		});
-		return json(projects);
+		return Response.json(projects);
 	} catch (e) {
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		logError('API:Projects:GET', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
 
 export async function POST({ request, locals }: RequestEvent) {
 	// Auth check - only owner can create projects
 	if (!locals.user) {
-		return json({ message: 'Unauthorized' }, { status: 401 });
+		return Response.json({ message: 'Unauthorized' }, { status: 401 });
 	}
 
 	if (locals.user.email !== env.OWNER_EMAIL) {
-		return json({ message: 'Forbidden' }, { status: 403 });
+		return Response.json({ message: 'Forbidden' }, { status: 403 });
 	}
 
 	try {
@@ -59,10 +58,10 @@ export async function POST({ request, locals }: RequestEvent) {
 		const project = await projectsService.create(
 			validatedData as unknown as Omit<Project, 'id' | 'createdAt' | 'updatedAt'>
 		);
-		return json(project, { status: 201 });
+		return Response.json(project, { status: 201 });
 	} catch (e) {
 		if (e instanceof z.ZodError) {
-			return json(
+			return Response.json(
 				{
 					message: 'Validation error',
 					errors: e.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message }))
@@ -71,10 +70,10 @@ export async function POST({ request, locals }: RequestEvent) {
 			);
 		}
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		logError('API:Projects:POST', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
 

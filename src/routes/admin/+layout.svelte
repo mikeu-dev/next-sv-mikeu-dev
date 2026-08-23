@@ -35,7 +35,7 @@
 			>
 				<div class="ml-auto flex items-center gap-4">
 					<a
-						href={localizeHref(resolve(`/`.slice(1)))}
+						href={localizeHref(resolve('/'))}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"

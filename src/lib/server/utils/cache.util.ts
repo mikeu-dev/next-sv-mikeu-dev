@@ -27,7 +27,7 @@ export const persistentCache = {
 	/**
 	 * Get data from cache. Checks memory first, then file system.
 	 */
-	get(key: string): T | null {
+	get<T>(key: string): T | null {
 		const now = Date.now();
 
 		// Tier 1: Memory
@@ -64,7 +64,7 @@ export const persistentCache = {
 	/**
 	 * Set data to cache with a TTL (default 30 mins).
 	 */
-	set(key: string, data: T, ttlMs: number = 30 * 60 * 1000): void {
+	set<T>(key: string, data: T, ttlMs: number = 30 * 60 * 1000): void {
 		const expiry = Date.now() + ttlMs;
 		const item: CacheItem<T> = { data, expiry };
 
@@ -85,7 +85,7 @@ export const persistentCache = {
 	/**
 	 * Atomic fetch: gets from cache or fetches and sets.
 	 */
-	async getWithFetch(key: string, fetcher: () => Promise<T>, ttlMs?: number): Promise<T> {
+	async getWithFetch<T>(key: string, fetcher: () => Promise<T>, ttlMs?: number): Promise<T> {
 		const cached = this.get<T>(key);
 		if (cached !== null) return cached;
 

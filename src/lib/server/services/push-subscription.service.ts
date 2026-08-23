@@ -3,7 +3,8 @@ import {
 	type PushSubscription
 } from '../repositories/push-subscription.repository';
 import webpush from 'web-push';
-import { PUBLIC_VAPID_KEY, PRIVATE_VAPID_KEY, OWNER_EMAIL } from '$app/env/private';
+import { PRIVATE_VAPID_KEY, OWNER_EMAIL } from '$app/env/private';
+import { PUBLIC_VAPID_KEY } from '$app/env/public';
 import { logError } from '../utils/logger';
 
 export class PushSubscriptionService {

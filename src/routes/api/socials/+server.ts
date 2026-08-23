@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
+﻿import type { RequestHandler } from '@sveltejs/kit';
 import { SocialsService } from '#lib/server/services/socials.service.js';
 import { logError } from '#lib/server/utils/logger.js';
 import { env } from '#lib/server/config/env.js';
@@ -9,22 +8,22 @@ const socialsService = new SocialsService();
 export async function GET() {
 	try {
 		const data = await socialsService.getSocials();
-		return json(data);
+		return Response.json(data);
 	} catch (error: unknown) {
 		logError('API:Socials:GET', error);
 		const message = error instanceof Error ? error.message : 'Unknown error';
-		return json({ error: message }, { status: 500 });
+		return Response.json({ error: message }, { status: 500 });
 	}
 }
 
 export const PUT: RequestHandler = async ({ request, locals }) => {
 	// Auth check - only owner can update socials
 	if (!locals.user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
+		return Response.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
 	if (locals.user.email !== env.OWNER_EMAIL) {
-		return json({ error: 'Forbidden' }, { status: 403 });
+		return Response.json({ error: 'Forbidden' }, { status: 403 });
 	}
 
 	try {
@@ -36,7 +35,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 		// Validate data structure
 		if (!Array.isArray(links)) {
 			console.error('API:Socials:PUT - Invalid structure, not an array');
-			return json({ error: 'Invalid data structure' }, { status: 400 });
+			return Response.json({ error: 'Invalid data structure' }, { status: 400 });
 		}
 
 		// Validate and Sanitize each link
@@ -63,11 +62,11 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 		// Update via Service with sanitized data
 		await socialsService.updateSocials({ links: sanitizedLinks });
 
-		return json({ success: true, message: 'Socials updated successfully' });
+		return Response.json({ success: true, message: 'Socials updated successfully' });
 	} catch (error: unknown) {
 		logError('API:Socials:PUT', error);
 		const message = error instanceof Error ? error.message : 'Failed to update socials';
-		return json({ error: message }, { status: 500 });
+		return Response.json({ error: message }, { status: 500 });
 	}
 };
 

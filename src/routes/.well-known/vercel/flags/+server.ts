@@ -1,9 +1,8 @@
-﻿import { json } from '@sveltejs/kit';
-import { getProviderData } from '@vercel/flags/sveltekit';
-import * as flags from '$lib/flags';
+﻿import { getProviderData } from '@vercel/flags/sveltekit';
+import * as flags from '#lib/flags.js';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
 	const data = getProviderData(flags);
-	return json(data);
+	return Response.json(data);
 };

@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestEvent } from '@sveltejs/kit';
+﻿import type { RequestEvent } from '@sveltejs/kit';
 import { GitHubStorageService } from '#lib/server/services/github-storage.service.js';
 import busboy from 'busboy';
 import type { Readable } from 'stream';
@@ -14,11 +13,11 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'
 export async function POST(event: RequestEvent) {
 	// Auth check - only owner can upload files
 	if (!event.locals.user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
+		return Response.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
 	if (event.locals.user.email !== env.OWNER_EMAIL) {
-		return json({ error: 'Forbidden' }, { status: 403 });
+		return Response.json({ error: 'Forbidden' }, { status: 403 });
 	}
 
 	// Rate limiting - 10 uploads per minute
@@ -31,13 +30,13 @@ export async function POST(event: RequestEvent) {
 		const uploadedFile = await parseMultipartFile(event);
 
 		if (!uploadedFile) {
-			return json({ error: 'No file uploaded' }, { status: 400 });
+			return Response.json({ error: 'No file uploaded' }, { status: 400 });
 		}
 
 		// Upload to GitHub
 		const url = await githubStorage.uploadFile(uploadedFile.buffer, uploadedFile.filename);
 
-		return json({
+		return Response.json({
 			url,
 			filename: uploadedFile.filename,
 			size: uploadedFile.size,
@@ -47,7 +46,7 @@ export async function POST(event: RequestEvent) {
 		logError('API:Projects:Upload', error);
 		const message = error instanceof Error ? error.message : 'Upload failed';
 		const status = (error as { status?: number }).status || 500;
-		return json({ error: message }, { status });
+		return Response.json({ error: message }, { status });
 	}
 }
 

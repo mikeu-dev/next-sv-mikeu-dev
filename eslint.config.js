@@ -33,7 +33,7 @@ export default defineConfig(
 			'dist/**',
 			'static/**',
 			'messages/**',
-			'src/service-worker.ts',
+			'src/service-worker/**',
 			'src/lib/paraglide/**',
 			'src/paraglide/**',
 			'src/lib/server/scripts/**',

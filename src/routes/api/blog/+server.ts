@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { blogService } from '#lib/server/services/blog.service.js';
 
@@ -17,9 +16,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			tag
 		});
 
-		return json(result);
+		return Response.json(result);
 	} catch (err) {
 		console.error('Error in blog API:', err);
-		return json({ posts: [], nextCursor: null }, { status: 500 });
+		return Response.json({ posts: [], nextCursor: null }, { status: 500 });
 	}
 };

@@ -34,7 +34,7 @@
 		{ href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 		{ href: '/admin/monitoring', label: 'Monitoring', icon: Activity },
 		{ href: '/admin/settings', label: 'Settings', icon: Settings }
-	];
+	] as const;
 
 	function toggleSidebar() {
 		isOpen = !isOpen;
@@ -70,7 +70,7 @@
 	<nav class="flex flex-col gap-1 p-4">
 		{#each links as link (link.href)}
 			<a
-				href={resolve(`${link.href}`.slice(1))}
+				href={resolve(link.href)}
 				onclick={() => (isOpen = false)}
 				class={cn(
 					'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground',

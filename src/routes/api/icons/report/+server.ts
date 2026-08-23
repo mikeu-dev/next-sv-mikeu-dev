@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import { IconService } from '#lib/server/services/icon.service.js';
+﻿import { IconService } from '#lib/server/services/icon.service.js';
 import { logError } from '#lib/server/utils/logger.js';
 
 const iconService = new IconService();
@@ -8,14 +7,14 @@ export async function POST({ request }) {
 	try {
 		const { name } = await request.json();
 		if (!name) {
-			return json({ error: 'Name is required' }, { status: 400 });
+			return Response.json({ error: 'Name is required' }, { status: 400 });
 		}
 
 		await iconService.reportMissingIcon(name);
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (error: unknown) {
 		logError('API:Icons:Report:POST', error);
-		return json({ error: 'Failed to report icon' }, { status: 500 });
+		return Response.json({ error: 'Failed to report icon' }, { status: 500 });
 	}
 }
 

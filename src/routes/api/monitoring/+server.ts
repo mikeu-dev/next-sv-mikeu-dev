@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+﻿import type { RequestHandler } from './$types';
 import { monitoringService } from '#lib/server/services/monitoring.service.js';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -8,7 +7,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Basic validation
 		if (!data.type || !data.message) {
-			return json({ error: 'Missing required fields' }, { status: 400 });
+			return Response.json({ error: 'Missing required fields' }, { status: 400 });
 		}
 
 		await monitoringService.logError({
@@ -20,9 +19,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			context: data.context
 		});
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (error) {
 		console.error('Failed to process monitoring log:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return Response.json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

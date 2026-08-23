@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import { seedBlogPosts } from '#lib/server/services/migration/blog-seeder';
+﻿import { seedBlogPosts } from '#lib/server/services/migration/blog-seeder.js';
 import type { RequestHandler } from './$types';
 
 /**
@@ -9,10 +8,10 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async () => {
 	try {
 		const result = await seedBlogPosts();
-		return json(result);
+		return Response.json(result);
 	} catch (error: unknown) {
 		console.error('Seeding error:', error);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: (error as Error).message

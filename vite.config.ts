@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { createRequire } from 'module';
 
@@ -60,10 +61,10 @@ export default defineConfig({
 				extends: './vite.config.ts',
 				test: {
 					name: 'client',
-					environment: 'browser',
+					// vitest 4: browser mode is enabled via `browser.enabled`, not `test.environment`
 					browser: {
 						enabled: true,
-						provider: 'playwright',
+						provider: playwright(),
 						instances: [{ browser: 'chromium' }]
 					},
 					alias: {
@@ -102,22 +103,32 @@ export default defineConfig({
 	build: {
 		chunkSizeWarningLimit: 1000,
 		sourcemap: false,
-		reportCompressedSize: false,
-		rollupOptions: {
-			output: {
-				manualChunks: (id) => {
-					if (id.includes('node_modules')) {
-						if (id.includes('@lottiefiles/dotlottie-svelte') || id.includes('lottie-web')) {
-							return 'lottie';
-						}
-						if (id.includes('firebase')) {
-							return 'firebase';
-						}
-						if (id.includes('gsap') || id.includes('matter-js')) {
-							return 'animation';
-						}
-						if (id.includes('three')) {
-							return 'three';
+		reportCompressedSize: false
+	},
+	// manualChunks lives under the `client` environment (not top-level `build.rollupOptions`)
+	// because SvelteKit 3's service-worker build is its own Vite environment with
+	// `codeSplitting: false`, and a top-level manualChunks cascades into every environment —
+	// which Rolldown rejects when codeSplitting is off.
+	environments: {
+		client: {
+			build: {
+				rollupOptions: {
+					output: {
+						manualChunks: (id) => {
+							if (id.includes('node_modules')) {
+								if (id.includes('@lottiefiles/dotlottie-svelte') || id.includes('lottie-web')) {
+									return 'lottie';
+								}
+								if (id.includes('firebase')) {
+									return 'firebase';
+								}
+								if (id.includes('gsap') || id.includes('matter-js')) {
+									return 'animation';
+								}
+								if (id.includes('three')) {
+									return 'three';
+								}
+							}
 						}
 					}
 				}

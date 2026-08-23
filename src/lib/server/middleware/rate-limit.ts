@@ -1,5 +1,4 @@
 ﻿import type { RequestEvent } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 
 interface RateLimitRecord {
 	count: number;
@@ -66,7 +65,7 @@ export function checkRateLimit(event: RequestEvent, options: RateLimitOptions): 
 	if (record && now < record.resetAt) {
 		if (record.count >= maxRequests) {
 			// Rate limit exceeded
-			return json(
+			return Response.json(
 				{ message },
 				{
 					status: 429,

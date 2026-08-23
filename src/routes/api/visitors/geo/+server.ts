@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import { VisitorService } from '#lib/server/services/visitor.service.js';
+﻿import { VisitorService } from '#lib/server/services/visitor.service.js';
 import type { GeoVisitorResponse } from '#lib/components/guest/sections/world/folded-world.types.js';
 
 /**
@@ -22,7 +21,7 @@ export async function GET() {
 			lastUpdated: new Date().toISOString()
 		};
 
-		return json(response, {
+		return Response.json(response, {
 			headers: {
 				'cache-control': 'public, max-age=300' // Cache 5 minutes
 			}
@@ -33,6 +32,6 @@ export async function GET() {
 			totalVisitors: 0,
 			lastUpdated: new Date().toISOString()
 		};
-		return json(fallback, { status: 500 });
+		return Response.json(fallback, { status: 500 });
 	}
 }

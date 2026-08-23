@@ -1,16 +1,17 @@
 /// <reference types="@sveltejs/kit" />
 /// <reference lib="webworker" />
 
-import { build, files, version } from '$service-worker';
-
-const self = globalThis as unknown as ServiceWorkerGlobalScope;
+import { self } from '$app/service-worker';
+import { version } from '$app/env';
+import { immutable, assets } from '$app/manifest';
+import { asset, resolve } from '$app/paths';
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
 const ASSETS = [
-	...build, // the app itself
-	...files // everything in `static`
+	...immutable.map((file) => resolve(file.path)), // the app itself
+	...assets.map((file) => asset(file.path)) // everything in `static`
 ];
 
 self.addEventListener('install', (event: ExtendableEvent) => {
@@ -40,7 +41,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
 	const url = new URL(event.request.url);
 
-	// Only handle http(s) requests â€” skip chrome-extension://, etc.
+	// Only handle http(s) requests — skip chrome-extension://, etc.
 	if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
 	async function respond() {

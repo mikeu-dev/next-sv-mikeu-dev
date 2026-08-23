@@ -1,5 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+﻿import type { RequestHandler } from './$types';
 import { visitorService } from '#lib/server/services/visitor.service.js';
 import { monitoringService } from '#lib/server/services/monitoring.service.js';
 import { CRON_SECRET } from '$app/env/private';
@@ -16,7 +15,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 	// If not called by Vercel Cron and no secret provided, block it
 	if (!cronSecret && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
+		return Response.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
 	try {
@@ -26,7 +25,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		const visitorCleared = await visitorService.clearOldLogs(visitorDays);
 		const errorCleared = await monitoringService.clearOldLogs(errorDays);
 
-		return json({
+		return Response.json({
 			success: true,
 			timestamp: new Date().toISOString(),
 			summary: {
@@ -42,6 +41,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		});
 	} catch (error) {
 		console.error('System Cleanup Failed:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return Response.json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
