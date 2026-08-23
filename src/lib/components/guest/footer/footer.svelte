@@ -168,7 +168,7 @@
 											class="social-box relative flex size-12 items-center justify-center border-2 border-foreground bg-background transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
 											style="clip-path: {clip};"
 										>
-											<Icon iconName={link.iconName} src={link.icon} size={20} />
+											<Icon iconName={link.iconName} src={link.icon} size={20} label={link.label} />
 										</a>
 									</Tooltip.Trigger>
 								</div>
@@ -230,13 +230,13 @@
 			></div>
 
 			<div
-				class="flex items-center gap-4 font-mono text-[9px] font-black tracking-[0.3em] text-foreground/30 uppercase"
+				class="flex items-center gap-4 font-mono text-[9px] font-black tracking-[0.3em] text-muted-foreground uppercase"
 			>
 				<Cpu class="size-3" />
 				<p>PROTOCOL: MIKEU_PORTFOLIO_V5.0</p>
 			</div>
 
-			<p class="font-mono text-[10px] font-black tracking-widest text-foreground/40 uppercase">
+			<p class="font-mono text-[10px] font-black tracking-widest text-muted-foreground uppercase">
 				&copy; {new Date().getFullYear()} MIKEU_DEV // ALL_RIGHTS_RESERVED.
 			</p>
 

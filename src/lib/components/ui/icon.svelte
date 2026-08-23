@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { Icon as SvelteIconPack } from 'svelte-icons-pack';
 	import { iconRegistry } from '$lib/icons/registry';
 	import type { IconType } from 'svelte-icons-pack';
@@ -22,6 +22,7 @@
 		color?: string;
 		size?: number | string;
 		strokeWidth?: number;
+		label?: string;
 		class?: string;
 		style?: string;
 	}
@@ -32,9 +33,16 @@
 		color = 'currentColor',
 		size = 24,
 		strokeWidth = 2,
+		label = '',
 		class: className = '',
 		style = ''
 	}: Props = $props();
+
+	/** Accessibility attributes — labelled SVGs get role=img + aria-label,
+	 *  decorative ones get aria-hidden so screen readers skip them. */
+	let a11yAttrs = $derived(
+		label ? { role: 'img' as const, 'aria-label': label } : { 'aria-hidden': 'true' as const }
+	);
 
 	onMount(() => {
 		customIconStore.init();
@@ -138,6 +146,7 @@
 			viewBox={dynamicIcon.viewBox || '0 0 24 24'}
 			class="h-full w-full"
 			style="fill: {color}; stroke: {color};"
+			{...a11yAttrs}
 		>
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html dynamicIcon.svg}
@@ -152,6 +161,7 @@
 			stroke-linecap="round"
 			stroke-linejoin="round"
 			class="h-full w-full"
+			{...a11yAttrs}
 		>
 			<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
 			<line x1="9" y1="9" x2="15" y2="15" />

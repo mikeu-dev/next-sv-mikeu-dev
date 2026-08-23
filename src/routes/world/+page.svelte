@@ -11,9 +11,22 @@
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link
+		rel="preload"
+		as="style"
+		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
+	/>
+	<link
 		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
 		rel="stylesheet"
+		media="print"
+		onload={(e) => ((e.currentTarget as HTMLLinkElement).media = 'all')}
 	/>
+	<noscript>
+		<link
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
+			rel="stylesheet"
+		/>
+	</noscript>
 </svelte:head>
 
 <div class="fixed inset-0 z-40 bg-background font-mono transition-colors duration-500">

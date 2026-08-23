@@ -4,3 +4,6 @@ Disallow: /admin
 Disallow: /auth
 
 Sitemap: https://www.mikeudev.my.id/sitemap.xml
+
+# LLM/AI Agent context
+Llms-Txt: https://www.mikeudev.my.id/llms.txt
