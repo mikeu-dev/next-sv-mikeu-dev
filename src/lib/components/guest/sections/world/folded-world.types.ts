@@ -1,5 +1,5 @@
 ﻿/**
- * Folded World â€” Visitor Interaction Map
+ * Folded World — Visitor Interaction Map
  * Type definitions untuk visualisasi geolokasi pengunjung.
  */
 
@@ -71,7 +71,7 @@ export const DEFAULT_WORLD_CONFIG: WorldConfig = {
 	backgroundColor: '#0a0a0a'
 };
 
-/** Color palette â€” Dynamic Planet Styles */
+/** Color palette — Dynamic Planet Styles */
 export const getPlanetColors = (style: PlanetStyle, isDark: boolean) => {
 	const base = {
 		background: isDark ? 0x0a0a0a : 0xfafafa,
