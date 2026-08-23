@@ -14,7 +14,7 @@
  */
 
 import { db } from '$lib/server/firebase/firebase.server';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, FieldPath } from 'firebase-admin/firestore';
 import { VisitorRepository } from '../repositories/visitor.repository';
 import { persistentCache } from '../utils/cache.util';
 
@@ -184,13 +184,22 @@ export class VisitorService {
 					const browsers = Array.from(new Set([...existing.browsers, log.browser])).slice(0, 5);
 					const devices = Array.from(new Set([...existing.devices, log.device])).slice(0, 5);
 
-					t.update(summaryRef, {
-						[`${key}.count`]: FieldValue.increment(1),
-						[`${key}.lastVisit`]: now,
-						[`${key}.browsers`]: browsers,
-						[`${key}.devices`]: devices,
-						updatedAt: now
-					});
+					// Use FieldPath (not dotted strings) so a country/city containing a
+					// literal "." (e.g. "St. Petersburg") is treated as one field
+					// segment, matching how the flat key was written by set() above.
+					t.update(
+						summaryRef,
+						new FieldPath(key, 'count'),
+						FieldValue.increment(1),
+						new FieldPath(key, 'lastVisit'),
+						now,
+						new FieldPath(key, 'browsers'),
+						browsers,
+						new FieldPath(key, 'devices'),
+						devices,
+						'updatedAt',
+						now
+					);
 				}
 			});
 		} catch (error) {
