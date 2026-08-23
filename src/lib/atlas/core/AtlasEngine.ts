@@ -3,11 +3,44 @@ import { CameraEngine } from '../camera/CameraEngine';
 import { atlasStore } from './AtlasState.svelte';
 import { ATLAS_SCENES } from '../narrative/manifest/scenes.manifest';
 import { ATLAS_PROJECTS } from '../narrative/manifest/projects.data';
+import { PathMorpher } from '../morph/PathMorpher';
+import { PathSimplifier } from '../geometry/PathSimplifier';
 
 export class AtlasEngine {
 	private cameraEngine: CameraEngine;
 	private scenes: readonly AtlasScene[];
 	private activeSceneIndex: number = 0;
+	private pathMorpher: PathMorpher;
+
+	// Master Raw Geographic Points (Kab. Purwakarta)
+	private readonly geographicPoints: readonly AtlasPoint[] = [
+		{ x: 420, y: 380 },
+		{ x: 500, y: 360 },
+		{ x: 580, y: 370 },
+		{ x: 630, y: 460 },
+		{ x: 610, y: 530 },
+		{ x: 590, y: 580 },
+		{ x: 540, y: 610 },
+		{ x: 490, y: 620 },
+		{ x: 430, y: 580 },
+		{ x: 390, y: 540 },
+		{ x: 380, y: 430 }
+	];
+
+	// Master System Architecture Diagram Points (Rectangular Core Block)
+	private readonly architecturePoints: readonly AtlasPoint[] = [
+		{ x: 360, y: 320 },
+		{ x: 500, y: 320 },
+		{ x: 640, y: 320 },
+		{ x: 640, y: 460 },
+		{ x: 640, y: 600 },
+		{ x: 640, y: 680 },
+		{ x: 500, y: 680 },
+		{ x: 360, y: 680 },
+		{ x: 360, y: 600 },
+		{ x: 360, y: 460 },
+		{ x: 360, y: 320 }
+	];
 
 	constructor(scenes: readonly AtlasScene[] = ATLAS_SCENES) {
 		this.scenes = scenes;
@@ -18,15 +51,17 @@ export class AtlasEngine {
 			rotation: 0
 		};
 		this.cameraEngine = new CameraEngine(initialTarget);
+		this.pathMorpher = new PathMorpher(this.geographicPoints, this.architecturePoints, 64);
 		this.initWorldEntities();
 		this.updateStore(0, this.scenes[0] ?? null);
 	}
 
 	private initWorldEntities(): void {
-		// 1. Purwakarta Geographic Boundary Vector
+		// 1. Initial Geographic Vector Path (Douglas-Peucker Simplified)
+		const simplifiedGeo = PathSimplifier.simplify(this.geographicPoints, 1.0);
 		const purwakartaPolygonPath: AtlasPath = {
 			id: 'path-pwk-boundary',
-			d: 'M 420 380 L 580 370 L 630 460 L 590 580 L 490 620 L 390 540 L 380 430 Z',
+			d: PathSimplifier.toSvgPathString(simplifiedGeo, true),
 			strokeWidth: 1.5,
 			strokeColor: '#10b981',
 			dashArray: 'none',
@@ -129,7 +164,7 @@ export class AtlasEngine {
 	public setProgress(globalProgress: number): void {
 		const clampedProgress = Math.max(0, Math.min(1, globalProgress));
 
-		// Find current active scene
+		// Find active scene
 		let sceneIndex = this.scenes.findIndex(
 			(s) => clampedProgress >= s.startGlobalProgress && clampedProgress <= s.endGlobalProgress
 		);
@@ -140,8 +175,28 @@ export class AtlasEngine {
 		const currentScene = this.scenes[this.activeSceneIndex] ?? null;
 		const nextScene = this.scenes[this.activeSceneIndex + 1] ?? null;
 
-		// Update camera matrix
+		// Update camera viewport matrix
 		this.cameraEngine.updateFromProgress(clampedProgress, currentScene, nextScene);
+
+		// Dynamic Morph calculation during Scene 04 (Systems: 0.52 to 0.72)
+		let morphProgress = 0.0;
+		if (clampedProgress >= 0.52 && clampedProgress <= 0.72) {
+			morphProgress = (clampedProgress - 0.52) / (0.72 - 0.52);
+		} else if (clampedProgress > 0.72) {
+			morphProgress = 1.0;
+		}
+
+		const morphedPathString = this.pathMorpher.getInterpolatedPathString(morphProgress);
+		atlasStore.activePaths = atlasStore.activePaths.map((p) => {
+			if (p.id === 'path-pwk-boundary') {
+				return {
+					...p,
+					d: morphedPathString,
+					strokeColor: morphProgress > 0.5 ? '#38bdf8' : '#10b981'
+				};
+			}
+			return p;
+		});
 
 		// Update active narrative beat
 		if (currentScene) {
