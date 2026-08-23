@@ -168,7 +168,7 @@
 											class="social-box relative flex size-12 items-center justify-center border-2 border-foreground bg-background transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
 											style="clip-path: {clip};"
 										>
-											<Icon iconName={link.iconName} src={link.icon} size={20} />
+											<Icon iconName={link.iconName} src={link.icon} size={20} label={link.label} />
 										</a>
 									</Tooltip.Trigger>
 								</div>

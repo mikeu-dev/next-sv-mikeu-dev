@@ -166,6 +166,14 @@
 <ModeWatcher defaultMode="light" />
 <Toaster />
 
+<!-- Skip to content link for keyboard accessibility -->
+<a
+	href="#main-content"
+	class="fixed top-0 left-1/2 z-[9999] -translate-x-1/2 -translate-y-full bg-primary px-6 py-3 font-mono text-xs font-black tracking-widest text-primary-foreground uppercase transition-transform focus:translate-y-0"
+>
+	Skip to content
+</a>
+
 <div class="flex min-h-dvh flex-col overflow-x-clip">
 	{#if !isAdmin}
 		{#await data.resumeUrls}
@@ -175,6 +183,7 @@
 		{/await}
 	{/if}
 	<main
+		id="main-content"
 		class={page.url.pathname === '/' || isAdmin ? 'flex-1' : 'container mx-auto flex-1 px-4 py-8'}
 	>
 		{@render children?.()}

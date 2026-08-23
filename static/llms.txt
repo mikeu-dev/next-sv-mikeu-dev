@@ -1,0 +1,44 @@
+# Mikeu.Dev
+
+> Personal portfolio and technical blog by Riki Ruswandi (Mikeu.Dev), a fullstack software engineer specializing in SvelteKit, geospatial (GIS) solutions, and scalable web applications. Based in Indonesia.
+
+## Main Pages
+
+- [Home](https://www.mikeudev.my.id/): Landing page featuring project showcase, latest blog posts, and an interactive 3D world visitor map.
+- [About](https://www.mikeudev.my.id/about): Professional background, interactive tech stack playground (physics-based), career journey timeline, and fun facts.
+- [Blog](https://www.mikeudev.my.id/blog): Technical articles covering web development, AI/RAG, SvelteKit, GIS, and software engineering best practices.
+- [Projects](https://www.mikeudev.my.id/projects): Curated portfolio of completed projects with live demos and source links.
+- [World](https://www.mikeudev.my.id/world): Interactive Three.js globe visualizing real-time site visitors by geographic location.
+- [Contact](https://www.mikeudev.my.id/contact): Professional inquiry form.
+
+## Tech Stack
+
+- **Framework**: SvelteKit 2 + Svelte 5 (Runes)
+- **Language**: TypeScript (strict mode)
+- **Styling**: TailwindCSS 4
+- **3D Visualization**: Three.js
+- **Backend**: Firebase (Authentication & Firestore)
+- **Deployment**: Vercel (Edge Network)
+- **Internationalization**: Paraglide.js (Indonesian & English)
+
+## Content Topics
+
+- Svelte / SvelteKit development patterns
+- AI and RAG (Retrieval-Augmented Generation) implementations
+- Geospatial (GIS) web applications
+- Frontend performance optimization
+- TypeScript best practices
+- Firebase integration patterns
+
+## Languages
+
+Available in Indonesian (id, default) and English (en). Language can be switched via URL prefix or locale selector.
+
+## Contact
+
+- Email: Available on the contact page
+- GitHub: https://github.com/mikeu-dev
+
+## Sitemap
+
+- [Sitemap XML](https://www.mikeudev.my.id/sitemap.xml)

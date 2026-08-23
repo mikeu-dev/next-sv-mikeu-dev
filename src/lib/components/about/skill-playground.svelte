@@ -281,7 +281,7 @@
 											class:brightness-0={piece.isLight}
 											class:invert={!piece.isLight}
 										>
-											<Icon src={skill.icon} size={22} />
+											<Icon src={skill.icon} size={22} label={skill.name} />
 										</div>
 									{:else}
 										<span class="font-mono text-[8px] leading-none font-black"
