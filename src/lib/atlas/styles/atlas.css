@@ -1,0 +1,82 @@
+/* =========================================================================
+   ATLAS DESIGN SYSTEM — CARTOGRAPHIC & ENGINEERING INSTRUMENT TOKENS
+   ========================================================================= */
+
+:root {
+	/* Surfaces & Canvas Environment */
+	--atlas-surface-void: #0a0d12;
+	--atlas-surface-subtle: #0f141d;
+	--atlas-surface-elevated: #161e2b;
+	--atlas-surface-overlay: rgba(10, 13, 18, 0.88);
+	--atlas-surface-glass: rgba(22, 30, 43, 0.65);
+
+	/* Hairlines & Boundaries */
+	--atlas-border-hairline: rgba(148, 163, 184, 0.08);
+	--atlas-border-subtle: #1e293b;
+	--atlas-border-active: #334155;
+	--atlas-border-focus: #38bdf8;
+	--atlas-border-bright: #94a3b8;
+
+	/* Typography Colors */
+	--atlas-text-primary: #f8fafc;
+	--atlas-text-narrative: #cbd5e1;
+	--atlas-text-secondary: #94a3b8;
+	--atlas-text-technical: #64748b;
+	--atlas-text-faint: #334155;
+
+	/* Domain Semantic Accent Colors */
+	--atlas-domain-gis: #10b981;
+	--atlas-domain-gis-glow: rgba(16, 185, 129, 0.25);
+
+	--atlas-domain-erp: #0ea5e9;
+	--atlas-domain-erp-glow: rgba(14, 165, 233, 0.25);
+
+	--atlas-domain-ai: #8b5cf6;
+	--atlas-domain-ai-glow: rgba(139, 92, 246, 0.25);
+
+	--atlas-domain-infra: #f59e0b;
+	--atlas-domain-infra-glow: rgba(245, 158, 11, 0.25);
+}
+
+/* Typography Hierarchy Classes */
+.atlas-font-display {
+	font-family:
+		'Outfit',
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
+	letter-spacing: -0.02em;
+}
+
+.atlas-font-narrative {
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
+	line-height: 1.6;
+}
+
+.atlas-font-mono {
+	font-family: 'JetBrains Mono', monospace;
+	font-feature-settings:
+		'tnum' on,
+		'zero' on;
+}
+
+/* Tactical Crosshair Cursor */
+.atlas-crosshair-reticle {
+	pointer-events: none;
+	position: fixed;
+	z-index: 40;
+	transform: translate(-50%, -50%);
+	transition: opacity 0.2s ease-out;
+}
+
+/* Cartographic Grid Background */
+.atlas-bg-grid {
+	background-image:
+		linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+	background-size: 40px 40px;
+}
