@@ -26,17 +26,18 @@ export class AtlasEngine {
 
 	// Master Raw Geographic Points (Kab. Purwakarta)
 	private readonly geographicPoints: readonly AtlasPoint[] = [
-		{ x: 420, y: 380 },
-		{ x: 500, y: 360 },
-		{ x: 580, y: 370 },
-		{ x: 630, y: 460 },
-		{ x: 610, y: 530 },
-		{ x: 590, y: 580 },
-		{ x: 540, y: 610 },
-		{ x: 490, y: 620 },
-		{ x: 430, y: 580 },
-		{ x: 390, y: 540 },
-		{ x: 380, y: 430 }
+		{ x: 420, y: 180 },
+		{ x: 550, y: 170 },
+		{ x: 660, y: 230 },
+		{ x: 760, y: 320 },
+		{ x: 780, y: 460 },
+		{ x: 750, y: 530 },
+		{ x: 680, y: 670 },
+		{ x: 630, y: 730 },
+		{ x: 440, y: 810 },
+		{ x: 320, y: 750 },
+		{ x: 250, y: 440 },
+		{ x: 360, y: 230 }
 	];
 
 	// Master System Architecture Diagram Points (Rectangular Core Block)
@@ -58,7 +59,7 @@ export class AtlasEngine {
 		this.scenes = scenes;
 		const initialTarget = this.scenes[0]?.cameraTarget ?? {
 			x: 500,
-			y: 500,
+			y: 390,
 			zoom: 4.5,
 			rotation: 0
 		};
@@ -83,7 +84,7 @@ export class AtlasEngine {
 		// 2. Career Trajectory Vector (2022 to 2026)
 		const trajectoryPath: AtlasPath = {
 			id: 'path-career-trajectory',
-			d: 'M 500 500 Q 560 460 620 380 T 720 360 M 620 380 Q 500 550 380 640 T 280 680',
+			d: 'M 500 390 Q 560 350 620 320 T 740 340 M 620 320 Q 500 500 380 600 T 280 680',
 			strokeWidth: 2,
 			strokeColor: '#38bdf8',
 			dashArray: '6 4',
@@ -121,9 +122,9 @@ export class AtlasEngine {
 		const nodes: AtlasNode[] = [
 			{
 				id: 'node-origin-pwk',
-				label: 'PURWAKARTA ORIGIN',
-				subtitle: 'Base Spatial Anchor (00°31\'12"S 107°26\'32"E)',
-				position: { x: 500, y: 500 },
+				label: 'SIPEDO GIS PLATFORM',
+				subtitle: 'PostGIS GiST Engine (Purwakarta)',
+				position: { x: 500, y: 390 },
 				domain: 'gis',
 				isPrimary: true,
 				evidenceId: 'ev-sipedo-indexing'
@@ -132,7 +133,7 @@ export class AtlasEngine {
 				id: 'node-wms-hub',
 				label: 'ENTERPRISE WMS CORE',
 				subtitle: '4,500 req/sec Inventory Mesh',
-				position: { x: 720, y: 360 },
+				position: { x: 740, y: 340 },
 				domain: 'erp',
 				isPrimary: false,
 				evidenceId: 'ev-wms-state-machine'
