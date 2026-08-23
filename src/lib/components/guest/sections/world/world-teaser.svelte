@@ -263,7 +263,7 @@
 <section
 	id="world-teaser"
 	bind:this={sectionEl}
-	class="relative h-[65vh] min-h-[500px] w-full overflow-hidden border-y-2 border-foreground bg-background py-16"
+	class="relative h-[65vh] min-h-125 w-full overflow-hidden border-y-2 border-foreground bg-background py-16"
 >
 	<!-- Grain Texture Overlay -->
 	<div

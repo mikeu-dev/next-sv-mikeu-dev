@@ -1,14 +1,6 @@
 <script lang="ts">
 	import { atlasStore } from '../core/AtlasState.svelte';
-	import {
-		X,
-		ExternalLink,
-		Sparkles,
-		MapPin,
-		Calendar,
-		Layers,
-		CheckCircle2
-	} from '@lucide/svelte';
+	import { X, ExternalLink, MapPin, Calendar, Layers, CheckCircle2 } from '@lucide/svelte';
 
 	function handleEvidenceClick(evidenceId: string) {
 		if (atlasStore.activeProject) {
@@ -34,13 +26,13 @@
 	<!-- Project Card Dialog (Cartographic Blueprint Theme) -->
 	<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
 		<div
-			class="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-md border border-[#1e293b] bg-[#0f141d] text-[#f8fafc] shadow-2xl"
+			class="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-md border border-[#1e293b] bg-[#0f141d] text-background shadow-2xl"
 		>
 			<!-- Top Accent Stripe based on Territory Domain -->
 			<div
 				class={`h-1.5 w-full ${
 					atlasStore.activeProject.domain === 'gis'
-						? 'bg-[#10b981]'
+						? 'bg-emerald'
 						: atlasStore.activeProject.domain === 'erp'
 							? 'bg-[#0ea5e9]'
 							: 'bg-[#8b5cf6]'
@@ -63,7 +55,7 @@
 						</span>
 					</div>
 
-					<h2 class="mt-2 font-sans text-2xl font-bold tracking-tight text-[#f8fafc]">
+					<h2 class="mt-2 font-sans text-2xl font-bold tracking-tight text-background">
 						{atlasStore.activeProject.title}
 					</h2>
 
@@ -74,7 +66,7 @@
 
 				<button
 					onclick={() => atlasStore.closeProject()}
-					class="rounded-md border border-[#1e293b] bg-[#161e2b] p-2 text-[#94a3b8] transition-colors hover:border-[#38bdf8] hover:text-[#f8fafc]"
+					class="rounded-md border border-[#1e293b] bg-[#161e2b] p-2 text-[#94a3b8] transition-colors hover:border-[#38bdf8] hover:text-background"
 					aria-label="Close project modal"
 				>
 					<X class="size-4" />
@@ -89,7 +81,7 @@
 						<span class="font-mono text-[8.5px] font-bold tracking-wider text-[#64748b] uppercase"
 							>CLIENT / PARTNER</span
 						>
-						<p class="mt-0.5 font-mono text-xs font-semibold text-[#f8fafc]">
+						<p class="mt-0.5 font-mono text-xs font-semibold text-background">
 							{atlasStore.activeProject.clientOrOrg}
 						</p>
 					</div>
@@ -97,9 +89,7 @@
 						<span class="font-mono text-[8.5px] font-bold tracking-wider text-[#64748b] uppercase"
 							>SPATIAL ANCHOR</span
 						>
-						<p
-							class="mt-0.5 flex items-center gap-1 font-mono text-xs font-semibold text-[#10b981]"
-						>
+						<p class="mt-0.5 flex items-center gap-1 font-mono text-xs font-semibold text-emerald">
 							<MapPin class="size-3" />
 							{atlasStore.activeProject.location.label}
 						</p>
@@ -128,7 +118,7 @@
 				<!-- Evidence Artifacts List -->
 				<div class="mt-6">
 					<div
-						class="flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-widest text-[#10b981] uppercase"
+						class="flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-widest text-emerald uppercase"
 					>
 						<CheckCircle2 class="size-3" />
 						<span>ATTACHED PRODUCTION EVIDENCE ({atlasStore.activeProject.evidence.length})</span>
@@ -137,10 +127,10 @@
 					<div class="mt-3 space-y-2.5">
 						{#each atlasStore.activeProject.evidence as ev (ev.id)}
 							<div
-								class="flex items-center justify-between rounded border border-[#1e293b] bg-[#111620] p-3.5 transition-all hover:border-[#10b981]/50"
+								class="flex items-center justify-between rounded border border-[#1e293b] bg-[#111620] p-3.5 transition-all hover:border-emerald/50"
 							>
 								<div class="flex flex-col">
-									<span class="font-sans text-sm font-semibold text-[#f8fafc]">{ev.title}</span>
+									<span class="font-sans text-sm font-semibold text-background">{ev.title}</span>
 									<span class="font-mono text-[9px] text-[#64748b]">
 										{ev.artifacts.length} Verified Artifacts (Metrics & Code Snippets)
 									</span>
@@ -148,7 +138,7 @@
 
 								<button
 									onclick={() => handleEvidenceClick(ev.id)}
-									class="flex items-center gap-1 rounded border border-[#10b981]/60 bg-[#10b981]/10 px-3 py-1.5 font-mono text-[10px] font-bold text-[#10b981] transition-colors hover:bg-[#10b981] hover:text-[#0a0d12]"
+									class="flex items-center gap-1 rounded border border-emerald/60 bg-emerald/10 px-3 py-1.5 font-mono text-[10px] font-bold text-emerald transition-colors hover:bg-emerald hover:text-[#0a0d12]"
 								>
 									<span>INSPECT</span>
 									<ExternalLink class="size-3" />
@@ -166,7 +156,7 @@
 				<span>ATLAS PROJECT DNA // ID: {atlasStore.activeProject.id}</span>
 				<button
 					onclick={() => atlasStore.closeProject()}
-					class="font-bold text-[#f8fafc] hover:underline"
+					class="font-bold text-background hover:underline"
 				>
 					[CLOSE DIALOG]
 				</button>

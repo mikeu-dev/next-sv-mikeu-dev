@@ -58,11 +58,11 @@
 	<!-- Left Telemetry: Coordinate Beacon & Location Anchor -->
 	<div class="flex items-center gap-3">
 		<div class="flex size-2.5 items-center justify-center">
-			<span class="size-2.5 animate-ping rounded-full bg-[#10b981] opacity-75"></span>
-			<span class="absolute size-1.5 rounded-full bg-[#10b981]"></span>
+			<span class="size-2.5 animate-ping rounded-full bg-emerald opacity-75"></span>
+			<span class="absolute size-1.5 rounded-full bg-emerald"></span>
 		</div>
 		<div class="flex flex-col">
-			<span class="font-mono text-[11px] font-bold tracking-widest text-[#f8fafc] uppercase">
+			<span class="font-mono text-[11px] font-bold tracking-widest text-background uppercase">
 				{atlasStore.formattedCoordinates}
 			</span>
 			<span class="font-mono text-[8.5px] tracking-wider text-[#64748b] uppercase">
@@ -81,16 +81,16 @@
 				<span class="h-2 w-px bg-[#94a3b8]"></span>
 				<span class="h-px w-14 bg-[#94a3b8]"></span>
 				<span class="h-2 w-px bg-[#94a3b8]"></span>
-				<span class="pl-1 text-[9px] font-bold text-[#f8fafc]">{atlasStore.altitudeMeters}M</span>
+				<span class="pl-1 text-[9px] font-bold text-background">{atlasStore.altitudeMeters}M</span>
 			</div>
 			<span class="text-[8px] text-[#64748b]">SCALE {atlasStore.scaleLabel}</span>
 		</div>
 
 		<!-- System Operational Status Badge -->
 		<div
-			class="flex items-center gap-1.5 rounded-xs border border-[#10b981]/40 bg-[#111620] px-2.5 py-1 text-[9px] font-bold text-[#10b981]"
+			class="flex items-center gap-1.5 rounded-xs border border-emerald/40 bg-[#111620] px-2.5 py-1 text-[9px] font-bold text-emerald"
 		>
-			<span class="size-1.5 rounded-full bg-[#10b981]"></span>
+			<span class="size-1.5 rounded-full bg-emerald"></span>
 			<span>SYS_READY</span>
 		</div>
 	</div>
@@ -108,19 +108,19 @@
 			<span class="font-bold text-[#38bdf8]">
 				CH 0{atlasStore.activeSceneIndex + 1}:
 			</span>
-			<span class="font-bold text-[#f8fafc]">
+			<span class="font-bold text-background">
 				{atlasStore.activeScene?.title ?? 'ARRIVAL'}
 			</span>
 		</div>
 		<span class="font-bold text-[#64748b]">
-			PROGRESS: <span class="text-[#f8fafc]">{Math.round(atlasStore.globalProgress * 100)}%</span>
+			PROGRESS: <span class="text-background">{Math.round(atlasStore.globalProgress * 100)}%</span>
 		</span>
 	</div>
 
 	<!-- Linear Progress Bar -->
 	<div class="relative h-1.5 w-full overflow-hidden rounded-full bg-[#1e293b]">
 		<div
-			class="h-full bg-gradient-to-r from-[#10b981] via-[#0ea5e9] to-[#8b5cf6] transition-all duration-75"
+			class="h-full bg-linear-to-r from-emerald via-[#0ea5e9] to-[#8b5cf6] transition-all duration-75"
 			style={`width: ${Math.round(atlasStore.globalProgress * 100)}%`}
 		></div>
 	</div>
@@ -132,9 +132,9 @@
 		{#each ATLAS_SCENES as scene, idx (scene.id)}
 			<button
 				onclick={() => engine.focusAnchor(scene.cameraTarget, scene.cameraTarget.zoom)}
-				class={`transition-all duration-200 hover:text-[#f8fafc] ${
+				class={`transition-all duration-200 hover:text-background ${
 					atlasStore.activeSceneIndex === idx
-						? 'border-b border-[#10b981] font-bold text-[#10b981]'
+						? 'border-b border-emerald font-bold text-emerald'
 						: 'opacity-70 hover:opacity-100'
 				}`}
 			>
