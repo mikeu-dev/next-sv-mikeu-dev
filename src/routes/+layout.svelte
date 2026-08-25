@@ -16,11 +16,26 @@
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import Lenis from 'lenis';
 	import { dev } from '$app/env';
-	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	// @vercel/analytics's `injectAnalytics` (from '@vercel/analytics/sveltekit') still imports the
+	// removed `$app/stores`, which now throws and crashes hydration — no SvelteKit-3-compatible
+	// release exists yet (checked even the latest canary). Using the framework-agnostic `inject`
+	// instead, replicating what `injectAnalytics` did internally (see its source): inject with
+	// `disableAutoTrack`, then manually call `pageview()` on route change via `$app/state`.
+	import { inject, pageview } from '@vercel/analytics';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
 	import { ArrowUp } from '@lucide/svelte';
 
-	injectAnalytics({ mode: dev ? 'development' : 'production' });
+	inject({
+		mode: dev ? 'development' : 'production',
+		disableAutoTrack: true,
+		framework: 'sveltekit'
+	});
+
+	$effect(() => {
+		if (page.route.id) {
+			pageview({ route: page.route.id, path: page.url.pathname });
+		}
+	});
 
 	import { pwaState, type BeforeInstallPromptEvent } from '#lib/stores/pwa.svelte.js';
 	import AdsenseLoader from '@/lib/components/ui/adsense-loader.svelte';
