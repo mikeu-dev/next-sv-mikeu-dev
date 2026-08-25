@@ -17,9 +17,6 @@ importers:
       '@splidejs/svelte-splide':
         specifier: ^0.2.9
         version: 0.2.9
-      '@sveltejs/adapter-static':
-        specifier: ^3.0.10
-        version: 3.0.10(@sveltejs/kit@3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))
       '@sveltejs/adapter-vercel':
         specifier: next
         version: 7.0.0-next.8(@sveltejs/kit@3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(encoding@0.1.13)(rollup@4.62.2)(supports-color@7.2.0)
@@ -126,9 +123,6 @@ importers:
       '@storybook/sveltekit':
         specifier: ^10.4.6
         version: 10.4.6(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(esbuild@0.28.1)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.2)(prettier@3.6.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1))
-      '@sveltejs/adapter-node':
-        specifier: next
-        version: 6.0.0-next.10(@sveltejs/kit@3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))
       '@sveltejs/kit':
         specifier: next
         version: 3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1))
@@ -1677,16 +1671,6 @@ packages:
     resolution: {integrity: sha512-wgKggnhZVL9Bfx1OaKKTrYY9BFRk6C8UAkQNUcIv1+llzYrIqy+RZm5HPKzn0NpEBvTVhTqB4kQyllZywsRBRQ==}
     peerDependencies:
       acorn: ^8.9.0
-
-  '@sveltejs/adapter-node@6.0.0-next.10':
-    resolution: {integrity: sha512-eYvk01tqPixXDkw5MCsMJZUU/9gbqWIAE9ASUYDtIaESmUcT/QBXo15Gd5NHy4ow4pelXVP/wJnQKa2RxOg10g==}
-    peerDependencies:
-      '@sveltejs/kit': ^3.0.0-next.0
-
-  '@sveltejs/adapter-static@3.0.10':
-    resolution: {integrity: sha512-7D9lYFWJmB7zxZyTE/qxjksvMqzMuYrrsyh1f4AlZqeZeACPRySjbC3aFiY55wb1tWUaKOQG9PVbm74JcN2Iew==}
-    peerDependencies:
-      '@sveltejs/kit': ^2.0.0
 
   '@sveltejs/adapter-vercel@7.0.0-next.8':
     resolution: {integrity: sha512-PxZNjtolvKLgt5uOqN+Iz5l86N5OZgXxK2iV1QgTs/zhCYSk7+xJk7Yh5ZSKv6QsNwyOnyEOTyd5NsaUJbk/9Q==}
@@ -5948,15 +5932,6 @@ snapshots:
   '@sveltejs/acorn-typescript@1.0.13(acorn@8.18.0)':
     dependencies:
       acorn: 8.18.0
-
-  '@sveltejs/adapter-node@6.0.0-next.10(@sveltejs/kit@3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))':
-    dependencies:
-      '@sveltejs/kit': 3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1))
-      rolldown: 1.2.5
-
-  '@sveltejs/adapter-static@3.0.10(@sveltejs/kit@3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))':
-    dependencies:
-      '@sveltejs/kit': 3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1))
 
   '@sveltejs/adapter-vercel@7.0.0-next.8(@sveltejs/kit@3.0.0-next.25(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.56.10(@typescript-eslint/types@8.61.1))(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(svelte@5.56.10(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.2.2(@types/node@22.19.21)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.6.1)))(encoding@0.1.13)(rollup@4.62.2)(supports-color@7.2.0)':
     dependencies:

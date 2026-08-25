@@ -117,10 +117,8 @@
 									<span class={getStatusClass(contact.status)}>{contact.status}</span>
 								</td>
 								<td class="p-4 text-right align-middle">
-									<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-
 									<a
-										href="{resolve('')}/admin/contacts/{contact.id}"
+										href={resolve('/admin/contacts/[id]', { id: contact.id })}
 										class="text-primary hover:underline">View</a
 									>
 								</td>

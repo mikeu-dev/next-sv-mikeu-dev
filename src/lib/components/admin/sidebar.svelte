@@ -62,7 +62,7 @@
 	)}
 >
 	<div class="flex h-16 items-center justify-center border-b px-6">
-		<a href="{resolve('')}/admin" class="flex items-center gap-2 text-xl font-bold"
+		<a href={resolve('/admin')} class="flex items-center gap-2 text-xl font-bold"
 			><span>Admin Panel</span></a
 		>
 	</div>
