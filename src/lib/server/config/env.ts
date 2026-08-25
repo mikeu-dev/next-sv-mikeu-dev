@@ -6,9 +6,6 @@ const envSchema = z.object({
 	FIREBASE_PRIVATE_KEY: z.string().optional(),
 	FIREBASE_CLIENT_EMAIL: z.string().optional(),
 
-	// Session Configuration
-	SESSION_EXPIRES_DAYS: z.string().default('7'),
-
 	// Owner & Admin Configuration
 	OWNER_EMAIL: z.string().optional(),
 	ADMIN_USERNAME: z.string().optional(),
@@ -19,9 +16,6 @@ const envSchema = z.object({
 	GITHUB_USERNAME: z.string().optional(),
 	GITHUB_REPO: z.string().optional(),
 	GITHUB_BRANCH: z.string().default('main'),
-
-	// Uploads
-	UPLOADS_DIR: z.string().default('./uploads'),
 
 	// AI Gemini
 	GOOGLE_GEMINI_API_KEY: z.string().optional(),
@@ -69,7 +63,6 @@ export function checkRequiredEnvVars(): boolean {
 		'GITHUB_REPO'
 	];
 
-	// @migration-task Rewrite dynamic env lookup manually.
 	const missing = required.filter((key) => !dynamicPrivateEnv[key]);
 
 	if (missing.length > 0) {

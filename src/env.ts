@@ -1,6 +1,9 @@
 import { defineEnvVars } from '@sveltejs/kit/env';
 
-// @migration-task Review usage of dynamic environment variables. They fall back to the empty string if not present, which may not be what you want.
+// Reviewed: every var below falls back to '' if unset, matching the old $env/dynamic/private
+// behavior these replaced (bare `undefined`). All of them are actually set in .env for this
+// project; consumers that gate on these (e.g. handlePublicApi's EXTERNAL_API_KEY check,
+// firebase.server.ts's Firebase Admin init) already fail closed rather than fail open when empty.
 export const variables = defineEnvVars({
 	FLAGS_SECRET: { static: true },
 	PUBLIC_LOTTIE_URL: { public: true, schema: (input) => input ?? '' },
@@ -15,8 +18,7 @@ export const variables = defineEnvVars({
 	OWNER_EMAIL: { schema: (input) => input ?? '' },
 	// `$env/dynamic/private` (still used by firebase.server.ts, github-storage.service.ts, and
 	// src/lib/server/config/env.ts) is now just a re-export of these declared vars — anything not
-	// listed here silently reads as undefined instead of the real value. See MIGRATION_TASKS.md
-	// history / commit for the regression this restored.
+	// listed here silently reads as undefined instead of the real value (see commit 0f337a2).
 	FIREBASE_PROJECT_ID: { schema: (input) => input ?? '' },
 	FIREBASE_PRIVATE_KEY: { schema: (input) => input ?? '' },
 	FIREBASE_CLIENT_EMAIL: { schema: (input) => input ?? '' },
