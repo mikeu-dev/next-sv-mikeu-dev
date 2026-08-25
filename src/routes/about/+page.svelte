@@ -1,18 +1,18 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { TechStackCategory, JourneyItem } from '$lib/types';
+	import type { TechStackCategory, JourneyItem } from '#lib/types.js';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { getLocale } from '$lib/paraglide/runtime';
-	import { m } from '$lib/paraglide/messages';
-	import { getLocalizedTag } from '$lib/utils/project-mapper';
-	import { optimizeImage } from '$lib/utils/image.util';
+	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { m } from '#lib/paraglide/messages.js';
+	import { getLocalizedTag } from '#lib/utils/project-mapper.js';
+	import { optimizeImage } from '#lib/utils/image.util.js';
 	import { Mail, Coffee, Gamepad2, Music, CheckCircle2, ArrowRight, Hash } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
-	import SkillPlayground from '$lib/components/about/skill-playground.svelte';
-	import SEO from '$lib/components/seo/seo.svelte';
-	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
+	import SkillPlayground from '#lib/components/about/skill-playground.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
+	import { PUBLIC_CONTACT_EMAIL } from '$app/env/public';
 
 	let { data }: { data: PageData } = $props();
 	let locale = $state(getLocale());
@@ -27,10 +27,10 @@
 	});
 
 	let initialLocale = locale;
-
 	let techstackRaw = $derived(
 		(data?.techStack?.[initialLocale] || data?.techStack?.['id'] || []) as TechStackCategory[]
 	);
+
 	let techstack = $derived(
 		techstackRaw.map((category) => ({
 			...category,
@@ -194,8 +194,10 @@
 			style="clip-path: polygon(0% 0%, 100% 0%, 98% 92%, 80% 100%, 20% 95%, 0% 100%);"
 		>
 			<!-- Paper Creases -->
+
 			<div class="pointer-events-none absolute inset-0 overflow-hidden opacity-20">
 				<div class="absolute -top-1/2 -left-1/4 h-[200%] w-px rotate-35 bg-foreground/30"></div>
+
 				<div
 					class="absolute -top-1/2 left-3/4 h-[200%] w-px rotate-[-15deg] bg-foreground/30"
 				></div>
@@ -210,8 +212,10 @@
 						>
 							[USER_IDENTITY_STAMP]
 						</div>
+
 						<h1 class="font-poppins text-6xl font-black tracking-tighter md:text-9xl">
-							{m.about_begin_first_part()} 👋<br />
+							{m.about_begin_first_part()} 👋
+							<br />
 							I'm
 							<span class="text-primary underline decoration-4 underline-offset-8"
 								>{m.common_author_name()}</span
@@ -240,10 +244,14 @@
 									href={resumeUrl}
 									download
 									class="group relative border-4 border-foreground bg-primary px-8 py-4 font-mono text-xs font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none"
-									>{m.about_hero_resume()}<ArrowRight
-										class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
-									/></a
 								>
+									{m.about_hero_resume()}
+
+									<ArrowRight
+										class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
+									/>
+								</a>
+
 								<ArrowRight
 									class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
 								/>
@@ -331,8 +339,10 @@
 				>
 					[TEMPORAL_LOGS]
 				</div>
+
 				<h2 class="font-poppins text-5xl font-black tracking-tight md:text-8xl">
-					{m.about_jurney_title()}<span class="text-primary">_</span>
+					{m.about_jurney_title()}
+					<span class="text-primary">_</span>
 				</h2>
 			</div>
 

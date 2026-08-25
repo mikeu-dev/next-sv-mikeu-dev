@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import BlogClippingTile from './blog-clipping-tile.svelte';
-	import BlogFeatured from '$lib/components/guest/blog/blog-featured.svelte';
-	import type { BlogPost } from '$lib/types';
+	import BlogFeatured from '#lib/components/guest/blog/blog-featured.svelte';
+	import type { BlogPost } from '#lib/types.js';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import Icon from '$lib/components/ui/icon.svelte';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import Icon from '#lib/components/ui/icon.svelte';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 	import { Hash, Terminal } from '@lucide/svelte';
 
 	let { posts = [] }: { posts: BlogPost[] } = $props();

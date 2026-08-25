@@ -1,5 +1,5 @@
-﻿import { SkillsRepository } from '../repositories/skills.repository';
-import { dev } from '$app/environment';
+import { SkillsRepository } from '../repositories/skills.repository';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
 
 export class SkillsService {
@@ -55,6 +55,7 @@ export class SkillsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`SkillsService: Quota exceeded while fetching skills for ${lang}`);
+
 				return (
 					persistentCache.get<{ items: string[] }>(`skills_${lang}`) ||
 					SkillsService.cache[lang] || { items: [] }

@@ -1,11 +1,10 @@
 ﻿export const prerender = false;
 
-import { json } from '@sveltejs/kit';
 import { AuthService } from '../../../lib/server/services/auth.service';
 import { HttpException } from '../../../lib/server/exceptions/http.exception';
-import { UserService } from '$lib/server/services/user.service';
-import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
-import { logError } from '$lib/server/utils/logger';
+import { UserService } from '#lib/server/services/user.service.js';
+import { checkRateLimit, RateLimitPresets } from '#lib/server/middleware/rate-limit.js';
+import { logError } from '#lib/server/utils/logger.js';
 import type { RequestEvent } from '@sveltejs/kit';
 
 const authService = new AuthService();
@@ -35,20 +34,20 @@ export async function POST(event: RequestEvent) {
 			maxAge: 60 * 60 * 24 * 7 // 1 week
 		});
 
-		return json({ uid: decodedToken.uid });
+		return Response.json({ uid: decodedToken.uid });
 	} catch (e: unknown) {
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		// Safely check for Firebase Auth error codes
 		if (typeof e === 'object' && e !== null && 'code' in e) {
 			const error = e as { code: string };
 			if (error.code === 'auth/id-token-revoked') {
-				return json({ message: 'Token has been revoked.' }, { status: 401 });
+				return Response.json({ message: 'Token has been revoked.' }, { status: 401 });
 			}
 		}
 		logError('API:Auth:POST', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
 
@@ -60,12 +59,12 @@ export async function DELETE({ cookies }: RequestEvent) {
 			await authService.revokeRefreshTokens(decodedClaims.sub);
 			cookies.delete('__session', { path: '/' });
 		}
-		return json({ message: 'Logged out' });
+		return Response.json({ message: 'Logged out' });
 	} catch (e: unknown) {
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		logError('API:Auth:DELETE', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }

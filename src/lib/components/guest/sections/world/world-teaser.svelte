@@ -2,10 +2,10 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { m } from '$lib/paraglide/messages';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { m } from '#lib/paraglide/messages.js';
 	import { ArrowRight, Terminal, Command, Hash, Sparkles } from '@lucide/svelte';
-	import SectionLoader from '$lib/components/ui/section-loader.svelte';
+	import SectionLoader from '#lib/components/ui/section-loader.svelte';
 
 	let sectionEl = $state<HTMLElement>();
 	let cardElement = $state<HTMLElement>();

@@ -1,8 +1,7 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { visitorService } from '$lib/server/services/visitor.service';
-import { monitoringService } from '$lib/server/services/monitoring.service';
-import { env } from '$env/dynamic/private';
+﻿import type { RequestHandler } from './$types';
+import { visitorService } from '#lib/server/services/visitor.service.js';
+import { monitoringService } from '#lib/server/services/monitoring.service.js';
+import { CRON_SECRET } from '$app/env/private';
 
 /**
  * System Cleanup Endpoint
@@ -15,8 +14,8 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const cronSecret = request.headers.get('x-vercel-cron'); // Auto-set by Vercel Cron
 
 	// If not called by Vercel Cron and no secret provided, block it
-	if (!cronSecret && env.CRON_SECRET && authHeader !== `Bearer ${env.CRON_SECRET}`) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!cronSecret && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+		return Response.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
 	try {
@@ -26,7 +25,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		const visitorCleared = await visitorService.clearOldLogs(visitorDays);
 		const errorCleared = await monitoringService.clearOldLogs(errorDays);
 
-		return json({
+		return Response.json({
 			success: true,
 			timestamp: new Date().toISOString(),
 			summary: {
@@ -42,6 +41,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		});
 	} catch (error) {
 		console.error('System Cleanup Failed:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return Response.json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

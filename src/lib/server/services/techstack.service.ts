@@ -1,5 +1,5 @@
-﻿import { TechStackRepository, type TechStackData } from '../repositories/techstack.repository';
-import { dev } from '$app/environment';
+import { TechStackRepository, type TechStackData } from '../repositories/techstack.repository';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
 
 export class TechStackService {
@@ -55,6 +55,7 @@ export class TechStackService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`TechStackService: Quota exceeded while fetching techstack for ${lang}`);
+
 				return (
 					persistentCache.get<TechStackData>(`techstack_${lang}`) ||
 					TechStackService.cache[lang] || { categories: [] }

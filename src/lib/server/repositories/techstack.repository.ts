@@ -1,6 +1,6 @@
 ﻿import { BaseRepository } from '../core/base.repository';
 import { COLLECTIONS } from '../firebase/collections';
-import type { TechStackCategory } from '$lib/types';
+import type { TechStackCategory } from '#lib/types.js';
 
 export interface TechStackData {
 	categories: TechStackCategory[];

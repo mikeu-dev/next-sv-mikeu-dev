@@ -12,10 +12,10 @@
 		Clock,
 		RefreshCw
 	} from '@lucide/svelte';
-	import type { VisitorAnalytics } from '$lib/server/services/visitor.service';
-	import { Button } from '$lib/components/ui/button';
+	import type { VisitorAnalytics } from '#lib/server/services/visitor.service.js';
+	import { Button } from '#lib/components/ui/button/index.js';
 	import { toast } from 'svelte-sonner';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.js';
 	import { fade, fly } from 'svelte/transition';
 
 	let analytics = $state<VisitorAnalytics | null>(null);

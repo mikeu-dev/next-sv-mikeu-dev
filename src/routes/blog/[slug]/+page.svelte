@@ -1,18 +1,18 @@
 <script lang="ts">
-	import Breadcrumb from '$lib/components/ui/breadcrumb.svelte';
+	import Breadcrumb from '#lib/components/ui/breadcrumb.svelte';
 	import type { PageData } from './$types';
-	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-	import { m } from '$lib/paraglide/messages';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
+	import { m } from '#lib/paraglide/messages.js';
 	import { ArrowLeft, Clock, Calendar, Database, BookOpen, Coffee } from '@lucide/svelte';
-	import { env } from '$env/dynamic/public';
-	import MarkdownRenderer from '$lib/components/ui/markdown-renderer.svelte';
-	import ReadingProgress from '$lib/components/blog/reading-progress.svelte';
-	import TableOfContents from '$lib/components/blog/table-of-contents.svelte';
-	import RelatedPosts from '$lib/components/blog/related-posts.svelte';
-	import BlogReactions from '$lib/components/blog/blog-reactions.svelte';
-	import BlogShare from '$lib/components/blog/blog-share.svelte';
+	import { PUBLIC_TRAKTEER_URL } from '$app/env/public';
+	import MarkdownRenderer from '#lib/components/ui/markdown-renderer.svelte';
+	import ReadingProgress from '#lib/components/blog/reading-progress.svelte';
+	import TableOfContents from '#lib/components/blog/table-of-contents.svelte';
+	import RelatedPosts from '#lib/components/blog/related-posts.svelte';
+	import BlogReactions from '#lib/components/blog/blog-reactions.svelte';
+	import BlogShare from '#lib/components/blog/blog-share.svelte';
 	import { page } from '$app/state';
-	import SEO from '$lib/components/seo/seo.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 
@@ -207,7 +207,7 @@
 							{m.blog_support_desc()}
 						</p>
 						<a
-							href={env.PUBLIC_TRAKTEER_URL || '#'}
+							href={PUBLIC_TRAKTEER_URL || '#'}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="tape-cta flex w-full items-center justify-center gap-2 px-4 py-2.5 font-mono text-[11px] font-black tracking-wide uppercase"

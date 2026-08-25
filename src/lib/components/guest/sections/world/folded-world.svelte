@@ -8,7 +8,7 @@
 		type ViewMode,
 		type PlanetStyle
 	} from './folded-world.types';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { mode } from 'mode-watcher';
 	import gsap from 'gsap';
 
@@ -151,7 +151,8 @@
 
 <div class="folded-world-container" class:minimal bind:this={containerEl}>
 	<!-- Three.js Canvas -->
-	<canvas bind:this={canvasEl} class="folded-world-canvas"></canvas>
+	<canvas bind:this={canvasEl} class="folded-world-canvas" aria-label={m.world_description()}
+	></canvas>
 
 	<!-- Loading State -->
 	{#if engine.state.loading && !minimal}
@@ -261,7 +262,7 @@
 							class="text-[8px] transition-transform"
 							style:transform={isPlanetDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
 						>
-							â–¼
+							▼
 						</span>
 					</button>
 
@@ -288,7 +289,7 @@
 
 		<!-- Bottom-left: FPS & Face count -->
 		<div class="hud hud-bottom-left">
-			<span class="hud-meta">{engine.state.fps} FPS Â· {engine.state.faceCount} FACES</span>
+			<span class="hud-meta">{engine.state.fps} FPS · {engine.state.faceCount} FACES</span>
 		</div>
 
 		<!-- Bottom-right: Instructions -->
@@ -347,7 +348,7 @@
 					{node.city ? `${node.city}, ` : ''}{node.country}
 				</p>
 				<p class="tooltip-detail">
-					{node.count} visitor{node.count !== 1 ? 's' : ''} Â· {formatRelativeTime(node.lastVisit)}
+					{node.count} visitor{node.count !== 1 ? 's' : ''} · {formatRelativeTime(node.lastVisit)}
 				</p>
 			</div>
 		</div>
@@ -357,7 +358,9 @@
 	{#if engine.detailPanel.visible && engine.detailPanel.node}
 		{@const node = engine.detailPanel.node}
 		<div class="detail-panel">
-			<button class="detail-close" onclick={() => engine.closeDetailPanel()}>Ã—</button>
+			<button class="detail-close" aria-label="Close" onclick={() => engine.closeDetailPanel()}
+				>×</button
+			>
 
 			<h3 class="detail-title">
 				{node.city ? `${node.city}, ` : ''}{node.country}
@@ -376,8 +379,7 @@
 				</div>
 				<div class="detail-item">
 					<span class="detail-label">{m.world_detail_coords()}</span>
-					<span class="detail-value"
-						>{node.latitude.toFixed(2)}Â°, {node.longitude.toFixed(2)}Â°</span
+					<span class="detail-value">{node.latitude.toFixed(2)}°, {node.longitude.toFixed(2)}°</span
 					>
 				</div>
 			</div>
@@ -409,7 +411,7 @@
 
 <style>
 	/* ================================================
-	   FOLDED WORLD â€” Brutalist + Origami Aesthetics
+	   FOLDED WORLD — Brutalist + Origami Aesthetics
 	   ================================================ */
 
 	.folded-world-container {

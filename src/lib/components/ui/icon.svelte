@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Icon as SvelteIconPack } from 'svelte-icons-pack';
-	import { iconRegistry } from '$lib/icons/registry';
+	import { iconRegistry } from '#lib/icons/registry.js';
 	import type { IconType } from 'svelte-icons-pack';
 	import { onMount, type Component } from 'svelte';
-	import { customIconStore } from '$lib/stores/icons.svelte';
+	import { customIconStore } from '#lib/stores/icons.svelte.js';
 
 	interface GenericIconProps {
 		color?: string;

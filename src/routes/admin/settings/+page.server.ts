@@ -1,7 +1,10 @@
 ﻿import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { settingsService } from '$lib/server/services/settings.service';
-import { generalSettingsSchema, profileSettingsSchema } from '$lib/server/schemas/settings.schema';
+import { settingsService } from '#lib/server/services/settings.service.js';
+import {
+	generalSettingsSchema,
+	profileSettingsSchema
+} from '#lib/server/schemas/settings.schema.js';
 
 export const load: PageServerLoad = async () => {
 	return {

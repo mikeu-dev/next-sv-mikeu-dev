@@ -1,15 +1,15 @@
 ﻿import type { RequestHandler } from './$types';
-import { projectsService } from '$lib/server/services/projects.service';
-import { blogService } from '$lib/server/services/blog.service';
-import { monitoringService } from '$lib/server/services/monitoring.service';
-import { locales, baseLocale } from '$lib/paraglide/runtime';
+import { projectsService } from '#lib/server/services/projects.service.js';
+import { blogService } from '#lib/server/services/blog.service.js';
+import { monitoringService } from '#lib/server/services/monitoring.service.js';
+import { locales, baseLocale } from '#lib/paraglide/runtime.js';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const siteUrl = 'https://www.mikeudev.my.id';
 
 	// Fetch dynamic data from services (singletons)
-	let dbProjects: import('$lib/types').Project[] = [];
-	let dbPosts: import('$lib/types').BlogPost[] = [];
+	let dbProjects: import('#lib/types.js').Project[] = [];
+	let dbPosts: import('#lib/types.js').BlogPost[] = [];
 
 	try {
 		const [projects, posts] = await Promise.all([

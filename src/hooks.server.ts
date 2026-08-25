@@ -1,16 +1,15 @@
-import type { Handle } from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
-import { paraglideMiddleware } from '$lib/paraglide/server';
-import { AuthService } from '$lib/server/services/auth.service';
 import { redirect } from '@sveltejs/kit';
-import { env } from '$lib/server/config/env';
-import { logWarning } from '$lib/server/utils/logger';
-import { VisitorService } from '$lib/server/services/visitor.service';
+import { sequence, type Handle } from '@sveltejs/kit/hooks';
+import { paraglideMiddleware } from '#lib/paraglide/server.js';
+import { AuthService } from '#lib/server/services/auth.service.js';
+import { env } from '#lib/server/config/env.js';
+import { logWarning } from '#lib/server/utils/logger.js';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
 import { UAParser } from 'ua-parser-js';
-import { building } from '$app/environment';
+import { building } from '$app/env';
 import { createHandle } from '@vercel/flags/sveltekit';
-import { FLAGS_SECRET } from '$env/static/private';
-import * as flags from '$lib/flags';
+import { FLAGS_SECRET } from '$app/env/private';
+import * as flags from '#lib/flags.js';
 
 const authService = new AuthService();
 const visitorService = new VisitorService();
@@ -76,16 +75,20 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(
 		event.request,
 		({ request, locale }: { request: Request; locale: string }) => {
-			event.request = request;
 			event.locals.paraglide = { locale };
 
-			return resolve(event, {
-				transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
-			});
+			// event.request is readonly in SvelteKit 3 — pass the locale-decorated
+			// request via a shallow-cloned event instead of reassigning it.
+			return resolve(
+				{ ...event, request },
+				{
+					transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
+				}
+			);
 		}
 	);
 
-import { resolveGeo } from '$lib/server/services/geo.service';
+import { resolveGeo } from '#lib/server/services/geo.service.js';
 
 /**
  * Visitor tracking middleware
@@ -223,7 +226,7 @@ const handlePublicApi: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-import { monitoringService } from '$lib/server/services/monitoring.service';
+import { monitoringService } from '#lib/server/services/monitoring.service.js';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	console.log(`[Hooks] Start handling request: ${event.url.pathname}`);
@@ -241,21 +244,25 @@ export const handle: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-export const handleError: import('@sveltejs/kit').HandleServerError = async ({
+export const handleError: import('@sveltejs/kit/hooks').HandleServerError = async ({
 	error,
 	event,
-	status,
-	message
+	kind
 }) => {
 	const errorId = crypto.randomUUID();
+	// `error` is only `{ status, message }` for 'app'/'framework'/'validation' kinds; for 'unknown' it's whatever was thrown.
+	const status = kind === 'unknown' ? 500 : error.status;
+	const message =
+		kind === 'unknown' ? (error instanceof Error ? error.message : 'Unknown error') : error.message;
+
 	// Log to console for CI/CD debugging
 	console.error(`[handleError] Error at ${event.url.pathname}:`, error);
 
 	// Log the error to Firestore
 	await monitoringService.logError({
 		type: 'server',
-		message: error instanceof Error ? error.message : message,
-		stack: error instanceof Error ? error.stack : undefined,
+		message,
+		stack: kind === 'unknown' && error instanceof Error ? error.stack : undefined,
 		url: event.url.toString(),
 		userAgent: event.request.headers.get('user-agent') || undefined,
 		locale: event.locals.paraglide?.locale,
@@ -269,7 +276,7 @@ export const handleError: import('@sveltejs/kit').HandleServerError = async ({
 
 	// For debugging purposes, we'll show the real error even in production temporarily
 	return {
-		message: error instanceof Error ? error.message : message,
+		message,
 		errorId
 	};
 };

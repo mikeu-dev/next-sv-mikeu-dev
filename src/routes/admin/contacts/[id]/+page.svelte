@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import type { Contact } from '$lib/types';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
+	import type { Contact } from '#lib/types.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Label } from '#lib/components/ui/label/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Textarea } from '#lib/components/ui/textarea/index.js';
+	import * as Card from '#lib/components/ui/card/index.js';
+	import * as Select from '#lib/components/ui/select/index.js';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	let contact: Contact | null = null;
 	let loading = true;
@@ -23,7 +23,7 @@
 	let tags: string[] = [];
 	let newTag: string = '';
 
-	const id = $page.params.id;
+	const id = page.params.id;
 
 	onMount(async () => {
 		try {
@@ -107,9 +107,11 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-4">
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			<Button variant="ghost" size="sm" onclick={() => goto(`${base}/admin/contacts`)}
-				>&larr; Back</Button
+
+			<Button variant="ghost" size="sm" onclick={() => goto(resolve(`admin/contacts`))}
+				>← Back</Button
 			>
+
 			<h2 class="text-3xl font-bold tracking-tight">Contact Details</h2>
 		</div>
 	</div>
@@ -198,7 +200,7 @@
 										{tag}
 										<button
 											class="ml-1 text-muted-foreground hover:text-foreground"
-											onclick={() => removeTag(tag)}>&times;</button
+											onclick={() => removeTag(tag)}>×</button
 										>
 									</span>
 								{/each}

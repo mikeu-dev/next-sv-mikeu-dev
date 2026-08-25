@@ -6,7 +6,7 @@ import type {
 	ContentEnhancementOptions,
 	ContentEnhancementResult,
 	FetchedArticle
-} from '$lib/types/ai-content.types';
+} from '#lib/types/ai-content.types.js';
 
 export interface ProjectMetadata {
 	title_id: string;

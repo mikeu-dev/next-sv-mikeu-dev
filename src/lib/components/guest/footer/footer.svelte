@@ -1,13 +1,13 @@
 <script lang="ts">
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import Icon from '$lib/components/ui/icon.svelte';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.js';
+	import Icon from '#lib/components/ui/icon.svelte';
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { Database, Activity, Cpu } from '@lucide/svelte';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { origamiClipPath, randomOrigamiClipPath } from '$lib/utils/origami-shape';
-	import { tornPaperClipPath } from '$lib/utils/torn-paper-shape';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { origamiClipPath, randomOrigamiClipPath } from '#lib/utils/origami-shape.js';
+	import { tornPaperClipPath } from '#lib/utils/torn-paper-shape.js';
 
 	let { socials = [], visitorStats = { total: 0, today: 0 } } = $props();
 

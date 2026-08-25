@@ -1,16 +1,16 @@
 <script lang="ts">
 	import WorkProjectTile from './work-project-tile.svelte';
-	import type { Project } from '$lib/types';
-	import { getLocale } from '$lib/paraglide/runtime.js';
-	import { m } from '$lib/paraglide/messages.js';
-	import { localizeHref } from '$lib/paraglide/runtime';
-	import { getLocalizedProject } from '$lib/utils/project-mapper';
+	import type { Project } from '#lib/types.js';
+	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
+	import { getLocalizedProject } from '#lib/utils/project-mapper.js';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowUpRight, Terminal, Hash } from '@lucide/svelte';
-	import { simulateDenseGrid, assignPuzzleEdges } from '$lib/utils/puzzle-grid';
+	import { simulateDenseGrid, assignPuzzleEdges } from '#lib/utils/puzzle-grid.js';
 
 	let { projects }: { projects: Project[] } = $props();
 	let currentLocale = $derived(getLocale());

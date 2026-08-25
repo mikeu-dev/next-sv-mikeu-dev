@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { blogService } from '$lib/server/services/blog.service';
-import { renderMarkdown } from '$lib/server/utils/markdown';
-import { reactionService } from '$lib/server/services/reaction.service';
+import { blogService } from '#lib/server/services/blog.service.js';
+import { renderMarkdown } from '#lib/server/utils/markdown.js';
+import { reactionService } from '#lib/server/services/reaction.service.js';
 
 export const load: PageServerLoad = async (event) => {
 	const { params, locals, setHeaders, cookies } = event;

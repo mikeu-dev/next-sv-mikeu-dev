@@ -1,13 +1,12 @@
 export const prerender = false;
 
-import { json } from '@sveltejs/kit';
 import { ContactsService } from '@/lib/server/services/contacts.service';
 import type { RequestHandler } from './$types';
-import { contactSchema } from '$lib/server/schemas/contact.schema';
-import { checkRateLimit, RateLimitPresets } from '$lib/server/middleware/rate-limit';
-import { logError } from '$lib/server/utils/logger';
+import { contactSchema } from '#lib/server/schemas/contact.schema.js';
+import { checkRateLimit, RateLimitPresets } from '#lib/server/middleware/rate-limit.js';
+import { logError } from '#lib/server/utils/logger.js';
 import { z } from 'zod';
-import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
+import { PushSubscriptionService } from '#lib/server/services/push-subscription.service.js';
 
 const contactsService = new ContactsService();
 const pushService = new PushSubscriptionService();
@@ -37,14 +36,14 @@ export const POST: RequestHandler = async (event) => {
 			})
 			.catch(console.error);
 
-		return json(
+		return Response.json(
 			{ message: 'Contact created successfully', contactId: contact.id },
 			{ status: 201 }
 		);
 	} catch (error) {
 		// Handle validation errors
 		if (error instanceof z.ZodError) {
-			return json(
+			return Response.json(
 				{
 					message: 'Validation error',
 					errors: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message }))
@@ -54,6 +53,6 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		logError('API:Contact:POST', error);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 };

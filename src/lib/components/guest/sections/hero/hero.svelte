@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { gsap } from 'gsap';
-	import { m } from '$lib/paraglide/messages';
-	import { tornPaperClipPath } from '$lib/utils/torn-paper-shape';
+	import { m } from '#lib/paraglide/messages.js';
+	import { tornPaperClipPath } from '#lib/utils/torn-paper-shape.js';
 
 	let heroSection = $state<HTMLElement>();
 	let heroCard = $state<HTMLElement>();

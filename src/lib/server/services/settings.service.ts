@@ -1,8 +1,8 @@
-﻿import { db } from '$lib/server/firebase/firebase.server';
+﻿import { db } from '#lib/server/firebase/firebase.server.js';
 import type { GeneralSettings, ProfileSettings, ResumeSettings } from '../schemas/settings.schema';
 import { defaultSettings } from '../schemas/settings.schema';
 import { sanitizeForFirestore } from '../utils/firestore';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
 
 export class SettingsService {
@@ -76,6 +76,7 @@ export class SettingsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('SettingsService: Quota exceeded while fetching general settings');
+
 				return (
 					persistentCache.get<GeneralSettings>(`settings_${this.DOC_GENERAL}`) ||
 					SettingsService.cache.general ||
@@ -158,6 +159,7 @@ export class SettingsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('SettingsService: Quota exceeded while fetching profile settings');
+
 				return (
 					persistentCache.get<ProfileSettings>(`settings_${this.DOC_PROFILE}`) ||
 					SettingsService.cache.profile ||
@@ -240,6 +242,7 @@ export class SettingsService {
 				(error as { code: number }).code === 8
 			) {
 				console.error('SettingsService: Quota exceeded while fetching resume settings');
+
 				return (
 					persistentCache.get<ResumeSettings>(`settings_${this.DOC_RESUME}`) ||
 					SettingsService.cache.resume ||

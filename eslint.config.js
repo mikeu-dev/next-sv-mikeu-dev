@@ -8,7 +8,9 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import { loadConfig } from '@sveltejs/load-config';
+
+const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
@@ -31,7 +33,7 @@ export default defineConfig(
 			'dist/**',
 			'static/**',
 			'messages/**',
-			'src/service-worker.ts',
+			'src/service-worker/**',
 			'src/lib/paraglide/**',
 			'src/paraglide/**',
 			'src/lib/server/scripts/**',

@@ -1,7 +1,6 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { blogService } from '$lib/server/services/blog.service';
-import type { BlogPost } from '$lib/types';
+import { blogService } from '#lib/server/services/blog.service.js';
+import type { BlogPost } from '#lib/types.js';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -9,13 +8,13 @@ export const GET: RequestHandler = async ({ url }) => {
 		const title = url.searchParams.get('title');
 		if (title) {
 			const post = await blogService.getPostByTitle(title);
-			return json({ data: post ? [post] : [] });
+			return Response.json({ data: post ? [post] : [] });
 		}
 		const posts = await blogService.getAllPosts();
-		return json({ data: posts });
+		return Response.json({ data: posts });
 	} catch (err) {
 		console.error('Error in public blog GET API:', err);
-		return json({ data: [] }, { status: 500 });
+		return Response.json({ data: [] }, { status: 500 });
 	}
 };
 
@@ -64,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			await blogService.createPost(postDataId);
 			const postEn = await blogService.createPost(postDataEn);
 
-			return json({ success: true, data: [postDataId, postEn] }, { status: 201 });
+			return Response.json({ success: true, data: [postDataId, postEn] }, { status: 201 });
 		}
 
 		// Fallback for single language payload
@@ -82,9 +81,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const post = await blogService.createPost(postData);
 
-		return json({ success: true, data: post }, { status: 201 });
+		return Response.json({ success: true, data: post }, { status: 201 });
 	} catch (err) {
 		console.error('Error in public blog POST API:', err);
-		return json({ success: false, error: 'Failed to create blog post' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to create blog post' }, { status: 500 });
 	}
 };

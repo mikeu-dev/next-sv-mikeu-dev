@@ -1,7 +1,7 @@
 import { BlogRepository } from '../repositories/blog.repository';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
-import type { BlogPost } from '$lib/types';
+import type { BlogPost } from '#lib/types.js';
 export type { BlogPost };
 
 // Shared global cache to avoid SvelteKit/Vite module reload duplicates in development
@@ -133,6 +133,7 @@ export class BlogService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`BlogService: Quota exceeded while fetching posts for ${locale}`);
+
 				return (
 					persistentCache.get<{ posts: BlogPost[]; nextCursor: string | null }>(cacheKey) || {
 						posts: [],
@@ -140,6 +141,7 @@ export class BlogService {
 					}
 				);
 			}
+
 			throw error;
 		}
 	}

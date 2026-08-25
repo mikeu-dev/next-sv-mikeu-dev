@@ -1,9 +1,9 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import type { Project } from '$lib/types';
+	import type { Project } from '#lib/types.js';
 
 	let projects = $state<Project[]>([]);
 	let loading = $state(true);
@@ -134,7 +134,7 @@
 			<button
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/projects/create`);
+					goto(resolve(`admin/projects/create`));
 				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
@@ -248,7 +248,7 @@
 			<button
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/projects/create`);
+					goto(resolve(`admin/projects/create`));
 				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
@@ -319,7 +319,7 @@
 							<button
 								onclick={() => {
 									// eslint-disable-next-line svelte/no-navigation-without-resolve
-									goto(`${base}/admin/projects/${project.id}`);
+									goto(resolve(`admin/projects/${project.id}`));
 								}}
 								class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 							>

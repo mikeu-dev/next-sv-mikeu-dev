@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { blogService } from '$lib/server/services/blog.service';
+import { blogService } from '#lib/server/services/blog.service.js';
 
 export const prerender = false;
 

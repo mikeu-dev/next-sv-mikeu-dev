@@ -4,12 +4,12 @@ import webpush from 'web-push';
 import { PushSubscriptionRepository } from '../repositories/push-subscription.repository';
 
 // Mock the environment variables
-vi.mock('$env/dynamic/private', () => ({
-	env: {
-		PUBLIC_VAPID_KEY: 'test-public-key',
-		PRIVATE_VAPID_KEY: 'test-private-key',
-		OWNER_EMAIL: 'test@example.com'
-	}
+vi.mock('$app/env/public', () => ({
+	PUBLIC_VAPID_KEY: 'test-public-key'
+}));
+vi.mock('$app/env/private', () => ({
+	PRIVATE_VAPID_KEY: 'test-private-key',
+	OWNER_EMAIL: 'test@example.com'
 }));
 
 // Mock the web-push library
@@ -23,11 +23,14 @@ vi.mock('web-push', () => ({
 // Mock the repository
 vi.mock('../repositories/push-subscription.repository', () => {
 	return {
-		PushSubscriptionRepository: vi.fn().mockImplementation(() => ({
-			saveSubscription: vi.fn(),
-			getAllSubscriptions: vi.fn(),
-			delete: vi.fn()
-		}))
+		// vitest 4 requires a `function`/`class` implementation (not an arrow function) so `new PushSubscriptionRepository()` works
+		PushSubscriptionRepository: vi.fn().mockImplementation(function () {
+			return {
+				saveSubscription: vi.fn(),
+				getAllSubscriptions: vi.fn(),
+				delete: vi.fn()
+			};
+		})
 	};
 });
 

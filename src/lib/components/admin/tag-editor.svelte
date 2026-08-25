@@ -1,7 +1,7 @@
 ﻿<script lang="ts">
-	import type { SerializedTag } from '$lib/types';
+	import type { SerializedTag } from '#lib/types.js';
 	import IconPicker from './icon-picker.svelte';
-	import Icon from '$lib/components/ui/icon.svelte';
+	import Icon from '#lib/components/ui/icon.svelte';
 	import { toast } from 'svelte-sonner';
 
 	let { tags = $bindable([]) } = $props<{ tags: SerializedTag[] }>();

@@ -11,7 +11,10 @@ vi.mock('../repositories/contacts.repository', () => {
 		update: vi.fn()
 	};
 	return {
-		ContactsRepository: vi.fn().mockImplementation(() => mockRepositoryInstance)
+		// vitest 4 requires a `function`/`class` implementation (not an arrow function) so `new ContactsRepository()` works
+		ContactsRepository: vi.fn().mockImplementation(function () {
+			return mockRepositoryInstance;
+		})
 	};
 });
 

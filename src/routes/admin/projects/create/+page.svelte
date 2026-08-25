@@ -1,11 +1,11 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { toast } from 'svelte-sonner';
-	import MarkdownEditor from '$lib/components/admin/markdown-editor.svelte';
-	import TagEditor from '$lib/components/admin/tag-editor.svelte';
-	import AIAssist from '$lib/components/admin/ai-assist.svelte';
-	import type { SerializedTag } from '$lib/types';
+	import MarkdownEditor from '#lib/components/admin/markdown-editor.svelte';
+	import TagEditor from '#lib/components/admin/tag-editor.svelte';
+	import AIAssist from '#lib/components/admin/ai-assist.svelte';
+	import type { SerializedTag } from '#lib/types.js';
 
 	let title_id = $state('');
 	let title_en = $state('');
@@ -183,7 +183,7 @@
 
 			toast.success('Project created successfully!');
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			goto(`${base}/admin/projects`);
+			goto(resolve(`admin/projects`));
 		} catch (error: unknown) {
 			const message = error instanceof Error ? error.message : 'Failed to create project';
 			toast.error(message);
@@ -428,7 +428,7 @@ Write detailed content in Markdown format..."
 										fill-rule="evenodd"
 										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
 										clip-rule="evenodd"
-									/>
+									></path>
 								</svg>
 							</button>
 						</div>
@@ -539,7 +539,7 @@ Write detailed content in Markdown format..."
 				type="button"
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/projects`);
+					goto(resolve(`admin/projects`));
 				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>

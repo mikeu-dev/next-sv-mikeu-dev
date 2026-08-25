@@ -1,12 +1,12 @@
 ﻿<script lang="ts">
-	import { pwaState } from '$lib/stores/pwa.svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { pwaState } from '#lib/stores/pwa.svelte.js';
+	import { m } from '#lib/paraglide/messages.js';
 	import { Download, Smartphone } from '@lucide/svelte';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
-	import { playConfettiSound } from '$lib/utils/confetti-sound';
+	import { playConfettiSound } from '#lib/utils/confetti-sound.js';
 	import { tick } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.js';
 
 	let { class: className = '' } = $props();
 	let confettiCannon = $state(false);

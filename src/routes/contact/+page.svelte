@@ -2,9 +2,9 @@
 	import Button from '@/lib/components/ui/button/button.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
-	import { playConfettiSound } from '$lib/utils/confetti-sound';
+	import { playConfettiSound } from '#lib/utils/confetti-sound.js';
 	import { onMount, tick } from 'svelte';
 	import { gsap } from 'gsap';
 	import {
@@ -19,11 +19,11 @@
 		QrCode,
 		Command
 	} from '@lucide/svelte';
-	import { PUBLIC_CONTACT_EMAIL } from '$env/static/public';
-	import Icon from '$lib/components/ui/icon.svelte';
-	import Skeleton from '$lib/components/ui/skeleton.svelte';
-	import SEO from '$lib/components/seo/seo.svelte';
-	import type { SocialLink } from '$lib/types';
+	import { PUBLIC_CONTACT_EMAIL } from '$app/env/public';
+	import Icon from '#lib/components/ui/icon.svelte';
+	import Skeleton from '#lib/components/ui/skeleton.svelte';
+	import SEO from '#lib/components/seo/seo.svelte';
+	import type { SocialLink } from '#lib/types.js';
 
 	type ActionData = {
 		success: boolean;
@@ -213,7 +213,9 @@
 						style="clip-path: polygon(0 0, 90% 0, 100% 100%, 10% 100%);"
 					>
 						<Clock class="mb-4 size-5 text-primary" />
+
 						<p class="font-mono text-[10px] font-black text-foreground/80 uppercase">Avg</p>
+
 						<p class="font-bold">&lt; 24H</p>
 					</div>
 				</div>

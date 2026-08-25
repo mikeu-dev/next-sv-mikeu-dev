@@ -19,7 +19,7 @@
 		type ContentEnhancementResult,
 		type FetchedArticle,
 		type TargetAudience
-	} from '$lib/types/ai-content.types';
+	} from '#lib/types/ai-content.types.js';
 
 	interface Props {
 		readonly locale: 'en' | 'id';

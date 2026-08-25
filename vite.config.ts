@@ -1,7 +1,11 @@
+import { mdsvex } from 'mdsvex';
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { createRequire } from 'module';
 
@@ -32,7 +36,15 @@ export default defineConfig({
 		]
 	},
 	plugins: [
-		sveltekit(),
+		sveltekit({
+			// Consult https://svelte.dev/docs/kit/integrations
+			// for more information about preprocessors
+			preprocess: [vitePreprocess(), mdsvex({ extensions: ['.svx'] })],
+			extensions: ['.svelte', '.svx'],
+			adapter: adapter({ runtime: 'nodejs22.x', memory: 1024, regions: ['sin1'] }),
+			alias: { '@/*': 'src/*', '@lib/*': 'src/lib/*' },
+			paths: { relative: false }
+		}),
 		tailwindcss(),
 		devtoolsJson(),
 		paraglideVitePlugin({
@@ -49,26 +61,29 @@ export default defineConfig({
 				extends: './vite.config.ts',
 				test: {
 					name: 'client',
-					environment: 'browser',
+					// vitest 4: browser mode is enabled via `browser.enabled`, not `test.environment`
 					browser: {
 						enabled: true,
-						provider: 'playwright',
+						provider: playwright(),
 						instances: [{ browser: 'chromium' }]
 					},
 					alias: {
-						'$lib/components/guest/sections/hero/hero.svelte': require.resolve(
+						'#lib/components/guest/sections/hero/hero.svelte': require.resolve(
 							'./src/lib/mocks/HeroMock.svelte'
 						),
-						'$lib/components/guest/sections/work/work.svelte': require.resolve(
+						'#lib/components/guest/sections/work/work.svelte': require.resolve(
 							'./src/lib/mocks/EmptyMock.svelte'
 						),
-						'$lib/components/guest/sections/blog/latest-blogs.svelte': require.resolve(
+						'#lib/components/guest/sections/blog/latest-blogs.svelte': require.resolve(
 							'./src/lib/mocks/EmptyMock.svelte'
 						),
-						'$lib/components/guest/sections/world/folded-world.svelte': require.resolve(
+						// world-teaser.svelte dynamic-imports this by relative path ('./folded-world.svelte'),
+						// so an alias here has never actually matched it — kept for whenever that import
+						// is changed to go through #lib instead.
+						'#lib/components/guest/sections/world/folded-world.svelte': require.resolve(
 							'./src/lib/mocks/EmptyMock.svelte'
 						),
-						'$lib/components/guest/sections/contact/contact.svelte': require.resolve(
+						'#lib/components/guest/sections/contact/contact.svelte': require.resolve(
 							'./src/lib/mocks/EmptyMock.svelte'
 						)
 					},
@@ -91,22 +106,32 @@ export default defineConfig({
 	build: {
 		chunkSizeWarningLimit: 1000,
 		sourcemap: false,
-		reportCompressedSize: false,
-		rollupOptions: {
-			output: {
-				manualChunks: (id) => {
-					if (id.includes('node_modules')) {
-						if (id.includes('@lottiefiles/dotlottie-svelte') || id.includes('lottie-web')) {
-							return 'lottie';
-						}
-						if (id.includes('firebase')) {
-							return 'firebase';
-						}
-						if (id.includes('gsap') || id.includes('matter-js')) {
-							return 'animation';
-						}
-						if (id.includes('three')) {
-							return 'three';
+		reportCompressedSize: false
+	},
+	// manualChunks lives under the `client` environment (not top-level `build.rollupOptions`)
+	// because SvelteKit 3's service-worker build is its own Vite environment with
+	// `codeSplitting: false`, and a top-level manualChunks cascades into every environment —
+	// which Rolldown rejects when codeSplitting is off.
+	environments: {
+		client: {
+			build: {
+				rollupOptions: {
+					output: {
+						manualChunks: (id) => {
+							if (id.includes('node_modules')) {
+								if (id.includes('@lottiefiles/dotlottie-svelte') || id.includes('lottie-web')) {
+									return 'lottie';
+								}
+								if (id.includes('firebase')) {
+									return 'firebase';
+								}
+								if (id.includes('gsap') || id.includes('matter-js')) {
+									return 'animation';
+								}
+								if (id.includes('three')) {
+									return 'three';
+								}
+							}
 						}
 					}
 				}

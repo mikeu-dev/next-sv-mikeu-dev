@@ -1,7 +1,6 @@
-﻿import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { GitHubStorageService } from '$lib/server/services/github-storage.service';
-import { settingsService } from '$lib/server/services/settings.service';
+﻿import type { RequestHandler } from './$types';
+import { GitHubStorageService } from '#lib/server/services/github-storage.service.js';
+import { settingsService } from '#lib/server/services/settings.service.js';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['application/pdf'];
@@ -13,19 +12,19 @@ export const POST: RequestHandler = async ({ request }) => {
 		const locale = (formData.get('locale') as string) || 'id';
 
 		if (!file || !(file instanceof File)) {
-			return json({ error: 'No file uploaded' }, { status: 400 });
+			return Response.json({ error: 'No file uploaded' }, { status: 400 });
 		}
 
 		if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-			return json({ error: 'Only PDF files are allowed' }, { status: 400 });
+			return Response.json({ error: 'Only PDF files are allowed' }, { status: 400 });
 		}
 
 		if (file.size > MAX_FILE_SIZE) {
-			return json({ error: 'File size exceeds 10MB limit' }, { status: 400 });
+			return Response.json({ error: 'File size exceeds 10MB limit' }, { status: 400 });
 		}
 
 		if (!['en', 'id'].includes(locale)) {
-			return json({ error: 'Invalid locale. Must be "en" or "id"' }, { status: 400 });
+			return Response.json({ error: 'Invalid locale. Must be "en" or "id"' }, { status: 400 });
 		}
 
 		const arrayBuffer = await file.arrayBuffer();
@@ -51,7 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		await settingsService.updateResumeSettings(updateData);
 
-		return json({
+		return Response.json({
 			success: true,
 			url,
 			fileName: file.name,
@@ -59,6 +58,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (error) {
 		console.error('Resume upload error:', error);
-		return json({ error: `Failed to upload resume: ${(error as Error).message}` }, { status: 500 });
+		return Response.json(
+			{ error: `Failed to upload resume: ${(error as Error).message}` },
+			{ status: 500 }
+		);
 	}
 };

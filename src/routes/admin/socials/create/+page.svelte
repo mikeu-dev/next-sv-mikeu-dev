@@ -1,8 +1,8 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { toast } from 'svelte-sonner';
-	import IconPicker from '$lib/components/admin/icon-picker.svelte';
+	import IconPicker from '#lib/components/admin/icon-picker.svelte';
 
 	let label = $state('');
 	let href = $state('');
@@ -44,7 +44,7 @@
 
 			toast.success('Social link created successfully!');
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			goto(`${base}/admin/socials`);
+			goto(resolve(`admin/socials`));
 		} catch (error: unknown) {
 			const message = error instanceof Error ? error.message : 'Failed to create social link';
 			toast.error(message);
@@ -96,9 +96,10 @@
 
 			<!-- Icon Picker -->
 			<div class="mb-4">
-				<label for="icon-picker" class="mb-2 block text-sm font-medium">
-					Icon <span class="text-red-500">*</span>
-				</label>
+				<label for="icon-picker" class="mb-2 block text-sm font-medium"
+					>Icon <span class="text-red-500">*</span></label
+				>
+
 				<IconPicker id="icon-picker" bind:value={iconName} {color} />
 			</div>
 
@@ -140,7 +141,7 @@
 				type="button"
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/socials`);
+					goto(resolve(`admin/socials`));
 				}}
 				class="rounded-lg border border-gray-300 px-6 py-2 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 			>

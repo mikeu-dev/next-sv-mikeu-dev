@@ -1,5 +1,5 @@
 /**
- * Folded World â€” Three.js Reactive Engine
+ * Folded World — Three.js Reactive Engine
  *
  * Svelte 5 reactive module yang mengelola Three.js scene,
  * icosahedron mesh, deformasi, dan interaksi.
@@ -25,7 +25,7 @@ import { getPlanetColors, DEFAULT_WORLD_CONFIG } from './folded-world.types';
 import type { PlanetStyle } from './folded-world.types';
 import { vertexShader, fragmentShader } from './folded-world-shaders';
 
-// Three.js types â€” imported dynamically at runtime
+// Three.js types — imported dynamically at runtime
 type ThreeModule = typeof import('three');
 
 interface EngineState {
@@ -67,6 +67,7 @@ export function createFoldedWorldEngine() {
 	let mainMesh: InstanceType<ThreeModule['Mesh']>;
 	let ringMesh: InstanceType<ThreeModule['Mesh']>;
 	let particlesMesh: InstanceType<ThreeModule['Points']> | null = null;
+	let worldMaskTexture: InstanceType<ThreeModule['Texture']> | null = null;
 	let mainMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let ringMaterial: InstanceType<ThreeModule['ShaderMaterial']>;
 	let raycaster: InstanceType<ThreeModule['Raycaster']>;
@@ -93,6 +94,7 @@ export function createFoldedWorldEngine() {
 	let isVisible = true;
 	let canvasEl: HTMLCanvasElement | null = null;
 	let containerEl: HTMLElement | null = null;
+	let resizeRAF: number | null = null;
 	let geoNodes: GeoNode[] = [];
 	let faceCentersCache: [number, number][] = [];
 	let isDestroyed = false;
@@ -121,7 +123,7 @@ export function createFoldedWorldEngine() {
 		state.error = null;
 
 		try {
-			// Dynamic import Three.js â€” keeps it out of main bundle
+			// Dynamic import Three.js — keeps it out of main bundle
 			THREE = await import('three');
 
 			setupScene(isDark);
@@ -137,8 +139,11 @@ export function createFoldedWorldEngine() {
 
 			if (!isMinimal) {
 				setupEventListeners();
-				setupVisibilityObserver(container);
 			}
+			// Always pause the render loop when off-screen — the minimal/teaser
+			// embed benefits from this the most, since it stays mounted while the
+			// user scrolls the rest of the homepage.
+			setupVisibilityObserver(container);
 
 			state.ready = true;
 			state.loading = false;
@@ -177,6 +182,10 @@ export function createFoldedWorldEngine() {
 			cancelAnimationFrame(animationId);
 			animationId = null;
 		}
+		if (resizeRAF !== null) {
+			cancelAnimationFrame(resizeRAF);
+			resizeRAF = null;
+		}
 
 		removeEventListeners();
 		if (intersectionObserver) {
@@ -192,6 +201,15 @@ export function createFoldedWorldEngine() {
 		}
 		if (mainMaterial) mainMaterial.dispose();
 		if (ringMaterial) ringMaterial.dispose();
+		if (worldMaskTexture) {
+			worldMaskTexture.dispose();
+			worldMaskTexture = null;
+		}
+		if (particlesMesh) {
+			particlesMesh.geometry.dispose();
+			(particlesMesh.material as InstanceType<ThreeModule['Material']>).dispose();
+			particlesMesh = null;
+		}
 		if (renderer) {
 			renderer.dispose();
 			renderer.forceContextLoss();
@@ -264,7 +282,7 @@ export function createFoldedWorldEngine() {
 
 	function buildGlobe(isDark: boolean): void {
 		const colors = getPlanetColors(planetStyle, isDark);
-		// Icosahedron geometry â€” subdivided for more faces
+		// Icosahedron geometry — subdivided for more faces
 		const detail = config.subdivisions;
 		const geometry = new THREE.IcosahedronGeometry(1, detail);
 
@@ -364,6 +382,7 @@ export function createFoldedWorldEngine() {
 		const textureLoader = new THREE.TextureLoader();
 		const worldMask = textureLoader.load('/images/world-mask.png');
 		worldMask.wrapS = THREE.RepeatWrapping;
+		worldMaskTexture = worldMask;
 
 		// Main mesh material (custom shader)
 		mainMaterial = new THREE.ShaderMaterial({
@@ -786,14 +805,19 @@ export function createFoldedWorldEngine() {
 	}
 
 	function onResize(): void {
-		if (!containerEl || !renderer || !camera) return;
+		// Coalesce bursts of resize events (window drag) into one update per frame.
+		if (resizeRAF !== null) return;
+		resizeRAF = requestAnimationFrame(() => {
+			resizeRAF = null;
+			if (!containerEl || !renderer || !camera) return;
 
-		const width = containerEl.clientWidth;
-		const height = containerEl.clientHeight;
+			const width = containerEl.clientWidth;
+			const height = containerEl.clientHeight;
 
-		camera.aspect = width / height;
-		camera.updateProjectionMatrix();
-		renderer.setSize(width, height);
+			camera.aspect = width / height;
+			camera.updateProjectionMatrix();
+			renderer.setSize(width, height);
+		});
 	}
 
 	function updateTheme(isDark: boolean): void {

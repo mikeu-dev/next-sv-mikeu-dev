@@ -1,9 +1,9 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import Icon from '$lib/components/ui/icon.svelte';
+	import Icon from '#lib/components/ui/icon.svelte';
 	import type { IconType } from 'svelte-icons-pack';
 
 	interface SocialLink {
@@ -45,7 +45,7 @@
 		<button
 			onclick={() => {
 				// eslint-disable-next-line svelte/no-navigation-without-resolve
-				goto(`${base}/admin/socials/create`);
+				goto(resolve(`admin/socials/create`));
 			}}
 			class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 		>
@@ -88,7 +88,7 @@
 						<button
 							onclick={() => {
 								// eslint-disable-next-line svelte/no-navigation-without-resolve
-								goto(`${base}/admin/socials/edit/${idx}`);
+								goto(resolve(`admin/socials/edit/${idx}`));
 							}}
 							class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>

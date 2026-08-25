@@ -1,6 +1,6 @@
 ﻿import { BaseRepository } from '../core/base.repository';
 import { COLLECTIONS } from '../firebase/collections';
-import type { Socials } from '$lib/types';
+import type { Socials } from '#lib/types.js';
 
 /**
  * Repository untuk menangani data tautan sosial.

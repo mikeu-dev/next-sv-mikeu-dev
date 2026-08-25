@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 	import { page } from '$app/state';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 	import Icon from './icon.svelte';
 
 	let { items = [] } = $props<{

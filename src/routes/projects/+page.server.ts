@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-import type { Project } from '$lib/types';
+import type { Project } from '#lib/types.js';
 
 export const prerender = false;
 

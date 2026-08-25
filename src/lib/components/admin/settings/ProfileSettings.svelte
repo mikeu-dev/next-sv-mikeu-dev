@@ -1,11 +1,11 @@
 ﻿<script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import type { ProfileSettings } from '$lib/server/schemas/settings.schema';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Label } from '#lib/components/ui/label/index.js';
+	import { Separator } from '#lib/components/ui/separator/index.js';
+	import { Textarea } from '#lib/components/ui/textarea/index.js';
+	import type { ProfileSettings } from '#lib/server/schemas/settings.schema.js';
 
 	type FormState = {
 		type?: string;

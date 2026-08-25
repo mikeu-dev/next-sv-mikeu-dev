@@ -1,5 +1,5 @@
 import type Matter from 'matter-js';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import {
 	shapes,
 	tetrisColors,

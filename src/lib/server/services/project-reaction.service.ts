@@ -1,8 +1,8 @@
-﻿import {
+import {
 	ProjectReactionRepository,
 	type ProjectReaction
 } from '../repositories/project-reaction.repository';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { persistentCache } from '../utils/cache.util';
 
 export class ProjectReactionService {
@@ -49,6 +49,7 @@ export class ProjectReactionService {
 				(error as { code: number }).code === 8
 			) {
 				console.error(`ProjectReactionService: Quota exceeded for ${slug}`);
+
 				return (
 					persistentCache.get<ProjectReaction>(cacheKey) ||
 					ProjectReactionService.cache[slug] ||

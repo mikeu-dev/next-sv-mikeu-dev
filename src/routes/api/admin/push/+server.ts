@@ -1,7 +1,6 @@
-import { json } from '@sveltejs/kit';
-import { PushSubscriptionService } from '$lib/server/services/push-subscription.service';
+import { PushSubscriptionService } from '#lib/server/services/push-subscription.service.js';
 import type { RequestHandler } from './$types';
-import { logError } from '$lib/server/utils/logger';
+import { logError } from '#lib/server/utils/logger.js';
 
 const pushService = new PushSubscriptionService();
 
@@ -10,14 +9,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		const subscription = await request.json();
 
 		if (!subscription || !subscription.endpoint || !subscription.keys) {
-			return json({ message: 'Invalid subscription data' }, { status: 400 });
+			return Response.json({ message: 'Invalid subscription data' }, { status: 400 });
 		}
 
 		const saved = await pushService.saveSubscription(subscription);
 
-		return json({ message: 'Subscription saved successfully', data: saved });
+		return Response.json({ message: 'Subscription saved successfully', data: saved });
 	} catch (error) {
 		logError('API:Admin:Push:POST', error);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 };

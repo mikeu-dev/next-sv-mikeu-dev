@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { PUBLIC_IMAGE_CDN_URL } from '$app/env/public';
 
 /**
  * Image Optimization Utility
@@ -20,7 +20,7 @@ export function optimizeImage(
 ): string {
 	if (!url) return '';
 
-	const cdnUrl = env.PUBLIC_IMAGE_CDN_URL;
+	const cdnUrl = PUBLIC_IMAGE_CDN_URL;
 
 	// If no CDN is configured, return the original URL
 	if (!cdnUrl) return url;

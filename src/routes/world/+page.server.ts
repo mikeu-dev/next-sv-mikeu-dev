@@ -1,5 +1,5 @@
 ﻿import type { PageServerLoad } from './$types';
-import { VisitorService } from '$lib/server/services/visitor.service';
+import { VisitorService } from '#lib/server/services/visitor.service.js';
 
 /**
  * Server load function untuk /world page.

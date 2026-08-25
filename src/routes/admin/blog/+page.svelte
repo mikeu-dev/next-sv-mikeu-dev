@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -99,7 +99,7 @@
 			<button
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/blog/create`);
+					goto(resolve(`admin/blog/create`));
 				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
@@ -192,7 +192,7 @@
 			<button
 				onclick={() => {
 					// eslint-disable-next-line svelte/no-navigation-without-resolve
-					goto(`${base}/admin/blog/create`);
+					goto(resolve(`admin/blog/create`));
 				}}
 				class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 			>
@@ -248,7 +248,7 @@
 						</p>
 
 						<div class="mb-4 text-xs text-gray-500 dark:text-gray-400">
-							{post.date} &bull; {post.slug}
+							{post.date} • {post.slug}
 						</div>
 					</div>
 
@@ -257,7 +257,7 @@
 						<button
 							onclick={() => {
 								// eslint-disable-next-line svelte/no-navigation-without-resolve
-								goto(`${base}/admin/blog/${post.id}`);
+								goto(resolve(`admin/blog/${post.id}`));
 							}}
 							class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
 						>

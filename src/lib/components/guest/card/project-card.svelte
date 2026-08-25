@@ -3,12 +3,12 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { ArrowUpRight, ExternalLink, Github, Sparkles, Trophy } from '@lucide/svelte';
-	import type { LocalizedProject } from '$lib/utils/project-mapper';
-	import Icon from '$lib/components/ui/icon.svelte';
-	import { m } from '$lib/paraglide/messages';
-	import { localizeHref } from '$lib/paraglide/runtime';
+	import type { LocalizedProject } from '#lib/utils/project-mapper.js';
+	import Icon from '#lib/components/ui/icon.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 
-	import { optimizeImage } from '$lib/utils/image.util';
+	import { optimizeImage } from '#lib/utils/image.util.js';
 
 	let {
 		project,

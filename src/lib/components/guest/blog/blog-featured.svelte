@@ -2,10 +2,10 @@
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import type { BlogPost } from '$lib/types';
-	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+	import type { BlogPost } from '#lib/types.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 	import { Calendar, Clock, Sparkles, Hash, ArrowUpRight } from '@lucide/svelte';
-	import { optimizeImage } from '$lib/utils/image.util';
+	import { optimizeImage } from '#lib/utils/image.util.js';
 
 	let {
 		post,

@@ -1,8 +1,7 @@
 ﻿export const prerender = false;
 
-import { json } from '@sveltejs/kit';
-import { UserService } from '$lib/server/services/user.service';
-import { HttpException } from '$lib/server/exceptions/http.exception';
+import { UserService } from '#lib/server/services/user.service.js';
+import { HttpException } from '#lib/server/exceptions/http.exception.js';
 
 const userService = new UserService();
 
@@ -20,12 +19,12 @@ export async function POST({ request }) {
 		}
 
 		// Hanya kirim email ke frontend untuk login
-		return json({ email: user.email });
+		return Response.json({ email: user.email });
 	} catch (e: unknown) {
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		console.error('API Find By Username Error:', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }

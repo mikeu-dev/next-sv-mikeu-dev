@@ -1,12 +1,11 @@
-import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Project } from '$lib/types';
+import type { Project } from '#lib/types.js';
 import { ProjectsService } from '../../../../lib/server/services/projects.service';
 import { ProjectsRepository } from '../../../../lib/server/repositories/projects.repository';
 import { HttpException } from '../../../../lib/server/exceptions/http.exception';
-import { projectUpdateSchema } from '$lib/server/schemas/project.schema';
-import { logError } from '$lib/server/utils/logger';
-import { env } from '$lib/server/config/env';
+import { projectUpdateSchema } from '#lib/server/schemas/project.schema.js';
+import { logError } from '#lib/server/utils/logger.js';
+import { env } from '#lib/server/config/env.js';
 import { z } from 'zod';
 
 const projectsService = new ProjectsService(new ProjectsRepository());
@@ -17,35 +16,35 @@ export const prerender = false;
 export async function GET({ params }: RequestEvent) {
 	try {
 		if (!params.id) {
-			return json({ message: 'Project ID is required' }, { status: 400 });
+			return Response.json({ message: 'Project ID is required' }, { status: 400 });
 		}
 		const project = await projectsService.findById(params.id);
 		if (!project) {
-			return json({ message: 'Project not found' }, { status: 404 });
+			return Response.json({ message: 'Project not found' }, { status: 404 });
 		}
-		return json(project);
+		return Response.json(project);
 	} catch (e) {
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		logError('API:Projects:GET:ById', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
 
 export async function PUT({ params, request, locals }: RequestEvent) {
 	// Auth check - only owner can update projects
 	if (!locals.user) {
-		return json({ message: 'Unauthorized' }, { status: 401 });
+		return Response.json({ message: 'Unauthorized' }, { status: 401 });
 	}
 
 	if (locals.user.email !== env.OWNER_EMAIL) {
-		return json({ message: 'Forbidden' }, { status: 403 });
+		return Response.json({ message: 'Forbidden' }, { status: 403 });
 	}
 
 	try {
 		if (!params.id) {
-			return json({ message: 'Project ID is required' }, { status: 400 });
+			return Response.json({ message: 'Project ID is required' }, { status: 400 });
 		}
 		const data = await request.json();
 
@@ -58,12 +57,12 @@ export async function PUT({ params, request, locals }: RequestEvent) {
 			updateData as unknown as Partial<Omit<Project, 'id' | 'createdAt' | 'updatedAt'>>
 		);
 		if (!project) {
-			return json({ message: 'Project not found' }, { status: 404 });
+			return Response.json({ message: 'Project not found' }, { status: 404 });
 		}
-		return json(project);
+		return Response.json(project);
 	} catch (e) {
 		if (e instanceof z.ZodError) {
-			return json(
+			return Response.json(
 				{
 					message: 'Validation error',
 					errors: e.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message }))
@@ -72,34 +71,34 @@ export async function PUT({ params, request, locals }: RequestEvent) {
 			);
 		}
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		logError('API:Projects:PUT', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }
 
 export async function DELETE({ params, locals }: RequestEvent) {
 	// Auth check - only owner can delete projects
 	if (!locals.user) {
-		return json({ message: 'Unauthorized' }, { status: 401 });
+		return Response.json({ message: 'Unauthorized' }, { status: 401 });
 	}
 
 	if (locals.user.email !== env.OWNER_EMAIL) {
-		return json({ message: 'Forbidden' }, { status: 403 });
+		return Response.json({ message: 'Forbidden' }, { status: 403 });
 	}
 
 	try {
 		if (!params.id) {
-			return json({ message: 'Project ID is required' }, { status: 400 });
+			return Response.json({ message: 'Project ID is required' }, { status: 400 });
 		}
 		await projectsService.delete(params.id);
-		return json({ message: 'Project deleted successfully' });
+		return Response.json({ message: 'Project deleted successfully' });
 	} catch (e) {
 		if (e instanceof HttpException) {
-			return json({ message: e.message }, { status: e.status });
+			return Response.json({ message: e.message }, { status: e.status });
 		}
 		logError('API:Projects:DELETE', e);
-		return json({ message: 'Internal Server Error' }, { status: 500 });
+		return Response.json({ message: 'Internal Server Error' }, { status: 500 });
 	}
 }

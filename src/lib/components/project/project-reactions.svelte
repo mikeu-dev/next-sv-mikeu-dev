@@ -2,7 +2,7 @@
 	import { Heart, Eye } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { onMount, tick } from 'svelte';
-	import { m } from '$lib/paraglide/messages';
+	import { m } from '#lib/paraglide/messages.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 
 	let { reactions = { likes: 0, views: 0 } } = $props<{

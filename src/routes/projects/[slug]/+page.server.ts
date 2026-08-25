@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { ProjectsService } from '$lib/server/services/projects.service';
-import { ProjectsRepository } from '$lib/server/repositories/projects.repository';
-import { projectReactionService } from '$lib/server/services/project-reaction.service';
+import { ProjectsService } from '#lib/server/services/projects.service.js';
+import { ProjectsRepository } from '#lib/server/repositories/projects.repository.js';
+import { projectReactionService } from '#lib/server/services/project-reaction.service.js';
 
 export const prerender = false;
 
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 	}
 
 	// Get related projects (same tags)
-	let relatedProjects: import('$lib/types').Project[] = [];
+	let relatedProjects: import('#lib/types.js').Project[] = [];
 	try {
 		const allProjects = await projectsService.findProjects({ limit: 10 });
 		relatedProjects = allProjects

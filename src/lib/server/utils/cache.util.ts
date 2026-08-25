@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 interface CacheItem<T> {
 	data: T;

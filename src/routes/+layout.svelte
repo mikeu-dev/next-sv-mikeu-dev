@@ -1,28 +1,43 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.png';
+	import favicon from '#lib/assets/favicon.png';
 	import { onMount } from 'svelte';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
 	import Navbar from '@/lib/components/guest/navbar/navbar.svelte';
 	import Footer from '@/lib/components/guest/footer/footer.svelte';
-	import { locales, localizeHref } from '$lib/paraglide/runtime';
+	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import { page } from '$app/state';
 	import { onNavigate, afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
-	import { playConfettiSound } from '$lib/utils/confetti-sound';
+	import { playConfettiSound } from '#lib/utils/confetti-sound.js';
 	import gsap from 'gsap';
 	import ScrollToPlugin from 'gsap/ScrollToPlugin';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import Lenis from 'lenis';
-	import { dev } from '$app/environment';
-	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { dev } from '$app/env';
+	// @vercel/analytics's `injectAnalytics` (from '@vercel/analytics/sveltekit') still imports the
+	// removed `$app/stores`, which now throws and crashes hydration — no SvelteKit-3-compatible
+	// release exists yet (checked even the latest canary). Using the framework-agnostic `inject`
+	// instead, replicating what `injectAnalytics` did internally (see its source): inject with
+	// `disableAutoTrack`, then manually call `pageview()` on route change via `$app/state`.
+	import { inject, pageview } from '@vercel/analytics';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
 	import { ArrowUp } from '@lucide/svelte';
 
-	injectAnalytics({ mode: dev ? 'development' : 'production' });
+	inject({
+		mode: dev ? 'development' : 'production',
+		disableAutoTrack: true,
+		framework: 'sveltekit'
+	});
 
-	import { pwaState, type BeforeInstallPromptEvent } from '$lib/stores/pwa.svelte';
+	$effect(() => {
+		if (page.route.id) {
+			pageview({ route: page.route.id, path: page.url.pathname });
+		}
+	});
+
+	import { pwaState, type BeforeInstallPromptEvent } from '#lib/stores/pwa.svelte.js';
 	import AdsenseLoader from '@/lib/components/ui/adsense-loader.svelte';
 
 	let { data, children } = $props();
@@ -33,6 +48,7 @@
 	}
 
 	onNavigate((navigation) => {
+		if (navigation.shallow) return;
 		if (!document.startViewTransition) return;
 
 		return new Promise((resolve) => {
@@ -123,7 +139,9 @@
 		};
 	});
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		if (page.url.pathname === '/' && !confettiShown) {
 			confettiShown = true;
 			fallingConfetti = true;

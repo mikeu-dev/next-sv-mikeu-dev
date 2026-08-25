@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { m } from '$lib/paraglide/messages';
-	import SEO from '$lib/components/seo/seo.svelte';
+	import { m } from '#lib/paraglide/messages.js';
+	import SEO from '#lib/components/seo/seo.svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>
@@ -30,7 +30,7 @@
 </svelte:head>
 
 <div class="fixed inset-0 z-40 bg-background font-mono transition-colors duration-500">
-	{#await import('$lib/components/guest/sections/world/folded-world.svelte')}
+	{#await import('#lib/components/guest/sections/world/folded-world.svelte')}
 		<!-- Loading fallback while Three.js component loads -->
 		<div class="flex h-dvh flex-col items-center justify-center bg-background">
 			<div

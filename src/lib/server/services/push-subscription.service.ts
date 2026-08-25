@@ -3,7 +3,8 @@ import {
 	type PushSubscription
 } from '../repositories/push-subscription.repository';
 import webpush from 'web-push';
-import { env } from '$env/dynamic/private';
+import { PRIVATE_VAPID_KEY, OWNER_EMAIL } from '$app/env/private';
+import { PUBLIC_VAPID_KEY } from '$app/env/public';
 import { logError } from '../utils/logger';
 
 export class PushSubscriptionService {
@@ -12,9 +13,9 @@ export class PushSubscriptionService {
 	constructor() {
 		this.repository = new PushSubscriptionRepository();
 
-		const publicKey = env.PUBLIC_VAPID_KEY || '';
-		const privateKey = env.PRIVATE_VAPID_KEY || '';
-		const ownerEmail = env.OWNER_EMAIL || 'admin@example.com';
+		const publicKey = PUBLIC_VAPID_KEY || '';
+		const privateKey = PRIVATE_VAPID_KEY || '';
+		const ownerEmail = OWNER_EMAIL || 'admin@example.com';
 
 		if (publicKey && privateKey) {
 			webpush.setVapidDetails(`mailto:${ownerEmail}`, publicKey, privateKey);
