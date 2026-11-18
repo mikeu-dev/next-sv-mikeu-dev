@@ -1,5 +1,5 @@
 ﻿import { Octokit } from 'octokit';
-import { env } from '$env/dynamic/private';
+import * as env from '$app/env/private';
 import { HttpException } from '../exceptions/http.exception';
 
 export class GitHubStorageService {

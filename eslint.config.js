@@ -12,6 +12,22 @@ import { loadConfig } from '@sveltejs/load-config';
 
 const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
 
+// `eslint --cache` serializes languageOptions and refuses function values,
+// but the SvelteKit config carries some (e.g. `kit.typescript.config`).
+// Give the cache a function-free snapshot via a non-enumerable toJSON while
+// the parser keeps the real object.
+if (svelteConfig) {
+	Object.defineProperty(svelteConfig, 'toJSON', {
+		enumerable: false,
+		value: () =>
+			JSON.parse(
+				JSON.stringify({ ...svelteConfig }, (_key, value) =>
+					typeof value === 'function' ? undefined : value
+				)
+			)
+	});
+}
+
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default defineConfig(

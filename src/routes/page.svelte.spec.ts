@@ -12,6 +12,7 @@ describe('/+page.svelte', () => {
 					skills: ['Svelte', 'TypeScript'],
 					projects: [],
 					latestPosts: [],
+					journey: [],
 					socials: Promise.resolve([]),
 					visitorStats: Promise.resolve({ total: 0, today: 0 }),
 					resumeUrls: Promise.resolve({ en: '', id: '' }),

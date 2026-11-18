@@ -24,7 +24,7 @@ const envSchema = z.object({
 	EXTERNAL_API_KEY: z.string().optional()
 });
 
-import { env as dynamicPrivateEnv } from '$env/dynamic/private';
+import * as dynamicPrivateEnv from '$app/env/private';
 
 // Parse with error handling
 let parsedEnv: z.infer<typeof envSchema>;
@@ -51,7 +51,7 @@ export type Env = z.infer<typeof envSchema>;
 
 // Helper to check if required env vars are set
 export function checkRequiredEnvVars(): boolean {
-	const required = [
+	const required: (keyof typeof dynamicPrivateEnv)[] = [
 		'FIREBASE_PROJECT_ID',
 		'FIREBASE_PRIVATE_KEY',
 		'FIREBASE_CLIENT_EMAIL',
