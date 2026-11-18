@@ -7,11 +7,9 @@ test.describe('Contact Page E2E Tests', () => {
 	});
 
 	test('should display all contact page elements and form inputs', async ({ page }) => {
-		// Verify heading and identity
-		await expect(page.locator('h2')).toContainText('Mikeu');
-
-		// Verify information shards
-		await expect(page.locator('.origami-shard').first()).toBeVisible();
+		// Verify page heading and the email card
+		await expect(page.locator('h1')).toBeVisible();
+		await expect(page.getByRole('link', { name: 'rikiruswandi28@gmail.com' })).toBeVisible();
 
 		// Verify form elements
 		await expect(page.locator('input[name="name"]')).toBeVisible();
@@ -29,10 +27,8 @@ test.describe('Contact Page E2E Tests', () => {
 			};
 		});
 
-		// Find the email shard, hover it to make the copy button visible, then click it
-		const emailShard = page.locator('.origami-shard', { hasText: 'rikiruswandi28@gmail.com' });
-		await emailShard.hover();
-		const copyButton = emailShard.locator('button');
+		// The copy button sits right under the email address
+		const copyButton = page.getByRole('button', { name: /salin email|copy email/i });
 		await copyButton.click();
 
 		// Verify the copied text

@@ -1,6 +1,6 @@
 ﻿import admin from 'firebase-admin';
 import { getApps } from 'firebase-admin/app';
-import { env } from '$env/dynamic/private';
+import * as env from '$app/env/private';
 
 if (!getApps().length) {
 	const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = env;

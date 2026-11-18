@@ -2,67 +2,46 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageData } from './$types';
 	import type { BlogPost } from '#lib/types.js';
-	import BlogCard from '#lib/components/guest/blog/blog-card.svelte';
-	import BlogFeatured from '#lib/components/guest/blog/blog-featured.svelte';
 	import SEO from '#lib/components/seo/seo.svelte';
-	import { onMount } from 'svelte';
-	import gsap from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-	import { Search, X, Loader2, Database, Filter, Plus } from '@lucide/svelte';
+	import PageHeader from '#lib/components/guest/map/page-header.svelte';
+	import MapThumb from '#lib/components/guest/map/map-thumb.svelte';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
+	import { optimizeImage } from '#lib/utils/image.util.js';
 
 	let { data }: { data: PageData } = $props();
+	const locale = getLocale();
 
-	// Reactive state for posts and pagination
 	let loadedPosts = $state<BlogPost[]>([]);
 	let nextCursorState = $state<string | null | undefined>(undefined);
 	let isLoadingMore = $state(false);
 
-	// Derived state combining server-loaded data and client-loaded pages
 	const allPosts = $derived([...(data.posts as BlogPost[]), ...loadedPosts]);
 	const nextCursor = $derived(nextCursorState !== undefined ? nextCursorState : data.nextCursor);
 
-	// Reset client-loaded pagination state when server data changes (e.g. on new search query or category change)
+	// Reset pagination whenever the server data changes (new search / tag).
 	$effect(() => {
-		// Dependency tracker for server data changes
-		const _ = data.posts;
+		void data.posts;
 		loadedPosts = [];
 		nextCursorState = undefined;
 	});
 
-	// Category filtering state derived from URL tag query parameter
-	const selectedCategory = $derived(data.tag || 'All');
-
-	// List of all unique categories returned from the server to keep selection chips persistent
-	const categories = $derived(['All', ...(data.tags || [])]);
-
-	// Filtered posts (already filtered server-side)
-	const filteredPosts = $derived(allPosts);
-
-	// Featured post (only if not searching and no active tag filter)
-	const featuredPost = $derived(!data.search && selectedCategory === 'All' ? allPosts[0] : null);
-	const gridPosts = $derived(
-		featuredPost
-			? filteredPosts.filter((p: BlogPost) => p.slug !== featuredPost.slug)
-			: filteredPosts
-	);
+	const featured = $derived(!data.search && !data.tag ? allPosts[0] : null);
+	const gridPosts = $derived(featured ? allPosts.slice(1) : allPosts);
 
 	async function loadMore() {
 		if (isLoadingMore || !nextCursor) return;
-
 		isLoadingMore = true;
 		try {
-			const res = await fetch(
-				`/api/blog?lastDate=${nextCursor}&q=${data.search || ''}&tag=${data.tag || ''}`
-			);
-			const result = await res.json();
-
-			if (result.posts && result.posts.length > 0) {
+			const params = new URLSearchParams({
+				lastDate: String(nextCursor),
+				q: data.search || '',
+				tag: data.tag || ''
+			});
+			const result = await (await fetch(`/api/blog?${params}`)).json();
+			if (result.posts?.length) {
 				loadedPosts = [...loadedPosts, ...result.posts];
 				nextCursorState = result.nextCursor;
-			} else {
-				nextCursorState = null;
-			}
+			} else nextCursorState = null;
 		} catch (err) {
 			console.error('Error loading more posts:', err);
 		} finally {
@@ -70,261 +49,171 @@
 		}
 	}
 
-	// Animations
-	let container: HTMLElement;
-
-	onMount(() => {
-		gsap.registerPlugin(ScrollTrigger);
-
-		const ctx = gsap.context(() => {
-			const tl = gsap.timeline();
-
-			tl.from('.header-origami', {
-				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-				duration: 1,
-				ease: 'power4.inOut'
-			}).from(
-				'.stagger-item',
-				{
-					y: 50,
-					rotateX: -15,
-					skewY: 2,
-					opacity: 0,
-					duration: 0.8,
-					stagger: 0.1,
-					ease: 'expo.out'
-				},
-				'-=0.6'
-			);
-		}, container);
-
-		return () => ctx.revert();
+	const dateFmt = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'id-ID', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric'
 	});
+	function fmt(date: string) {
+		const d = new Date(date);
+		return Number.isNaN(d.getTime()) ? date : dateFmt.format(d);
+	}
+	/** Stable pseudo-location per post for its map thumbnail. */
+	function spot(slug: string) {
+		let h = 0;
+		for (const c of slug) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+		return { x: 25 + (h % 50), y: 25 + ((h >>> 8) % 50), seed: h % 97 };
+	}
 
-	// Re-run animation when category changes
-	$effect(() => {
-		if (selectedCategory) {
-			gsap.from('.blog-grid-item', {
-				y: 20,
-				opacity: 0,
-				duration: 0.5,
-				stagger: 0.05,
-				ease: 'power2.out',
-				clearProps: 'all'
-			});
-		}
-	});
+	const chip = (on: boolean) =>
+		`flex min-h-11 items-center rounded-full border-[1.5px] px-4 text-[15px] font-extrabold transition-colors ${on ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card text-foreground hover:border-foreground'}`;
+	const tagHref = (t: string) => localizeHref(t ? `/blog?tag=${encodeURIComponent(t)}` : '/blog');
 </script>
 
 <SEO title={m.blog_title()} description={m.blog_subtitle()} />
 
-<div class="relative mt-28 min-h-screen space-y-24 pb-32" bind:this={container}>
-	<!-- Industrial Background Element -->
-	<div
-		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
-		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
-	></div>
+<PageHeader
+	eyebrow={m.gis_blog_page_eyebrow()}
+	title={m.gis_blog_page_title()}
+	lead={m.blog_subtitle()}
+	focus="50% 60%"
+/>
 
-	<!-- Header Section -->
-	<section class="container mx-auto px-4">
-		<div
-			class="header-origami relative border-y-4 border-foreground py-16 text-center md:py-24"
-			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
+<div
+	class="mx-auto box-border flex max-w-[1440px] flex-col gap-6 px-[clamp(16px,4vw,56px)] pt-10 pb-24"
+>
+	<form
+		action={localizeHref('/blog')}
+		method="GET"
+		role="search"
+		class="flex flex-wrap items-center gap-3"
+	>
+		<label
+			class="flex min-h-[52px] flex-[1_1_320px] items-center gap-2.5 rounded-full border border-border bg-card px-[18px]"
 		>
-			<div class="absolute inset-0 -z-10 bg-primary/5"></div>
+			<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+				<circle cx="9" cy="9" r="6" fill="none" stroke="var(--muted-foreground)" stroke-width="2" />
+				<path
+					d="M14 14l4 4"
+					stroke="var(--muted-foreground)"
+					stroke-width="2"
+					stroke-linecap="round"
+				/>
+			</svg>
+			<span class="sr-only">{m.gis_search_posts()}</span>
+			<input
+				type="search"
+				name="q"
+				value={data.search}
+				placeholder={m.gis_search_posts()}
+				class="min-w-0 flex-1 border-0 bg-transparent text-base font-semibold text-foreground outline-none placeholder:text-muted-foreground"
+			/>
+		</label>
+		{#if data.tag}<input type="hidden" name="tag" value={data.tag} />{/if}
+	</form>
 
-			<div
-				class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase"
+	{#if data.tags?.length}
+		<nav aria-label={m.gis_categories()} class="flex flex-wrap gap-2">
+			<a href={tagHref('')} aria-current={!data.tag ? 'page' : undefined} class={chip(!data.tag)}
+				>{m.gis_all()}</a
 			>
-				[KNOWLEDGE_ARCHIVE_v1.0]
-			</div>
-
-			<h1 class="stagger-item font-poppins text-5xl font-black tracking-tighter md:text-8xl">
-				{m.blog_title()}<span class="text-primary">_</span>
-			</h1>
-
-			<p
-				class="stagger-item mx-auto mt-8 max-w-3xl px-6 font-mono text-xs leading-relaxed tracking-wider wrap-break-word text-muted-foreground uppercase md:px-0 md:text-sm"
-			>
-				// {m.blog_subtitle()}
-			</p>
-
-			<!-- Decorative Origami Shards -->
-			<div
-				class="absolute -top-10 -right-10 size-40 bg-primary/10 transition-transform duration-500 hover:rotate-45"
-				style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
-			></div>
-			<div
-				class="absolute -bottom-10 -left-10 size-32 bg-foreground/5 transition-transform duration-500 hover:-rotate-12"
-				style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"
-			></div>
-		</div>
-	</section>
-
-	<!-- Controls Section (Search & Filter) -->
-	<section class="container mx-auto space-y-12 px-4">
-		<div class="flex flex-col items-stretch justify-between gap-8 lg:flex-row lg:items-end">
-			<!-- Search Bar -->
-			<div class="stagger-item relative flex-1">
-				<div
-					class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
+			{#each data.tags as t (t)}
+				<a
+					href={tagHref(t)}
+					aria-current={data.tag === t ? 'page' : undefined}
+					class={chip(data.tag === t)}>{t}</a
 				>
-					<Database class="size-3" /> [QUERY_DATABASE]
-				</div>
-				<form action="/blog" method="GET" class="group relative">
-					<Search
-						class="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
-					/>
-					<input
-						type="text"
-						name="q"
-						value={data.search}
-						placeholder="INITIATE_SEARCH..."
-						class="h-14 w-full border-2 border-foreground bg-card px-4 pl-12 font-mono text-sm tracking-tight text-card-foreground transition-all outline-none focus:bg-primary/5 focus:shadow-[4px_4px_0_var(--primary)]"
-					/>
-					{#if data.search}
-						<a
-							href="/blog"
-							class="absolute top-1/2 right-4 -translate-y-1/2 border border-foreground/20 p-1 transition-colors hover:bg-primary hover:text-primary-foreground"
-						>
-							<X class="size-4" />
-						</a>
-					{/if}
-				</form>
-				{#if data.search}
-					<p
-						class="mt-3 font-mono text-[9px] font-bold tracking-widest text-muted-foreground uppercase"
-					>
-						// RESULTS_FOR: <span class="text-foreground">"{data.search}"</span>
-					</p>
-				{/if}
-			</div>
-
-			<!-- Category Filter Label -->
-			<div class="stagger-item hidden lg:block">
-				<div
-					class="mb-2 flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase"
-				>
-					<Filter class="size-3" /> [CATEGORY_SORT]
-				</div>
-				<div class="flex h-14 items-center border-l-2 border-foreground/10 px-4">
-					<span class="font-mono text-[10px] font-black tracking-[0.3em] text-foreground uppercase">
-						{selectedCategory === 'All'
-							? 'FILTER_ACTIVE'
-							: `MOD_${selectedCategory.toUpperCase().replace(/\s+/g, '_')}`}
-					</span>
-				</div>
-			</div>
-		</div>
-
-		<!-- Category Filter Chips -->
-		<div class="stagger-item space-y-4">
-			<div
-				class="flex items-center gap-2 font-mono text-[10px] font-black tracking-widest uppercase lg:hidden"
-			>
-				<Filter class="size-3" /> [CATEGORY_SORT]
-			</div>
-			<div class="flex flex-wrap gap-3">
-				{#each categories as category (category)}
-					<a
-						href={category === 'All' ? '/blog' : `/blog?tag=${encodeURIComponent(category)}`}
-						class="group relative flex items-center gap-3 border-2 border-foreground px-5 py-2.5 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none {selectedCategory ===
-						category
-							? 'bg-foreground text-background'
-							: 'bg-card text-card-foreground'}"
-					>
-						<span class="relative z-10 font-mono text-[10px] font-black tracking-widest uppercase">
-							{category}
-						</span>
-
-						{#if selectedCategory === category}
-							<div class="absolute inset-0 -z-10 translate-x-1 translate-y-1 bg-primary"></div>
-						{/if}
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-
-	<!-- Featured Post Section -->
-	{#if featuredPost}
-		<section class="stagger-item container mx-auto px-4">
-			<BlogFeatured post={featuredPost} animateOnScroll={false} />
-		</section>
+			{/each}
+		</nav>
 	{/if}
 
-	<!-- Blog Grid -->
-	<section class="container mx-auto px-4">
-		<div class="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
+	{#if featured}
+		{@const s = spot(featured.slug)}
+		<a
+			href={localizeHref(`/blog/${featured.slug}`)}
+			class="map-card lift flex flex-wrap overflow-hidden rounded-[32px] text-foreground"
+		>
+			<div class="relative min-h-[300px] flex-[1_1_420px]">
+				{#if featured.thumbnailUrl}
+					<img
+						src={optimizeImage(featured.thumbnailUrl, { width: 900, quality: 80 })}
+						alt=""
+						class="absolute inset-0 size-full object-cover"
+					/>
+				{:else}
+					<div class="absolute inset-0">
+						<MapThumb x={s.x} y={s.y} zoom={2.2} variant="route" seed={s.seed} />
+					</div>
+				{/if}
+				<span
+					class="absolute top-5 left-5 rounded-full bg-primary px-3.5 py-[7px] font-mono text-xs font-semibold text-primary-foreground"
+					>{m.gis_blog_featured()}</span
+				>
+			</div>
+			<div class="flex flex-[1_1_420px] flex-col justify-center gap-4 p-[clamp(24px,3vw,44px)]">
+				<span class="font-mono text-[13px] font-semibold text-muted-foreground">
+					{fmt(featured.date)}{featured.readingTime
+						? ` · ${m.gis_min_read({ count: featured.readingTime })}`
+						: ''}
+				</span>
+				<span class="text-[clamp(26px,2.6vw,38px)] leading-[1.12] font-black tracking-[-0.02em]"
+					>{featured.title}</span
+				>
+				{#if featured.description}
+					<span class="text-[17px] leading-relaxed text-ink-soft">{featured.description}</span>
+				{/if}
+				<span class="font-extrabold text-primary">{m.gis_read_article()}</span>
+			</div>
+		</a>
+	{/if}
+
+	{#if gridPosts.length}
+		<div class="grid grid-cols-[repeat(auto-fill,minmax(min(320px,100%),1fr))] gap-5">
 			{#each gridPosts as post (post.slug)}
-				<div class="blog-grid-item">
-					<BlogCard {post} />
-				</div>
+				{@const s = spot(post.slug)}
+				<a
+					href={localizeHref(`/blog/${post.slug}`)}
+					class="map-card lift flex flex-col gap-3.5 px-3 pt-3 pb-[22px] text-foreground"
+				>
+					<div class="aspect-video overflow-hidden rounded-[20px] bg-secondary">
+						{#if post.thumbnailUrl}
+							<img
+								src={optimizeImage(post.thumbnailUrl, { width: 640, quality: 75 })}
+								alt=""
+								loading="lazy"
+								class="size-full object-cover"
+							/>
+						{:else}
+							<MapThumb x={s.x} y={s.y} zoom={2.2} variant="route" seed={s.seed} />
+						{/if}
+					</div>
+					<div class="flex flex-col gap-2 px-2.5">
+						<span class="font-mono text-[13px] font-semibold text-muted-foreground">
+							{fmt(post.date)}{post.tags?.[0] ? ` · ${post.tags[0]}` : ''}
+						</span>
+						<span class="text-xl leading-[1.3] font-black">{post.title}</span>
+					</div>
+				</a>
 			{/each}
 		</div>
+	{:else if !featured}
+		<p
+			class="m-0 rounded-[28px] border-[1.5px] border-dashed border-line-strong bg-card p-10 text-center text-lg font-extrabold text-muted-foreground"
+		>
+			{data.search || data.tag ? m.gis_no_posts() : m.blog_empty()}
+		</p>
+	{/if}
 
-		<!-- Load More / Empty State -->
-		<div class="mt-24 flex justify-center">
-			{#if nextCursor && selectedCategory === 'All'}
-				<button
-					onclick={loadMore}
-					disabled={isLoadingMore}
-					class="group relative flex h-16 items-center gap-4 border-4 border-foreground bg-primary px-10 font-mono text-sm font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-2 hover:-translate-y-2 hover:shadow-[8px_8px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50"
-				>
-					<div
-						class="absolute inset-0 -z-10 translate-x-2 translate-y-2 bg-foreground/10 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"
-					></div>
-
-					{#if isLoadingMore}
-						<Loader2 class="size-5 animate-spin" />
-						[FETCHING_MORE...]
-					{:else}
-						<Plus class="size-5 transition-transform group-hover:rotate-180" />
-						[EXPAND_COLLECTION]
-					{/if}
-				</button>
-			{:else if gridPosts.length === 0}
-				<div
-					class="mx-auto flex max-w-2xl flex-col items-center justify-center border-4 border-dashed border-foreground/20 py-32 text-center"
-				>
-					<div
-						class="mb-8 border-2 border-foreground bg-muted p-8 shadow-[8px_8px_0_var(--foreground)]"
-					>
-						<Database class="size-20 text-foreground" />
-					</div>
-					<div class="space-y-4">
-						<h3 class="font-poppins text-3xl font-black tracking-tighter uppercase">
-							[ZERO_ENTRIES_FOUND]
-						</h3>
-						<p class="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-							// SEARCH_QUERY_RETURNED_NULL_RESULT
-						</p>
-					</div>
-					<a
-						href="/blog"
-						class="mt-10 border-2 border-foreground bg-foreground px-8 py-3 font-mono text-[10px] font-black tracking-widest text-background uppercase transition-all hover:bg-primary hover:text-primary-foreground"
-					>
-						[RESET_SEARCH]
-					</a>
-				</div>
-			{/if}
+	{#if nextCursor}
+		<div class="mt-4 flex justify-center">
+			<button
+				type="button"
+				onclick={loadMore}
+				disabled={isLoadingMore}
+				class="btn-pill-line text-base disabled:opacity-60"
+			>
+				{isLoadingMore ? m.blog_loading() : m.gis_load_more()}
+			</button>
 		</div>
-	</section>
+	{/if}
 </div>
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	:global(.header-origami) {
-		transform-style: preserve-3d;
-		perspective: 1000px;
-	}
-
-	.container {
-		@apply max-w-7xl;
-	}
-
-	input::placeholder {
-		color: oklch(from var(--card-foreground) l c h / 40%);
-	}
-</style>

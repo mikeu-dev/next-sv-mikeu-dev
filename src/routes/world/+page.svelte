@@ -6,39 +6,16 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<SEO title={m.world_title()} description={m.world_description()} />
+<SEO title={m.gis_world_title()} description={m.world_description()} />
 
-<svelte:head>
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link
-		rel="preload"
-		as="style"
-		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
-	/>
-	<link
-		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
-		rel="stylesheet"
-		media="print"
-		onload={(e) => ((e.currentTarget as HTMLLinkElement).media = 'all')}
-	/>
-	<noscript>
-		<link
-			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;900&display=swap"
-			rel="stylesheet"
-		/>
-	</noscript>
-</svelte:head>
-
-<div class="fixed inset-0 z-40 bg-background font-mono transition-colors duration-500">
+<div class="relative h-dvh min-h-[640px] bg-background">
 	{#await import('#lib/components/guest/sections/world/folded-world.svelte')}
-		<!-- Loading fallback while Three.js component loads -->
-		<div class="flex h-dvh flex-col items-center justify-center bg-background">
+		<div class="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
 			<div
-				class="animate-shape-pulse size-[100px] border-2 border-[#e0e0e0]"
-				style="clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);"
+				class="size-14 animate-spin rounded-full border-[3px] border-border border-t-primary motion-reduce:animate-none"
 			></div>
-			<p class="mt-8 text-[12px] tracking-[0.3em] text-[#fafafa] uppercase">LOADING FOLDED_WORLD</p>
-			<p class="mt-2 text-[10px] text-muted-foreground">Preparing 3D visualization engine...</p>
+			<p class="m-0 font-mono text-[13px] font-semibold text-primary">{m.world_loading()}</p>
+			<p class="m-0 text-sm text-muted-foreground">{m.world_loading_engine()}</p>
 		</div>
 	{:then module}
 		<module.default
@@ -48,44 +25,26 @@
 		/>
 	{:catch}
 		<!-- Fallback for devices that can't load Three.js -->
-		<div class="flex h-dvh items-center justify-center bg-background p-6">
-			<div class="w-full max-w-[600px]">
-				<h1 class="text-[48px] leading-none font-black tracking-[0.2em] text-[#fafafa] uppercase">
-					FOLDED<br />WORLD
-				</h1>
-				<div class="my-6 h-[3px] w-20 bg-[#ff3333]"></div>
-				<p class="mb-8 text-[12px] tracking-widest text-muted-foreground">
-					{data.stats.total} total visitors from {data.geoNodes.length} locations
-				</p>
-				<div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2">
-					{#each data.geoNodes.slice(0, 12) as node (node.id)}
-						<div class="flex items-center justify-between border border-[#222] bg-[#111] p-2 px-3">
-							<span class="text-[10px] tracking-[0.05em] text-[#aaa] uppercase">
-								{node.city ? `${node.city}, ` : ''}{node.country}
-							</span>
-							<span class="text-[14px] font-bold text-[#e0e0e0]">{node.count}</span>
-						</div>
-					{/each}
-				</div>
+		<div class="mx-auto flex h-full max-w-[720px] flex-col justify-center gap-5 px-6 pt-24">
+			<p class="eyebrow">{m.gis_world_eyebrow()}</p>
+			<h1 class="m-0 text-[clamp(40px,5vw,64px)] leading-none font-black tracking-[-0.03em]">
+				{m.gis_world_title()}
+			</h1>
+			<p class="m-0 font-mono text-sm text-muted-foreground">
+				{data.stats.total.toLocaleString()} · {m.gis_world_locations({
+					count: data.geoNodes.length
+				})}
+			</p>
+			<div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2">
+				{#each data.geoNodes.slice(0, 12) as node (node.id)}
+					<div
+						class="flex items-center justify-between rounded-2xl border border-border bg-card px-3.5 py-2.5"
+					>
+						<span class="text-sm font-bold">{node.city ? `${node.city}, ` : ''}{node.country}</span>
+						<span class="font-mono text-sm font-semibold text-primary">{node.count}</span>
+					</div>
+				{/each}
 			</div>
 		</div>
 	{/await}
 </div>
-
-<style>
-	@keyframes shape-pulse {
-		0%,
-		100% {
-			transform: scale(1) rotate(0deg);
-			opacity: 0.5;
-		}
-		50% {
-			transform: scale(1.1) rotate(45deg);
-			opacity: 1;
-		}
-	}
-
-	.animate-shape-pulse {
-		animation: shape-pulse 2s ease-in-out infinite;
-	}
-</style>

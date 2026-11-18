@@ -24,6 +24,7 @@
 	import { inject, pageview } from '@vercel/analytics';
 	import Skeleton from '@/lib/components/ui/skeleton.svelte';
 	import { ArrowUp } from '@lucide/svelte';
+	import { m } from '#lib/paraglide/messages.js';
 
 	inject({
 		mode: dev ? 'development' : 'production',
@@ -125,7 +126,9 @@
 			try {
 				const res = await fetch('/api/stats');
 				if (res.ok) {
-					liveStats = await res.json();
+					const stats = await res.json();
+					// The endpoint returns null when the database is unavailable.
+					if (stats && typeof stats.total === 'number') liveStats = stats;
 				}
 			} catch {
 				// Fail silently
@@ -151,6 +154,19 @@
 	});
 
 	let isAdmin = $derived(page.url.pathname.startsWith('/admin'));
+
+	// Guest pages that draw their own full-bleed header under the floating navbar.
+	const FULL_BLEED = new Set([
+		'/',
+		'/projects',
+		'/projects/[slug]',
+		'/blog',
+		'/blog/[slug]',
+		'/about',
+		'/contact',
+		'/world'
+	]);
+	let fullBleed = $derived(isAdmin || FULL_BLEED.has(page.route.id ?? ''));
 </script>
 
 <svelte:head>
@@ -165,17 +181,17 @@
 	<link
 		rel="preload"
 		as="style"
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap"
 	/>
 	<link
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap"
 		rel="stylesheet"
 		media="print"
 		onload={(e) => ((e.currentTarget as HTMLLinkElement).media = 'all')}
 	/>
 	<noscript>
 		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap"
 			rel="stylesheet"
 		/>
 	</noscript>
@@ -195,7 +211,7 @@
 <!-- Skip to content link for keyboard accessibility -->
 <a
 	href="#main-content"
-	class="fixed top-0 left-1/2 z-[9999] -translate-x-1/2 -translate-y-full bg-primary px-6 py-3 font-mono text-xs font-black tracking-widest text-primary-foreground uppercase transition-transform focus:translate-y-0"
+	class="fixed top-0 left-1/2 z-[9999] -translate-x-1/2 -translate-y-full rounded-b-2xl bg-primary px-6 py-3 text-sm font-extrabold text-primary-foreground transition-transform focus:translate-y-0"
 >
 	Skip to content
 </a>
@@ -210,7 +226,7 @@
 	{/if}
 	<main
 		id="main-content"
-		class={page.url.pathname === '/' || isAdmin ? 'flex-1' : 'container mx-auto flex-1 px-4 py-8'}
+		class={fullBleed ? 'flex-1' : 'container mx-auto flex-1 px-4 pt-28 pb-12 sm:pt-32'}
 	>
 		{@render children?.()}
 	</main>
@@ -236,33 +252,11 @@
 	{/each}
 </div>
 
-<!-- Brutalist Scroll to Top Button -->
 <button
 	bind:this={scrollBtn}
-	class="group scroll-top-origami pointer-events-none fixed right-8 bottom-8 z-9999 flex size-12 cursor-pointer items-center justify-center border-2 border-foreground bg-primary text-primary-foreground opacity-0 shadow-[4px_4px_0_var(--foreground)] transition-all duration-300 hover:-translate-x-2 hover:-translate-y-2 hover:rotate-3 hover:bg-foreground hover:text-primary hover:shadow-[12px_12px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
-	aria-label="Scroll to top"
+	class="pointer-events-none fixed right-6 bottom-6 z-[9999] flex size-12 items-center justify-center rounded-full border border-border bg-card text-foreground opacity-0 shadow-float transition-colors hover:bg-primary hover:text-primary-foreground sm:right-8 sm:bottom-8"
+	aria-label={m.gis_scroll_top()}
 	onclick={scrollToTop}
 >
-	<!-- Decorative Shard (Visible on Hover) -->
-	<div
-		class="absolute inset-0 -z-10 translate-x-0 translate-y-0 bg-primary-foreground/20 opacity-0 transition-all duration-300 group-hover:translate-x-3 group-hover:translate-y-3 group-hover:opacity-100"
-		style="clip-path: polygon(20% 0, 100% 40%, 80% 100%, 0 70%);"
-	></div>
-
-	<ArrowUp
-		class="relative z-10 size-6 transition-transform duration-300 group-hover:-translate-y-1"
-		strokeWidth={3}
-	/>
+	<ArrowUp class="size-5" strokeWidth={2.4} />
 </button>
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	.scroll-top-origami {
-		clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
-	}
-
-	.scroll-top-origami:hover {
-		clip-path: polygon(0 0, 85% 15%, 100% 100%, 15% 85%);
-	}
-</style>

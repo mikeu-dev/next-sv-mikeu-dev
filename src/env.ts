@@ -16,9 +16,9 @@ export const variables = defineEnvVars({
 	PUBLIC_VAPID_KEY: { public: true, schema: (input) => input ?? '' },
 	PRIVATE_VAPID_KEY: { schema: (input) => input ?? '' },
 	OWNER_EMAIL: { schema: (input) => input ?? '' },
-	// `$env/dynamic/private` (still used by firebase.server.ts, github-storage.service.ts, and
-	// src/lib/server/config/env.ts) is now just a re-export of these declared vars — anything not
-	// listed here silently reads as undefined instead of the real value (see commit 0f337a2).
+	// Read via `$app/env/private` by firebase.server.ts, github-storage.service.ts and
+	// src/lib/server/config/env.ts — anything not listed here silently reads as undefined
+	// instead of the real value (see commit 0f337a2).
 	FIREBASE_PROJECT_ID: { schema: (input) => input ?? '' },
 	FIREBASE_PRIVATE_KEY: { schema: (input) => input ?? '' },
 	FIREBASE_CLIENT_EMAIL: { schema: (input) => input ?? '' },

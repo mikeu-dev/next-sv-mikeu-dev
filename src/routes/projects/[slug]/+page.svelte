@@ -1,19 +1,14 @@
 <script lang="ts">
-	import { ArrowLeft, ExternalLink, Github, Layers, Calendar, Zap } from '@lucide/svelte';
-	import { Splide, SplideSlide } from '@splidejs/svelte-splide';
-	import Icon from '@/lib/components/ui/icon.svelte';
 	import SEO from '@/lib/components/seo/seo.svelte';
-	import ProjectCard from '@/lib/components/guest/card/project-card.svelte';
-	import Breadcrumb from '#lib/components/ui/breadcrumb.svelte';
+	import Icon from '@/lib/components/ui/icon.svelte';
 	import ProjectReactions from '#lib/components/project/project-reactions.svelte';
 	import ProjectShare from '#lib/components/project/project-share.svelte';
-
+	import MapThumb from '#lib/components/guest/map/map-thumb.svelte';
+	import { toMapProjects } from '#lib/components/guest/map/project-geo.js';
 	import { getLocalizedProject } from '#lib/utils/project-mapper.js';
 	import { optimizeImage } from '#lib/utils/image.util.js';
 	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
-	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
+	import { m } from '#lib/paraglide/messages.js';
 	import type { Project } from '#lib/types.js';
 
 	interface ProjectPageData {
@@ -23,369 +18,313 @@
 	}
 
 	let { data }: { data: ProjectPageData } = $props();
-	let project = $derived(getLocalizedProject(data.project, getLocale()));
-	let reactions = $derived(data.reactions);
-	let relatedProjects = $derived(
-		(data.relatedProjects || []).map((p) => getLocalizedProject(p, getLocale()))
+	const locale = getLocale();
+
+	let project = $derived(getLocalizedProject(data.project, locale));
+	let geo = $derived(toMapProjects([data.project], locale, localizeHref)[0]);
+	let related = $derived(toMapProjects(data.relatedProjects || [], locale, localizeHref));
+	let gallery = $derived(
+		project.imagesUrl?.length
+			? project.imagesUrl
+			: project.thumbnailUrl
+				? [project.thumbnailUrl]
+				: []
 	);
 
-	let breadcrumbItems = $derived([
-		{ label: 'Projects', href: '/projects' },
-		{ label: project.title, href: page.url.pathname }
-	]);
-
-	onMount(() => {
-		const ctx = gsap.context(() => {
-			const tl = gsap.timeline();
-
-			tl.from('.header-origami', {
-				clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-				duration: 1,
-				ease: 'power4.inOut'
-			})
-				.from(
-					'.hero-stagger',
-					{
-						y: 30,
-						rotateX: -10,
-						opacity: 0,
-						duration: 0.8,
-						stagger: 0.1,
-						ease: 'expo.out'
-					},
-					'-=0.4'
-				)
-				.from(
-					'.content-stagger',
-					{
-						opacity: 0,
-						y: 20,
-						duration: 0.6,
-						stagger: 0.1,
-						ease: 'power2.out'
-					},
-					'-=0.2'
-				);
-		});
-
-		return () => ctx.revert();
+	const dateFmt = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'id-ID', {
+		month: 'long',
+		year: 'numeric'
 	});
+	let released = $derived(project.createdAt ? dateFmt.format(new Date(project.createdAt)) : '—');
+
+	// Illustrative bounding-box query: hits inside the box are blue, the rest grey.
+	const HITS = [
+		[40, 36],
+		[47, 52],
+		[56, 40],
+		[60, 60],
+		[44, 62]
+	];
+	const MISSES = [
+		[20, 30],
+		[78, 22],
+		[84, 76],
+		[14, 80]
+	];
 </script>
 
 <SEO title={project.title} description={project.description} image={project.thumbnailUrl} />
 
-<div class="relative mt-28 min-h-screen pb-32">
-	<!-- Industrial Background -->
-	<div
-		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
-		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
-	></div>
-
-	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		<!-- Navigation HUD -->
-		<div
-			class="mb-12 flex flex-col gap-6 border-b-2 border-foreground/10 pb-8 md:flex-row md:items-center md:justify-between"
+<div
+	class="mx-auto box-border flex max-w-[1440px] flex-col gap-14 px-[clamp(16px,4vw,56px)] pt-28 pb-24 sm:pt-32"
+>
+	<div class="flex flex-col gap-6">
+		<ol
+			aria-label={m.gis_breadcrumb()}
+			class="m-0 flex list-none flex-wrap gap-2 p-0 font-mono text-sm text-muted-foreground"
 		>
-			<Breadcrumb items={breadcrumbItems} />
-			<a
-				href={localizeHref('/projects')}
-				class="group flex items-center border-2 border-foreground bg-background px-4 py-2 font-mono text-[10px] font-black tracking-widest uppercase transition-all hover:bg-foreground hover:text-background"
-			>
-				<ArrowLeft class="mr-2 size-3 transition-transform group-hover:-translate-x-1" />
-				[RETURN_TO_ARCHIVE]
-			</a>
-		</div>
-
-		<!-- Hero Section -->
-		<header
-			class="header-origami relative mb-20 border-x-4 border-foreground bg-card p-8 text-card-foreground md:p-16 dark:bg-card dark:text-card-foreground"
-			style="clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);"
-		>
-			<div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
-				<div class="max-w-4xl space-y-8 lg:col-span-8">
-					<div class="hero-stagger">
-						<div
-							class="mb-4 inline-block border-2 border-foreground bg-primary px-3 py-1 font-mono text-[9px] font-black tracking-[0.2em] text-primary-foreground uppercase shadow-[3px_3px_0_var(--foreground)]"
-						>
-							[PROJECT_SPEC_v2.0]
-						</div>
-						<h1
-							class="font-poppins text-5xl font-black tracking-tighter uppercase italic md:text-8xl"
-						>
-							{project.title}<span class="text-primary">_</span>
-						</h1>
-					</div>
-
-					<p
-						class="hero-stagger font-mono text-sm leading-relaxed tracking-wider text-card-foreground/70 uppercase md:text-lg dark:text-muted-foreground"
-					>
-						// {project.description}
-					</p>
-
-					<div class="hero-stagger flex flex-wrap items-center gap-8 pt-4">
-						<ProjectReactions {reactions} />
-						<div class="hidden h-8 w-0.5 bg-foreground/10 md:block"></div>
-						<ProjectShare title={project.title} />
-					</div>
-				</div>
-
-				<!-- Secondary HUD Stats -->
-				<div class="hero-stagger hidden lg:col-span-4 lg:block">
-					<div class="space-y-6 border-l-2 border-foreground/10 pl-8">
-						<div class="space-y-1">
-							<p
-								class="font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
-							>
-								[KERNEL_ID]
-							</p>
-							<p class="font-mono text-xs font-black uppercase">PID-{project.id.slice(0, 8)}</p>
-						</div>
-						<div class="space-y-1">
-							<p
-								class="font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
-							>
-								[DEPLOY_STATUS]
-							</p>
-							<div class="flex items-center gap-2">
-								<div class="size-2 animate-pulse bg-green-500"></div>
-								<p class="font-mono text-xs font-black uppercase">OPERATIONAL</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</header>
-
-		<!-- Featured Media -->
-		<section class="hero-stagger mb-24">
-			<div
-				class="relative border-4 border-foreground bg-card p-2 shadow-[12px_12px_0_var(--foreground)]"
-				style="clip-path: polygon(0 1%, 100% 0, 99% 100%, 1% 99%);"
-			>
-				<div
-					class="absolute -top-4 -left-4 border-2 border-foreground bg-primary px-3 py-1 font-mono text-[10px] font-black text-primary-foreground"
+			<li>
+				<a href={localizeHref('/')} class="underline hover:text-foreground">{m.gis_home()}</a>
+			</li>
+			<li aria-hidden="true">/</li>
+			<li>
+				<a href={localizeHref('/projects')} class="underline hover:text-foreground"
+					>{m.gis_projects()}</a
 				>
-					[VISUAL_DATA_STREAM]
-				</div>
-
-				{#if project.imagesUrl && project.imagesUrl.length > 0}
-					<Splide
-						aria-label="Project Images"
-						options={{
-							rewind: true,
-							autoplay: true,
-							interval: 4000,
-							type: 'fade',
-							speed: 1000,
-							arrows: project.imagesUrl.length > 1,
-							pagination: project.imagesUrl.length > 1
-						}}
+			</li>
+			<li aria-hidden="true">/</li>
+			<li aria-current="page" class="font-semibold text-foreground">{project.title}</li>
+		</ol>
+		<div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-8">
+			<div class="flex max-w-[860px] flex-[1_1_560px] flex-col gap-[18px]">
+				{#if geo.category}
+					<p
+						class="m-0 inline-flex items-center gap-2.5 self-start rounded-full bg-accent px-3.5 py-[7px] font-mono text-[13px] font-semibold text-primary"
 					>
-						{#each project.imagesUrl as url (url)}
-							<SplideSlide>
-								<img
-									src={optimizeImage(url, { width: 1200, quality: 80 })}
-									alt={project.title}
-									class="aspect-video w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
-								/>
-							</SplideSlide>
-						{/each}
-					</Splide>
-				{:else}
-					<img
-						src={optimizeImage(project.thumbnailUrl, { width: 1200, quality: 80 })}
-						alt={project.title}
-						class="aspect-video w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
-					/>
+						{geo.category}
+					</p>
 				{/if}
+				<h1 class="m-0 text-[clamp(40px,5.4vw,76px)] leading-[1.02] font-black tracking-[-0.035em]">
+					{project.title}
+				</h1>
+				<p class="m-0 text-[19px] leading-relaxed text-ink-soft">{project.description}</p>
+			</div>
+			<dl
+				class="m-0 grid flex-[0_1_380px] grid-cols-2 overflow-hidden rounded-3xl border border-border bg-card"
+			>
+				<div class="border-r border-b border-border px-5 py-4">
+					<dt class="font-mono text-xs text-muted-foreground">{m.gis_work_released()}</dt>
+					<dd class="m-0 mt-1 font-extrabold">{released}</dd>
+				</div>
+				<div class="border-b border-border px-5 py-4">
+					<dt class="font-mono text-xs text-muted-foreground">{m.blog_views()}</dt>
+					<dd class="m-0 mt-1 font-extrabold">{data.reactions?.views ?? 0}</dd>
+				</div>
+				<div class="border-r border-border px-5 py-4">
+					<dt class="font-mono text-xs text-muted-foreground">{m.gis_status()}</dt>
+					<dd class="m-0 mt-1 flex items-center gap-2 font-extrabold">
+						<span class="size-2.5 rounded-full bg-success"></span>
+						{project.demoUrl ? m.gis_status_live() : m.gis_status_code()}
+					</dd>
+				</div>
+				<div class="px-5 py-4">
+					<dt class="font-mono text-xs text-muted-foreground">Layer</dt>
+					<dd class="m-0 mt-1 font-mono font-extrabold">PID-{project.id.slice(0, 6)}</dd>
+				</div>
+			</dl>
+		</div>
+		<div class="flex flex-wrap gap-2.5">
+			{#if project.demoUrl}
+				<a
+					href={project.demoUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="btn-pill-solid min-h-[52px] px-[26px]"
+				>
+					{m.gis_live_preview()}
+					<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+						<path
+							d="M6 3h9v9M15 3L4 14"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</a>
+			{/if}
+			{#if project.repoUrl}
+				<a
+					href={project.repoUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="btn-pill-line min-h-[52px]"
+				>
+					{m.project_button_view_code()}
+				</a>
+			{/if}
+			<a href={localizeHref('/projects')} class="btn-pill-line min-h-[52px]"
+				>{m.gis_back_archive()}</a
+			>
+		</div>
+	</div>
+
+	<!-- Illustrative bbox query on the project's layer -->
+	<figure class="m-0">
+		<div
+			role="img"
+			aria-label={project.title}
+			class="relative aspect-[16/8] min-h-[300px] overflow-hidden rounded-[32px] border border-border"
+		>
+			<MapThumb x={geo.x} y={geo.y} zoom={1.4} variant="none" />
+			<div
+				class="bbox absolute top-[26%] left-[34%] h-[42%] w-[30%] rounded-md border-[3px] border-primary bg-primary/12"
+			></div>
+			{#each HITS as [x, y] (`${x}-${y}`)}
+				<span
+					class="hit absolute -mt-[7px] -ml-[7px] size-3.5 rounded-full border-[3px] border-white bg-primary shadow-[0_2px_6px_rgba(23,33,43,.25)]"
+					style="left: {x}%; top: {y}%"
+				></span>
+			{/each}
+			{#each MISSES as [x, y] (`${x}-${y}`)}
+				<span
+					class="absolute -mt-[7px] -ml-[7px] size-3.5 rounded-full border-[3px] border-white bg-pin-idle shadow-[0_2px_6px_rgba(23,33,43,.25)]"
+					style="left: {x}%; top: {y}%"
+				></span>
+			{/each}
+			<div
+				class="absolute top-4 right-4 hidden flex-col gap-1.5 rounded-[18px] border border-border bg-card px-[18px] py-3.5 shadow-float sm:flex"
+			>
+				<span class="font-mono text-xs text-muted-foreground">BOUNDING BOX QUERY</span>
+				<span class="text-lg font-black">{HITS.length} features</span>
+				<span class="font-mono text-xs text-muted-foreground">{geo.code} · {project.title}</span>
+			</div>
+		</div>
+	</figure>
+
+	{#if project.content}
+		<section aria-labelledby="ov" class="flex flex-wrap gap-x-14 gap-y-8">
+			<div class="map-reveal flex flex-[1_1_320px] flex-col gap-3">
+				<p class="eyebrow">{m.gis_overview()}</p>
+				<h2
+					id="ov"
+					class="m-0 text-[clamp(30px,3.4vw,44px)] leading-[1.08] font-black tracking-[-0.02em]"
+				>
+					{project.title}
+				</h2>
+			</div>
+			<div
+				class="prose prose-lg max-w-none min-w-0 flex-[2_1_480px] text-ink-soft dark:prose-invert"
+			>
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+				{@html project.content}
 			</div>
 		</section>
+	{:else}
+		<p class="m-0 text-lg text-muted-foreground">{m.project_content_not_found()}</p>
+	{/if}
 
-		<!-- Main Content Grid -->
-		<div class="grid grid-cols-1 gap-20 lg:grid-cols-[1fr_380px]">
-			<!-- Project Content -->
-			<div class="content-stagger space-y-16">
-				<article class="prose-origami prose prose-lg max-w-none dark:prose-invert">
-					{#if project.content}
-						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						{@html project.content}
-					{:else}
-						<div class="border-4 border-dashed border-foreground/10 p-20 text-center">
-							<Icon iconName="FileText" size={64} class="mx-auto mb-6 opacity-10" />
-							<p class="font-mono text-sm tracking-widest text-muted-foreground uppercase">
-								[CONTENT_NOT_LOCALIZED_OR_MISSING]
-							</p>
-						</div>
-					{/if}
-				</article>
+	{#if project.tags?.length}
+		<section
+			aria-labelledby="st"
+			class="flex flex-wrap items-center justify-between gap-6 rounded-[28px] bg-secondary p-7"
+		>
+			<h2 id="st" class="m-0 text-[26px] font-black">{m.gis_tech_stack()}</h2>
+			<div class="flex flex-wrap gap-2">
+				{#each project.tags as tag (tag.name)}
+					<span
+						class="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-[9px] text-[15px] font-extrabold"
+					>
+						{#if tag.icon}<Icon src={tag.icon} size={16} label={tag.name} />{/if}
+						{tag.name}
+					</span>
+				{/each}
 			</div>
+		</section>
+	{/if}
 
-			<!-- Sidebar Info -->
-			<aside class="content-stagger space-y-12">
-				<!-- Project Links -->
-				<div
-					class="group relative border-4 border-foreground bg-card p-8 text-card-foreground transition-all hover:shadow-[8px_8px_0_var(--primary)]"
-				>
-					<div class="mb-8 flex items-center justify-between border-b-2 border-foreground/10 pb-4">
-						<h3 class="font-poppins text-lg font-black uppercase italic">[ACCESS_PANEL]</h3>
-						<Zap class="size-5 text-primary" />
-					</div>
+	{#if gallery.length}
+		<section aria-labelledby="gl" class="flex flex-col gap-5">
+			<h2 id="gl" class="m-0 text-[clamp(28px,3vw,40px)] font-black tracking-[-0.02em]">
+				{m.gis_gallery()}
+			</h2>
+			<div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4">
+				{#each gallery as url, i (url)}
+					<a
+						href={url}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="lift block overflow-hidden rounded-3xl border border-border bg-card"
+					>
+						<img
+							src={optimizeImage(url, { width: 900, quality: 80 })}
+							alt={m.gis_screenshot({ n: i + 1 })}
+							loading="lazy"
+							class="aspect-[4/3] w-full object-cover"
+						/>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
 
-					<div class="flex flex-col gap-4">
-						{#if project.demoUrl}
-							<a
-								href={project.demoUrl}
-								target="_blank"
-								class="group/btn relative flex items-center justify-center border-4 border-foreground bg-primary px-6 py-4 font-mono text-xs font-black tracking-widest text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none"
-							>
-								<ExternalLink class="mr-3 size-4 transition-transform group-hover/btn:rotate-12" />
-								LIVE_PREVIEW
-							</a>
-						{/if}
-						{#if project.repoUrl}
-							<a
-								href={project.repoUrl}
-								target="_blank"
-								class="group/btn relative flex items-center justify-center border-2 border-foreground bg-background px-6 py-4 font-mono text-xs font-black tracking-widest uppercase transition-all hover:bg-foreground hover:text-background"
-							>
-								<Github class="mr-3 size-4 transition-transform group-hover/btn:scale-110" />
-								VIEW_SOURCE
-							</a>
-						{/if}
-					</div>
-				</div>
-
-				<!-- Meta Data -->
-				<div class="space-y-8 border-4 border-foreground bg-foreground/5 p-8">
-					<div class="space-y-6">
-						<div class="flex items-start gap-4">
-							<div
-								class="flex size-10 shrink-0 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground"
-							>
-								<Layers class="size-5" />
-							</div>
-							<div class="min-w-0 flex-1">
-								<p
-									class="mb-3 font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
-								>
-									[TECH_STACK_INVENTORY]
-								</p>
-								<div class="flex flex-wrap gap-2">
-									{#each project.tags || [] as tag (tag.name)}
-										<span
-											class="border border-foreground/20 bg-background px-3 py-1 font-mono text-[10px] font-black uppercase transition-colors hover:bg-primary hover:text-primary-foreground"
-										>
-											{tag.name}
-										</span>
-									{/each}
-								</div>
-							</div>
-						</div>
-
-						<div class="flex items-center gap-4">
-							<div
-								class="flex size-10 shrink-0 items-center justify-center border-2 border-foreground bg-foreground text-background"
-							>
-								<Calendar class="size-5" />
-							</div>
-							<div>
-								<p
-									class="mb-1 font-mono text-[9px] font-black tracking-widest text-card-foreground/60 uppercase dark:text-muted-foreground"
-								>
-									[TEMPORAL_MARK]
-								</p>
-								<p class="font-mono text-xs font-black uppercase">
-									{project.createdAt
-										? new Date(project.createdAt).toLocaleDateString(getLocale(), {
-												month: 'long',
-												year: 'numeric'
-											})
-										: 'N/A'}
-								</p>
-							</div>
-						</div>
-					</div>
-
-					<!-- Integrity Check -->
-					<div class="border-t-2 border-foreground/10 pt-6">
-						<div class="flex items-center gap-3">
-							<div class="h-2 flex-1 bg-foreground/10">
-								<div class="h-full w-full animate-pulse bg-primary"></div>
-							</div>
-							<span class="font-mono text-[8px] font-black uppercase">INTEGRITY_CHECK: PASSED</span>
-						</div>
-					</div>
-				</div>
-			</aside>
-		</div>
-
-		<!-- Related Projects Section -->
-		{#if relatedProjects && relatedProjects.length > 0}
-			<section class="content-stagger mt-32 space-y-16 border-t-4 border-foreground pt-20">
-				<div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-					<div>
-						<div
-							class="mb-4 inline-block border-2 border-foreground bg-foreground px-3 py-1 font-mono text-[9px] font-black text-background uppercase"
-						>
-							[RELATED_DATA_NODES]
-						</div>
-						<h3 class="font-poppins text-4xl font-black tracking-tighter uppercase italic">
-							Related Projects<span class="text-primary">_</span>
-						</h3>
-					</div>
-					<p class="max-w-md font-mono text-xs tracking-wider text-muted-foreground uppercase">
-						// EXPLORE_OTHER_ARTIFACTS_IN_THE_ARCHIVE
-					</p>
-				</div>
-				<div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-					{#each relatedProjects as related (related.id)}
-						<ProjectCard project={related} />
-					{/each}
-				</div>
-			</section>
-		{/if}
+	<div class="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+		<ProjectReactions reactions={data.reactions} />
+		<ProjectShare title={project.title} />
 	</div>
+
+	{#if related.length}
+		<section aria-labelledby="rl" class="flex flex-col gap-5">
+			<h2 id="rl" class="m-0 text-[clamp(28px,3vw,40px)] font-black tracking-[-0.02em]">
+				{m.gis_related_projects()}
+			</h2>
+			<div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4">
+				{#each related as r (r.project.id)}
+					<a
+						href={r.href}
+						class="map-card lift flex items-center gap-4 rounded-3xl p-3 text-foreground"
+					>
+						<span class="relative size-24 flex-none overflow-hidden rounded-[18px]">
+							<MapThumb x={r.x} y={r.y} zoom={5.2} />
+						</span>
+						<span class="flex min-w-0 flex-col gap-1">
+							<span class="font-mono text-xs font-semibold text-primary">{r.code}</span>
+							<span class="text-lg font-black">{r.title}</span>
+							{#if r.category}<span class="truncate text-sm text-muted-foreground"
+									>{r.category}</span
+								>{/if}
+						</span>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
 </div>
 
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	:global(.prose-origami) {
-		& :global(h2) {
-			@apply mt-16 mb-8 border-l-4 pl-6 text-3xl font-black tracking-tighter uppercase italic;
-			border-color: var(--primary);
-			font-family: var(--font-poppins);
+<style>
+	.bbox {
+		transform-origin: 0 0;
+		animation: bbox 6s ease-in-out infinite;
+	}
+	.hit {
+		animation: hit 6s ease-in-out infinite;
+	}
+	@keyframes bbox {
+		0% {
+			transform: scale(0.1);
+			opacity: 0;
 		}
-		& :global(p) {
-			@apply mb-6 font-mono text-sm leading-relaxed tracking-tight uppercase;
-			color: var(--muted-foreground);
+		10% {
+			opacity: 1;
 		}
-		& :global(strong) {
-			@apply font-black underline decoration-2 underline-offset-4;
-			color: var(--foreground);
-			text-decoration-color: var(--primary);
+		35%,
+		90% {
+			transform: scale(1);
+			opacity: 1;
 		}
-		& :global(ul) {
-			@apply mb-8 space-y-3;
-		}
-		& :global(li) {
-			@apply flex items-start gap-4 font-mono text-sm uppercase;
-			&:before {
-				content: '[+]';
-				@apply shrink-0 font-black;
-				color: var(--primary);
-			}
-		}
-		& :global(img) {
-			@apply mx-auto my-12;
-			border-width: 4px;
-			border-color: var(--foreground);
-			box-shadow: 8px 8px 0 var(--foreground);
+		100% {
+			transform: scale(1);
+			opacity: 0;
 		}
 	}
-
-	.header-origami {
-		transform-style: preserve-3d;
-		perspective: 1000px;
+	@keyframes hit {
+		0%,
+		35% {
+			transform: scale(0);
+		}
+		45%,
+		90% {
+			transform: scale(1);
+		}
+		100% {
+			transform: scale(0);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.bbox,
+		.hit {
+			animation: none;
+		}
 	}
 </style>

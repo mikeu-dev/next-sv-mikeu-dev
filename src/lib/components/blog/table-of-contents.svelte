@@ -55,32 +55,28 @@
 </script>
 
 {#if items.length > 0}
-	<nav class="hidden xl:block">
-		<div class="space-y-4">
-			<!-- Scrolls internally instead of growing past the viewport — the list
-			     sits inside a `sticky` box, so once it's genuinely pinned in place
-			     any overflow can no longer be reached by scrolling the page. -->
-			<ul class="max-h-[calc(100vh-14rem)] space-y-1 overflow-y-auto pr-1">
-				{#each items as item (item.id)}
-					<li class={`${item.depth === 3 ? 'pl-4' : ''}`}>
-						<button
-							onclick={() => scrollTo(item.id)}
-							class={`group relative flex w-full items-center border-2 border-transparent px-3 py-2 text-left font-mono text-[10px] font-black tracking-widest uppercase transition-all ${
-								activeId === item.id
-									? 'border-foreground bg-primary text-primary-foreground shadow-[3px_3px_0_var(--foreground)]'
-									: 'text-card-foreground/60 hover:bg-card-foreground/5 hover:text-card-foreground'
-							}`}
-						>
-							{#if activeId === item.id}
-								<span class="mr-2">[X]</span>
-							{:else}
-								<span class="mr-2 text-card-foreground/30 group-hover:text-primary">[-]</span>
-							{/if}
-							{item.text}
-						</button>
-					</li>
-				{/each}
-			</ul>
-		</div>
-	</nav>
+	<!-- Scrolls internally instead of growing past the viewport — the list sits
+	     inside a sticky box, so overflow could otherwise never be reached. -->
+	<ul class="m-0 flex max-h-[calc(100vh-18rem)] list-none flex-col gap-1 overflow-y-auto p-0 pr-1">
+		{#each items as item (item.id)}
+			{@const on = activeId === item.id}
+			<li class={item.depth === 3 ? 'pl-4' : ''}>
+				<button
+					type="button"
+					onclick={() => scrollTo(item.id)}
+					aria-current={on ? 'true' : undefined}
+					class="flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 py-2 text-left text-[15px] leading-snug font-extrabold text-foreground transition-colors {on
+						? 'bg-accent'
+						: 'hover:bg-secondary'}"
+				>
+					<span
+						class="size-3 flex-none rounded-full border-[2.5px] {on
+							? 'border-primary bg-primary'
+							: 'border-line-strong bg-card'}"
+					></span>
+					<span class="line-clamp-2">{item.text}</span>
+				</button>
+			</li>
+		{/each}
+	</ul>
 {/if}

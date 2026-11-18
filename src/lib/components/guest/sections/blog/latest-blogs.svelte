@@ -1,179 +1,72 @@
 <script lang="ts">
 	import { m } from '#lib/paraglide/messages.js';
-	import BlogClippingTile from './blog-clipping-tile.svelte';
-	import BlogFeatured from '#lib/components/guest/blog/blog-featured.svelte';
 	import type { BlogPost } from '#lib/types.js';
-	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import Icon from '#lib/components/ui/icon.svelte';
-	import { localizeHref } from '#lib/paraglide/runtime.js';
-	import { Hash, Terminal } from '@lucide/svelte';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
+	import SectionHead from '../../map/section-head.svelte';
 
-	let { posts = [] }: { posts: BlogPost[] } = $props();
+	let { posts = [] }: { posts?: BlogPost[] } = $props();
 
-	let section = $state<HTMLElement>();
-
-	onMount(() => {
-		gsap.registerPlugin(ScrollTrigger);
-
-		const sectionEl = section;
-		if (!sectionEl) return;
-
-		const ctx = gsap.context(() => {
-			const tl = gsap.timeline({
-				scrollTrigger: {
-					trigger: sectionEl,
-					start: 'top 80%',
-					toggleActions: 'play none none none'
-				}
-			});
-
-			tl.from('.blog-header-stagger', {
-				y: 30,
-				opacity: 0,
-				duration: 0.8,
-				ease: 'power3.out'
-			});
-
-			// Animate only the small grid blog items since the Featured Post handles its own animation
-			if (posts.length > 1) {
-				gsap.from('.blog-item', {
-					y: 30,
-					opacity: 0,
-					duration: 0.6,
-					stagger: 0.1,
-					ease: 'power3.out',
-					scrollTrigger: {
-						trigger: '.blog-list',
-						start: 'top 85%',
-						toggleActions: 'play none none none'
-					}
-				});
-			}
-		}, sectionEl);
-
-		return () => ctx.revert();
+	const locale = getLocale();
+	const dateFmt = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'id-ID', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric'
 	});
+	function fmt(date: string) {
+		const d = new Date(date);
+		return Number.isNaN(d.getTime()) ? date : dateFmt.format(d);
+	}
+
+	let featured = $derived(posts[0]);
+	let rest = $derived(posts.slice(1, 3));
 </script>
 
-<section
-	id="latest-blog"
-	bind:this={section}
-	class="blog-section relative overflow-hidden bg-background py-20 md:py-32"
->
-	<!-- Grain Texture Overlay -->
-	<div
-		class="pointer-events-none absolute inset-0 z-50 opacity-[0.03] mix-blend-overlay contrast-150 grayscale"
-		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
-	></div>
-
-	<!-- Origami shard decorations — same language as the work section's. -->
-	<div
-		class="origami-shard-blog pointer-events-none absolute -top-24 -right-24 size-96 bg-primary/5 dark:bg-primary/10"
-		style="clip-path: polygon(20% 0%, 100% 20%, 80% 100%, 0% 80%);"
-	></div>
-	<div
-		class="origami-shard-blog pointer-events-none absolute -bottom-24 -left-24 size-80 bg-foreground/5"
-		style="clip-path: polygon(0% 10%, 90% 0%, 100% 90%, 10% 100%);"
-	></div>
-
-	<div class="max-w-screen-4xl relative mx-auto px-6">
-		<div class="blog-header-stagger mb-12 text-left md:mb-16">
-			<div
-				class="mb-4 flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase md:mb-6"
+{#if featured}
+	<section
+		aria-labelledby="blog-h"
+		class="mx-auto box-border max-w-[1440px] px-[clamp(16px,4vw,56px)] pb-[clamp(64px,7vw,100px)]"
+	>
+		<SectionHead id="blog-h" eyebrow={m.gis_blog_eyebrow()} title={m.gis_blog_title()}>
+			<a href={localizeHref('/blog')} class="btn-pill-line min-h-[50px] px-[22px] text-base">
+				{m.gis_blog_all()}
+			</a>
+		</SectionHead>
+		<div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+			<a
+				href={localizeHref(`/blog/${featured.slug}`)}
+				class="map-reveal flex min-w-0 flex-col justify-between gap-6 rounded-[28px] bg-primary p-7 text-primary-foreground transition-colors hover:bg-foreground hover:text-background lg:col-span-2"
 			>
-				<Terminal class="size-3" /> ARCHIVE_SCAN: RECENT_ENTRIES
-			</div>
-			<h2 class="font-poppins text-4xl leading-none font-black tracking-tighter sm:text-5xl">
-				{m.blog_latest_header()} <span class="text-primary italic">{m.blog_title()}</span><span
-					class="text-primary">.</span
+				<span
+					class="self-start rounded-full bg-white/20 px-3 py-1.5 font-mono text-xs font-semibold"
 				>
-			</h2>
-			<p class="mt-4 max-w-lg font-mono text-sm text-muted-foreground">
-				{m.blog_subtitle()}
-			</p>
-		</div>
-
-		{#if posts.length > 0}
-			<div class="space-y-16">
-				<!-- Highlighted Featured Post -->
-				<div class="w-full">
-					<BlogFeatured post={posts[0]} animateOnScroll={true} />
-				</div>
-
-				<!-- Grid of secondary recent posts -->
-				{#if posts.length > 1}
-					<div
-						class="blog-list grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 lg:grid-cols-2"
+					{m.gis_blog_featured()} · {fmt(featured.date)}{featured.readingTime
+						? ` · ${m.gis_min_read({ count: featured.readingTime })}`
+						: ''}
+				</span>
+				<span class="text-[clamp(24px,2.4vw,34px)] leading-[1.15] font-black tracking-[-0.02em]">
+					{featured.title}
+				</span>
+				{#if featured.description}
+					<span class="line-clamp-3 text-base leading-relaxed opacity-90"
+						>{featured.description}</span
 					>
-						{#each posts.slice(1) as post (post.slug)}
-							<div class="blog-item aspect-4/5">
-								<BlogClippingTile {post} />
-							</div>
-						{/each}
-					</div>
 				{/if}
-			</div>
-		{:else}
-			<div class="blog-header-stagger py-24 text-center">
-				<div
-					class="mx-auto mb-6 flex size-16 items-center justify-center border-2 border-foreground/10"
-				>
-					<Hash class="size-8 text-foreground/20" />
+			</a>
+			{#if rest.length}
+				<div class="flex flex-col gap-5">
+					{#each rest as post (post.slug)}
+						<a
+							href={localizeHref(`/blog/${post.slug}`)}
+							class="map-card lift map-reveal flex flex-1 flex-col gap-2.5 rounded-3xl px-6 py-[22px] text-foreground"
+						>
+							<span class="font-mono text-xs font-semibold text-muted-foreground"
+								>{fmt(post.date)}</span
+							>
+							<span class="text-[19px] leading-[1.3] font-black">{post.title}</span>
+						</a>
+					{/each}
 				</div>
-				<p class="font-mono text-sm font-black tracking-widest text-muted-foreground uppercase">
-					{m.blog_empty()}
-				</p>
-			</div>
-		{/if}
-
-		{#if posts.length > 0}
-			<div class="mt-16 flex justify-center md:mt-20">
-				<a
-					href={localizeHref('/blog')}
-					class="tape-cta inline-flex items-center gap-1.5 px-6 py-2.5 font-mono text-sm font-bold tracking-wide"
-				>
-					{m.blog_card_button()}
-					<Icon iconName="BsArrowRight" size={16} />
-				</a>
-			</div>
-		{/if}
-
-		<!-- Footer technicality -->
-		<div
-			class="mt-8 flex items-center justify-between border-t-2 border-foreground/10 pt-4 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase lg:mt-16 lg:pt-6"
-		>
-			<div class="flex items-center gap-4">
-				<Hash class="size-3" />
-				<span>MIKEU_DEV // BLOG_ARCHIVE</span>
-			</div>
-			<span>ENTRIES_TOTAL: {posts.length.toString().padStart(2, '0')}</span>
+			{/if}
 		</div>
-	</div>
-</section>
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	.origami-shard-blog {
-		pointer-events: none;
-	}
-
-	/* Same glossy tape treatment as the hero/work CTAs — reuses the global
-	   --tape-* tokens from app.css so every section's primary CTA reads as one brand. */
-	.tape-cta {
-		background: var(--tape-bg-grad);
-		color: var(--tape-color);
-		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
-		box-shadow: 0 6px 12px var(--tape-shadow);
-		transition:
-			box-shadow 0.3s ease,
-			transform 0.3s ease;
-	}
-
-	.tape-cta:hover {
-		box-shadow: 0 10px 16px var(--tape-shadow-hover);
-		transform: translateY(-2px);
-	}
-</style>
+	</section>
+{/if}

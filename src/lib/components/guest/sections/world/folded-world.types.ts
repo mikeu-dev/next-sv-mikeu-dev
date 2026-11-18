@@ -74,9 +74,9 @@ export const DEFAULT_WORLD_CONFIG: WorldConfig = {
 /** Color palette — Dynamic Planet Styles */
 export const getPlanetColors = (style: PlanetStyle, isDark: boolean) => {
 	const base = {
-		background: isDark ? 0x0a0a0a : 0xfafafa,
-		text: isDark ? '#fafafa' : '#0a0a0a',
-		textMuted: isDark ? '#666666' : '#999999'
+		background: isDark ? 0x0f161d : 0xf7f5f0,
+		text: isDark ? '#eef1f4' : '#17212b',
+		textMuted: isDark ? '#a3adb8' : '#56626e'
 	};
 
 	switch (style) {
@@ -147,11 +147,12 @@ export const getPlanetColors = (style: PlanetStyle, isDark: boolean) => {
 		default:
 			return {
 				...base,
-				wireframe: isDark ? 0xe0e0e0 : 0x1a1a1a,
-				faceCold: isDark ? 0x121212 : 0xf5f5f5,
-				faceHot: isDark ? 0xffffff : 0x000000,
-				accent: 0xff3333,
-				neon: 0x00f3ff
+				// Vector-map palette: ink grid on paper, map-blue density, route-orange accent.
+				wireframe: isDark ? 0xa3adb8 : 0x17212b,
+				faceCold: isDark ? 0x17212b : 0xf2efe9,
+				faceHot: isDark ? 0x5b8fea : 0x1a5fd6,
+				accent: 0xf07b1f,
+				neon: 0x1a5fd6
 			};
 	}
 };

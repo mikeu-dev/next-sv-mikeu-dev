@@ -1,194 +1,244 @@
 <script lang="ts">
-	import WorkProjectTile from './work-project-tile.svelte';
 	import type { Project } from '#lib/types.js';
-	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 	import { m } from '#lib/paraglide/messages.js';
-	import { localizeHref } from '#lib/paraglide/runtime.js';
-	import { getLocalizedProject } from '#lib/utils/project-mapper.js';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
-	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { ArrowUpRight, Terminal, Hash } from '@lucide/svelte';
-	import { simulateDenseGrid, assignPuzzleEdges } from '#lib/utils/puzzle-grid.js';
+	import SectionHead from '../../map/section-head.svelte';
+	import { toMapProjects } from '../../map/project-geo.js';
 
-	let { projects }: { projects: Project[] } = $props();
-	let currentLocale = $derived(getLocale());
-	let localizedProjects = $derived(
-		projects.filter((p) => p.pinned).map((p) => getLocalizedProject(p, currentLocale))
-	);
+	let { projects = [] }: { projects?: Project[] } = $props();
+	const locale = getLocale();
 
-	// Deterministic bento rhythm: every 3rd tile is a wide feature tile — at both the
-	// 2-col (sm) and 3-col (lg) grid, a span-2 tile plus the following span-1 tile(s)
-	// tile evenly into full rows, so no dense-packing gaps appear.
-	let gridItems = $derived(
-		localizedProjects.map((p, i) => ({ id: p.id, colSpan: (i % 3 === 0 ? 2 : 1) as 1 | 2 }))
-	);
+	let layerProjects = $derived.by(() => {
+		const pinned = projects.filter((p) => p.pinned);
+		return toMapProjects((pinned.length ? pinned : projects).slice(0, 6), locale, localizeHref);
+	});
 
-	/**
-	 * Mirrors the `grid-cols-*` breakpoints below in JS so the puzzle-piece
-	 * bump/socket assignment (computed from a simulated layout) matches
-	 * whichever column count CSS is actually rendering at the current
-	 * viewport — the interlocking only works if both agree on who's next to
-	 * whom.
-	 */
-	function computeColumns(): number {
-		if (!browser) return 3;
-		if (window.matchMedia('(min-width: 1024px)').matches) return 3;
-		if (window.matchMedia('(min-width: 640px)').matches) return 2;
-		return 1;
+	let activeIndex = $state(0);
+	let touring = $state(true);
+	let active = $derived(layerProjects[Math.min(activeIndex, layerProjects.length - 1)]);
+
+	const ZOOM = 1.6;
+	let tx = $derived(active ? 50 - ZOOM * active.x : 0);
+	let ty = $derived(active ? 50 - ZOOM * active.y : 0);
+
+	const dateFmt = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'id-ID', {
+		month: 'long',
+		year: 'numeric'
+	});
+
+	onMount(() => {
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) touring = false;
+		const id = setInterval(() => {
+			if (touring && layerProjects.length > 1) {
+				activeIndex = (activeIndex + 1) % layerProjects.length;
+			}
+		}, 4200);
+		return () => clearInterval(id);
+	});
+
+	function pick(i: number) {
+		activeIndex = i;
+		touring = false;
 	}
-
-	let columns = $state(computeColumns());
-	let placements = $derived(simulateDenseGrid(gridItems, columns));
-	let edgeMap = $derived(assignPuzzleEdges(placements));
-
-	let workSection = $state<HTMLElement>();
-
-	onMount(() => {
-		const mqSm = window.matchMedia('(min-width: 640px)');
-		const mqLg = window.matchMedia('(min-width: 1024px)');
-		const updateColumns = () => {
-			columns = computeColumns();
-		};
-		mqSm.addEventListener('change', updateColumns);
-		mqLg.addEventListener('change', updateColumns);
-		return () => {
-			mqSm.removeEventListener('change', updateColumns);
-			mqLg.removeEventListener('change', updateColumns);
-		};
-	});
-
-	onMount(() => {
-		gsap.registerPlugin(ScrollTrigger);
-
-		const sectionEl = workSection;
-		if (!sectionEl) return;
-
-		const ctx = gsap.context(() => {
-			const tl = gsap.timeline({
-				scrollTrigger: {
-					trigger: sectionEl,
-					start: 'top 80%',
-					toggleActions: 'play none none none'
-				}
-			});
-
-			tl.from('.work-header-stagger', {
-				y: 30,
-				opacity: 0,
-				duration: 0.8,
-				ease: 'power3.out'
-			});
-
-			gsap.from('.work-item', {
-				y: 30,
-				opacity: 0,
-				duration: 0.6,
-				stagger: 0.1,
-				ease: 'power3.out',
-				scrollTrigger: {
-					trigger: '.work-list',
-					start: 'top 85%',
-					toggleActions: 'play none none none'
-				}
-			});
-		}, sectionEl);
-
-		return () => ctx.revert();
-	});
 </script>
 
 <section
-	bind:this={workSection}
-	class="work-section relative overflow-hidden bg-background py-20 md:py-32"
+	aria-labelledby="work-h"
+	class="mx-auto box-border max-w-[1440px] px-[clamp(16px,4vw,56px)] py-[clamp(72px,9vw,120px)]"
 >
-	<!-- Grain Texture Overlay -->
-	<div
-		class="pointer-events-none absolute inset-0 z-50 opacity-[0.03] mix-blend-overlay contrast-150 grayscale"
-		style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
-	></div>
-
-	<!-- Origami shard decorations — angular clipped panels echoing the hero's
-	     folded-paper panel, instead of the soft blurred glass blobs. -->
-	<div
-		class="origami-shard pointer-events-none absolute -top-32 -left-32 size-96 bg-primary/5 dark:bg-primary/10"
-		style="clip-path: polygon(10% 0%, 100% 10%, 90% 100%, 0% 90%);"
-	></div>
-	<div
-		class="origami-shard pointer-events-none absolute -right-32 -bottom-32 size-80 bg-foreground/5"
-		style="clip-path: polygon(0% 15%, 85% 0%, 100% 85%, 15% 100%);"
-	></div>
-
-	<div class="max-w-screen-4xl relative mx-auto px-6">
-		<div class="work-header-stagger mb-12 text-left md:mb-16">
-			<div
-				class="mb-4 flex items-center gap-2 font-mono text-[10px] font-black tracking-[0.2em] text-primary uppercase md:mb-6"
+	<SectionHead id="work-h" eyebrow={m.gis_work_eyebrow()} title={m.gis_work_title()}>
+		{#if layerProjects.length > 1}
+			<button
+				type="button"
+				onclick={() => (touring = !touring)}
+				class="btn-pill-line min-h-[50px] px-[22px] text-base"
 			>
-				<Terminal class="size-3" /> ARCHIVE_SECTOR: PROJECTS_CATALOG
-			</div>
-			<h2 class="font-poppins text-4xl leading-none font-black tracking-tighter sm:text-5xl">
-				{m.work_title()}<span class="text-primary italic">.</span>
-			</h2>
-			<p class="mt-4 max-w-lg font-mono text-sm text-muted-foreground">
-				{m.work_subtitle()}
-			</p>
-		</div>
-
-		<div
-			class="work-list grid grid-flow-row-dense auto-rows-[16rem] grid-cols-1 gap-0 sm:auto-rows-[18rem] sm:grid-cols-2 lg:auto-rows-[20rem] lg:grid-cols-3"
-		>
-			{#each localizedProjects as project, i (project.id)}
-				<WorkProjectTile {project} index={i} isFeature={i % 3 === 0} edges={edgeMap[project.id]} />
-			{/each}
-		</div>
-
-		{#if localizedProjects.length > 0}
-			<div class="mt-12 flex justify-center md:mt-16">
-				<a
-					href={localizeHref('/projects')}
-					class="tape-cta inline-flex items-center gap-1.5 px-6 py-2.5 font-mono text-sm font-bold tracking-wide"
-				>
-					{m.work_view_all_button()}
-					<ArrowUpRight class="size-4" />
-				</a>
-			</div>
+				<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+					{#if touring}
+						<rect x="3" y="2" width="3.5" height="12" rx="1.5" fill="currentColor" />
+						<rect x="9.5" y="2" width="3.5" height="12" rx="1.5" fill="currentColor" />
+					{:else}
+						<path
+							d="M4 2.5l9 5.5-9 5.5z"
+							fill="currentColor"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linejoin="round"
+						/>
+					{/if}
+				</svg>
+				{touring ? m.gis_work_tour_pause() : m.gis_work_tour_play()}
+			</button>
 		{/if}
+	</SectionHead>
 
-		<!-- Footer technicality -->
-		<div
-			class="mt-8 flex items-center justify-between border-t-2 border-foreground/10 pt-4 font-mono text-[8px] font-black tracking-[0.3em] text-foreground/30 uppercase lg:mt-16 lg:pt-6"
+	{#if !active}
+		<p
+			class="rounded-[28px] border-[1.5px] border-dashed border-line-strong bg-card p-10 text-center text-lg font-extrabold text-muted-foreground"
 		>
-			<div class="flex items-center gap-4">
-				<Hash class="size-3" />
-				<span>MIKEU_DEV // PROJECT_VAULT</span>
+			{m.gis_work_empty()}
+		</p>
+	{:else}
+		<div class="map-reveal flex flex-wrap items-start gap-5">
+			<div
+				role="group"
+				aria-label={m.gis_work_layers()}
+				class="map-card flex flex-[1_1_330px] flex-col gap-1.5 p-3"
+			>
+				<div class="flex items-center justify-between px-3 pt-2 pb-2.5">
+					<span class="text-lg font-black">{m.gis_work_layers()}</span>
+					<span class="font-mono text-[13px] text-muted-foreground">
+						{String(activeIndex + 1).padStart(2, '0')} / {String(layerProjects.length).padStart(
+							2,
+							'0'
+						)}
+					</span>
+				</div>
+				{#each layerProjects as p, i (p.project.id)}
+					{@const on = i === activeIndex}
+					<button
+						type="button"
+						onclick={() => pick(i)}
+						aria-pressed={on}
+						class="flex min-h-[72px] items-center gap-3.5 rounded-[20px] border-[1.5px] p-3.5 text-left text-foreground transition-colors {on
+							? 'border-primary bg-accent'
+							: 'border-transparent bg-card hover:bg-secondary'}"
+					>
+						<span
+							class="flex size-[42px] flex-none items-center justify-center rounded-[14px] {on
+								? 'bg-primary'
+								: 'bg-secondary'}"
+						>
+							<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+								<path
+									d={p.icon}
+									fill="none"
+									stroke={on ? '#FFFFFF' : 'var(--muted-foreground)'}
+									stroke-width="2.2"
+									stroke-linejoin="round"
+									stroke-linecap="round"
+								/>
+							</svg>
+						</span>
+						<span class="flex min-w-0 flex-1 flex-col gap-0.5">
+							<span class="text-[17px] font-extrabold">{p.title}</span>
+							{#if p.category}
+								<span class="truncate text-sm text-muted-foreground">{p.category}</span>
+							{/if}
+						</span>
+						<span class="font-mono text-xs text-muted-foreground">{p.code}</span>
+					</button>
+				{/each}
 			</div>
-			<span>LOAD_COUNT: {localizedProjects.length.toString().padStart(2, '0')}</span>
+
+			<div class="map-card flex min-w-0 flex-[999_1_560px] flex-col overflow-hidden">
+				<div
+					role="img"
+					aria-label={m.gis_work_map_label()}
+					class="relative aspect-[800/480] overflow-hidden bg-secondary"
+				>
+					<div
+						class="fly absolute inset-0 origin-top-left"
+						style="transform: translate({tx}%, {ty}%) scale({ZOOM})"
+					>
+						<img
+							src="/images/map/flat-basemap.svg"
+							alt=""
+							aria-hidden="true"
+							class="map-art absolute inset-0 block size-full"
+						/>
+						{#each layerProjects as p, i (p.project.id)}
+							{@const on = i === activeIndex}
+							{@const pw = on ? 22 : 16}
+							<div class="absolute size-0" style="left: {p.x}%; top: {p.y}%">
+								{#if on}<span class="map-ring"></span><span class="map-ring r2"></span>{/if}
+								<svg
+									width={pw}
+									height={Math.round((pw * 4) / 3)}
+									viewBox="0 0 30 40"
+									aria-hidden="true"
+									class="absolute transition-all duration-400"
+									style="left: {-pw / 2}px; top: {-Math.round((pw * 4) / 3)}px"
+								>
+									<path
+										d="M15 1C7.3 1 1 7 1 14.6 1 24.8 15 39 15 39s14-14.2 14-24.4C29 7 22.7 1 15 1z"
+										fill={on ? 'var(--primary)' : 'var(--pin-idle)'}
+										stroke="#FFFFFF"
+										stroke-width="2"
+									/>
+									<circle cx="15" cy="14.5" r="5.5" fill="#FFFFFF" />
+								</svg>
+							</div>
+						{/each}
+					</div>
+					<div
+						class="absolute top-4 left-4 flex max-w-[calc(100%-32px)] items-center gap-2.5 rounded-full border border-border bg-card py-2 pr-3.5 pl-2 shadow-float"
+					>
+						<span
+							class="rounded-full bg-primary px-2.5 py-1 font-mono text-xs font-semibold text-primary-foreground"
+							>{active.code}</span
+						>
+						<span class="truncate text-[15px] font-extrabold">{active.title}</span>
+					</div>
+					<div
+						class="absolute right-4 bottom-4 rounded-full border border-border bg-card px-3 py-1.5 font-mono text-xs text-muted-foreground"
+					>
+						2D · ZOOM {ZOOM.toFixed(1)}×
+					</div>
+				</div>
+				<div class="flex flex-wrap gap-x-9 gap-y-5 px-7 pt-[26px] pb-7">
+					<div class="flex flex-[2_1_320px] flex-col gap-2.5">
+						<p class="m-0 font-mono text-[13px] font-semibold text-primary">
+							{active.code}{active.category ? ` · ${active.category}` : ''}
+						</p>
+						<h3 class="m-0 text-[28px] font-black tracking-[-0.02em]">{active.title}</h3>
+						<p class="m-0 line-clamp-5 text-[17px] leading-relaxed text-ink-soft">
+							{active.description}
+						</p>
+					</div>
+					<div class="flex flex-[1_1_220px] flex-col gap-3.5">
+						<div class="flex flex-wrap gap-2">
+							{#each active.tags.slice(0, 6) as t (t)}
+								<span class="chip-tag">{t}</span>
+							{/each}
+						</div>
+						{#if active.date}
+							<p class="m-0 font-mono text-[13px] text-muted-foreground">
+								{m.gis_work_released()}:
+								<b class="text-foreground">{dateFmt.format(active.date)}</b>
+							</p>
+						{/if}
+						<a
+							href={active.href}
+							class="flex min-h-11 items-center gap-2 text-base font-extrabold text-primary hover:text-foreground"
+						>
+							{m.gis_work_detail()}
+							<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+								<path
+									d="M4 9h10M10 5l4 4-4 4"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+							</svg>
+						</a>
+					</div>
+				</div>
+			</div>
 		</div>
-	</div>
+	{/if}
 </section>
 
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	/* Same glossy tape treatment as the hero's primary CTA — reuses the global
-	   --tape-* tokens from app.css so the two sections' CTAs read as one brand. */
-	.tape-cta {
-		background: var(--tape-bg-grad);
-		color: var(--tape-color);
-		clip-path: polygon(0% 12%, 100% 0%, 96% 100%, 4% 88%);
-		box-shadow: 0 6px 12px var(--tape-shadow);
-		transition:
-			box-shadow 0.3s ease,
-			transform 0.3s ease;
+<style>
+	.fly {
+		transition: transform 1.5s cubic-bezier(0.65, 0, 0.2, 1);
 	}
-
-	.tape-cta:hover {
-		box-shadow: 0 10px 16px var(--tape-shadow-hover);
-		transform: translateY(-2px);
-	}
-
-	.origami-shard {
-		pointer-events: none;
+	@media (prefers-reduced-motion: reduce) {
+		.fly {
+			transition: none;
+		}
 	}
 </style>

@@ -35,24 +35,11 @@
 
 		<button
 			onclick={handleInstall}
-			class="group install-btn-origami flex h-10 cursor-pointer items-center gap-2 border-2 border-foreground bg-background px-4 font-mono text-[10px] font-black tracking-widest uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:bg-foreground hover:text-background hover:shadow-[4px_4px_0_var(--primary)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+			class="flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-[15px] font-extrabold text-ink-soft transition-colors hover:bg-secondary hover:text-foreground"
 		>
-			<Smartphone class="size-3 transition-transform group-hover:scale-110" />
+			<Smartphone class="size-4" />
 			<span>{m.pwa_install_button()}</span>
-			<Download class="size-2 text-primary opacity-50 transition-opacity group-hover:opacity-100" />
+			<Download class="size-3.5 text-primary" />
 		</button>
 	</div>
 {/if}
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	.install-btn-origami {
-		clip-path: polygon(0 0, 90% 0, 100% 25%, 100% 100%, 10% 100%, 0 75%);
-		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-	}
-
-	.install-btn-origami:hover {
-		clip-path: polygon(10% 0, 100% 0, 90% 75%, 90% 100%, 0 100%, 0 25%);
-	}
-</style>

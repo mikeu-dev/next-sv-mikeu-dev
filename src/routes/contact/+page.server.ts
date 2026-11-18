@@ -7,7 +7,19 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const name = formData.get('name');
 		const email = formData.get('email');
-		const message = formData.get('message');
+		const rawMessage = formData.get('message');
+		const need = formData.get('need');
+		// The "what do you need" chip is folded into the message so the existing
+		// contact schema / inbox doesn't need a new field. Only added to a message
+		// that already passes the length check, so the tag can't pad a too-short
+		// message past validation.
+		const message =
+			typeof need === 'string' &&
+			need.trim() &&
+			typeof rawMessage === 'string' &&
+			rawMessage.trim().length >= 10
+				? `[${need.trim().slice(0, 60)}] ${rawMessage}`
+				: rawMessage;
 		const company = formData.get('company') || undefined;
 		const budget = formData.get('budget') || undefined;
 
