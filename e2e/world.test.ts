@@ -20,7 +20,7 @@ test.describe('Folded World Interaction Map', () => {
 		// Verify HUD Elements
 		const hudTitle = page.locator('.hud-title');
 		await expect(hudTitle).toBeVisible();
-		expect(await hudTitle.textContent()).toContain('FOLDED');
+		expect((await hudTitle.textContent())?.toUpperCase()).toMatch(/FOLDED|DUNIA LIPAT/);
 
 		const totalStats = page.locator('.hud-stat-label:has-text("TOTAL")');
 		await expect(totalStats).toBeVisible();

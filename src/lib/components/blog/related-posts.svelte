@@ -1,22 +1,36 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import type { BlogPost } from '#lib/types.js';
-	import BlogCard from '#lib/components/guest/blog/blog-card.svelte';
 	import { m } from '#lib/paraglide/messages.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 
-	let { posts = [] } = $props<{ posts: BlogPost[] }>();
+	let { posts = [] }: { posts?: BlogPost[] } = $props();
+
+	const dateFmt = new Intl.DateTimeFormat(getLocale() === 'en' ? 'en-GB' : 'id-ID', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric'
+	});
+	function fmt(date: string) {
+		const d = new Date(date);
+		return Number.isNaN(d.getTime()) ? date : dateFmt.format(d);
+	}
 </script>
 
 {#if posts.length > 0}
-	<section class="mt-24 border-t border-border/50 pt-16">
-		<div class="mb-12 flex items-center justify-between">
-			<h2 class="font-poppins text-3xl font-black tracking-tight md:text-4xl">
-				{m.blog_related_posts()}<span class="text-primary">.</span>
-			</h2>
-		</div>
-		<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+	<nav aria-labelledby="related-h" class="flex flex-col gap-5">
+		<h2 id="related-h" class="m-0 text-[clamp(26px,3vw,36px)] font-black tracking-[-0.02em]">
+			{m.blog_related_posts()}
+		</h2>
+		<div class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4">
 			{#each posts as post (post.slug)}
-				<BlogCard {post} />
+				<a
+					href={localizeHref(`/blog/${post.slug}`)}
+					class="map-card lift flex flex-col gap-2 rounded-3xl px-6 py-[22px] text-foreground"
+				>
+					<span class="font-mono text-xs text-muted-foreground">{fmt(post.date)}</span>
+					<span class="text-lg leading-[1.3] font-black">{post.title}</span>
+				</a>
 			{/each}
 		</div>
-	</section>
+	</nav>
 {/if}

@@ -1,540 +1,503 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/env';
-	import { gsap } from 'gsap';
 	import { m } from '#lib/paraglide/messages.js';
-	import { tornPaperClipPath } from '#lib/utils/torn-paper-shape.js';
+	import { localizeHref } from '#lib/paraglide/runtime.js';
 
-	let heroSection = $state<HTMLElement>();
-	let heroCard = $state<HTMLElement>();
-	let heroNameEl = $state<HTMLElement>();
-	let devTagEl = $state<HTMLElement>();
+	// --- Layer toggles -------------------------------------------------------
+	type LayerKey = 'buildings' | 'route' | 'buffer' | 'poly';
+	let layers = $state<Record<LayerKey, boolean>>({
+		buildings: true,
+		route: true,
+		buffer: true,
+		poly: true
+	});
+	const layerDefs: { key: LayerKey; label: () => string }[] = [
+		{ key: 'buildings', label: m.gis_layer_buildings },
+		{ key: 'route', label: m.gis_layer_route },
+		{ key: 'buffer', label: m.gis_layer_buffer },
+		{ key: 'poly', label: m.gis_layer_poly }
+	];
 
-	const currentYear = new Date().getFullYear();
+	// --- Zoom / bearing ------------------------------------------------------
+	let zoom = $state(16);
+	let bearing = $state(20);
+	let artScale = $derived(1 + (zoom - 16) * 0.12);
 
-	// Hand-torn deckle silhouette for the paper sheet — a fixed seed keeps SSR and
-	// the client rendering the identical tear instead of reshuffling on hydration.
-	const heroClip = tornPaperClipPath('hero-paper', { segments: 10, jitter: 2 });
+	// --- Cursor readout ------------------------------------------------------
+	let mx = $state(0.7);
+	let my = $state(0.42);
+	let lat = $derived((6.548 + my * 0.018).toFixed(4) + '° S');
+	let lon = $derived((107.432 + mx * 0.024).toFixed(4) + '° E');
 
-	let ctx: gsap.Context;
-	let removeListeners: (() => void) | undefined;
-	let visibilityObserver: IntersectionObserver | undefined;
-	const ambientTweens: gsap.core.Tween[] = [];
+	function onMove(e: PointerEvent) {
+		if (e.pointerType !== 'mouse') return;
+		const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		mx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+		my = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+	}
 
-	/** Subtle magnetic cursor-pull on the CTA button; returns a cleanup function */
-	function setupMagneticButtons(root: HTMLElement): () => void {
-		const wrappers = root.querySelectorAll<HTMLElement>('.tape-button-wrapper');
-		const cleanups: (() => void)[] = [];
-
-		wrappers.forEach((wrapper) => {
-			const xTo = gsap.quickTo(wrapper, 'x', { duration: 0.4, ease: 'power3.out' });
-			const yTo = gsap.quickTo(wrapper, 'y', { duration: 0.4, ease: 'power3.out' });
-
-			const handleMove = (e: MouseEvent) => {
-				const rect = wrapper.getBoundingClientRect();
-				const relX = e.clientX - rect.left - rect.width / 2;
-				const relY = e.clientY - rect.top - rect.height / 2;
-				xTo(gsap.utils.clamp(-8, 8, relX * 0.25));
-				yTo(gsap.utils.clamp(-8, 8, relY * 0.25) - 2);
-			};
-			const handleLeave = () => {
-				gsap.to(wrapper, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
-			};
-
-			wrapper.addEventListener('mousemove', handleMove);
-			wrapper.addEventListener('mouseleave', handleLeave);
-			cleanups.push(() => {
-				wrapper.removeEventListener('mousemove', handleMove);
-				wrapper.removeEventListener('mouseleave', handleLeave);
+	// --- Vector tiles that "load" and fade out on first paint ----------------
+	// Pre-computed (deterministic) so SSR and hydration match.
+	const tiles: { x: number; y: number; label: string; delay: number }[] = [];
+	for (let col = 0; col < 8; col++) {
+		for (let row = 0; row < 9; row++) {
+			const x = col * 256;
+			const y = row * 256;
+			// Fan out from the map centre (≈ col 4, row 3).
+			const d = Math.hypot(col - 4, row - 3.2);
+			tiles.push({
+				x,
+				y,
+				label: `16/${52326 + col}/${33966 + row}`,
+				delay: +(0.1 + d * 0.16).toFixed(2)
 			});
-		});
-
-		return () => cleanups.forEach((fn) => fn());
+		}
 	}
 
-	/**
-	 * Blueprint-style cursor spotlight — tracks pointer position as CSS custom
-	 * properties consumed by `.mouse-spotlight`'s radial-gradient, instead of
-	 * animating any element directly (cheap: one style write per rAF-throttled
-	 * move, no GSAP tween churn).
-	 */
-	function setupMouseSpotlight(card: HTMLElement): () => void {
-		let ticking = false;
-		let lastEvent: MouseEvent | null = null;
-
-		const applyMove = () => {
-			if (!lastEvent) return;
-			const rect = card.getBoundingClientRect();
-			const x = ((lastEvent.clientX - rect.left) / rect.width) * 100;
-			const y = ((lastEvent.clientY - rect.top) / rect.height) * 100;
-			card.style.setProperty('--mouse-x', `${x}%`);
-			card.style.setProperty('--mouse-y', `${y}%`);
-			ticking = false;
-		};
-
-		const handleMove = (e: MouseEvent) => {
-			lastEvent = e;
-			if (!ticking) {
-				ticking = true;
-				requestAnimationFrame(applyMove);
-			}
-		};
-
-		card.addEventListener('mousemove', handleMove);
-		return () => card.removeEventListener('mousemove', handleMove);
-	}
-
-	/**
-	 * The "Dev" tag hangs at an angle (its entrance swing lives in the intro
-	 * timeline) and straightens up on hover, then swings back on mouseleave —
-	 * moved here from the navbar logo, which no longer has it.
-	 */
-	function setupPendulumHover(trigger: HTMLElement, tag: HTMLElement): () => void {
-		const hoverIn = () => {
-			gsap.to(tag, { rotate: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
-		};
-		const hoverOut = () => {
-			gsap.to(tag, { rotate: -25, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
-		};
-
-		trigger.addEventListener('mouseenter', hoverIn);
-		trigger.addEventListener('mouseleave', hoverOut);
-		return () => {
-			trigger.removeEventListener('mouseenter', hoverIn);
-			trigger.removeEventListener('mouseleave', hoverOut);
-		};
-	}
-
-	onMount(() => {
-		if (!browser || !heroSection) return;
-
-		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const section = heroSection;
-
-		ctx = gsap.context(() => {
-			if (!prefersReducedMotion) {
-				gsap.set('.hero-greeting', { opacity: 0, y: 24 });
-				gsap.set('.hero-name', { opacity: 0, y: 24 });
-				gsap.set('.hero-dev-tag', { opacity: 0, rotate: 0 });
-				gsap.set('.hero-pills', { opacity: 0, y: 16 });
-				gsap.set('.tape-button-wrapper', { opacity: 0, scale: 0.6, y: 16 });
-				gsap.set('.hero-secondary-link', { opacity: 0, y: 8 });
-				gsap.set('.hero-caption', { opacity: 0 });
-
-				const introTl = gsap.timeline();
-				introTl.to('.hero-greeting', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0);
-				introTl.to('.hero-name', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.1);
-				introTl.to(
-					'.hero-dev-tag',
-					{ opacity: 1, rotate: -25, duration: 1, ease: 'bounce.out' },
-					0.3
-				);
-				introTl.to('.hero-pills', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.35);
-				introTl.to(
-					'.tape-button-wrapper',
-					{ opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(2)' },
-					0.5
-				);
-				introTl.to(
-					'.hero-secondary-link',
-					{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
-					0.65
-				);
-				introTl.to('.hero-caption', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.5);
-
-				// Ambient dot pulse — the only looping tween left once the color-blob
-				// background was swapped for the static blueprint/origami panel.
-				// Collected so it can be paused whenever the hero scrolls out of view.
-				ambientTweens.push(
-					gsap.to('.hero-dot', {
-						scale: 1.5,
-						opacity: 0.4,
-						duration: 1.6,
-						repeat: -1,
-						yoyo: true,
-						ease: 'sine.inOut'
-					})
-				);
-
-				visibilityObserver = new IntersectionObserver(
-					([entry]) => {
-						if (entry.isIntersecting) {
-							ambientTweens.forEach((tween) => tween.play());
-							section.classList.remove('hero-offscreen');
-						} else {
-							ambientTweens.forEach((tween) => tween.pause());
-							section.classList.add('hero-offscreen');
-						}
-					},
-					{ threshold: 0 }
-				);
-				visibilityObserver.observe(section);
-			}
-
-			const pointerIsFine = window.matchMedia('(pointer: fine)').matches;
-			const removeMagnetic = prefersReducedMotion ? undefined : setupMagneticButtons(section);
-			const removeSpotlight =
-				!prefersReducedMotion && pointerIsFine && heroCard
-					? setupMouseSpotlight(heroCard)
-					: undefined;
-			const removePendulumHover =
-				!prefersReducedMotion && heroNameEl && devTagEl
-					? setupPendulumHover(heroNameEl, devTagEl)
-					: undefined;
-			removeListeners = () => {
-				removeMagnetic?.();
-				removeSpotlight?.();
-				removePendulumHover?.();
-			};
-		});
-	});
-
-	onDestroy(() => {
-		removeListeners?.();
-		visibilityObserver?.disconnect();
-		if (ctx) ctx.revert();
-	});
+	const MAP_TRANSFORM = 'matrix(0.93969 -0.20521 0.34202 0.56382 -489.65 112.44)';
+	const ROUTE = 'M723 1459 L999 1459 L999 1652 L1299 1652';
+	const POLY = 'M1025 1335 L1183 1340 L1202 1462 L1041 1465Z';
+	const POLY_VERTS = [
+		[1025, 1335],
+		[1183, 1340],
+		[1202, 1462],
+		[1041, 1465]
+	];
+	const BUILDINGS = [1, 2, 3, 4];
+	const STACK_PREVIEW = ['Leaflet', 'OpenLayers', 'Laravel', 'SvelteKit'];
 </script>
 
 <section
-	id="hero"
-	bind:this={heroSection}
-	class="paper-hero relative flex flex-col items-center justify-center px-3 pt-24 pb-6 transition-colors duration-300 sm:px-6 sm:pt-28 sm:pb-10"
+	aria-label={m.gis_hero_label()}
+	onpointermove={onMove}
+	class="relative flex min-h-[760px] flex-col overflow-hidden bg-secondary pt-24 sm:min-h-[900px] sm:pt-28"
 >
+	<!-- Map canvas -->
 	<div
-		bind:this={heroCard}
-		class="hero-card max-w-screen-4xl relative flex min-h-[90vh] w-full flex-col items-center justify-center text-center sm:min-h-[90vh]"
-		style="--mouse-x: 50%; --mouse-y: 50%; clip-path: {heroClip};"
+		aria-hidden="true"
+		class="pointer-events-none absolute inset-0 transition-transform duration-700 ease-out"
+		style="transform: scale({artScale}); transform-origin: 62% 55%"
 	>
-		<!-- Crumpled-paper surface — fractal-noise height map lit by SVG filters:
-		     feDiffuseLighting bakes each wrinkle's matte shadow/highlight, the
-		     sheen layer adds the glossy light-catch on crease ridges. -->
-		<div class="crumpled-paper pointer-events-none absolute inset-0"></div>
-		<div class="crumpled-sheen pointer-events-none absolute inset-0"></div>
-
-		<!-- Interactive spotlight following the cursor -->
-		<div class="mouse-spotlight pointer-events-none absolute inset-0"></div>
-
-		<!-- Glossy diagonal reflection, like light catching a folded paper surface -->
-		<div class="hero-sweep pointer-events-none absolute inset-0"></div>
-
-		<!-- Crease shading — a soft diagonal fold running through the panel -->
-		<div class="hero-crease pointer-events-none absolute inset-0"></div>
-
-		<!-- Torn rim shading — a soft inner shadow giving the deckle edge a hint of
-		     paper thickness where the sheet lifts off the page. -->
-		<div class="hero-edge pointer-events-none absolute inset-0"></div>
-
-		<!-- Fine grain overlay -->
-		<div
-			class="pointer-events-none absolute inset-0 z-40 opacity-[0.04] mix-blend-overlay"
-			style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
-		></div>
-
-		<!-- Content -->
-		<div class="relative z-10 mx-auto flex flex-col items-center px-6 py-16 md:py-24">
-			<p class="hero-greeting font-mono text-sm tracking-wide text-[#c7d796]/80">
-				{m.hero_title()}
-			</p>
-
-			<h1
-				bind:this={heroNameEl}
-				class="hero-name relative z-50 mt-2 font-poppins text-6xl font-bold tracking-tight text-white italic drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] sm:text-7xl md:text-8xl"
+		<img
+			src="/images/map/hero-basemap.svg"
+			alt=""
+			class="map-art absolute inset-0 block size-full object-cover object-[70%_50%] md:object-center"
+		/>
+		<svg
+			viewBox="0 0 1440 900"
+			preserveAspectRatio="xMidYMid slice"
+			class="map-art absolute inset-0 block size-full"
+		>
+			<g transform={MAP_TRANSFORM}>
+				{#if layers.buffer}
+					{#each [0, 1, 2] as i (i)}
+						<circle
+							class="map-buf"
+							style="animation-delay: {i}s"
+							cx="1617"
+							cy="761"
+							r="190"
+							fill="var(--primary)"
+							fill-opacity=".10"
+							stroke="var(--primary)"
+							stroke-width="3"
+						/>
+					{/each}
+					<circle
+						cx="1617"
+						cy="761"
+						r="70"
+						fill="none"
+						stroke="var(--primary)"
+						stroke-width="3"
+						stroke-dasharray="10 8"
+					/>
+					<circle cx="1617" cy="761" r="12" fill="var(--primary)" stroke="#fff" stroke-width="5" />
+				{/if}
+				{#if layers.route}
+					<path
+						d={ROUTE}
+						fill="none"
+						stroke="#fff"
+						stroke-width="22"
+						stroke-linejoin="round"
+						stroke-linecap="round"
+					/>
+					<path
+						d={ROUTE}
+						fill="none"
+						stroke="var(--route)"
+						stroke-width="12"
+						stroke-linejoin="round"
+						stroke-linecap="round"
+					/>
+					<path
+						class="map-flow-dots"
+						d={ROUTE}
+						fill="none"
+						stroke="#fff"
+						stroke-width="4"
+						stroke-linecap="round"
+					/>
+					<circle
+						class="hero-car"
+						r="16"
+						fill="var(--route)"
+						stroke="#fff"
+						stroke-width="6"
+						style="offset-path: path('{ROUTE}')"
+					/>
+				{/if}
+				{#if layers.poly}
+					<path class="hero-pfill" d={POLY} fill="var(--primary)" fill-opacity=".18" />
+					<path
+						class="hero-pline"
+						pathLength="1"
+						d={POLY}
+						fill="none"
+						stroke="var(--primary)"
+						stroke-width="5"
+						stroke-linejoin="round"
+					/>
+					{#each POLY_VERTS as [cx, cy], i (i)}
+						<circle
+							class="hero-vtx"
+							style="animation-delay: {i * 0.5}s"
+							{cx}
+							{cy}
+							r="11"
+							fill="#fff"
+							stroke="var(--primary)"
+							stroke-width="5"
+						/>
+					{/each}
+				{/if}
+				{#each tiles as t (t.label)}
+					<g class="hero-tile" style="animation-delay: {t.delay}s">
+						<rect x={t.x} y={t.y} width="256" height="256" fill="#F2EFE9" />
+						<rect
+							x={t.x + 2}
+							y={t.y + 2}
+							width="252"
+							height="252"
+							fill="none"
+							stroke="#B9B0A0"
+							stroke-dasharray="6 6"
+						/>
+						<text
+							x={t.x + 14}
+							y={t.y + 30}
+							font-family="Red Hat Mono, monospace"
+							font-size="17"
+							fill="#8A7F6C">{t.label}</text
+						>
+					</g>
+				{/each}
+			</g>
+		</svg>
+		{#if layers.buildings}
+			{#each BUILDINGS as n (n)}
+				<img
+					src="/images/map/hero-buildings-{n}.svg"
+					alt=""
+					class="map-art map-rise absolute inset-0 block size-full object-cover object-[70%_50%] md:object-center"
+					style="animation-delay: {0.7 + n * 0.3}s"
+				/>
+			{/each}
+		{/if}
+		{#if layers.route}
+			<svg
+				viewBox="0 0 1440 900"
+				preserveAspectRatio="xMidYMid slice"
+				class="absolute inset-0 block size-full"
 			>
-				{m.common_alias_name()}
-				<span class="hero-dot absolute top-2 -right-4 inline-block size-3 rounded-full bg-primary"
-				></span>
-				<span
-					bind:this={devTagEl}
-					class="hero-dev-tag absolute -right-2 -bottom-2 inline-block bg-primary px-3 py-1 font-mono text-xs font-black tracking-widest text-primary-foreground uppercase not-italic sm:-right-4 sm:-bottom-3 sm:text-sm"
-					style="clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);"
-				>
-					Dev
-					<span class="absolute right-1 bottom-1 size-1.5 rounded-full bg-white"></span>
-				</span>
+				{#each [{ x: 672, y: 741, l: 'A', c: 'var(--route)' }, { x: 1279, y: 731, l: 'B', c: 'var(--primary)' }] as p (p.l)}
+					<g transform="translate({p.x} {p.y})">
+						<g class="map-drop" style="animation-delay: 2.4s">
+							<path
+								d="M17 1C8.2 1 1 7.9 1 16.6 1 28.2 17 45 17 45s16-16.8 16-28.4C33 7.9 25.8 1 17 1z"
+								fill={p.c}
+								stroke="#fff"
+								stroke-width="2.5"
+							/>
+							<text
+								x="17"
+								y="22"
+								text-anchor="middle"
+								font-family="Nunito, sans-serif"
+								font-size="15"
+								font-weight="900"
+								fill="#fff">{p.l}</text
+							>
+						</g>
+					</g>
+				{/each}
+			</svg>
+		{/if}
+	</div>
+
+	<!-- Cursor crosshair + coordinate label (mouse only) -->
+	<div
+		aria-hidden="true"
+		class="pointer-events-none absolute -mt-[17px] -ml-[17px] hidden size-[34px] rounded-full border-2 border-primary bg-white/35 md:block"
+		style="left: {mx * 100}%; top: {my * 100}%"
+	></div>
+	<div
+		aria-hidden="true"
+		class="pointer-events-none absolute mt-6 ml-5 hidden rounded-full bg-foreground px-2.5 py-1 font-mono text-[11px] whitespace-nowrap text-background md:block"
+		style="left: {mx * 100}%; top: {my * 100}%; transform: translateX({mx > 0.78
+			? 'calc(-100% - 40px)'
+			: '0px'})"
+	>
+		{lat}, {lon}
+	</div>
+
+	<!-- Foreground UI -->
+	<div
+		class="pointer-events-none relative flex flex-1 flex-wrap items-end justify-between gap-6 px-4 pt-[min(38vh,320px)] pb-8 sm:px-[clamp(16px,3vw,40px)] sm:pt-10"
+	>
+		<div
+			class="pointer-events-auto flex flex-[0_1_500px] flex-col gap-[18px] rounded-[32px] border border-border bg-card p-[clamp(22px,2.6vw,34px)] shadow-card"
+		>
+			<p
+				class="m-0 inline-flex items-center gap-2 self-start rounded-full bg-accent px-3.5 py-[7px] font-mono text-[13px] font-semibold text-primary"
+			>
+				<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+					<circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
+					<circle cx="7" cy="7" r="2.2" fill="currentColor" />
+				</svg>
+				Purwakarta · 6.5569° S, 107.4431° E
+			</p>
+			<p class="m-0 text-lg font-extrabold text-ink-soft">{m.gis_hero_hello()}</p>
+			<h1 class="m-0 text-[clamp(38px,4.3vw,58px)] leading-[1.04] font-black tracking-[-0.03em]">
+				{m.gis_hero_title_a()} <span class="text-primary">{m.gis_hero_title_em()}</span>
+				{m.gis_hero_title_b()}
 			</h1>
-
-			<div class="hero-pills mt-6">
-				<div class="tape-wrapper">
-					<div class="tape-body">
-						<span class="tape-label-text font-mono">{m.hero_subtitle()}</span>
-						<div class="tape-fold-tr"></div>
-						<div class="tape-fold-bl"></div>
-					</div>
-				</div>
-			</div>
-
-			<div class="mt-10 flex flex-col items-center gap-4">
-				<div class="tape-button-wrapper">
-					<a
-						href="#contact"
-						onclick={(e) => {
-							e.preventDefault();
-							document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-						}}
-						class="tape-button"
+			<p class="m-0 text-[17px] leading-relaxed text-ink-soft">{m.gis_hero_lead()}</p>
+			<div class="flex flex-wrap gap-1.5">
+				{#each STACK_PREVIEW as s (s)}
+					<span class="rounded-full bg-secondary px-2.5 py-1.5 font-mono text-xs font-semibold"
+						>{s}</span
 					>
-						<span class="relative z-10 font-poppins text-lg font-bold tracking-wide sm:text-xl">
-							{m.hero_button_text()}
-						</span>
-					</a>
-				</div>
-
-				<a
-					href="#work"
-					onclick={(e) => {
-						e.preventDefault();
-						document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
-					}}
-					class="hero-secondary-link font-mono text-xs tracking-wide text-[#c7d796]/70 underline decoration-transparent underline-offset-4 transition-colors hover:text-white hover:decoration-current sm:text-sm"
-				>
-					{m.hero_button_link()} →
+				{/each}
+			</div>
+			<div class="flex flex-wrap gap-2.5">
+				<a href="#work" class="btn-pill-solid min-h-[52px] px-[26px]">
+					{m.hero_button_link()}
+					<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+						<path
+							d="M4 9h10M10 5l4 4-4 4"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</a>
+				<a href={localizeHref('/contact')} class="btn-pill-line min-h-[52px]">
+					{m.hero_button_text()}
 				</a>
 			</div>
 		</div>
 
-		<!-- Corner captions — blueprint-style annotations -->
-		<span
-			class="hero-caption absolute bottom-4 left-4 z-10 font-mono text-[10px] tracking-[0.2em] text-[#c7d796]/70 uppercase sm:bottom-6 sm:left-6"
-			>{currentYear}</span
-		>
-		<span
-			class="hero-caption absolute right-4 bottom-4 z-10 font-mono text-[10px] tracking-[0.2em] text-[#c7d796]/70 uppercase sm:right-6 sm:bottom-6"
-			>Indonesia</span
-		>
+		<div class="pointer-events-auto hidden flex-col items-end gap-3 md:flex">
+			<div
+				class="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-float"
+			>
+				<button
+					type="button"
+					aria-label={m.gis_hero_zoom_in()}
+					disabled={zoom >= 18}
+					onclick={() => (zoom = Math.min(18, zoom + 1))}
+					class="flex size-12 items-center justify-center border-b border-border text-foreground hover:bg-secondary disabled:opacity-40"
+				>
+					<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+						<path
+							d="M9 3v12M3 9h12"
+							stroke="currentColor"
+							stroke-width="2.2"
+							stroke-linecap="round"
+						/>
+					</svg>
+				</button>
+				<button
+					type="button"
+					aria-label={m.gis_hero_zoom_out()}
+					disabled={zoom <= 16}
+					onclick={() => (zoom = Math.max(16, zoom - 1))}
+					class="flex size-12 items-center justify-center border-b border-border text-foreground hover:bg-secondary disabled:opacity-40"
+				>
+					<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+						<path d="M3 9h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+					</svg>
+				</button>
+				<button
+					type="button"
+					aria-label={m.gis_hero_north()}
+					onclick={() => (bearing = 0)}
+					class="flex size-12 items-center justify-center hover:bg-secondary"
+				>
+					<svg
+						class={bearing ? 'map-wob' : ''}
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+						style="transition: transform .4s ease"
+					>
+						<path d="M12 2l4 10h-8z" fill="#E5484D" />
+						<path d="M12 22l-4-10h8z" fill="#B5AC9C" />
+					</svg>
+				</button>
+			</div>
+			<div
+				role="group"
+				aria-label={m.gis_layers_label()}
+				class="flex min-w-[220px] flex-col gap-2 rounded-[22px] border border-border bg-card p-3.5 shadow-float"
+			>
+				<span class="px-1 font-mono text-xs font-semibold text-muted-foreground"
+					>{m.gis_layers()}</span
+				>
+				{#each layerDefs as l (l.key)}
+					{@const on = layers[l.key]}
+					<button
+						type="button"
+						aria-pressed={on}
+						onclick={() => (layers[l.key] = !on)}
+						class="flex min-h-11 items-center gap-2.5 rounded-full border-[1.5px] py-0 pr-3.5 pl-2.5 text-left text-[15px] font-bold text-foreground transition-colors hover:border-foreground {on
+							? 'border-primary bg-accent'
+							: 'border-border bg-card'}"
+					>
+						<span
+							class="relative h-5 w-[34px] flex-none rounded-full transition-colors {on
+								? 'bg-primary'
+								: 'bg-line-strong'}"
+						>
+							<span
+								class="absolute top-[3px] size-3.5 rounded-full bg-white transition-[left] duration-200"
+								style="left: {on ? 17 : 3}px"
+							></span>
+						</span>
+						{l.label()}
+					</button>
+				{/each}
+			</div>
+		</div>
+	</div>
+
+	<!-- Scale bar / map readout -->
+	<div
+		class="relative mx-4 mb-5 flex flex-wrap items-center gap-x-[18px] gap-y-2 self-start rounded-[22px] border border-border bg-card px-[18px] py-2.5 font-mono text-xs text-muted-foreground sm:mx-[clamp(16px,3vw,40px)] sm:rounded-full"
+	>
+		<span class="flex items-center gap-2">
+			<span class="flex h-2 w-[120px] border-[1.5px] border-t-0 border-foreground">
+				<span class="flex-1 border-r-[1.5px] border-foreground"></span>
+				<span class="flex-1"></span>
+			</span>
+			{Math.round(200 / 2 ** (zoom - 16))} m
+		</span>
+		<span>PITCH <b class="text-foreground">53°</b></span>
+		<span>BEARING <b class="text-foreground">{bearing}°</b></span>
+		<span>ZOOM <b class="text-foreground">{zoom}</b></span>
+		<span class="hidden sm:inline">LAT <b class="text-foreground">{lat}</b></span>
+		<span class="hidden sm:inline">LON <b class="text-foreground">{lon}</b></span>
 	</div>
 </section>
 
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	.paper-hero {
-		perspective: 1500px;
+<style>
+	.hero-tile {
+		animation: tileout 0.7s ease both;
 	}
-
-	/* The card is the paper sheet itself: a hand-torn deckle silhouette (the
-	   clip-path is generated in the script) carrying the crumpled surface, lifted
-	   off the page by a soft drop-shadow that follows that same torn outline. */
-	.hero-card {
-		overflow: hidden;
-		background: var(--hero-paper-grad);
-		filter: drop-shadow(var(--hero-shadow));
+	.hero-car {
+		offset-rotate: 0deg;
+		animation: car 10s ease-in-out infinite alternate;
 	}
-
-	/* "Dev" tag — hangs off the name at an angle, pinned at its own bottom-right
-	   corner (moved here from the navbar logo, which no longer has it). */
-	.hero-dev-tag {
-		transform-origin: calc(100% - 0.375rem) calc(100% - 0.375rem);
+	.hero-pline {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+		animation: pline 7s ease infinite;
 	}
-
-	:root {
-		--hero-shadow: 0 16px 28px rgba(0, 0, 0, 0.3);
-		--hero-paper-grad: linear-gradient(135deg, #215542 0%, #1a4435 55%, #0c2019 100%);
-		--mouse-glow: rgba(252, 236, 98, 0.1);
-
-		/* Glossy Badges — the subtitle's "tape label" treatment */
-		--badge-bg-grad:
-			linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 25%),
-			linear-gradient(135deg, #ffffff 0%, #f4f4f4 50%, #e0e0e0 100%);
-		--badge-color: #1a4435;
-		--badge-fold-color: #f8f8f8;
-		/* --tape-bg-grad / --tape-color / --tape-shadow* now live in app.css as
-		   global brand tokens, shared with the work section's CTA. */
+	.hero-pfill {
+		animation: pfill 7s ease infinite;
 	}
-
-	:global(.dark) {
-		--hero-shadow: 0 18px 34px rgba(0, 0, 0, 0.6);
-		--hero-paper-grad: linear-gradient(135deg, #3f3f46 0%, #18181b 55%, #000000 100%);
-		--mouse-glow: rgba(255, 255, 255, 0.08);
-
-		--badge-bg-grad:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 25%),
-			linear-gradient(135deg, #3f3f46 0%, #27272a 50%, #18181b 100%);
-		--badge-color: #e2e2e8;
-		--badge-fold-color: #4a4a52;
+	.hero-vtx {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: vtx 7s ease infinite both;
 	}
-
-	/* ── Realistic crumpled-paper surface ────────────────────────────────────
-	   A fractal-noise height map fed into SVG lighting filters. `feDiffuseLighting`
-	   bakes the matte shadow/highlight of every wrinkle under a fixed top-left
-	   "sun" (azimuth 235°, low elevation), tuned so a FLAT area lands on ~0.5 grey
-	   — neutral for the `overlay` blend — while slopes facing the light lift and
-	   slopes turned away sink into shadow. Tune crease SIZE via `baseFrequency`
-	   and crease DEPTH via `surfaceScale`. The sheen layer reuses the same
-	   seed/frequency so its glossy `feSpecularLighting` highlights land on the
-	   exact same ridges. */
-	.crumpled-paper {
-		background: center / cover no-repeat
-			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.009 0.012' numOctaves='6' seed='6' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' surfaceScale='3.4' diffuseConstant='0.72' lighting-color='%23fff'%3E%3CfeDistantLight azimuth='235' elevation='46'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='1200' height='1200' filter='url(%23p)'/%3E%3C/svg%3E");
-		mix-blend-mode: overlay;
-		opacity: 0.68;
-	}
-
-	.crumpled-sheen {
-		background: center / cover no-repeat
-			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.009 0.012' numOctaves='6' seed='6' stitchTiles='stitch' result='n'/%3E%3CfeSpecularLighting in='n' surfaceScale='3.4' specularConstant='0.55' specularExponent='18' lighting-color='%23fff'%3E%3CfeDistantLight azimuth='235' elevation='58'/%3E%3C/feSpecularLighting%3E%3C/filter%3E%3Crect width='1200' height='1200' filter='url(%23s)'/%3E%3C/svg%3E");
-		mix-blend-mode: screen;
-		opacity: 0.3;
-	}
-
-	/* Dark paper is already near-black, so the same wrinkles need a gentler hand
-	   to avoid crushing to pure black / blowing out to white. */
-	:global(.dark) .crumpled-paper {
-		opacity: 0.52;
-	}
-
-	:global(.dark) .crumpled-sheen {
-		opacity: 0.17;
-	}
-
-	.mouse-spotlight {
-		background: radial-gradient(
-			circle 450px at var(--mouse-x) var(--mouse-y),
-			var(--mouse-glow),
-			transparent 70%
-		);
-	}
-
-	.hero-sweep {
-		opacity: 0.7;
-		mix-blend-mode: overlay;
-		background: linear-gradient(
-			110deg,
-			rgba(255, 255, 255, 0) 35%,
-			rgba(255, 255, 255, 0.2) 45%,
-			rgba(255, 255, 255, 0.6) 50%,
-			rgba(255, 255, 255, 0) 55%
-		);
-	}
-
-	.hero-crease {
-		opacity: 0.6;
-		mix-blend-mode: multiply;
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.1) 0%,
-			rgba(255, 255, 255, 0) 50%,
-			rgba(0, 0, 0, 0.1) 50.1%,
-			rgba(0, 0, 0, 0.3) 100%
-		);
-	}
-
-	:global(.dark) .hero-crease {
-		opacity: 0.8;
-		mix-blend-mode: overlay;
-	}
-
-	/* Torn rim: a soft inner shadow that darkens the deckle edge, giving the
-	   sheet a hint of thickness where it lifts off the page. */
-	.hero-edge {
-		box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.28);
-	}
-
-	/* ── Tape Label (subtitle badge, stacked-paper style) ── */
-	.tape-wrapper {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		filter: drop-shadow(0px 4px 6px var(--tape-shadow));
-		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-		will-change: transform, filter;
-	}
-
-	.tape-wrapper:hover {
-		filter: drop-shadow(0px 6px 10px var(--tape-shadow-hover));
-		transform: translateY(-2px);
-	}
-
-	.tape-body {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		padding: 8px 20px;
-		background: var(--badge-bg-grad);
-		color: var(--badge-color);
-		clip-path: polygon(
-			0% 0%,
-			calc(100% - 16px) 0%,
-			100% 16px,
-			100% 100%,
-			16px 100%,
-			0% calc(100% - 16px)
-		);
-	}
-
-	.tape-label-text {
-		font-size: 12px;
-		font-weight: 500;
-		letter-spacing: 0.02em;
-	}
-
-	@media (min-width: 640px) {
-		.tape-label-text {
-			font-size: 14px;
+	@keyframes tileout {
+		0%,
+		35% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			visibility: hidden;
 		}
 	}
-
-	.tape-fold-tr {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 16px;
-		height: 16px;
-		background: linear-gradient(
-			225deg,
-			transparent 50%,
-			var(--badge-fold-color) 50%,
-			rgba(255, 255, 255, 0.9) 100%
-		);
-		filter: drop-shadow(-1.5px 1.5px 1px rgba(0, 0, 0, 0.3));
+	@keyframes car {
+		from {
+			offset-distance: 0%;
+		}
+		to {
+			offset-distance: 100%;
+		}
 	}
-
-	.tape-fold-bl {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 16px;
-		height: 16px;
-		background: linear-gradient(
-			45deg,
-			transparent 50%,
-			var(--badge-fold-color) 50%,
-			rgba(255, 255, 255, 0.9) 100%
-		);
-		filter: drop-shadow(1.5px -1.5px 1px rgba(0, 0, 0, 0.3));
+	@keyframes pline {
+		0% {
+			stroke-dashoffset: 1;
+			opacity: 1;
+		}
+		40%,
+		88% {
+			stroke-dashoffset: 0;
+			opacity: 1;
+		}
+		100% {
+			stroke-dashoffset: 0;
+			opacity: 0;
+		}
 	}
-
-	.tape-button-wrapper {
-		display: inline-flex;
-		filter: drop-shadow(0px 6px 12px var(--tape-shadow));
-		transition: filter 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-		will-change: transform, filter;
+	@keyframes pfill {
+		0%,
+		40% {
+			opacity: 0;
+		}
+		52%,
+		88% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
-
-	.tape-button-wrapper:hover {
-		/* Lift is applied via the magnetic-hover GSAP tween, not here — an inline
-		   transform written by GSAP always wins over this rule anyway. */
-		filter: drop-shadow(0px 10px 16px var(--tape-shadow-hover));
+	@keyframes vtx {
+		0% {
+			transform: scale(0);
+		}
+		6%,
+		88% {
+			transform: scale(1);
+		}
+		100% {
+			transform: scale(0);
+		}
 	}
-
-	.tape-button {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 14px 36px;
-		cursor: pointer;
-		background: var(--tape-bg-grad);
-		color: var(--tape-color);
-		clip-path: polygon(4% 0%, 100% 12%, 96% 88%, 0% 100%);
-		transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-		text-decoration: none;
-	}
-
-	@media (min-width: 640px) {
-		.tape-button {
-			padding: 18px 48px;
+	@media (prefers-reduced-motion: reduce) {
+		.hero-tile {
+			display: none;
+		}
+		.hero-car,
+		.hero-pline,
+		.hero-pfill,
+		.hero-vtx {
+			animation: none;
+		}
+		.hero-car {
+			offset-distance: 45%;
+		}
+		.hero-pline {
+			stroke-dashoffset: 0;
 		}
 	}
 </style>

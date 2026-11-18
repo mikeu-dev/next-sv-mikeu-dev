@@ -1,40 +1,26 @@
 <script lang="ts">
-	import Button from '@/lib/components/ui/button/button.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import { m } from '#lib/paraglide/messages.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '#lib/utils/confetti-sound.js';
-	import { onMount, tick } from 'svelte';
-	import { gsap } from 'gsap';
-	import {
-		Mail,
-		Copy,
-		Check,
-		MapPin,
-		Clock,
-		Loader2,
-		ArrowRight,
-		Hash,
-		QrCode,
-		Command
-	} from '@lucide/svelte';
+	import { tick } from 'svelte';
 	import { PUBLIC_CONTACT_EMAIL } from '$app/env/public';
-	import Icon from '#lib/components/ui/icon.svelte';
-	import Skeleton from '#lib/components/ui/skeleton.svelte';
 	import SEO from '#lib/components/seo/seo.svelte';
+	import PageHeader from '#lib/components/guest/map/page-header.svelte';
 	import type { SocialLink } from '#lib/types.js';
 
-	type ActionData = {
-		success: boolean;
-		message: string;
-	};
+	type ActionData = { success: boolean; message: string };
 
 	let { data }: { data: import('./$types').PageData } = $props();
+	const email = PUBLIC_CONTACT_EMAIL || 'rikiruswandi28@gmail.com';
 
-	let confettiCannon = $state(false);
+	const NEEDS = [m.gis_need_webgis, m.gis_need_erp, m.gis_need_ai, m.gis_need_other];
+	let need = $state(0);
+	let sent = $state(false);
 	let isSubmitting = $state(false);
 	let isCopied = $state(false);
+	let confettiCannon = $state(false);
 
 	const triggerConfetti = async () => {
 		confettiCannon = false;
@@ -43,79 +29,22 @@
 		playConfettiSound();
 	};
 
-	const copyEmail = async () => {
+	async function copyEmail() {
 		try {
-			await navigator.clipboard.writeText(PUBLIC_CONTACT_EMAIL);
+			await navigator.clipboard.writeText(email);
 			isCopied = true;
-			toast.success(m.blog_link_copied());
+			toast.success(m.gis_email_copied());
 			setTimeout(() => (isCopied = false), 2000);
 		} catch {
 			toast.error('Failed to copy email');
 		}
-	};
+	}
 
-	onMount(() => {
-		// GSAP Origami Reveal
-		const tl = gsap.timeline({ defaults: { ease: 'power4.inOut' } });
-
-		// Set initial states for 3D unfold
-		gsap.set('.origami-shard', {
-			transformPerspective: 1000,
-			rotateX: -90,
-			opacity: 0
-		});
-
-		tl.to('.origami-shard', {
-			rotateX: 0,
-			opacity: 1,
-			duration: 1.5,
-			stagger: 0.1,
-			clearProps: 'all'
-		})
-			.from(
-				'.brutalist-title',
-				{
-					x: -200,
-					opacity: 0,
-					duration: 1,
-					ease: 'expo.out'
-				},
-				'-=1'
-			)
-			.from(
-				'.archive-detail',
-				{
-					y: 20,
-					opacity: 0,
-					duration: 0.8,
-					stagger: 0.05
-				},
-				'-=0.5'
-			);
-
-		// Mouse interaction for shards (subtle tilt)
-		const handleMouseMove = (e: MouseEvent) => {
-			const { clientX, clientY } = e;
-			const x = (clientX / window.innerWidth - 0.5) * 10;
-			const y = (clientY / window.innerHeight - 0.5) * 10;
-
-			gsap.to('.shards-container', {
-				rotateY: x,
-				rotateX: -y,
-				duration: 1,
-				ease: 'power2.out'
-			});
-		};
-
-		window.addEventListener('mousemove', handleMouseMove);
-
-		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-		};
-	});
+	const field =
+		'min-h-[52px] rounded-2xl border-[1.5px] border-border bg-background px-4 text-base font-semibold text-foreground outline-none placeholder:text-muted-foreground focus:border-primary';
 </script>
 
-<SEO title="Contact" description="Get in touch with me" />
+<SEO title={m.contact_page_title()} description={m.contact_page_subtitle()} />
 
 {#if confettiCannon}
 	<ConfettiCannon
@@ -126,298 +55,238 @@
 	/>
 {/if}
 
-<!-- Grain & Static Texture Overlay -->
+<PageHeader
+	eyebrow={m.gis_contact_page_eyebrow()}
+	title={m.gis_contact_title()}
+	lead={m.gis_contact_page_lead()}
+/>
+
 <div
-	class="pointer-events-none fixed inset-0 z-50 opacity-[0.04] mix-blend-overlay contrast-150 grayscale"
-	style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"
-></div>
-
-<main class="relative min-h-screen overflow-hidden bg-background p-6 lg:p-12">
-	<!-- Vertical Spine Title -->
-	<div
-		class="brutalist-title pointer-events-none fixed top-0 left-0 hidden h-full w-24 items-center justify-center border-r-2 border-foreground/10 lg:flex"
-	>
-		<h1
-			class="-rotate-90 font-poppins text-8xl font-black -tracking-widest whitespace-nowrap text-foreground/15 uppercase italic"
-		>
-			Mikeu // Dev_Archive
-		</h1>
-	</div>
-
-	<div class="relative mx-auto max-w-7xl lg:pl-32">
-		<!-- Header / Technical Specs -->
-		<header
-			class="mb-12 flex flex-col items-start justify-between gap-8 border-b-2 border-foreground pb-8 sm:flex-row sm:items-end"
-		>
-			<div class="mt-20 space-y-2">
-				<div
-					class="archive-detail flex items-center gap-2 font-mono text-[10px] font-black text-primary uppercase"
-				>
-					<Hash class="size-3" /> [IDENTITY: {m.common_author_name()}]
-				</div>
-				<h2 class="font-poppins text-5xl font-black tracking-tighter text-foreground sm:text-7xl">
-					Mikeu<span class="text-primary">.</span>Dev
-				</h2>
+	class="mx-auto box-border flex max-w-[1440px] flex-wrap items-start gap-5 px-[clamp(16px,4vw,56px)] pt-10 pb-24"
+>
+	<div class="flex flex-[1_1_360px] flex-col gap-4">
+		<div class="map-card flex flex-col gap-3 p-6">
+			<span class="font-mono text-xs font-semibold text-muted-foreground"
+				>{m.gis_email_label()}</span
+			>
+			<a
+				href="mailto:{email}"
+				class="text-[22px] font-black break-all text-primary hover:text-foreground">{email}</a
+			>
+			<button
+				type="button"
+				onclick={copyEmail}
+				class="btn-pill-line min-h-11 self-start px-[18px] text-[15px]"
+			>
+				{isCopied ? m.gis_email_copied() : m.gis_copy_email()}
+			</button>
+		</div>
+		<div class="grid grid-cols-2 gap-4">
+			<div class="flex flex-col gap-1.5 rounded-3xl border border-border bg-card p-5">
+				<span class="font-mono text-xs text-muted-foreground">{m.gis_base_label()}</span>
+				<span class="text-xl font-black">{m.gis_base_country()}</span>
 			</div>
-			<div class="archive-detail text-right font-mono text-sm leading-tight font-bold uppercase">
-				<p class="text-foreground/80">
-					SECTOR: <span class="text-foreground">FULLSTACK_WEB_DEVELOPER</span>
-				</p>
-				<p class="text-foreground/80">
-					BASE_LOC: <span class="text-foreground">IDN // 7.79Â°S 110.37Â°E</span>
-				</p>
-			</div>
-		</header>
-
-		<div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
-			<!-- Left: Info Shards -->
-			<div class="order-2 space-y-4 lg:order-1 lg:col-span-4">
-				<!-- Shard 1: Email -->
-				<div
-					class="origami-shard group relative h-48 bg-foreground p-8 text-background transition-all hover:bg-primary hover:text-primary-foreground"
-					style="clip-path: polygon(0 0, 100% 15%, 95% 100%, 0 85%);"
-				>
-					<div class="flex h-full flex-col justify-between">
-						<Mail class="size-8" />
-						<div class="space-y-1">
-							<p class="font-mono text-[10px] font-black text-background/80 uppercase">
-								{m.contact_field_email()}
-							</p>
-							<p class="text-lg font-black tracking-tight break-all">{PUBLIC_CONTACT_EMAIL}</p>
-						</div>
-					</div>
-					<button
-						onclick={copyEmail}
-						class="absolute top-8 right-8 opacity-0 transition-opacity group-hover:opacity-100"
-					>
-						{#if isCopied}
-							<Check />
-						{:else}
-							<Copy />
-						{/if}
-					</button>
-				</div>
-
-				<!-- Shard 2: Location/Time -->
-				<div class="grid grid-cols-2 gap-4">
-					<div
-						class="origami-shard bg-muted p-6 text-foreground"
-						style="clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);"
-					>
-						<MapPin class="mb-4 size-5 text-primary" />
-						<p class="font-mono text-[10px] font-black text-foreground/80 uppercase">Base</p>
-						<p class="font-bold">IDN</p>
-					</div>
-					<div
-						class="origami-shard bg-muted p-6 text-foreground"
-						style="clip-path: polygon(0 0, 90% 0, 100% 100%, 10% 100%);"
-					>
-						<Clock class="mb-4 size-5 text-primary" />
-
-						<p class="font-mono text-[10px] font-black text-foreground/80 uppercase">Avg</p>
-
-						<p class="font-bold">&lt; 24H</p>
-					</div>
-				</div>
-
-				<!-- Shard 3: Social/QR -->
-				<div
-					class="origami-shard relative flex h-64 flex-col justify-between border-2 border-foreground p-8"
-					style="clip-path: polygon(0 15%, 100% 0, 100% 85%, 0 100%);"
-				>
-					<div class="flex items-center justify-between">
-						<QrCode class="size-10" />
-						<Command class="size-6 animate-pulse text-primary" />
-					</div>
-					<div class="flex flex-wrap gap-4">
-						{#await data.socials}
-							<div class="flex gap-4">
-								<Skeleton class="size-12 rounded-none" />
-								<Skeleton class="size-12 rounded-none" />
-								<Skeleton class="size-12 rounded-none" />
-							</div>
-						{:then socialsData}
-							{@const socials = socialsData as SocialLink[]}
-							{#each socials as social (social.href)}
-								<a
-									href={social.href}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="flex size-12 items-center justify-center border-2 border-foreground transition-all hover:bg-foreground hover:text-background"
-									aria-label={social.label}
-								>
-									<Icon iconName={social.iconName} src={social.icon} size={20} strokeWidth={2.5} />
-								</a>
-							{/each}
-						{/await}
-					</div>
-				</div>
-			</div>
-
-			<!-- Right: The Deconstructed Form -->
-			<div class="order-1 lg:order-2 lg:col-span-8">
-				<div class="shards-container space-y-6">
-					<form
-						method="POST"
-						use:enhance={() => {
-							isSubmitting = true;
-							return async ({ result, update }) => {
-								isSubmitting = false;
-								let isSuccess = false;
-
-								if (result.type === 'success') {
-									const data = result.data as ActionData;
-									if (data?.success === false) {
-										toast.error(data?.message ?? m.contact_form_failure());
-									} else {
-										isSuccess = true;
-										toast.success(data?.message ?? m.contact_form_success());
-										await triggerConfetti();
-									}
-								} else if (result.type === 'failure') {
-									const data = result.data as ActionData;
-									toast.error(data?.message ?? m.contact_form_failure());
-								}
-
-								await update({ reset: isSuccess });
-							};
-						}}
-						class="space-y-6"
-					>
-						<!-- Shard: Main Inputs -->
-						<div
-							class="origami-shard bg-card p-10 shadow-2xl dark:bg-card/50"
-							style="clip-path: polygon(0 5%, 95% 0, 100% 95%, 5% 100%);"
-						>
-							<div class="grid grid-cols-1 gap-12 md:grid-cols-2">
-								<div class="group relative">
-									<input
-										type="text"
-										id="name"
-										name="name"
-										required
-										placeholder="[FULL_NAME]"
-										class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg font-black tracking-tighter uppercase outline-none placeholder:text-foreground/80 focus:border-primary sm:text-xl"
-									/>
-									<label
-										for="name"
-										class="pointer-events-none absolute -top-6 left-0 font-mono text-xs font-black tracking-widest text-foreground/80 uppercase"
-									>
-										01 // {m.contact_field_name()}
-									</label>
-								</div>
-								<div class="group relative">
-									<input
-										type="email"
-										id="email"
-										name="email"
-										required
-										placeholder="[EMAIL_ADDRESS]"
-										class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg font-black tracking-tighter uppercase outline-none placeholder:text-foreground/80 focus:border-primary sm:text-xl"
-									/>
-									<label
-										for="email"
-										class="pointer-events-none absolute -top-6 left-0 font-mono text-xs font-black tracking-widest text-foreground/80 uppercase"
-									>
-										02 // {m.contact_field_email()}
-									</label>
-								</div>
-							</div>
-						</div>
-
-						<!-- Shard: Message -->
-						<div
-							class="origami-shard bg-card p-10 shadow-2xl dark:bg-card/50"
-							style="clip-path: polygon(5% 0, 100% 5%, 95% 100%, 0 95%);"
-						>
-							<div class="group relative">
-								<textarea
-									id="message"
-									name="message"
-									required
-									rows="4"
-									placeholder="[WRITE_MESSAGE_HERE...]"
-									class="peer w-full border-b-2 border-foreground bg-transparent py-4 font-poppins text-lg font-black tracking-tighter uppercase outline-none placeholder:text-foreground/80 focus:border-primary sm:text-xl"
-								></textarea>
-								<label
-									for="message"
-									class="pointer-events-none absolute -top-6 left-0 font-mono text-xs font-black tracking-widest text-foreground/80 uppercase"
-								>
-									03 // {m.contact_field_message()}
-								</label>
-							</div>
-						</div>
-
-						<!-- Shard: Submit -->
-						<div class="flex justify-end">
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								class="origami-shard relative h-24 w-full bg-primary p-0 text-primary-foreground sm:w-80"
-								style="clip-path: polygon(0 0, 100% 20%, 90% 100%, 10% 80%);"
-							>
-								<div class="flex items-center justify-center gap-4 px-12">
-									{#if isSubmitting}
-										<Loader2 class="size-6 animate-spin" />
-										<span class="font-poppins text-2xl font-black tracking-tighter uppercase"
-											>Archiving...</span
-										>
-									{:else}
-										<span class="font-poppins text-3xl font-black tracking-tighter uppercase"
-											>{m.contact_page_button()}</span
-										>
-										<ArrowRight class="size-8" />
-									{/if}
-								</div>
-							</Button>
-						</div>
-					</form>
-				</div>
+			<div class="flex flex-col gap-1.5 rounded-3xl border border-border bg-card p-5">
+				<span class="font-mono text-xs text-muted-foreground">{m.gis_reply_label()}</span>
+				<span class="text-xl font-black">{m.gis_reply_value()}</span>
 			</div>
 		</div>
-
-		<!-- Footer technicality -->
-		<footer
-			class="mt-12 flex items-center justify-between border-t-2 border-foreground/10 pt-8 font-mono text-[10px] font-black tracking-widest text-foreground/80 uppercase"
+		<div
+			role="img"
+			aria-label={m.gis_location_label()}
+			class="relative aspect-[4/3] overflow-hidden rounded-[28px] border border-border bg-secondary"
 		>
-			<p>Â© MIKEU_DEV_PROTOCOL_2026</p>
-			<p>STACK: SVELTEKIT_VITE_TS</p>
-		</footer>
+			<img
+				src="/images/map/flat-basemap.svg"
+				alt=""
+				class="map-art absolute max-w-none"
+				style="width: 200%; height: 200%; left: -30%; top: -60%"
+			/>
+			<svg
+				viewBox="0 0 400 300"
+				preserveAspectRatio="xMidYMid slice"
+				aria-hidden="true"
+				class="absolute inset-0 size-full"
+			>
+				{#each [0, 1.2] as d (d)}
+					<circle
+						class="map-pulse"
+						style="animation-delay: {d}s"
+						cx="200"
+						cy="150"
+						r="70"
+						fill="var(--primary)"
+						fill-opacity=".18"
+						stroke="var(--primary)"
+						stroke-width="2"
+					/>
+				{/each}
+				<g class="map-drop">
+					<path
+						transform="translate(182 102)"
+						d="M18 1C8.6 1 1 8.4 1 17.6 1 30 18 47 18 47s17-17 17-29.4C35 8.4 27.4 1 18 1z"
+						fill="var(--primary)"
+						stroke="#FFFFFF"
+						stroke-width="3"
+					/>
+					<circle cx="200" cy="120" r="6" fill="#FFFFFF" />
+				</g>
+			</svg>
+			<div
+				class="absolute bottom-4 left-4 flex flex-col rounded-[18px] border border-border bg-card px-4 py-2.5"
+			>
+				<span class="font-black">Purwakarta, Jawa Barat</span>
+				<span class="font-mono text-xs text-muted-foreground">6.5569° S, 107.4431° E · UTC+7</span>
+			</div>
+		</div>
+		{#await data.socials then socialsData}
+			{@const socials = (socialsData as SocialLink[]).filter((s) => s?.href)}
+			{#if socials.length}
+				<div class="flex flex-wrap gap-2">
+					{#each socials as s (s.href)}
+						<a
+							href={s.href}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="btn-pill-line min-h-12 px-5 text-base">{s.label}</a
+						>
+					{/each}
+				</div>
+			{/if}
+		{/await}
 	</div>
-</main>
 
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	:global(body) {
-		background-color: var(--background);
-		color: var(--foreground);
-		overflow-x: hidden;
-		cursor: crosshair;
-	}
-
-	.shards-container {
-		transform-style: preserve-3d;
-	}
-
-	.origami-shard {
-		transition:
-			transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-			background-color 0.3s ease;
-	}
-
-	.origami-shard:hover {
-		transform: scale(1.02) translateZ(20px);
-	}
-
-	input::placeholder,
-	textarea::placeholder {
-		opacity: 1 !important;
-	}
-
-	@media (max-width: 1024px) {
-		.origami-shard {
-			border-radius: 4px;
-		}
-	}
-</style>
+	<div
+		class="min-w-0 flex-[999_1_560px] rounded-[32px] border border-border bg-card p-[clamp(24px,3vw,40px)] shadow-[0_24px_60px_rgba(23,33,43,.08)]"
+	>
+		{#if !sent}
+			<form
+				method="POST"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ result, update }) => {
+						isSubmitting = false;
+						let ok = false;
+						if (result.type === 'success') {
+							const res = result.data as ActionData;
+							if (res?.success === false) toast.error(res?.message ?? m.contact_form_failure());
+							else {
+								ok = true;
+								toast.success(res?.message ?? m.contact_form_success());
+								await triggerConfetti();
+							}
+						} else if (result.type === 'failure') {
+							const res = result.data as ActionData;
+							toast.error(res?.message ?? m.contact_form_failure());
+						}
+						await update({ reset: ok });
+						if (ok) sent = true;
+					};
+				}}
+				class="flex flex-col gap-5"
+			>
+				<h2 class="m-0 text-[30px] font-black">{m.gis_send_title()}</h2>
+				<div class="flex flex-wrap gap-4">
+					<label class="flex flex-[1_1_240px] flex-col gap-2 font-extrabold">
+						{m.contact_field_name()}
+						<input
+							type="text"
+							name="name"
+							required
+							autocomplete="name"
+							placeholder={m.gis_name_placeholder()}
+							class={field}
+						/>
+					</label>
+					<label class="flex flex-[1_1_240px] flex-col gap-2 font-extrabold">
+						{m.contact_field_email()}
+						<input
+							type="email"
+							name="email"
+							required
+							autocomplete="email"
+							placeholder={m.gis_email_placeholder()}
+							class={field}
+						/>
+					</label>
+				</div>
+				<fieldset class="m-0 flex flex-col gap-2.5 border-0 p-0">
+					<legend class="mb-2 font-extrabold">{m.gis_need()}</legend>
+					<input type="hidden" name="need" value={NEEDS[need]()} />
+					<div class="flex flex-wrap gap-2">
+						{#each NEEDS as label, i (i)}
+							<button
+								type="button"
+								aria-pressed={need === i}
+								onclick={() => (need = i)}
+								class="min-h-11 rounded-full border-[1.5px] px-4 text-[15px] font-extrabold transition-colors {need ===
+								i
+									? 'border-primary bg-primary text-primary-foreground'
+									: 'border-border bg-card text-foreground hover:border-foreground'}"
+								>{label()}</button
+							>
+						{/each}
+					</div>
+				</fieldset>
+				<label class="flex flex-col gap-2 font-extrabold">
+					{m.contact_field_message()}
+					<textarea
+						name="message"
+						rows="6"
+						required
+						placeholder={m.gis_message_placeholder()}
+						class="{field} resize-y py-3.5 leading-relaxed"
+					></textarea>
+				</label>
+				<button
+					type="submit"
+					disabled={isSubmitting}
+					class="btn-pill-solid min-h-14 self-start px-[30px] disabled:opacity-60"
+				>
+					{isSubmitting ? m.gis_sending() : m.contact_page_button()}
+					<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+						<path
+							d="M4 9h10M10 5l4 4-4 4"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</button>
+			</form>
+		{:else}
+			<div role="status" class="flex flex-col items-center gap-4 px-4 py-12 text-center">
+				<svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">
+					<circle
+						class="map-pulse"
+						cx="48"
+						cy="48"
+						r="30"
+						fill="var(--primary)"
+						fill-opacity=".2"
+					/>
+					<circle cx="48" cy="48" r="30" fill="var(--primary)" />
+					<path
+						d="M35 49l9 9 17-19"
+						fill="none"
+						stroke="#FFFFFF"
+						stroke-width="5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+				<h2 class="m-0 text-[30px] font-black">{m.gis_sent_title()}</h2>
+				<p class="m-0 text-[17px] text-ink-soft">{m.gis_sent_desc()}</p>
+				<button
+					type="button"
+					onclick={() => (sent = false)}
+					class="btn-pill-line min-h-11 text-[15px]"
+				>
+					{m.gis_send_again()}
+				</button>
+			</div>
+		{/if}
+	</div>
+</div>

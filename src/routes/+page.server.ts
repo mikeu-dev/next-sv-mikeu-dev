@@ -2,6 +2,8 @@ import type { PageServerLoad } from './$types';
 import { skillsService } from '#lib/server/services/skills.service.js';
 import { projectsService } from '#lib/server/services/projects.service.js';
 import { blogService } from '#lib/server/services/blog.service.js';
+import { JourneyService } from '#lib/server/services/journey.service.js';
+import type { JourneyItem } from '#lib/types.js';
 
 export const prerender = false;
 
@@ -15,15 +17,17 @@ export const load: PageServerLoad = async ({ locals, setHeaders }) => {
 			: 'public, s-maxage=10, stale-while-revalidate=30'
 	});
 
-	const [projects, skillsResult, latestPostsResult] = await Promise.all([
+	const [projects, skillsResult, latestPostsResult, journeyResult] = await Promise.all([
 		projectsService.findAll().catch(() => []),
 		skillsService.getSkills(locale).catch(() => null),
-		blogService.getPublishedPostsByLocale(locale).catch(() => null)
+		blogService.getPublishedPostsByLocale(locale).catch(() => null),
+		new JourneyService().getJourney(locale).catch(() => null)
 	]);
 
 	return {
 		projects,
 		skills: (skillsResult as { items: string[] })?.items || [],
-		latestPosts: latestPostsResult?.posts.slice(0, 3) || []
+		latestPosts: latestPostsResult?.posts.slice(0, 3) || [],
+		journey: ((journeyResult as { items?: JourneyItem[] } | null)?.items || []).slice(0, 4)
 	};
 };

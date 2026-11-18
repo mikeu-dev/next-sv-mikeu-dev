@@ -1,618 +1,327 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import type { TechStackCategory, JourneyItem } from '#lib/types.js';
-	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocalizedTag } from '#lib/utils/project-mapper.js';
 	import { optimizeImage } from '#lib/utils/image.util.js';
-	import { Mail, Coffee, Gamepad2, Music, CheckCircle2, ArrowRight, Hash } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
-	import SkillPlayground from '#lib/components/about/skill-playground.svelte';
+	import Icon from '#lib/components/ui/icon.svelte';
 	import SEO from '#lib/components/seo/seo.svelte';
+	import JourneyRoute from '#lib/components/guest/sections/journey/journey-route.svelte';
 	import { PUBLIC_CONTACT_EMAIL } from '$app/env/public';
 
 	let { data }: { data: PageData } = $props();
-	let locale = $state(getLocale());
+	const locale = getLocale();
+	const email = PUBLIC_CONTACT_EMAIL || 'rikiruswandi28@gmail.com';
 
-	let resumeUrl = $state('');
-
+	let resumeUrl = $state(
+		`https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${locale}).pdf`
+	);
 	$effect(() => {
-		const fallback = `https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${locale}).pdf`;
 		data.resumeUrls.then((urls) => {
-			resumeUrl = (locale === 'id' ? urls.id : urls.en) || fallback;
+			const url = locale === 'id' ? urls.id : urls.en;
+			if (url) resumeUrl = url;
 		});
 	});
 
-	let initialLocale = locale;
-	let techstackRaw = $derived(
-		(data?.techStack?.[initialLocale] || data?.techStack?.['id'] || []) as TechStackCategory[]
-	);
-
 	let techstack = $derived(
-		techstackRaw.map((category) => ({
-			...category,
-			items: (category.items || []).map((item) => getLocalizedTag(item))
-		}))
-	);
-
-	let myJourney = $derived(
-		(data?.journey?.[initialLocale] || data?.journey?.['id'] || []) as JourneyItem[]
-	);
-
-	let container: HTMLElement;
-	let timelineProgress: HTMLElement;
-
-	onMount(() => {
-		gsap.registerPlugin(ScrollTrigger);
-
-		const ctx = gsap.context(() => {
-			const tl = gsap.timeline();
-
-			tl.from('.hero-origami', {
-				clipPath: 'polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%, 50% 100%, 50% 100%)',
-				duration: 1.2,
-				ease: 'expo.inOut'
+		((data?.techStack?.[locale] || data?.techStack?.['id'] || []) as TechStackCategory[]).map(
+			(category) => ({
+				...category,
+				items: (category.items || []).map((item) => getLocalizedTag(item))
 			})
-				.from(
-					'.stagger-item',
-					{
-						x: -50,
-						rotateY: -20,
-						opacity: 0,
-						duration: 0.8,
-						stagger: 0.1,
-						ease: 'expo.out'
-					},
-					'-=0.6'
-				)
-				.from(
-					'.hero-portrait-origami',
-					{
-						scale: 0.9,
-						rotate: 5,
-						opacity: 0,
-						duration: 0.8,
-						ease: 'elastic.out(1, 0.5)'
-					},
-					'-=0.6'
-				);
+		)
+	);
+	let journey = $derived((data?.journey?.[locale] || data?.journey?.['id'] || []) as JourneyItem[]);
 
-			// Journey Progress Line
-			if (timelineProgress) {
-				gsap.to(timelineProgress, {
-					height: '100%',
-					ease: 'none',
-					scrollTrigger: {
-						trigger: '.journey-container',
-						start: 'top center',
-						end: 'bottom center',
-						scrub: true
-					}
-				});
-			}
+	// Skill-layer toggles: every category starts visible.
+	let hidden = $state<Record<string, boolean>>({});
+	let shown = $derived(techstack.filter((c) => !hidden[c.category]));
+	const ICONS = [
+		'M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4',
+		'M12 3l8 4v10l-8 4-8-4V7z',
+		'M4 18l5-8 4 5 7-11',
+		'M12 4v16M4 12h16'
+	];
 
-			// Scroll animations for sections
-			gsap.from('.journey-item-origami', {
-				scrollTrigger: {
-					trigger: '.journey-container',
-					start: 'top 80%'
-				},
-				y: 50,
-				opacity: 0,
-				stagger: 0.2,
-				duration: 1,
-				ease: 'power4.out'
-			});
-		}, container);
-
-		return () => ctx.revert();
-	});
-
+	let copied = $state(false);
 	async function copyEmail() {
 		try {
-			await navigator.clipboard.writeText(PUBLIC_CONTACT_EMAIL);
-			toast.success(m.blog_link_copied());
+			await navigator.clipboard.writeText(email);
+			copied = true;
+			toast.success(m.gis_email_copied());
 		} catch {
 			toast.error('Failed to copy email');
 		}
 	}
-
-	let juiciness = $state({
-		caffeine: 95,
-		ping: 12,
-		syncStatus: 'SYNCING_DATA...'
-	});
-
-	$effect(() => {
-		const interval = setInterval(() => {
-			juiciness.caffeine = 94 + Math.floor(Math.random() * 5);
-			juiciness.ping = 10 + Math.floor(Math.random() * 5);
-			juiciness.syncStatus = Math.random() > 0.8 ? 'OPTIMIZED' : 'SYNCING_DATA...';
-		}, 3000);
-		return () => clearInterval(interval);
-	});
-
-	const funFacts = $derived([
-		{
-			icon: Coffee,
-			text: `${juiciness.caffeine}%`,
-			color: 'text-orange-500',
-			bg: 'bg-orange-500/10',
-			sub: 'High Caffeine'
-		},
-		{
-			icon: Gamepad2,
-			text: `${juiciness.ping}ms`,
-			color: 'text-red-500',
-			bg: 'bg-red-500/10',
-			sub: 'Live Gaming'
-		},
-		{
-			icon: Music,
-			text: '24/7',
-			color: 'text-pink-500',
-			bg: 'bg-pink-500/10',
-			sub: 'Deep Beats'
-		},
-		{
-			icon: CheckCircle2,
-			text: juiciness.syncStatus,
-			color: 'text-emerald-500',
-			bg: 'bg-emerald-500/10',
-			sub: 'Infinite Loop'
-		}
-	]);
-
-	let expandedIndex = $state(0);
-	function toggleJourney(index: number) {
-		expandedIndex = expandedIndex === index ? -1 : index;
-	}
 </script>
 
-<SEO
-	title={m.about_begin_first_part()}
-	description={m
-		.about_desc_first_part()
-		.replace(/<[^>]*>?/gm, '')
-		.substring(0, 150)}
-/>
+<SEO title={m.about_title()} description={m.about_subtitle()} />
 
-<div bind:this={container} class="relative mt-28 min-h-screen space-y-24 pb-32">
-	<!-- Industrial Background -->
-	<div
-		class="pointer-events-none fixed inset-0 -z-10 opacity-[0.03] dark:opacity-[0.05]"
-		style="background-image: radial-gradient(var(--foreground) 1px, transparent 1px); background-size: 32px 32px;"
-	></div>
-
-	<!-- Hero Section -->
-	<section class="container mx-auto px-4">
+<header class="relative overflow-hidden bg-secondary pt-24 pb-10 sm:pt-28">
+	<img
+		src="/images/map/band-basemap.svg"
+		alt=""
+		aria-hidden="true"
+		class="map-art absolute inset-0 block size-full object-cover object-[50%_30%]"
+	/>
+	<img
+		src="/images/map/band-buildings.svg"
+		alt=""
+		aria-hidden="true"
+		class="map-art map-rise absolute inset-0 block size-full object-cover object-[50%_30%]"
+		style="animation-delay: .3s"
+	/>
+	<div class="relative mx-[clamp(16px,4vw,56px)] mt-4 flex flex-wrap items-stretch gap-5 sm:mt-10">
 		<div
-			class="hero-origami relative border-y-4 border-foreground bg-card/50 py-16 md:py-24"
-			style="clip-path: polygon(0% 0%, 100% 0%, 98% 92%, 80% 100%, 20% 95%, 0% 100%);"
+			class="flex flex-[1_1_520px] flex-col gap-[18px] rounded-[32px] border border-border bg-card p-[clamp(24px,3vw,40px)] shadow-card"
 		>
-			<!-- Paper Creases -->
-
-			<div class="pointer-events-none absolute inset-0 overflow-hidden opacity-20">
-				<div class="absolute -top-1/2 -left-1/4 h-[200%] w-px rotate-35 bg-foreground/30"></div>
-
-				<div
-					class="absolute -top-1/2 left-3/4 h-[200%] w-px rotate-[-15deg] bg-foreground/30"
-				></div>
+			<p class="eyebrow">{m.gis_about_eyebrow()}</p>
+			<h1 class="m-0 text-[clamp(40px,5vw,68px)] leading-[1.02] font-black tracking-[-0.03em]">
+				{m.gis_about_title()}
+			</h1>
+			<p class="m-0 text-lg leading-[1.65] text-ink-soft">{m.gis_about_lead()}</p>
+			<div class="flex flex-wrap gap-2.5">
+				<a href={resumeUrl} download class="btn-pill-solid min-h-[52px] px-[26px]"
+					>{m.about_hero_resume()}</a
+				>
+				<button type="button" onclick={copyEmail} class="btn-pill-line min-h-[52px]">
+					{copied ? m.gis_email_copied() : m.gis_copy_email()}
+				</button>
 			</div>
+		</div>
+		<div
+			class="flex flex-[0_1_360px] flex-col gap-3.5 rounded-[32px] border border-border bg-card p-[22px] shadow-card"
+		>
+			<div class="flex items-center gap-3.5">
+				<img
+					src={optimizeImage('https://github.com/mikeu-dev.png', { width: 160, quality: 80 })}
+					alt="Riki Ruswandi"
+					width="72"
+					height="72"
+					class="size-[72px] flex-none rounded-3xl bg-primary object-cover"
+				/>
+				<span class="flex flex-col gap-0.5">
+					<span class="text-[22px] font-black">Mikeu</span>
+					<span class="font-mono text-[13px] text-muted-foreground">{m.gis_about_alias()}</span>
+				</span>
+			</div>
+			<dl class="m-0 flex flex-col gap-2.5 font-mono text-sm">
+				<div class="flex justify-between gap-3">
+					<dt class="text-muted-foreground">{m.gis_role()}</dt>
+					<dd class="m-0 text-right font-semibold">Software Engineer</dd>
+				</div>
+				<div class="flex justify-between gap-3">
+					<dt class="text-muted-foreground">{m.gis_base()}</dt>
+					<dd class="m-0 text-right font-semibold">{m.gis_base_value()}</dd>
+				</div>
+				<div class="flex justify-between gap-3">
+					<dt class="text-muted-foreground">{m.gis_coords()}</dt>
+					<dd class="m-0 text-right font-semibold">6.5569° S, 107.4431° E</dd>
+				</div>
+				<div class="flex items-center justify-between gap-3">
+					<dt class="text-muted-foreground">{m.gis_status()}</dt>
+					<dd class="m-0 flex items-center gap-2 font-semibold">
+						<span class="relative size-2.5 rounded-full bg-success">
+							<span
+								class="absolute inset-0 animate-ping rounded-full bg-success motion-reduce:animate-none"
+							></span>
+						</span>
+						{m.gis_status_open()}
+					</dd>
+				</div>
+			</dl>
+			<div class="flex flex-wrap gap-1.5">
+				<span class="rounded-full bg-accent px-3 py-1.5 text-[13px] font-extrabold text-primary"
+					>Svelte expert</span
+				>
+				<span class="rounded-full bg-accent px-3 py-1.5 text-[13px] font-extrabold text-primary"
+					>GIS engineer</span
+				>
+			</div>
+		</div>
+	</div>
+</header>
 
-			<div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-12">
-				<!-- Text Content -->
-				<div class="z-10 space-y-10 lg:col-span-8 lg:pl-16">
-					<div class="stagger-item">
-						<div
-							class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black tracking-[0.2em] text-primary-foreground uppercase shadow-[4px_4px_0_var(--foreground)]"
+<div
+	class="mx-auto box-border flex max-w-[1440px] flex-col gap-20 px-[clamp(16px,4vw,56px)] pt-[72px] pb-24"
+>
+	{#if techstack.length}
+		<section aria-labelledby="craft" class="flex flex-col gap-7">
+			<div class="map-reveal flex max-w-[720px] flex-col gap-3.5">
+				<p class="eyebrow">{m.gis_craft_eyebrow()}</p>
+				<h2
+					id="craft"
+					class="m-0 text-[clamp(34px,4.2vw,56px)] leading-[1.05] font-black tracking-[-0.025em]"
+				>
+					{m.gis_craft_title()}
+				</h2>
+				<p class="m-0 text-[17px] leading-relaxed text-ink-soft">{m.gis_craft_lead()}</p>
+			</div>
+			<div class="flex flex-wrap items-start gap-5">
+				<div
+					role="group"
+					aria-label={m.gis_skill_layers()}
+					class="map-card flex flex-[1_1_280px] flex-col gap-1.5 p-3"
+				>
+					{#each techstack as c (c.category)}
+						{@const on = !hidden[c.category]}
+						<button
+							type="button"
+							aria-pressed={on}
+							onclick={() => (hidden[c.category] = on)}
+							class="flex min-h-14 items-center gap-3 rounded-[18px] px-3 py-2 text-left text-foreground transition-colors {on
+								? 'bg-accent'
+								: 'hover:bg-secondary'}"
 						>
-							[USER_IDENTITY_STAMP]
-						</div>
-
-						<h1 class="font-poppins text-6xl font-black tracking-tighter md:text-9xl">
-							{m.about_begin_first_part()} 👋
-							<br />
-							I'm
-							<span class="text-primary underline decoration-4 underline-offset-8"
-								>{m.common_author_name()}</span
-							><span class="text-primary">_</span>
-						</h1>
-						<div
-							class="mt-2 flex items-center gap-2 font-mono text-xs font-black text-muted-foreground uppercase"
-						>
-							<Hash class="size-3" /> ALIAS: {m.common_alias_name()}
-						</div>
-					</div>
-
-					<div class="stagger-item space-y-8">
-						<div
-							class="max-w-2xl font-mono text-sm leading-relaxed tracking-wider text-card-foreground uppercase md:text-base dark:text-muted-foreground"
-						>
-							// <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-							{@html m.about_desc_first_part()}
-						</div>
-
-						<div class="flex flex-wrap gap-6">
-							<button
-								class="group relative border-4 border-foreground bg-primary px-8 py-4 font-mono text-xs font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+							<span
+								class="relative h-5 w-[34px] flex-none rounded-full {on
+									? 'bg-primary'
+									: 'bg-line-strong'}"
 							>
-								<a
-									href={resumeUrl}
-									download
-									class="group relative border-4 border-foreground bg-primary px-8 py-4 font-mono text-xs font-black tracking-[0.2em] text-primary-foreground uppercase transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--foreground)] active:translate-x-0 active:translate-y-0 active:shadow-none"
-								>
-									{m.about_hero_resume()}
-
-									<ArrowRight
-										class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
+								<span
+									class="absolute top-[3px] size-3.5 rounded-full bg-white transition-[left] duration-200"
+									style="left: {on ? 17 : 3}px"
+								></span>
+							</span>
+							<span class="flex-1 text-base font-black">{c.category}</span>
+							<span class="font-mono text-xs text-muted-foreground">{c.items.length}</span>
+						</button>
+					{/each}
+				</div>
+				<div class="flex min-w-0 flex-[999_1_560px] flex-col gap-4">
+					{#each shown as c (c.category)}
+						<div
+							class="flex flex-col gap-3 rounded-3xl border border-border bg-card px-[22px] py-5"
+						>
+							<span class="flex items-center gap-2.5 text-lg font-black">
+								<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+									<path
+										d={ICONS[techstack.indexOf(c) % ICONS.length]}
+										fill="none"
+										stroke="var(--primary)"
+										stroke-width="2.2"
+										stroke-linejoin="round"
+										stroke-linecap="round"
 									/>
-								</a>
-
-								<ArrowRight
-									class="ml-3 inline-block size-5 transition-transform group-hover:translate-x-1"
-								/>
-							</button>
-							<button
-								onclick={copyEmail}
-								class="group relative border-2 border-foreground bg-background px-8 py-4 font-mono text-xs font-black tracking-[0.2em] uppercase transition-all hover:bg-foreground hover:text-background"
-							>
-								<Mail class="mr-3 inline-block size-5" />
-								{m.about_hero_copy_email()}
-							</button>
-						</div>
-
-						<div
-							class="inline-flex items-center gap-4 border-2 border-foreground bg-foreground/5 p-4 pr-8"
-						>
-							<div class="flex size-10 items-center justify-center bg-green-500 text-white">
-								<CheckCircle2 class="size-6" />
-							</div>
-							<p class="font-mono text-[10px] font-black tracking-[0.2em] uppercase">
-								STATUS: READY_FOR_MISSION_CRITICAL_TASKS
-							</p>
-						</div>
-					</div>
-				</div>
-
-				<!-- Portrait -->
-				<div class="hero-portrait-origami relative lg:col-span-4 lg:pr-16">
-					<div
-						class="relative aspect-4/5 border-4 border-foreground bg-muted p-2 shadow-[20px_20px_0_rgba(0,0,0,0.1)] transition-all duration-500 hover:shadow-[10px_10px_0_rgba(0,0,0,0.2)] dark:shadow-[20px_20px_0_rgba(255,255,255,0.05)]"
-						style="clip-path: polygon(0% 15%, 15% 0%, 100% 8%, 92% 85%, 100% 100%, 8% 92%);"
-					>
-						<!-- Folded Corner Flap -->
-						<div
-							class="absolute top-0 left-0 size-12 bg-foreground/10"
-							style="clip-path: polygon(0% 0%, 100% 0%, 0% 100%);"
-						></div>
-
-						<img
-							src={optimizeImage('https://github.com/mikeu-dev.png', { width: 400, quality: 80 })}
-							alt={m.common_author_name()}
-							class="h-full w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
-						/>
-
-						<!-- Industrial Overlay Tags -->
-						<div
-							class="absolute -top-4 -right-4 border-2 border-foreground bg-black px-4 py-1 font-mono text-[10px] font-black text-white shadow-[4px_4px_0_var(--primary)] dark:bg-white dark:text-black"
-						>
-							[SVELTE_EXPERT]
-						</div>
-						<div
-							class="absolute -bottom-4 -left-4 border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black text-primary-foreground shadow-[4px_4px_0_var(--foreground)]"
-						>
-							[GIS_ENGINEER]
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Interactive Skill Playground -->
-	<section class="py-28">
-		<div class="container mx-auto mb-20 px-4 text-right">
-			<div class="stagger-item inline-block border-l-4 border-primary pr-8">
-				<h2 class="font-poppins text-5xl font-black tracking-tighter uppercase italic md:text-8xl">
-					THE SKILL <span class="text-primary">PLAYGROUND</span>
-				</h2>
-				<p
-					class="mt-6 ml-auto max-w-md font-mono text-xs tracking-wider text-muted-foreground uppercase"
-				>
-					// ARTIFACT_COLLECTION_v2.0: INTERACTIVE_TECH_STACK_SIMULATION
-				</p>
-			</div>
-		</div>
-		<SkillPlayground categories={techstack} />
-	</section>
-
-	<!-- Journey Section -->
-	<section class="py-28">
-		<div class="container mx-auto px-4">
-			<div class="relative mb-32 text-center">
-				<div
-					class="header-badge mb-6 inline-block border-2 border-foreground bg-foreground px-4 py-1 font-mono text-[10px] font-black text-background uppercase"
-				>
-					[TEMPORAL_LOGS]
-				</div>
-
-				<h2 class="font-poppins text-5xl font-black tracking-tight md:text-8xl">
-					{m.about_jurney_title()}
-					<span class="text-primary">_</span>
-				</h2>
-			</div>
-
-			<div class="journey-container relative mx-auto max-w-5xl">
-				<!-- Central Timeline -->
-				<div
-					class="absolute top-0 left-8 h-full w-2 bg-foreground/10 md:left-1/2 md:-translate-x-1/2"
-				>
-					<div
-						bind:this={timelineProgress}
-						class="w-full origin-top bg-primary"
-						style="height: 0%"
-					></div>
-				</div>
-
-				<div class="space-y-24">
-					{#each myJourney as item, i (i)}
-						{@const isExpanded = expandedIndex === i}
-						<div
-							class="journey-item-origami group relative flex flex-col md:flex-row md:items-center"
-						>
-							<!-- Timeline Node -->
-							<div
-								class={`absolute top-0 left-8 z-20 size-6 -translate-x-1/2 border-4 bg-background transition-all duration-500 md:left-1/2 ${isExpanded ? 'scale-125 rotate-45 border-foreground bg-primary' : 'rotate-0 border-foreground'}`}
-							></div>
-
-							<div
-								class={`relative w-full pl-20 md:w-1/2 md:pl-0 ${i % 2 === 0 ? 'md:pr-24 md:text-right' : 'md:order-2 md:pl-24'}`}
-							>
-								<button
-									onclick={() => toggleJourney(i)}
-									class={`group/card relative w-full border-4 p-8 text-left transition-all duration-500 md:text-inherit ${isExpanded ? 'border-foreground bg-card text-card-foreground shadow-[8px_8px_0_var(--primary)]' : 'border-foreground/10 bg-transparent hover:border-foreground/30'}`}
-									style={isExpanded ? '' : `clip-path: polygon(0 0, 100% 2%, 98% 100%, 2% 98%);`}
-								>
-									<div class="space-y-4">
-										<div class={`flex items-center gap-4 ${i % 2 === 0 ? 'md:justify-end' : ''}`}>
-											<span
-												class={`px-3 py-1 font-mono text-xs font-black tracking-widest ${isExpanded ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-muted-foreground'}`}
-											>
-												[{item.year}]
-											</span>
-										</div>
-
-										<h3
-											class={`font-poppins text-3xl font-black tracking-tighter uppercase italic ${isExpanded ? 'text-card-foreground' : 'text-muted-foreground'}`}
-										>
-											{item.title}
-										</h3>
-
-										<div
-											class={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'mt-6 grid-rows-[1fr] opacity-100' : 'mt-0 grid-rows-[0fr] opacity-0'}`}
-										>
-											<div class="space-y-6 overflow-hidden">
-												<p
-													class="font-mono text-sm leading-relaxed tracking-tight text-card-foreground uppercase dark:text-muted-foreground"
-												>
-													// {item.description}
-												</p>
-												<div
-													class={`flex flex-wrap gap-3 border-t border-foreground/10 pt-6 ${i % 2 === 0 ? 'md:justify-end' : ''}`}
-												>
-													<span
-														class="border border-foreground/20 px-3 py-1 font-mono text-[9px] font-black uppercase"
-														>STATUS: COMPLETED</span
-													>
-													<span
-														class="border border-foreground/20 px-3 py-1 font-mono text-[9px] font-black uppercase"
-														>TYPE: PROFESSIONAL</span
-													>
-												</div>
-											</div>
-										</div>
-
-										{#if !isExpanded}
-											<div
-												class={`mt-4 font-mono text-[9px] font-black tracking-[0.3em] text-primary opacity-0 transition-opacity group-hover/card:opacity-100 ${i % 2 === 0 ? 'md:text-right' : ''}`}
-											>
-												[EXPAND_ENTRY_DETAILS]
-											</div>
-										{/if}
-									</div>
-								</button>
-							</div>
+								</svg>
+								{c.category}
+							</span>
+							{#if c.description}<p class="m-0 text-[15px] text-ink-soft">{c.description}</p>{/if}
+							<span class="flex flex-wrap gap-2">
+								{#each c.items as item (item.name)}
+									<span
+										class="flex items-center gap-2 rounded-full bg-secondary px-3.5 py-2 text-[15px] font-extrabold"
+									>
+										{#if item.icon}<Icon src={item.icon} size={15} label={item.name} />{/if}
+										{item.name}
+									</span>
+								{/each}
+							</span>
 						</div>
 					{/each}
 				</div>
 			</div>
-		</div>
-	</section>
-
-	<!-- Fun Facts Section -->
-	<section class="py-32">
-		<div class="container mx-auto px-4">
-			<div
-				class="relative border-4 border-foreground bg-card p-8 md:p-20"
-				style="clip-path: polygon(2% 0%, 98% 2%, 100% 100%, 0% 98%);"
+			<blockquote
+				class="map-reveal m-0 rounded-[28px] bg-primary px-8 py-7 text-[clamp(20px,2vw,26px)] leading-[1.45] font-extrabold text-primary-foreground"
 			>
-				<div class="grid grid-cols-1 gap-20 lg:grid-cols-12">
-					<!-- Fact Header -->
-					<div class="space-y-10 text-card-foreground lg:col-span-5">
-						<div class="stagger-item">
-							<div
-								class="mb-6 inline-block border-2 border-foreground bg-primary px-4 py-1 font-mono text-[10px] font-black text-primary-foreground uppercase"
-							>
-								[SYSTEM_JUICE]
-							</div>
-							<h2
-								class="font-poppins text-5xl font-black tracking-tight uppercase italic md:text-8xl"
-							>
-								{m.about_fun_facts_title()}<span class="text-primary">_</span>
-							</h2>
-						</div>
+				{m.gis_quote()}
+			</blockquote>
+		</section>
+	{/if}
 
-						<p
-							class="font-mono text-sm leading-relaxed tracking-wider text-card-foreground uppercase dark:text-muted-foreground"
-						>
-							// {m.about_fun_facts_desc_long()}
-						</p>
+	{#if journey.length}
+		<section aria-labelledby="jrn" class="flex flex-col gap-7">
+			<h2
+				id="jrn"
+				class="map-reveal m-0 text-[clamp(34px,4.2vw,56px)] leading-[1.05] font-black tracking-[-0.025em]"
+			>
+				{m.gis_journey_page_title()}
+			</h2>
+			<div class="max-w-[900px]"><JourneyRoute items={journey} /></div>
+		</section>
+	{/if}
 
-						<div class="space-y-4">
-							<div class="flex items-center gap-4 border-l-4 border-primary pl-6">
-								<span class="font-mono text-xs font-black tracking-widest uppercase"
-									>{m.about_fun_facts_growth()}</span
-								>
-							</div>
-							<div class="flex items-center gap-4 border-l-4 border-primary pl-6">
-								<span class="font-mono text-xs font-black tracking-widest uppercase"
-									>{m.about_fun_facts_detail()}</span
-								>
-							</div>
-						</div>
-					</div>
-
-					<!-- Fact Grid -->
-					<div class="lg:col-span-7">
-						<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-							{#each funFacts as fact, i (fact.sub)}
-								<div
-									class="group relative border-2 border-foreground bg-background p-8 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_var(--foreground)]"
-								>
-									<div class="relative z-10 space-y-8">
-										<div class="flex items-center justify-between">
-											<div
-												class={`flex size-14 items-center justify-center border-2 border-foreground transition-all group-hover:bg-foreground group-hover:text-background ${fact.bg}`}
-											>
-												<fact.icon
-													class={`size-7 ${fact.color} transition-colors group-hover:text-inherit`}
-												/>
-											</div>
-
-											<!-- Industrial Mini-Widgets -->
-											<div class="flex items-center gap-2">
-												{#if i === 0}
-													<div class="flex gap-1">
-														{#each Array(4) as _, j (j)}
-															<div
-																class={`h-4 w-1.5 border border-foreground ${j < 3 ? 'bg-orange-500' : 'bg-transparent'} animate-pulse`}
-																style="animation-delay: {j * 150}ms"
-															></div>
-														{/each}
-													</div>
-												{:else if i === 2}
-													<div class="flex h-5 items-end gap-1">
-														{#each Array(4) as _, j (j)}
-															<div
-																class="animate-visualizer w-1.5 border border-foreground bg-pink-500"
-																style="animation-delay: {j * 100}ms"
-															></div>
-														{/each}
-													</div>
-												{:else if i === 1}
-													<div
-														class="flex items-center gap-2 border border-foreground bg-red-500/10 px-2 py-1"
-													>
-														<div class="size-2 animate-ping rounded-none bg-red-500"></div>
-														<span class="font-mono text-[8px] font-black text-red-500 uppercase"
-															>LIVE</span
-														>
-													</div>
-												{/if}
-											</div>
-										</div>
-
-										<div class="space-y-2">
-											<p
-												class="font-mono text-[9px] font-black tracking-widest text-muted-foreground uppercase"
-											>
-												[NODE_{fact.sub.replace(' ', '_').toUpperCase()}]
-											</p>
-											<p class="font-mono text-3xl font-black tracking-tighter uppercase italic">
-												{fact.text}
-											</p>
-										</div>
-									</div>
-									<div
-										class="absolute bottom-0 left-0 h-1 w-0 bg-primary transition-all duration-500 group-hover:w-full"
-									></div>
-								</div>
-							{/each}
-						</div>
-					</div>
-				</div>
+	<section aria-labelledby="fun" class="flex flex-col gap-7">
+		<div class="map-reveal flex max-w-[760px] flex-col gap-3.5">
+			<p class="eyebrow">{m.gis_fun_eyebrow()}</p>
+			<h2
+				id="fun"
+				class="m-0 text-[clamp(34px,4.2vw,56px)] leading-[1.05] font-black tracking-[-0.025em]"
+			>
+				{m.gis_fun_title()}
+			</h2>
+		</div>
+		<div class="grid grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))] gap-4">
+			<div class="map-card map-reveal flex flex-col gap-3 rounded-3xl p-6">
+				<span class="text-xl font-black">{m.gis_fun_growth()}</span>
+				<span class="text-base leading-normal text-ink-soft">{m.gis_fun_growth_desc()}</span>
+			</div>
+			<div class="map-card map-reveal flex flex-col gap-3 rounded-3xl p-6">
+				<span class="text-xl font-black">{m.gis_fun_detail()}</span>
+				<span class="text-base leading-normal text-ink-soft">{m.gis_fun_detail_desc()}</span>
+			</div>
+			<div class="map-card map-reveal flex flex-col gap-3 rounded-3xl p-6">
+				<span class="font-mono text-xs text-muted-foreground">{m.gis_fun_caffeine()}</span>
+				<span class="text-[34px] font-black">95%</span>
+				<span class="h-2.5 overflow-hidden rounded-full bg-secondary">
+					<span class="block h-full w-[95%] rounded-full bg-route"></span>
+				</span>
+			</div>
+			<div class="map-card map-reveal flex flex-col gap-3 rounded-3xl p-6">
+				<span class="font-mono text-xs text-muted-foreground">{m.gis_fun_ping()}</span>
+				<span class="text-[34px] font-black">12ms</span>
+				<span class="flex items-center gap-2 font-mono text-xs text-success">
+					<span class="size-2.5 rounded-full bg-success"></span>LIVE
+				</span>
+			</div>
+			<div class="map-card map-reveal flex flex-col gap-3 rounded-3xl p-6">
+				<span class="font-mono text-xs text-muted-foreground">{m.gis_fun_music()}</span>
+				<span class="text-[34px] font-black">24/7</span>
+				<span aria-hidden="true" class="flex h-6 items-end gap-1">
+					{#each [0, 1, 2, 3, 4] as i (i)}
+						<span
+							class="eq h-full w-1.5 rounded-[3px] bg-primary"
+							style="animation-delay: {i * 0.15}s"
+						></span>
+					{/each}
+				</span>
 			</div>
 		</div>
 	</section>
+
+	<a
+		href={localizeHref('/contact')}
+		class="map-reveal lift flex flex-wrap items-center justify-between gap-5 rounded-[36px] bg-[#17212B] p-[clamp(28px,4vw,48px)] text-white"
+	>
+		<span class="max-w-[760px] text-[clamp(28px,3.4vw,46px)] leading-[1.1] font-black"
+			>{m.gis_about_cta()}</span
+		>
+		<span
+			class="rounded-full bg-primary px-7 py-4 text-[17px] font-extrabold text-primary-foreground"
+			>{m.gis_contact_me()}</span
+		>
+	</a>
 </div>
 
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	:global(.prose strong) {
-		font-weight: 900;
-		color: var(--foreground);
+<style>
+	.eq {
+		transform-origin: bottom;
+		animation: eq 0.9s ease-in-out infinite alternate;
 	}
-
-	:global(.prose em) {
-		font-weight: 700;
-		color: var(--primary);
-		font-style: normal;
-	}
-
-	.hero-origami {
-		transform-style: preserve-3d;
-		perspective: 1000px;
-	}
-
-	@keyframes visualizer {
-		0%,
-		100% {
-			height: 30%;
+	@keyframes eq {
+		from {
+			transform: scaleY(0.25);
 		}
-		50% {
-			height: 100%;
+		to {
+			transform: scaleY(1);
 		}
 	}
-
-	.group:hover .animate-visualizer {
-		animation: visualizer 0.8s ease-in-out infinite;
-	}
-
-	.group:hover .animate-ping {
-		animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-	}
-
-	.animate-visualizer,
-	.animate-ping {
-		animation: none;
-	}
-
-	button {
-		@apply cursor-pointer;
-	}
-
-	.hero-origami {
-		background-image:
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3C%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
-			linear-gradient(
-				135deg,
-				rgba(255, 255, 255, 0.05) 0%,
-				transparent 50%,
-				rgba(0, 0, 0, 0.05) 100%
-			);
-		background-blend-mode: overlay;
-	}
-
-	.hero-portrait-origami::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		background: linear-gradient(225deg, transparent 80%, rgba(0, 0, 0, 0.05) 100%);
+	@media (prefers-reduced-motion: reduce) {
+		.eq {
+			animation: none;
+			transform: scaleY(0.6);
+		}
 	}
 </style>
