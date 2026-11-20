@@ -65,14 +65,14 @@
 					type="button"
 					onclick={() => scrollTo(item.id)}
 					aria-current={on ? 'true' : undefined}
-					class="flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 py-2 text-left text-[15px] leading-snug font-extrabold text-foreground transition-colors {on
-						? 'bg-accent'
-						: 'hover:bg-secondary'}"
+					class="flex min-h-11 w-full items-center gap-3 rounded-leaf px-3 py-2 text-left text-[15px] leading-snug font-extrabold text-foreground transition-colors {on
+						? 'bg-white shadow-[inset_0_0_0_1.5px_var(--primary)] dark:bg-white/10'
+						: 'hover:bg-white/60 dark:hover:bg-white/5'}"
 				>
 					<span
-						class="size-3 flex-none rounded-full border-[2.5px] {on
-							? 'border-primary bg-primary'
-							: 'border-line-strong bg-card'}"
+						class="size-3 flex-none border-[2.5px] {on
+							? 'rounded-[4px_2px_4px_2px]'
+							: 'rounded-full'} {on ? 'border-primary bg-primary' : 'border-line-strong bg-card'}"
 					></span>
 					<span class="line-clamp-2">{item.text}</span>
 				</button>

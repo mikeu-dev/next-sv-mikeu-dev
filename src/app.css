@@ -7,48 +7,52 @@
 
 :root {
 	--radius: 0.625rem;
-	/* "Vector map" theme — warm paper basemap, ink text, map-blue accent,
-	   route-orange highlight. Shared by the guest site and the admin CRM. */
-	--background: #f7f5f0;
-	--foreground: #17212b;
-	--card: #ffffff;
-	--card-foreground: #17212b;
-	--popover: #ffffff;
-	--popover-foreground: #17212b;
-	--primary: #1a5fd6;
+	/* "Cloud shard" map theme — neutral stone ground, frosted panels, navy
+	   accent and burnt-orange highlights. Shared by the guest site and admin. */
+	--background: #d9d7d2;
+	--foreground: #25272b;
+	--card: #f1f0ed;
+	--card-foreground: #25272b;
+	--popover: #f1f0ed;
+	--popover-foreground: #25272b;
+	--primary: #3e5c8a;
 	--primary-foreground: #ffffff;
-	--secondary: #f2efe9;
-	--secondary-foreground: #17212b;
-	--muted: #f2efe9;
-	--muted-foreground: #56626e;
-	--accent: #eef3fd;
-	--accent-foreground: #1a5fd6;
-	--destructive: #c2410c;
-	--border: #e2dccf;
-	--input: #cfc7b8;
-	--ring: #1a5fd6;
-	--chart-1: #1a5fd6;
-	--chart-2: #f07b1f;
-	--chart-3: #2f9e62;
-	--chart-4: #7d8894;
-	--chart-5: #17212b;
-	--sidebar: #ffffff;
-	--sidebar-foreground: #17212b;
-	--sidebar-primary: #1a5fd6;
+	--secondary: #e4e2dd;
+	--secondary-foreground: #25272b;
+	--muted: #e4e2dd;
+	--muted-foreground: #5b5e65;
+	--accent: #dce1e8;
+	--accent-foreground: #3e5c8a;
+	--destructive: #a44d1e;
+	--border: #cfccc5;
+	--input: #b7b4ad;
+	--ring: #3e5c8a;
+	--chart-1: #3e5c8a;
+	--chart-2: #d9733a;
+	--chart-3: #2f7a52;
+	--chart-4: #7a7d84;
+	--chart-5: #25272b;
+	--sidebar: #f1f0ed;
+	--sidebar-foreground: #25272b;
+	--sidebar-primary: #3e5c8a;
 	--sidebar-primary-foreground: #ffffff;
-	--sidebar-accent: #eef3fd;
-	--sidebar-accent-foreground: #1a5fd6;
-	--sidebar-border: #e2dccf;
-	--sidebar-ring: #1a5fd6;
+	--sidebar-accent: #dce1e8;
+	--sidebar-accent-foreground: #3e5c8a;
+	--sidebar-border: #cfccc5;
+	--sidebar-ring: #3e5c8a;
 
 	/* Map-specific tokens */
-	--ink-soft: #4a5764;
-	--line-strong: #cfc7b8;
-	--route: #f07b1f;
-	--pin-idle: #7d8894;
-	--success: #2f9e62;
-	--shadow-card: 0 24px 60px rgba(23, 33, 43, 0.14);
-	--shadow-float: 0 10px 30px rgba(23, 33, 43, 0.08);
+	--ink-soft: #45484e;
+	--line-strong: #b7b4ad;
+	--route: #d9733a;
+	--pin-idle: #7a7d84;
+	--success: #2f7a52;
+	/* translucent chip / well fill used on panels and on the ground */
+	--well: rgba(214, 212, 207, 0.55);
+	--glass: rgba(239, 238, 235, 0.88);
+	--panel-edge: rgba(255, 255, 255, 0.8);
+	--shadow-card: 0 24px 60px rgba(30, 32, 38, 0.14);
+	--shadow-float: 0 6px 14px rgba(30, 32, 38, 0.14);
 
 	/* Glossy "tape" gradient — the hero CTA's signature treatment, shared globally
 	   so other sections (e.g. the work section's CTA) can reuse the same brand
@@ -62,46 +66,49 @@
 }
 
 .dark {
-	/* Night basemap — same roles, inverted lightness. */
-	--background: #0f161d;
-	--foreground: #eef1f4;
-	--card: #17212b;
-	--card-foreground: #eef1f4;
-	--popover: #17212b;
-	--popover-foreground: #eef1f4;
-	--primary: #5b8fea;
-	--primary-foreground: #0f161d;
-	--secondary: #1e2a35;
-	--secondary-foreground: #eef1f4;
-	--muted: #1e2a35;
-	--muted-foreground: #a3adb8;
-	--accent: #1a2b45;
-	--accent-foreground: #8fb3f2;
-	--destructive: #f08a5d;
-	--border: #2a3744;
-	--input: #3a4856;
-	--ring: #5b8fea;
-	--chart-1: #5b8fea;
-	--chart-2: #f5953f;
-	--chart-3: #4cc086;
-	--chart-4: #a3adb8;
-	--chart-5: #eef1f4;
-	--sidebar: #17212b;
-	--sidebar-foreground: #eef1f4;
-	--sidebar-primary: #5b8fea;
-	--sidebar-primary-foreground: #0f161d;
-	--sidebar-accent: #1a2b45;
-	--sidebar-accent-foreground: #8fb3f2;
-	--sidebar-border: #2a3744;
-	--sidebar-ring: #5b8fea;
+	/* Night: same roles on a charcoal ground. */
+	--background: #16181b;
+	--foreground: #eceded;
+	--card: #22252a;
+	--card-foreground: #eceded;
+	--popover: #22252a;
+	--popover-foreground: #eceded;
+	--primary: #8fa9d3;
+	--primary-foreground: #121418;
+	--secondary: #2c3036;
+	--secondary-foreground: #eceded;
+	--muted: #2c3036;
+	--muted-foreground: #a4a8ae;
+	--accent: #2a3442;
+	--accent-foreground: #b5c7e4;
+	--destructive: #ef9a6a;
+	--border: #363a41;
+	--input: #4a4f57;
+	--ring: #8fa9d3;
+	--chart-1: #8fa9d3;
+	--chart-2: #ef9a6a;
+	--chart-3: #6cc196;
+	--chart-4: #a4a8ae;
+	--chart-5: #eceded;
+	--sidebar: #22252a;
+	--sidebar-foreground: #eceded;
+	--sidebar-primary: #8fa9d3;
+	--sidebar-primary-foreground: #121418;
+	--sidebar-accent: #2a3442;
+	--sidebar-accent-foreground: #b5c7e4;
+	--sidebar-border: #363a41;
+	--sidebar-ring: #8fa9d3;
 
-	--ink-soft: #c2cad3;
-	--line-strong: #3a4856;
-	--route: #f5953f;
-	--pin-idle: #8a95a1;
-	--success: #4cc086;
+	--ink-soft: #c4c7cc;
+	--line-strong: #4a4f57;
+	--route: #ef9a6a;
+	--pin-idle: #8d9097;
+	--success: #6cc196;
+	--well: rgba(255, 255, 255, 0.07);
+	--glass: rgba(34, 37, 42, 0.86);
+	--panel-edge: rgba(255, 255, 255, 0.08);
 	--shadow-card: 0 24px 60px rgba(0, 0, 0, 0.45);
-	--shadow-float: 0 10px 30px rgba(0, 0, 0, 0.35);
+	--shadow-float: 0 6px 14px rgba(0, 0, 0, 0.4);
 
 	--tape-bg-grad:
 		linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 25%),
@@ -153,6 +160,8 @@
 	--color-route: var(--route);
 	--color-pin-idle: var(--pin-idle);
 	--color-success: var(--success);
+	--color-well: var(--well);
+	--color-glass: var(--glass);
 	--shadow-card: var(--shadow-card);
 	--shadow-float: var(--shadow-float);
 
@@ -278,40 +287,119 @@
    Vector-map motion kit — shared by the guest pages.
    Every loop is cancelled under prefers-reduced-motion.
    ------------------------------------------------------------------ */
+/* "Leaf" corners: alternating large/small radii, the design's signature shape. */
+@utility rounded-leaf {
+	border-radius: 24px 12px 24px 12px;
+}
+@utility rounded-leaf-r {
+	border-radius: 12px 24px 12px 24px;
+}
+@utility rounded-leaf-sm {
+	border-radius: 16px 8px 16px 8px;
+}
+@utility rounded-leaf-sm-r {
+	border-radius: 8px 16px 8px 16px;
+}
+@utility rounded-leaf-xs {
+	border-radius: 12px 6px 12px 6px;
+}
+
 @layer components {
-	/* Pill buttons */
+	/* Buttons */
 	.btn-pill {
-		@apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full px-6 text-[17px] font-extrabold no-underline transition-colors;
+		@apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-leaf px-6 text-[17px] font-extrabold no-underline transition-colors;
 	}
 	.btn-pill-solid {
-		@apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full bg-primary px-6 text-[17px] font-extrabold text-primary-foreground no-underline transition-colors hover:bg-foreground hover:text-background;
+		@apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-leaf bg-primary px-6 text-[17px] font-extrabold text-primary-foreground no-underline transition-colors hover:bg-foreground hover:text-background;
 	}
 	.btn-pill-line {
-		@apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full border-[1.5px] border-line-strong bg-card px-6 text-[17px] font-extrabold text-foreground no-underline transition-colors hover:border-foreground;
+		@apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-leaf bg-well px-6 text-[17px] font-extrabold text-foreground no-underline transition-colors hover:bg-white hover:text-[#25272b];
 	}
 	.chip-tag {
-		@apply rounded-full bg-secondary px-3.5 py-1.5 text-sm font-extrabold;
+		@apply rounded-leaf-sm bg-well px-3 py-1.5 text-sm font-extrabold;
 	}
 	.eyebrow {
 		@apply m-0 font-mono text-sm font-semibold text-primary;
 	}
+	/* A floating panel. Shadow is a filter so a tab + panel cast one shape. */
 	.map-card {
-		@apply rounded-[28px] border border-border bg-card;
+		@apply rounded-[30px] bg-card;
+	}
+	.shard {
+		filter: drop-shadow(0 8px 18px rgba(30, 32, 38, 0.12))
+			drop-shadow(0 1px 2px rgba(30, 32, 38, 0.1));
 	}
 	.lift {
-		transition:
-			transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-			box-shadow 0.3s ease,
-			border-color 0.3s ease;
+		transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 	.lift:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 18px 40px rgba(23, 33, 43, 0.12);
-		border-color: var(--line-strong);
+	}
+	.glass {
+		background: var(--glass);
+		-webkit-backdrop-filter: blur(16px) saturate(1.05);
+		backdrop-filter: blur(16px) saturate(1.05);
+		box-shadow:
+			var(--shadow-float),
+			inset 0 0 0 1.5px var(--panel-edge);
+	}
+
+	/* Folder tab sitting on top of a panel, with an inverted corner joining
+	   the panel on its right (.tab-r) and/or left (.tab-l) side. */
+	.tab {
+		--pcol: var(--card);
+		position: relative;
+		z-index: 1;
+		margin-bottom: -1px;
+		background: var(--pcol);
+		border-radius: 30px 30px 0 0;
+	}
+	.tab-accent {
+		--pcol: var(--primary);
+	}
+	.tab-r::after {
+		content: '';
+		position: absolute;
+		left: 100%;
+		bottom: 0;
+		width: 30px;
+		height: 30px;
+		background: radial-gradient(circle at 100% 0, transparent 29.5px, var(--pcol) 30px);
+	}
+	.tab-l::before {
+		content: '';
+		position: absolute;
+		right: 100%;
+		bottom: 0;
+		width: 30px;
+		height: 30px;
+		background: radial-gradient(circle at 0 0, transparent 29.5px, var(--pcol) 30px);
+	}
+	/* A downward inverted corner under a header shard (the language tab). */
+	.ext-down {
+		position: relative;
+	}
+	.ext-down::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 100%;
+		width: 30px;
+		height: 30px;
+		background: radial-gradient(
+			circle at 100% 100%,
+			transparent 29.5px,
+			color-mix(in srgb, var(--card) 95%, transparent) 30px
+		);
 	}
 }
 
 /* Raster-free basemap art: dim it at night instead of shipping a second set. */
+/* The design mutes the basemap so panels and data read first. */
+.map-mute {
+	filter: saturate(0.62) contrast(0.97) brightness(1.02);
+}
+
 .dark .map-art {
 	filter: invert(0.88) hue-rotate(180deg) saturate(0.7);
 }

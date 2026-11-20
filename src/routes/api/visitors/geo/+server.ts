@@ -1,5 +1,5 @@
 ﻿import { VisitorService } from '#lib/server/services/visitor.service.js';
-import type { GeoVisitorResponse } from '#lib/components/guest/sections/world/folded-world.types.js';
+import type { GeoVisitorResponse } from '#lib/types.js';
 
 /**
  * GET /api/visitors/geo

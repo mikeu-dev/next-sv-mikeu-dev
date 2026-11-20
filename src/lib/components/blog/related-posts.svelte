@@ -25,7 +25,7 @@
 			{#each posts as post (post.slug)}
 				<a
 					href={localizeHref(`/blog/${post.slug}`)}
-					class="map-card lift flex flex-col gap-2 rounded-3xl px-6 py-[22px] text-foreground"
+					class="shard lift flex flex-col gap-2 rounded-[30px_12px_30px_12px] bg-card px-6 py-[22px] text-foreground no-underline"
 				>
 					<span class="font-mono text-xs text-muted-foreground">{fmt(post.date)}</span>
 					<span class="text-lg leading-[1.3] font-black">{post.title}</span>

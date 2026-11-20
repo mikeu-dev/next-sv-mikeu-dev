@@ -18,7 +18,7 @@
 </script>
 
 <div class="map-reveal mb-10 flex flex-wrap items-end justify-between gap-5">
-	<div class="flex max-w-[720px] flex-col gap-3.5">
+	<div class="flex max-w-[760px] flex-col gap-3.5">
 		{#if eyebrow}<p class="eyebrow">{eyebrow}</p>{/if}
 		<h2
 			{id}

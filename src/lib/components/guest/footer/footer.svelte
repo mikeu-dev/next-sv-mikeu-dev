@@ -37,39 +37,40 @@
 	];
 </script>
 
-<footer
-	class="flex flex-wrap items-center justify-between gap-4 border-t border-border bg-card px-[clamp(16px,4vw,56px)] py-7"
->
-	<div class="flex max-w-xl flex-col gap-1">
-		<span class="text-lg font-black">mikeu<span class="text-primary">.gis</span></span>
-		<span class="text-sm text-muted-foreground">{m.gis_footer_blurb()}</span>
-		{#if visitorStats.total > 0}
-			<span class="font-mono text-xs text-muted-foreground">
-				{m.gis_footer_visitors({
-					total: visitorStats.total.toLocaleString(),
-					today: visitorStats.today.toLocaleString()
-				})}
+<footer class="shard m-3 sm:m-4">
+	<div
+		class="flex flex-wrap items-start justify-between gap-x-8 gap-y-5 rounded-[30px] bg-card px-6 py-6 sm:px-7"
+	>
+		<div class="flex max-w-xl flex-col gap-1.5">
+			<span class="text-lg font-black">mikeu<span class="text-primary">.gis</span></span>
+			<span class="text-sm text-ink-soft">{m.gis_footer_blurb()}</span>
+			<span class="mt-3 font-mono text-[13px] text-muted-foreground">
+				© {new Date().getFullYear()} Riki Ruswandi · {m.gis_footer_clock()}
+				<b class="text-foreground tabular-nums">{clock || '--:--:--'}</b> WIB
 			</span>
-		{/if}
+			{#if visitorStats.total > 0}
+				<span class="font-mono text-xs text-muted-foreground">
+					{m.gis_footer_visitors({
+						total: visitorStats.total.toLocaleString(),
+						today: visitorStats.today.toLocaleString()
+					})}
+				</span>
+			{/if}
+		</div>
+		<nav aria-label="Footer" class="flex flex-wrap gap-x-[18px] gap-y-2 font-mono text-[13px]">
+			{#each links as link (link.href)}
+				<a
+					href={link.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-ink-soft underline hover:text-foreground">{link.label}</a
+				>
+			{/each}
+			{#each legal as link (link.href)}
+				<a href={localizeHref(link.href)} class="text-ink-soft underline hover:text-foreground"
+					>{link.label}</a
+				>
+			{/each}
+		</nav>
 	</div>
-	<nav aria-label="Footer" class="flex flex-wrap gap-x-[18px] gap-y-2 font-mono text-[13px]">
-		{#each links as link (link.href)}
-			<a
-				href={link.href}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="text-muted-foreground underline hover:text-foreground">{link.label}</a
-			>
-		{/each}
-		{#each legal as link (link.href)}
-			<a
-				href={localizeHref(link.href)}
-				class="text-muted-foreground underline hover:text-foreground">{link.label}</a
-			>
-		{/each}
-	</nav>
-	<span class="font-mono text-[13px] text-muted-foreground">
-		© {new Date().getFullYear()} Riki Ruswandi · {m.gis_footer_clock()}
-		<b class="text-foreground tabular-nums">{clock || '--:--:--'}</b> WIB
-	</span>
 </footer>

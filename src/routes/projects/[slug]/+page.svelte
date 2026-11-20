@@ -75,87 +75,105 @@
 			<li aria-hidden="true">/</li>
 			<li aria-current="page" class="font-semibold text-foreground">{project.title}</li>
 		</ol>
-		<div class="flex flex-wrap items-end justify-between gap-x-12 gap-y-8">
-			<div class="flex max-w-[860px] flex-[1_1_560px] flex-col gap-[18px]">
-				{#if geo.category}
-					<p
-						class="m-0 inline-flex items-center gap-2.5 self-start rounded-full bg-accent px-3.5 py-[7px] font-mono text-[13px] font-semibold text-primary"
-					>
-						{geo.category}
-					</p>
-				{/if}
-				<h1 class="m-0 text-[clamp(40px,5.4vw,76px)] leading-[1.02] font-black tracking-[-0.035em]">
-					{project.title}
-				</h1>
-				<p class="m-0 text-[19px] leading-relaxed text-ink-soft">{project.description}</p>
-			</div>
-			<dl
-				class="m-0 grid flex-[0_1_380px] grid-cols-2 overflow-hidden rounded-3xl border border-border bg-card"
-			>
-				<div class="border-r border-b border-border px-5 py-4">
-					<dt class="font-mono text-xs text-muted-foreground">{m.gis_work_released()}</dt>
-					<dd class="m-0 mt-1 font-extrabold">{released}</dd>
-				</div>
-				<div class="border-b border-border px-5 py-4">
-					<dt class="font-mono text-xs text-muted-foreground">{m.blog_views()}</dt>
-					<dd class="m-0 mt-1 font-extrabold">{data.reactions?.views ?? 0}</dd>
-				</div>
-				<div class="border-r border-border px-5 py-4">
-					<dt class="font-mono text-xs text-muted-foreground">{m.gis_status()}</dt>
-					<dd class="m-0 mt-1 flex items-center gap-2 font-extrabold">
-						<span class="size-2.5 rounded-full bg-success"></span>
-						{project.demoUrl ? m.gis_status_live() : m.gis_status_code()}
-					</dd>
-				</div>
-				<div class="px-5 py-4">
-					<dt class="font-mono text-xs text-muted-foreground">Layer</dt>
-					<dd class="m-0 mt-1 font-mono font-extrabold">PID-{project.id.slice(0, 6)}</dd>
-				</div>
-			</dl>
-		</div>
-		<div class="flex flex-wrap gap-2.5">
-			{#if project.demoUrl}
-				<a
-					href={project.demoUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="btn-pill-solid min-h-[52px] px-[26px]"
+		<div class="flex flex-wrap items-stretch gap-2.5">
+			<div class="shard flex min-w-0 flex-[1_1_620px] flex-col">
+				<p
+					class="tab tab-r m-0 flex h-[50px] max-w-[calc(100%-30px)] items-center gap-2 self-start px-[22px] font-mono text-[13px] font-semibold text-primary"
 				>
-					{m.gis_live_preview()}
-					<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+					<svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true" class="flex-none">
 						<path
-							d="M6 3h9v9M15 3L4 14"
+							d="M4 7l6-4 6 4-2 9H6z"
 							fill="none"
-							stroke="currentColor"
-							stroke-width="2.2"
-							stroke-linecap="round"
+							stroke="var(--route)"
+							stroke-width="2"
 							stroke-linejoin="round"
 						/>
 					</svg>
-				</a>
-			{/if}
-			{#if project.repoUrl}
-				<a
-					href={project.repoUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="btn-pill-line min-h-[52px]"
+					<span class="truncate">{geo.code}{geo.category ? ` · ${geo.category}` : ''}</span>
+				</p>
+				<div
+					class="flex flex-1 flex-col gap-[18px] rounded-[0_34px_34px_34px] bg-card p-[clamp(24px,3vw,40px)]"
 				>
-					{m.project_button_view_code()}
-				</a>
-			{/if}
-			<a href={localizeHref('/projects')} class="btn-pill-line min-h-[52px]"
-				>{m.gis_back_archive()}</a
+					<h1
+						class="m-0 text-[clamp(40px,5.4vw,76px)] leading-[1.02] font-black tracking-[-0.035em]"
+					>
+						{project.title}
+					</h1>
+					<p class="m-0 text-[19px] leading-relaxed text-ink-soft">{project.description}</p>
+					<div class="flex flex-wrap gap-2.5">
+						{#if project.demoUrl}
+							<a
+								href={project.demoUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="btn-pill-solid min-h-[54px] px-[26px]"
+							>
+								{m.gis_live_preview()}
+								<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+									<path
+										d="M6 3h9v9M15 3L4 14"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2.2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									/>
+								</svg>
+							</a>
+						{/if}
+						{#if project.repoUrl}
+							<a
+								href={project.repoUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="btn-pill-line min-h-[54px] rounded-leaf-r"
+							>
+								{m.project_button_view_code()}
+							</a>
+						{/if}
+						<a href={localizeHref('/projects')} class="btn-pill-line min-h-[54px]"
+							>{m.gis_back_archive()}</a
+						>
+					</div>
+				</div>
+			</div>
+			<dl
+				class="shard m-0 grid flex-[0_1_400px] grid-cols-2 gap-2.5 self-stretch rounded-[34px] bg-card p-2.5"
 			>
+				<div class="flex flex-col justify-between gap-6 rounded-leaf bg-well px-[18px] py-4">
+					<dt class="font-mono text-xs text-muted-foreground">{m.gis_work_released()}</dt>
+					<dd class="m-0 text-xl leading-tight font-black">{released}</dd>
+				</div>
+				<div class="flex flex-col justify-between gap-6 rounded-leaf-r bg-well px-[18px] py-4">
+					<dt class="font-mono text-xs text-muted-foreground">{m.gis_views()}</dt>
+					<dd class="m-0 text-xl leading-tight font-black">{data.reactions?.views ?? 0}</dd>
+				</div>
+				<div class="flex flex-col justify-between gap-6 rounded-leaf-r bg-well px-[18px] py-4">
+					<dt class="font-mono text-xs text-muted-foreground">{m.gis_status()}</dt>
+					<dd class="m-0 flex items-center gap-2 text-xl leading-tight font-black">
+						<span class="size-2.5 flex-none rounded-[4px_2px_4px_2px] bg-success"></span>
+						{project.demoUrl ? m.gis_status_live() : m.gis_status_code()}
+					</dd>
+				</div>
+				<div class="flex flex-col justify-between gap-6 rounded-leaf bg-well px-[18px] py-4">
+					<dt class="font-mono text-xs text-muted-foreground">Layer</dt>
+					<dd class="m-0 font-mono text-lg font-extrabold">PID-{project.id.slice(0, 6)}</dd>
+				</div>
+			</dl>
 		</div>
 	</div>
 
 	<!-- Illustrative bbox query on the project's layer -->
-	<figure class="m-0">
+	<figure class="shard m-0 flex flex-col">
+		<figcaption
+			class="tab tab-r flex h-11 items-center self-start px-5 font-mono text-xs font-semibold text-ink-soft"
+		>
+			{m.gis_figure_caption()}
+		</figcaption>
 		<div
 			role="img"
 			aria-label={project.title}
-			class="relative aspect-[16/8] min-h-[300px] overflow-hidden rounded-[32px] border border-border"
+			class="relative aspect-[16/8] min-h-[300px] overflow-hidden rounded-[0_34px_34px_34px] border-[10px] border-card bg-card"
 		>
 			<MapThumb x={geo.x} y={geo.y} zoom={1.4} variant="none" />
 			<div
@@ -174,7 +192,7 @@
 				></span>
 			{/each}
 			<div
-				class="absolute top-4 right-4 hidden flex-col gap-1.5 rounded-[18px] border border-border bg-card px-[18px] py-3.5 shadow-float sm:flex"
+				class="glass absolute top-4 right-4 hidden flex-col gap-1.5 rounded-leaf px-[18px] py-3.5 sm:flex"
 			>
 				<span class="font-mono text-xs text-muted-foreground">BOUNDING BOX QUERY</span>
 				<span class="text-lg font-black">{HITS.length} features</span>
@@ -208,13 +226,13 @@
 	{#if project.tags?.length}
 		<section
 			aria-labelledby="st"
-			class="flex flex-wrap items-center justify-between gap-6 rounded-[28px] bg-secondary p-7"
+			class="shard flex flex-wrap items-center justify-between gap-6 rounded-[30px_12px_30px_12px] bg-card p-7"
 		>
 			<h2 id="st" class="m-0 text-[26px] font-black">{m.gis_tech_stack()}</h2>
 			<div class="flex flex-wrap gap-2">
 				{#each project.tags as tag (tag.name)}
 					<span
-						class="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-[9px] text-[15px] font-extrabold"
+						class="flex items-center gap-2 rounded-leaf-sm bg-well px-4 py-[9px] text-[15px] font-extrabold"
 					>
 						{#if tag.icon}<Icon src={tag.icon} size={16} label={tag.name} />{/if}
 						{tag.name}
@@ -235,7 +253,7 @@
 						href={url}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="lift block overflow-hidden rounded-3xl border border-border bg-card"
+						class="shard lift block overflow-hidden rounded-[30px_12px_30px_12px] border-[10px] border-card bg-card"
 					>
 						<img
 							src={optimizeImage(url, { width: 900, quality: 80 })}
@@ -249,7 +267,9 @@
 		</section>
 	{/if}
 
-	<div class="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+	<div
+		class="shard flex flex-wrap items-center justify-between gap-4 rounded-[30px] bg-card px-6 py-4"
+	>
 		<ProjectReactions reactions={data.reactions} />
 		<ProjectShare title={project.title} />
 	</div>
@@ -263,9 +283,9 @@
 				{#each related as r (r.project.id)}
 					<a
 						href={r.href}
-						class="map-card lift flex items-center gap-4 rounded-3xl p-3 text-foreground"
+						class="shard lift flex items-center gap-4 rounded-[30px_12px_30px_12px] bg-card p-3 text-foreground no-underline"
 					>
-						<span class="relative size-24 flex-none overflow-hidden rounded-[18px]">
+						<span class="relative size-24 flex-none overflow-hidden rounded-leaf">
 							<MapThumb x={r.x} y={r.y} zoom={5.2} />
 						</span>
 						<span class="flex min-w-0 flex-col gap-1">

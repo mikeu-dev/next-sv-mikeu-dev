@@ -111,3 +111,23 @@ export interface DynamicIcon {
 	svg: string; // Raw path data or SVG string
 	viewBox?: string; // Default "0 0 24 24"
 }
+
+/** One aggregated visitor location (see VisitorService.getGeoAggregation). */
+export interface GeoNode {
+	readonly id: string;
+	readonly country: string;
+	readonly city: string | null;
+	readonly latitude: number;
+	readonly longitude: number;
+	readonly count: number;
+	readonly lastVisit: string; // ISO timestamp
+	readonly browsers: string[];
+	readonly devices: string[];
+}
+
+/** Response of /api/visitors/geo */
+export interface GeoVisitorResponse {
+	readonly nodes: GeoNode[];
+	readonly totalVisitors: number;
+	readonly lastUpdated: string;
+}

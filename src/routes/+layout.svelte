@@ -254,7 +254,7 @@
 
 <button
 	bind:this={scrollBtn}
-	class="pointer-events-none fixed right-6 bottom-6 z-[9999] flex size-12 items-center justify-center rounded-full border border-border bg-card text-foreground opacity-0 shadow-float transition-colors hover:bg-primary hover:text-primary-foreground sm:right-8 sm:bottom-8"
+	class="glass pointer-events-none fixed right-6 bottom-6 z-[9999] flex size-12 items-center justify-center rounded-leaf-sm text-foreground opacity-0 transition-colors hover:bg-primary hover:text-primary-foreground sm:right-8 sm:bottom-8"
 	aria-label={m.gis_scroll_top()}
 	onclick={scrollToTop}
 >

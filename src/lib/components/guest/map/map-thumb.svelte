@@ -30,7 +30,8 @@
 		const c = 40 + (seed % 4) * 3;
 		const d = 24 + (seed % 5) * 3;
 		const e = 70 + (seed % 3) * 5;
-		return { path: `M${a} ${b} L${c} ${b} L${c} ${d} L${e} ${d}`, a, b, d, e };
+		const tone = ['var(--primary)', 'var(--success)', 'var(--route)'][seed % 3];
+		return { path: `M${a} ${b} L${c} ${b} L${c} ${d} L${e} ${d}`, a, b, d, e, tone };
 	});
 </script>
 
@@ -38,7 +39,7 @@
 	<img
 		src="/images/map/flat-basemap.svg"
 		alt=""
-		class="map-art absolute max-w-none"
+		class="map-art map-mute absolute max-w-none"
 		style="width: {zoom * 100}%; height: {zoom * 100}%; left: {left}%; top: {top}%"
 	/>
 	{#if variant === 'pin'}
@@ -69,7 +70,7 @@
 				class="map-dash"
 				d={route.path}
 				fill="none"
-				stroke="var(--primary)"
+				stroke={route.tone}
 				stroke-width="3.5"
 				stroke-linejoin="round"
 				stroke-linecap="round"
@@ -81,8 +82,8 @@
 			style="left: {route.a}%; top: {route.b}%"
 		></span>
 		<span
-			class="absolute -mt-2.5 -ml-2.5 size-5 rounded-full border-[3px] border-white bg-primary shadow-[0_2px_6px_rgba(23,33,43,.25)]"
-			style="left: {route.e}%; top: {route.d}%"
+			class="absolute -mt-2.5 -ml-2.5 size-5 rounded-full border-[3px] border-white shadow-[0_2px_6px_rgba(23,33,43,.25)]"
+			style="left: {route.e}%; top: {route.d}%; background: {route.tone}"
 		></span>
 	{/if}
 </div>
