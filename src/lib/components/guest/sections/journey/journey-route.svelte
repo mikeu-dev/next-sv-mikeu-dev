@@ -23,7 +23,7 @@
 	);
 </script>
 
-<ol class="relative m-0 flex list-none flex-col gap-[18px] p-0">
+<ol class="relative m-0 flex list-none flex-col gap-2.5 p-0">
 	{#if ordered.length > 1}
 		<li
 			aria-hidden="true"
@@ -35,7 +35,7 @@
 		<li class="relative flex items-start gap-[18px]">
 			{#if current}
 				<span
-					class="flex size-[50px] flex-none items-center justify-center rounded-full border-4 border-background bg-primary"
+					class="box-border flex size-[50px] flex-none items-center justify-center rounded-[18px_9px_18px_9px] border-4 border-background bg-primary"
 				>
 					<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
 						<path
@@ -46,15 +46,17 @@
 				</span>
 			{:else}
 				<span
-					class="box-border flex size-[50px] flex-none items-center justify-center rounded-full border-4 border-route bg-card"
+					class="box-border flex size-[50px] flex-none items-center justify-center rounded-[9px_18px_9px_18px] border-4 border-route bg-card"
 				>
-					<span class="size-3 rounded-full bg-route"></span>
+					<span class="size-3 rounded-[5px_2px_5px_2px] bg-route"></span>
 				</span>
 			{/if}
 			<div
-				class="flex flex-1 flex-col gap-2 rounded-3xl bg-card px-6 py-5 {current
-					? 'border-[1.5px] border-primary'
-					: 'border border-border'}"
+				class="shard flex flex-1 flex-col gap-2 bg-card px-6 py-5 {i % 2
+					? 'rounded-[12px_30px_12px_30px]'
+					: 'rounded-[30px_12px_30px_12px]'} {current
+					? 'shadow-[inset_0_0_0_1.5px_var(--primary)]'
+					: ''}"
 			>
 				<span
 					class="font-mono text-[13px] font-semibold {current

@@ -77,12 +77,6 @@ export default defineConfig({
 						'#lib/components/guest/sections/blog/latest-blogs.svelte': require.resolve(
 							'./src/lib/mocks/EmptyMock.svelte'
 						),
-						// world-teaser.svelte dynamic-imports this by relative path ('./folded-world.svelte'),
-						// so an alias here has never actually matched it — kept for whenever that import
-						// is changed to go through #lib instead.
-						'#lib/components/guest/sections/world/folded-world.svelte': require.resolve(
-							'./src/lib/mocks/EmptyMock.svelte'
-						),
 						'#lib/components/guest/sections/contact/contact.svelte': require.resolve(
 							'./src/lib/mocks/EmptyMock.svelte'
 						)
@@ -127,9 +121,6 @@ export default defineConfig({
 								}
 								if (id.includes('gsap') || id.includes('matter-js')) {
 									return 'animation';
-								}
-								if (id.includes('three')) {
-									return 'three';
 								}
 							}
 						}

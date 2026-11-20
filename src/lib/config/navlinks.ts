@@ -3,7 +3,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/blog', label: 'Blog' },
-		{ href: '/world', label: 'World' },
+		{ href: '/world', label: 'Footprints' },
 		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	],
@@ -11,7 +11,7 @@
 		{ href: '/', label: 'Beranda' },
 		{ href: '/projects', label: 'Proyek' },
 		{ href: '/blog', label: 'Blog' },
-		{ href: '/world', label: 'World' },
+		{ href: '/world', label: 'Jejak' },
 		{ href: '/about', label: 'Tentang' },
 		{ href: '/contact', label: 'Kontak' }
 	]

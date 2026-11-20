@@ -7,6 +7,7 @@
 	import PageHeader from '#lib/components/guest/map/page-header.svelte';
 	import MapThumb from '#lib/components/guest/map/map-thumb.svelte';
 	import { toMapProjects } from '#lib/components/guest/map/project-geo.js';
+	import plotsScene from '#lib/assets/scenes/projects-plots.svg?raw';
 
 	let { data }: { data: PageData } = $props();
 	const locale = getLocale();
@@ -75,10 +76,10 @@
 		tag = ALL;
 	}
 
-	const segBtn = (on: boolean) =>
-		`flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-extrabold ${on ? 'bg-card text-foreground' : 'text-muted-foreground hover:text-foreground'}`;
-	const chip = (on: boolean) =>
-		`min-h-11 rounded-full border-[1.5px] px-4 text-[15px] font-extrabold transition-colors ${on ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card text-foreground hover:border-foreground'}`;
+	const segBtn = (on: boolean, i: number) =>
+		`flex min-h-11 items-center gap-2 px-4 text-[15px] font-extrabold transition-colors ${i % 2 ? 'rounded-leaf-sm-r' : 'rounded-leaf-sm'} ${on ? 'bg-white text-[#25272b] shadow-[0_4px_10px_rgba(30,32,38,.1)]' : 'text-muted-foreground hover:text-foreground'}`;
+	const chip = (on: boolean, i: number) =>
+		`min-h-11 px-4 text-[15px] font-extrabold transition-colors ${i % 2 ? 'rounded-leaf-r' : 'rounded-leaf'} ${on ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-white dark:hover:bg-white/10'}`;
 </script>
 
 <SEO title={m.projects_title()} description={m.projects_subtitle()} />
@@ -87,15 +88,15 @@
 	eyebrow={m.gis_projects_eyebrow({ count: String(all.length).padStart(2, '0') })}
 	title={m.gis_projects_title()}
 	lead={m.gis_projects_lead()}
-	focus="50% 40%"
+	scene={plotsScene}
 />
 
 <div
 	class="mx-auto box-border flex max-w-[1440px] flex-col gap-6 px-[clamp(16px,4vw,56px)] pt-10 pb-24"
 >
-	<div class="map-card flex flex-wrap items-center gap-3 p-3">
+	<div class="shard flex flex-wrap items-center gap-2.5 rounded-[30px] bg-card p-3">
 		<label
-			class="flex min-h-[52px] flex-[1_1_320px] items-center gap-2.5 rounded-full bg-secondary px-[18px]"
+			class="flex min-h-[52px] flex-[1_1_320px] items-center gap-2.5 rounded-leaf bg-well px-[18px]"
 		>
 			<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
 				<circle cx="9" cy="9" r="6" fill="none" stroke="var(--muted-foreground)" stroke-width="2" />
@@ -114,34 +115,26 @@
 				class="min-w-0 flex-1 border-0 bg-transparent text-base font-semibold text-foreground outline-none placeholder:text-muted-foreground"
 			/>
 		</label>
-		<div
-			role="group"
-			aria-label={m.gis_sort_label()}
-			class="flex gap-1 rounded-full bg-secondary p-1"
-		>
+		<div role="group" aria-label={m.gis_sort_label()} class="flex gap-1 rounded-leaf bg-well p-1">
 			<button
 				type="button"
 				aria-pressed={sort === 'date'}
 				onclick={() => (sort = 'date')}
-				class={segBtn(sort === 'date')}>{m.gis_sort_latest()}</button
+				class={segBtn(sort === 'date', 0)}>{m.gis_sort_latest()}</button
 			>
 			<button
 				type="button"
 				aria-pressed={sort === 'az'}
 				onclick={() => (sort = 'az')}
-				class={segBtn(sort === 'az')}>{m.gis_sort_az()}</button
+				class={segBtn(sort === 'az', 1)}>{m.gis_sort_az()}</button
 			>
 		</div>
-		<div
-			role="group"
-			aria-label={m.gis_view_label()}
-			class="flex gap-1 rounded-full bg-secondary p-1"
-		>
+		<div role="group" aria-label={m.gis_view_label()} class="flex gap-1 rounded-leaf bg-well p-1">
 			<button
 				type="button"
 				aria-pressed={view === 'grid'}
 				onclick={() => (view = 'grid')}
-				class={segBtn(view === 'grid')}
+				class={segBtn(view === 'grid', 0)}
 			>
 				<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
 					<path
@@ -158,7 +151,7 @@
 				type="button"
 				aria-pressed={view === 'map'}
 				onclick={() => (view = 'map')}
-				class={segBtn(view === 'map')}
+				class={segBtn(view === 'map', 1)}
 			>
 				<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
 					<path
@@ -180,14 +173,14 @@
 				type="button"
 				aria-pressed={tag === ALL}
 				onclick={() => (tag = ALL)}
-				class={chip(tag === ALL)}>{m.gis_all()}</button
+				class={chip(tag === ALL, 0)}>{m.gis_all()}</button
 			>
-			{#each allTags as t (t)}
+			{#each allTags as t, i (t)}
 				<button
 					type="button"
 					aria-pressed={tag === t}
 					onclick={() => (tag = t)}
-					class={chip(tag === t)}>{t}</button
+					class={chip(tag === t, i + 1)}>{t}</button
 				>
 			{/each}
 		</div>
@@ -199,7 +192,7 @@
 
 	{#if list.length === 0}
 		<div
-			class="flex flex-col items-center gap-3 rounded-[28px] border-[1.5px] border-dashed border-line-strong bg-card px-6 py-14 text-center"
+			class="flex flex-col items-center gap-3 rounded-[30px] border-[1.5px] border-dashed border-line-strong bg-card px-6 py-14 text-center"
 		>
 			<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
 				<circle
@@ -224,47 +217,69 @@
 			>
 		</div>
 	{:else if view === 'grid'}
-		<div class="grid grid-cols-[repeat(auto-fill,minmax(min(340px,100%),1fr))] gap-5">
-			{#each list as p (p.project.id)}
-				<a
-					href={p.href}
-					class="map-card lift flex flex-col gap-4 px-3.5 pt-3.5 pb-[22px] text-foreground"
-				>
-					<div class="relative aspect-[16/10] overflow-hidden rounded-[20px]">
-						<MapThumb x={p.x} y={p.y} />
+		<div
+			class="grid grid-cols-[repeat(auto-fill,minmax(min(340px,100%),1fr))] items-start gap-x-2.5 gap-y-5"
+		>
+			{#each list as p, i (p.project.id)}
+				{@const right = i % 2 === 1}
+				<a href={p.href} class="shard lift flex min-w-0 flex-col text-foreground no-underline">
+					<span
+						class="tab flex h-11 max-w-[calc(100%-30px)] items-center gap-2 px-5 font-mono text-xs font-semibold text-primary {right
+							? 'tab-l self-end'
+							: 'tab-r self-start'}"
+					>
+						<svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true" class="flex-none">
+							<path
+								d="M4 7l6-4 6 4-2 9H6z"
+								fill="none"
+								stroke="var(--route)"
+								stroke-width="2"
+								stroke-linejoin="round"
+							/>
+						</svg>
+						<span class="truncate">{p.code}{p.category ? ` · ${p.category}` : ''}</span>
+					</span>
+					<span
+						class="flex flex-1 flex-col gap-4 bg-card p-3 pb-[22px] {right
+							? 'rounded-[30px_0_30px_30px]'
+							: 'rounded-[0_30px_30px_30px]'}"
+					>
 						<span
-							class="absolute top-3 left-3 rounded-full bg-card px-2.5 py-[5px] font-mono text-xs font-semibold"
-							>{p.code}</span
+							class="relative block aspect-[16/10] overflow-hidden {right
+								? 'rounded-[12px_22px_12px_22px]'
+								: 'rounded-[22px_12px_22px_12px]'}"
 						>
-					</div>
-					<div class="flex flex-col gap-2 px-2">
-						{#if p.category}
-							<span class="font-mono text-[13px] font-semibold text-primary">{p.category}</span>
-						{/if}
-						<span class="text-[22px] font-black tracking-[-0.01em]">{p.title}</span>
-						<span class="line-clamp-3 text-base leading-normal text-ink-soft">{p.description}</span>
-						<span class="mt-1 flex flex-wrap gap-1.5">
-							{#each p.tags.slice(0, 5) as t (t)}
-								<span
-									class="rounded-full bg-secondary px-[11px] py-[5px] text-[13px] font-extrabold"
-									>{t}</span
-								>
-							{/each}
+							<MapThumb x={p.x} y={p.y} />
 						</span>
-					</div>
+						<span class="flex flex-col gap-2 px-2">
+							<span class="text-[22px] font-black tracking-[-0.01em]">{p.title}</span>
+							<span class="line-clamp-3 text-base leading-normal text-ink-soft"
+								>{p.description}</span
+							>
+							<span class="mt-1 flex flex-wrap gap-1.5">
+								{#each p.tags.slice(0, 5) as t, j (t)}
+									<span
+										class="bg-well px-[11px] py-[5px] text-[13px] font-extrabold {j % 2
+											? 'rounded-leaf-sm-r'
+											: 'rounded-leaf-sm'}">{t}</span
+									>
+								{/each}
+							</span>
+						</span>
+					</span>
 				</a>
 			{/each}
 		</div>
 	{:else}
-		<div class="flex flex-wrap items-start gap-5">
+		<div class="flex flex-wrap items-start gap-2.5">
 			<div
-				class="relative aspect-[800/520] min-w-0 flex-[999_1_560px] overflow-hidden rounded-[28px] border border-border bg-secondary"
+				class="shard relative aspect-[800/520] min-w-0 flex-[999_1_560px] overflow-hidden rounded-[30px] bg-secondary"
 			>
 				<img
 					src="/images/map/flat-basemap.svg"
 					alt=""
 					aria-hidden="true"
-					class="map-art absolute inset-0 block size-full"
+					class="map-art map-mute absolute inset-0 block size-full"
 				/>
 				{#each list as p (p.project.id)}
 					{@const on = selected?.project.id === p.project.id}
@@ -295,7 +310,7 @@
 					</button>
 				{/each}
 				<div
-					class="absolute bottom-4 left-4 rounded-full border border-border bg-card px-3 py-1.5 font-mono text-xs text-muted-foreground"
+					class="glass absolute bottom-4 left-4 rounded-leaf-xs px-3 py-1.5 font-mono text-xs text-ink-soft"
 				>
 					{m.gis_map_hint()}
 				</div>
@@ -303,7 +318,7 @@
 			{#if selected}
 				<a
 					href={selected.href}
-					class="lift flex flex-[1_1_320px] flex-col gap-2.5 rounded-[28px] border-[1.5px] border-primary bg-card p-[26px] text-foreground"
+					class="shard lift flex flex-[1_1_320px] flex-col gap-2.5 rounded-[30px_12px_30px_12px] bg-card p-[26px] text-foreground no-underline shadow-[inset_0_0_0_1.5px_var(--primary)]"
 				>
 					<span class="font-mono text-[13px] font-semibold text-primary"
 						>{selected.code}{selected.category ? ` · ${selected.category}` : ''}</span
@@ -324,7 +339,7 @@
 				type="button"
 				onclick={loadMore}
 				disabled={loadingMore}
-				class="btn-pill-line text-base disabled:opacity-60"
+				class="shard btn-pill-line bg-card text-base disabled:opacity-60"
 			>
 				{loadingMore ? '…' : m.gis_load_more()}
 			</button>

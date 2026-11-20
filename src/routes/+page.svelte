@@ -42,7 +42,7 @@
 				</h2>
 				<p class="m-0 text-[17px] leading-relaxed text-ink-soft">{m.gis_journey_lead()}</p>
 				<blockquote
-					class="mt-2 mb-0 rounded-[22px] border border-border bg-card px-[22px] py-5 text-[17px] leading-normal font-bold"
+					class="shard mt-2 mb-0 rounded-[30px_12px_30px_12px] bg-card px-6 py-[22px] text-[17px] leading-[1.55] font-bold"
 				>
 					{m.gis_quote()}
 				</blockquote>
