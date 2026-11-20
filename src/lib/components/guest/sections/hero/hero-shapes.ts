@@ -16,8 +16,14 @@ const R = 30; // corner radius
 
 type Pt = [number, number];
 
-/** Polygon → SVG path with every corner rounded (convex and concave alike). */
-export function roundedPath(points: Pt[], radius: number): string {
+/**
+ * Polygon → SVG path with every corner rounded (convex and concave alike).
+ * `radius` may be one value or one per point. Every point always emits the
+ * same "L … A …" pair, so two paths with the same point count can be
+ * interpolated by CSS (`d` / `clip-path` transitions) — that is what makes
+ * the intro pills morph into the hero shards.
+ */
+export function roundedPath(points: Pt[], radius: number | number[]): string {
 	const n = points.length;
 	let d = '';
 	for (let i = 0; i < n; i++) {
@@ -26,9 +32,12 @@ export function roundedPath(points: Pt[], radius: number): string {
 		const q = points[(i + 1) % n];
 		const d1 = Math.hypot(p[0] - a[0], p[1] - a[1]);
 		const d2 = Math.hypot(q[0] - p[0], q[1] - p[1]);
-		const r = Math.max(0, Math.min(radius, d1 / 2, d2 / 2));
 		const u1: Pt = d1 ? [(p[0] - a[0]) / d1, (p[1] - a[1]) / d1] : [0, 0];
 		const u2: Pt = d2 ? [(q[0] - p[0]) / d2, (q[1] - p[1]) / d2] : [0, 0];
+		const want = Array.isArray(radius) ? (radius[i] ?? 0) : radius;
+		// A straight-through point gets no arc (it would bulge into a semicircle).
+		const straight = Math.abs(u1[0] * u2[1] - u1[1] * u2[0]) < 1e-6;
+		const r = straight ? 0 : Math.max(0, Math.min(want, d1 / 2, d2 / 2));
 		const p1: Pt = [p[0] - u1[0] * r, p[1] - u1[1] * r];
 		const p2: Pt = [p[0] + u2[0] * r, p[1] + u2[1] * r];
 		const sweep = u1[0] * u2[1] - u1[1] * u2[0] > 0 ? 1 : 0;
@@ -126,5 +135,48 @@ export function heroLayout(width: number, leftOpen: boolean, rightOpen: boolean)
 			const inAsk = askOpen && px > W - askR - 370 && py > H - M - 294;
 			return inLeft || inRight || inTop || inBottom || inAsk;
 		}
+	};
+}
+
+/**
+ * The intro's starting shapes: three small "loading" pills with the same point
+ * counts as the shards they morph into — a status pill top-left (→ nav bar), a
+ * status pill top-right (→ layer panel) and a progress bar along the bottom
+ * (→ profile panel).
+ */
+export function introPills(width: number): { leftD: string; headD: string; rightD: string } {
+	const W = Math.max(1024, width);
+	const left: Pt[] = [
+		[32, 822],
+		[232, 822],
+		[232, 822],
+		[W - 32, 822],
+		[W - 32, 868],
+		[W - 332, 868],
+		[W - 332, 868],
+		[32, 868]
+	];
+	const head: Pt[] = [
+		[32, 32],
+		[392, 32],
+		[392, 54],
+		[392, 54],
+		[392, 76],
+		[32, 76]
+	];
+	const right: Pt[] = [
+		[W - 312, 32],
+		[W - 32, 32],
+		[W - 32, 54],
+		[W - 32, 76],
+		[W - 140, 76],
+		[W - 140, 76],
+		[W - 312, 76],
+		[W - 312, 54]
+	];
+	return {
+		leftD: roundedPath(left, [23, 0, 0, 23, 23, 0, 0, 23]),
+		headD: roundedPath(head, [22, 11, 0, 0, 11, 22]),
+		rightD: roundedPath(right, [22, 22, 0, 22, 0, 0, 22, 0])
 	};
 }

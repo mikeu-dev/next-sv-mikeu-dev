@@ -548,3 +548,35 @@
 		animation: none !important;
 	}
 }
+
+/* ---- Home intro (see hero.svelte + app.html) --------------------------------
+   html.intro       loading pills over a zooming map; hero content hidden
+   html.intro-out   pills' text fades
+   html.intro-done  pills have morphed; hero content staggers in (--in delay) */
+.intro-only {
+	display: none;
+}
+html.intro .intro-only {
+	display: flex;
+	transition: opacity 0.24s ease;
+}
+html.intro-out .intro-only {
+	opacity: 0;
+}
+html.intro .intro-hide {
+	opacity: 0 !important;
+	filter: blur(6px);
+	pointer-events: none;
+}
+html.intro-done .intro-hide {
+	transition:
+		opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1) var(--in, 0.3s),
+		filter 0.55s cubic-bezier(0.4, 0, 0.2, 1) var(--in, 0.3s) !important;
+}
+html.intro .intro-cam {
+	transform: scale(var(--cam, 0.62));
+	transform-origin: 62% 55%;
+}
+.intro-cam {
+	transition: transform 0.45s cubic-bezier(0.65, 0, 0.25, 1);
+}

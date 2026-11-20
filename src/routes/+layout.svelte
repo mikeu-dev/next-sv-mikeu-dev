@@ -147,9 +147,17 @@
 
 		if (page.url.pathname === '/' && !confettiShown) {
 			confettiShown = true;
-			fallingConfetti = true;
-			playConfettiSound();
-			setTimeout(() => (fallingConfetti = false), 5000);
+			const fire = () => {
+				fallingConfetti = true;
+				playConfettiSound();
+				setTimeout(() => (fallingConfetti = false), 5000);
+			};
+			// On a first visit the home intro plays first; celebrate once it hands over.
+			if (document.documentElement.classList.contains('intro'))
+				window.addEventListener('mikeu:intro-done', () => setTimeout(fire, 1100), {
+					once: true
+				});
+			else fire();
 		}
 	});
 
