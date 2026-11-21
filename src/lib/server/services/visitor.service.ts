@@ -17,6 +17,7 @@ import { db } from '#lib/server/firebase/firebase.server.js';
 import { FieldValue, FieldPath } from 'firebase-admin/firestore';
 import { VisitorRepository } from '../repositories/visitor.repository';
 import { persistentCache } from '../utils/cache.util';
+import { VERCEL_ENV } from '$app/env/private';
 
 export interface VisitorStats {
 	total: number;
@@ -63,10 +64,17 @@ export interface GeoNode {
 
 import { sanitizeForFirestore } from '../utils/firestore';
 import { geoEntries, geoKey, isDevPlace, isPlottable, planGeoRepair } from '../utils/geo-summary';
-import { isDataCenterKey } from '../utils/bot-filter';
 
 /** How often a broken geo summary may trigger a repair (reads recent logs). */
 const GEO_REPAIR_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Counting scheme stored on `counters/visitors.countingVersion`.
+ * 2 = counted from the browser via POST /api/visit with bot filtering. Data
+ * from before (every server request counted, bots included) is archived to
+ * `*_legacy` documents and the live counters start again from zero.
+ */
+const COUNTING_VERSION = 2;
 
 export class VisitorService {
 	private readonly collectionName = 'counters';
@@ -75,7 +83,6 @@ export class VisitorService {
 	private readonly docId = 'visitors';
 	private readonly geoSummaryDocId = 'geo_aggregation';
 	private readonly analyticsSummaryDocId = 'analytics_aggregation';
-	private readonly geoExcludedDocId = 'geo_excluded';
 	private repository = new VisitorRepository();
 
 	private get db() {
@@ -292,7 +299,10 @@ export class VisitorService {
 				try {
 					const doc = await currentDb.collection(this.collectionName).doc(this.docId).get();
 					if (!doc.exists) return null;
-					const data = doc.data() as VisitorStats;
+					let data = doc.data() as VisitorStats & { countingVersion?: number };
+					if ((data.countingVersion ?? 1) < COUNTING_VERSION && VERCEL_ENV === 'production') {
+						data = (await this.archiveLegacyCounts()) ?? data;
+					}
 					const todayDate = new Date().toLocaleDateString('en-CA', {
 						timeZone: 'Asia/Jakarta'
 					});
@@ -317,6 +327,71 @@ export class VisitorService {
 			},
 			5 * 60 * 1000 // 5 minutes
 		);
+	}
+
+	/**
+	 * One-time switch to browser-side counting: copies the counter, the geo
+	 * summary and the analytics summary to `*_legacy` documents and resets the
+	 * live ones. Runs in a transaction, so concurrent callers do it once; only
+	 * the production deployment calls it. Returns the reset counter.
+	 */
+	private async archiveLegacyCounts(): Promise<VisitorStats | null> {
+		const currentDb = this.db;
+		if (!currentDb) return null;
+
+		const counters = currentDb.collection(this.collectionName);
+		const summaries = currentDb.collection(this.summaryCollectionName);
+		const counterRef = counters.doc(this.docId);
+		const geoRef = summaries.doc(this.geoSummaryDocId);
+		const analyticsRef = summaries.doc(this.analyticsSummaryDocId);
+		const now = new Date().toISOString();
+		const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+		const fresh = { total: 0, today: 0, lastUpdated: today };
+
+		try {
+			const archived = await currentDb.runTransaction(async (t) => {
+				const [counter, geo, analytics] = await Promise.all([
+					t.get(counterRef),
+					t.get(geoRef),
+					t.get(analyticsRef)
+				]);
+				const current = counter.data() as (VisitorStats & { countingVersion?: number }) | undefined;
+				if ((current?.countingVersion ?? 1) >= COUNTING_VERSION) return false;
+
+				t.set(counters.doc(`${this.docId}_legacy`), { ...current, archivedAt: now });
+				if (geo.exists) {
+					t.set(summaries.doc(`${this.geoSummaryDocId}_legacy`), {
+						...geo.data(),
+						archivedAt: now
+					});
+				}
+				if (analytics.exists) {
+					t.set(summaries.doc(`${this.analyticsSummaryDocId}_legacy`), {
+						...analytics.data(),
+						archivedAt: now
+					});
+				}
+				t.set(counterRef, { ...fresh, countingVersion: COUNTING_VERSION, countingSince: now });
+				t.set(geoRef, { updatedAt: now });
+				t.set(analyticsRef, {
+					topPages: {},
+					deviceMix: {},
+					browserMix: {},
+					referrers: {},
+					updatedAt: now
+				});
+				return true;
+			});
+			if (archived) {
+				persistentCache.clear('geo_aggregation');
+				persistentCache.clear('analytics_summary');
+				console.log('VisitorService: archived legacy visitor counts and reset the counters');
+			}
+			return fresh;
+		} catch (error) {
+			console.error('VisitorService: Failed to archive legacy visitor counts', error);
+			return null;
+		}
 	}
 
 	async getRecentLogs(limit: number = 20): Promise<VisitorLogData[]> {
@@ -405,6 +480,9 @@ export class VisitorService {
 				if (!currentDb) return [];
 
 				try {
+					// Make sure a pending switch to browser counting (which resets the
+					// summary) has happened before the summary is read and cached.
+					await this.getStats();
 					// Read from the pre-aggregated summary document (ONLY 1 READ!)
 					const summaryDoc = await currentDb
 						.collection(this.summaryCollectionName)
@@ -417,18 +495,13 @@ export class VisitorService {
 					}
 
 					let data = summaryDoc.data() || {};
-					if (geoEntries(data).some(([key]) => isDataCenterKey(key))) {
-						data = await this.excludeDataCenterPlaces(data);
-					}
 					const broken = geoEntries(data).some(
 						([key, node]) => isDevPlace(key, node) || !isPlottable(node)
 					);
 					if (broken) data = await this.repairGeoSummary(data);
 
 					return geoEntries(data)
-						.filter(
-							([key, node]) => isPlottable(node) && !isDevPlace(key, node) && !isDataCenterKey(key)
-						)
+						.filter(([key, node]) => isPlottable(node) && !isDevPlace(key, node))
 						.map(([id, node]) => ({ id, ...(node as Omit<GeoNode, 'id'>) }))
 						.sort((a, b) => b.count - a.count)
 						.slice(0, limit);
@@ -448,63 +521,6 @@ export class VisitorService {
 			},
 			30 * 60 * 1000 // 30 minutes
 		);
-	}
-
-	/**
-	 * Moves visits recorded from cloud data-centre towns (crawlers and other
-	 * automated traffic, see bot-filter.ts) out of the geo summary into
-	 * `summaries/geo_excluded`, and takes them off the total visitor count
-	 * (the amount is kept in `counters/visitors.excludedBotVisits`). Runs in one
-	 * transaction, so it is safe to call concurrently and repeats as a no-op.
-	 * Returns the summary data without those places.
-	 */
-	async excludeDataCenterPlaces(data: Record<string, unknown>): Promise<Record<string, unknown>> {
-		const currentDb = this.db;
-		const cleaned = Object.fromEntries(
-			Object.entries(data).filter(([key]) => !isDataCenterKey(key))
-		);
-		if (!currentDb) return cleaned;
-
-		const summaries = currentDb.collection(this.summaryCollectionName);
-		const summaryRef = summaries.doc(this.geoSummaryDocId);
-		const excludedRef = summaries.doc(this.geoExcludedDocId);
-		const counterRef = currentDb.collection(this.collectionName).doc(this.docId);
-
-		try {
-			const moved = await currentDb.runTransaction(async (t) => {
-				const [summary, counter] = await Promise.all([t.get(summaryRef), t.get(counterRef)]);
-				const places = geoEntries(summary.data() || {}).filter(([key]) => isDataCenterKey(key));
-				if (!places.length) return 0;
-
-				const visits = places.reduce((n, [, node]) => n + (Number(node.count) || 0), 0);
-				const excluded: Record<string, unknown> = {};
-				const removals: unknown[] = [];
-				for (const [key, node] of places) {
-					excluded[key] = { ...node, count: FieldValue.increment(Number(node.count) || 0) };
-					removals.push(new FieldPath(key), FieldValue.delete());
-				}
-
-				t.set(excludedRef, { ...excluded, updatedAt: new Date().toISOString() }, { merge: true });
-				const [first, firstValue, ...rest] = removals;
-				t.update(summaryRef, first as FieldPath, firstValue, ...rest);
-				if (counter.exists) {
-					const total = Number((counter.data() as VisitorStats).total) || 0;
-					t.update(counterRef, {
-						total: FieldValue.increment(-Math.min(visits, total)),
-						excludedBotVisits: FieldValue.increment(visits)
-					});
-				}
-				return visits;
-			});
-
-			if (moved) {
-				persistentCache.clear('visitor_stats');
-				console.log(`VisitorService: excluded ${moved} data-centre visits from the geo summary`);
-			}
-		} catch (error) {
-			console.error('VisitorService: Failed to exclude data-centre places', error);
-		}
-		return cleaned;
 	}
 
 	/**

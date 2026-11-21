@@ -122,6 +122,8 @@
 			pwaState.setInstallPrompt(null);
 		});
 
+		recordVisit();
+
 		(async () => {
 			try {
 				const res = await fetch('/api/stats');
@@ -141,6 +143,30 @@
 			if (lenis) lenis.destroy();
 		};
 	});
+
+	/**
+	 * Count this visit from the browser (once per session; the server also
+	 * dedupes per day). Bots that do not run JavaScript never get here, and
+	 * automation that does announces itself through navigator.webdriver.
+	 */
+	function recordVisit() {
+		if (page.url.pathname.startsWith('/admin') || navigator.webdriver) return;
+		try {
+			if (sessionStorage.getItem('mikeu-visit')) return;
+			sessionStorage.setItem('mikeu-visit', '1');
+		} catch {
+			/* storage unavailable: the server-side cookie still dedupes */
+		}
+		const body = JSON.stringify({ path: location.pathname, referrer: document.referrer });
+		setTimeout(() => {
+			fetch('/api/visit', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body,
+				keepalive: true
+			}).catch(() => {});
+		}, 1000);
+	}
 
 	afterNavigate(({ shallow }) => {
 		if (shallow) return;

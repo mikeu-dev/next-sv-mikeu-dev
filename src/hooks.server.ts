@@ -4,15 +4,12 @@ import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { AuthService } from '#lib/server/services/auth.service.js';
 import { env } from '#lib/server/config/env.js';
 import { logWarning } from '#lib/server/utils/logger.js';
-import { VisitorService } from '#lib/server/services/visitor.service.js';
-import { UAParser } from 'ua-parser-js';
-import { building, dev } from '$app/env';
+import { building } from '$app/env';
 import { createHandle } from '@vercel/flags/sveltekit';
 import { FLAGS_SECRET } from '$app/env/private';
 import * as flags from '#lib/flags.js';
 
 const authService = new AuthService();
-const visitorService = new VisitorService();
 
 /**
  * Security headers middleware
@@ -87,85 +84,6 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 			);
 		}
 	);
-
-import { resolveGeo } from '#lib/server/services/geo.service.js';
-import { isBotRequest, isDataCenterPlace } from '#lib/server/utils/bot-filter.js';
-
-/**
- * Visitor tracking middleware
- * Checks for cookie and increments counter if new visitor
- */
-const handleVisitor: Handle = async ({ event, resolve }) => {
-	const VISITOR_COOKIE = 'visitor_log';
-	const hasVisited = event.cookies.get(VISITOR_COOKIE);
-
-	if (
-		!hasVisited &&
-		!event.url.pathname.startsWith('/admin') &&
-		!event.url.pathname.startsWith('/api') &&
-		!event.url.pathname.includes('sitemap.xml') &&
-		!event.url.pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|json|xml)$/) &&
-		!building &&
-		// a local dev server must not count (or geo-tag) visits in the production data
-		!dev &&
-		// crawlers, previewers, monitors and scripts are not visitors
-		!isBotRequest(
-			event.request.headers.get('user-agent'),
-			event.request.headers.get('accept-language')
-		)
-	) {
-		// Only track public pages and skip during build
-		// Set the cookie immediately so the response is not blocked
-		event.cookies.set(VISITOR_COOKIE, 'true', {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'lax',
-			maxAge: 60 * 60 * 24 // 1 day
-		});
-
-		// Fire-and-forget: tracking must never delay the response
-		(async () => {
-			try {
-				const uaString = event.request.headers.get('user-agent') || '';
-				const parser = new UAParser(uaString);
-				const browser = parser.getBrowser();
-				const os = parser.getOS();
-				const device = parser.getDevice();
-
-				let ip = '0.0.0.0';
-				try {
-					ip = event.getClientAddress();
-				} catch (e) {
-					console.warn('Could not get client address:', e);
-				}
-
-				const geoData = await resolveGeo(event.request, ip);
-				// Requests from cloud data-centre towns are automated even when they
-				// pose as a browser (headless Chrome, scanners, link checkers).
-				if (isDataCenterPlace(geoData.country, geoData.city)) return;
-
-				await visitorService.increment({
-					ip,
-					browser: `${browser.name || 'Unknown'} ${browser.version || ''}`.trim(),
-					os: `${os.name || 'Unknown'} ${os.version || ''}`.trim(),
-					device: device.type || 'desktop',
-					referer: event.request.headers.get('referer') || null,
-					language: event.request.headers.get('accept-language') || null,
-					path: event.url.pathname,
-					country: geoData.country,
-					city: geoData.city,
-					region: geoData.region,
-					latitude: geoData.latitude,
-					longitude: geoData.longitude
-				});
-			} catch (error) {
-				console.error('Failed to track visitor', error);
-			}
-		})();
-	}
-
-	return resolve(event);
-};
 
 /**
  * Authentication middleware
@@ -245,7 +163,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		createHandle({ secret: FLAGS_SECRET, flags }),
 		handleSecurityHeaders,
 		handleParaglide,
-		handleVisitor,
 		handleAuth,
 		handlePublicApi
 	)({ event, resolve });
