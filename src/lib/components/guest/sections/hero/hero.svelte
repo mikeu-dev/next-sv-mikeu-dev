@@ -3,7 +3,8 @@
 	import { localizeHref } from '#lib/paraglide/runtime.js';
 	import { PUBLIC_CONTACT_EMAIL } from '$app/env/public';
 	import HeroMap, { type LayerKey } from './hero-map.svelte';
-	import { H, heroLayout } from './hero-shapes.js';
+	import { onMount } from 'svelte';
+	import { H, heroLayout, introPills } from './hero-shapes.js';
 
 	const email = PUBLIC_CONTACT_EMAIL || 'rikiruswandi28@gmail.com';
 
@@ -36,6 +37,103 @@
 	let rightOpen = $state(true);
 	let askOpen = $state(false);
 	let L = $derived(heroLayout(width, leftOpen, rightOpen));
+	let P = $derived(introPills(width));
+	let shapes = $derived([
+		[L.leftD, P.leftD],
+		[L.headD, P.headD],
+		[L.rightD, P.rightD]
+	]);
+
+	// --- Intro: loading pills that morph into the shards ----------------------
+	// An inline script in app.html adds `intro` to <html> before first paint on
+	// a first desktop visit (skipped for reduced motion, bots and repeat visits
+	// in the same session). While it is set, CSS draws the shards as three
+	// loading pills, hides the hero's content and zooms the camera out; removing
+	// it morphs pills → shards and staggers the content in.
+	const INTRO_MIN_MS = 2400;
+	const INTRO_MAX_MS = 6000;
+	const MAP_IMAGES = [
+		'/images/map/hero-basemap.svg',
+		...[1, 2, 3, 4].map((n) => `/images/map/hero-buildings-${n}.svg`)
+	];
+	let introProgress = $state(0);
+	let introLoaded = $state(false);
+	let introEase = $derived(1 - (1 - introProgress) ** 2);
+	let introZoom = $derived(12 + 4 * introEase);
+	let introTile = $derived.by(() => {
+		const z = Math.floor(introZoom);
+		const shift = 2 ** (16 - z);
+		return `${z}/${Math.floor(52326 / shift)}/${Math.floor(33966 / shift)}`;
+	});
+	let finishIntro = () => {};
+
+	onMount(() => {
+		const root = document.documentElement;
+		if (!root.classList.contains('intro')) return;
+
+		let loaded = 0;
+		for (const src of MAP_IMAGES) {
+			const img = new Image();
+			img.onload = img.onerror = () => loaded++;
+			img.src = src;
+		}
+
+		const start = performance.now();
+		let raf = 0;
+		let done = false;
+		const timers: ReturnType<typeof setTimeout>[] = [];
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') end();
+		};
+		function end() {
+			if (done) return;
+			done = true;
+			cancelAnimationFrame(raf);
+			window.removeEventListener('keydown', onKey);
+			introProgress = 1;
+			introLoaded = true;
+			try {
+				sessionStorage.setItem('mikeu-intro', '1');
+			} catch {
+				/* storage may be unavailable */
+			}
+			// 1) fade the pills' text, 2) morph pills → shards while the hero's
+			// content staggers in, 3) drop the stagger delays once it has played.
+			root.classList.add('intro-out');
+			timers.push(
+				setTimeout(() => {
+					root.classList.remove('intro', 'intro-out');
+					root.classList.add('intro-done');
+					window.dispatchEvent(new Event('mikeu:intro-done'));
+				}, 260),
+				setTimeout(() => root.classList.remove('intro-done'), 2600)
+			);
+		}
+		finishIntro = end;
+		window.addEventListener('keydown', onKey);
+
+		const tick = (now: number) => {
+			const t = Math.max(0, now - start);
+			const byTime = Math.min(1, t / INTRO_MIN_MS);
+			const byLoad = loaded / MAP_IMAGES.length;
+			// time drives the bar; it waits at 90% for images that are still loading
+			introProgress = t > INTRO_MAX_MS ? 1 : Math.min(byTime, Math.max(byLoad, 0.9));
+			if (introProgress >= 1 && !introLoaded) {
+				introLoaded = true;
+				timers.push(setTimeout(end, 700)); // let "3D buildings loaded" read
+			}
+			if (!done) raf = requestAnimationFrame(tick);
+		};
+		raf = requestAnimationFrame(tick);
+
+		return () => {
+			cancelAnimationFrame(raf);
+			timers.forEach(clearTimeout);
+			window.removeEventListener('keydown', onKey);
+			if (!done) window.dispatchEvent(new Event('mikeu:intro-done'));
+			root.classList.remove('intro', 'intro-out', 'intro-done');
+		};
+	});
 
 	// --- Map controls --------------------------------------------------------
 	let zoom = $state(16);
@@ -79,17 +177,19 @@
 	bind:clientWidth={width}
 	class="relative hidden h-[900px] overflow-hidden bg-background lg:block"
 >
-	<HeroMap {layers} {artScale} />
+	<div class="intro-cam absolute inset-0" style="--cam: {(0.62 + 0.38 * introEase).toFixed(4)}">
+		<HeroMap {layers} {artScale} />
+	</div>
 
 	<!-- Cursor box + coordinates (hidden over the panels) -->
 	<div
 		aria-hidden="true"
-		class="pointer-events-none absolute -mt-[17px] -ml-[17px] size-[34px] rounded-[12px_6px_12px_6px] border-2 border-primary bg-white/35 transition-opacity duration-200"
+		class="intro-hide pointer-events-none absolute -mt-[17px] -ml-[17px] size-[34px] rounded-[12px_6px_12px_6px] border-2 border-primary bg-white/35 transition-opacity duration-200"
 		style="left: {mx * 100}%; top: {my * 100}%; opacity: {cursorVisible ? 1 : 0}"
 	></div>
 	<div
 		aria-hidden="true"
-		class="pointer-events-none absolute mt-6 ml-5 rounded-[12px_6px_12px_6px] bg-[#25272b] px-2.5 py-1 font-mono text-[11px] whitespace-nowrap text-white transition-opacity duration-200"
+		class="intro-hide pointer-events-none absolute mt-6 ml-5 rounded-[12px_6px_12px_6px] bg-[#25272b] px-2.5 py-1 font-mono text-[11px] whitespace-nowrap text-white transition-opacity duration-200"
 		style="left: {mx * 100}%; top: {my * 100}%; opacity: {cursorVisible
 			? 1
 			: 0}; transform: translateX({mx > 0.7 ? 'calc(-100% - 40px)' : '0px'})"
@@ -105,15 +205,20 @@
 		viewBox="0 0 {width} {H}"
 		aria-hidden="true"
 	>
-		{#each [L.leftD, L.headD, L.rightD] as d, i (i)}
-			<path class="morph" style="d: path('{d}')" fill="var(--card)" fill-opacity=".7" />
+		{#each shapes as [d, pill], i (i)}
+			<path
+				class="morph"
+				style="--shape: path('{d}'); --pill: path('{pill}'); --i: {i}"
+				fill="var(--card)"
+				fill-opacity=".7"
+			/>
 		{/each}
 	</svg>
-	{#each [L.leftD, L.headD, L.rightD] as d, i (i)}
+	{#each shapes as [d, pill], i (i)}
 		<div
 			aria-hidden="true"
 			class="hero-glass clip pointer-events-none absolute inset-0"
-			style="clip-path: path('{d}')"
+			style="--shape: path('{d}'); --pill: path('{pill}'); --i: {i}"
 		></div>
 	{/each}
 	<svg
@@ -123,10 +228,10 @@
 		viewBox="0 0 {width} {H}"
 		aria-hidden="true"
 	>
-		{#each [L.leftD, L.headD, L.rightD] as d, i (i)}
+		{#each shapes as [d, pill], i (i)}
 			<path
 				class="morph"
-				style="d: path('{d}')"
+				style="--shape: path('{d}'); --pill: path('{pill}'); --i: {i}"
 				fill="none"
 				stroke="var(--panel-edge)"
 				stroke-width="1.5"
@@ -134,10 +239,59 @@
 		{/each}
 	</svg>
 
+	<!-- Intro: the loading pills' content (only while html.intro is set) -->
+	<div class="intro-only pointer-events-none absolute inset-0" aria-hidden="true">
+		<div class="absolute top-8 left-8 flex h-11 w-[360px] items-center gap-3 px-3">
+			<span class="flex size-7 items-center justify-center rounded-leaf-sm bg-primary">
+				<span class="size-2.5 rounded-full bg-white"></span>
+			</span>
+			<span class="text-[17px] font-black tracking-[-0.01em]"
+				>mikeu<span class="text-primary">.gis</span></span
+			>
+			<span class="ml-auto font-mono text-xs text-muted-foreground">{m.gis_intro_loading()}</span>
+		</div>
+		<div
+			class="absolute top-8 flex h-11 w-[280px] items-center justify-between px-5 font-mono text-xs text-ink-soft"
+			style="left: {Math.max(1024, width) - 312}px"
+		>
+			<span>ZOOM <b class="text-foreground">{introZoom.toFixed(1)}</b></span>
+			<span>TILE {introTile}</span>
+		</div>
+	</div>
+	<div
+		role="status"
+		aria-live="polite"
+		class="intro-only absolute right-8 left-8 flex h-[46px] items-center gap-4 px-5"
+		style="top: 822px"
+	>
+		<span
+			class="font-mono text-xs font-semibold whitespace-nowrap {introLoaded
+				? 'text-primary'
+				: 'text-ink-soft'}"
+		>
+			{introLoaded ? m.gis_intro_loaded() : m.gis_intro_fetching()}
+		</span>
+		<span class="relative h-1.5 flex-1 overflow-hidden rounded-full bg-well">
+			<span
+				class="absolute inset-y-0 left-0 rounded-full bg-primary"
+				style="width: {(introProgress * 100).toFixed(1)}%"
+			></span>
+		</span>
+		<span class="w-10 text-right font-mono text-xs text-ink-soft tabular-nums"
+			>{Math.round(introProgress * 100)}%</span
+		>
+		<button
+			type="button"
+			onclick={() => finishIntro()}
+			class="pointer-events-auto -mr-2 min-h-9 rounded-leaf-sm px-3 text-sm font-extrabold text-primary hover:bg-white/70"
+			>{m.gis_intro_skip()}</button
+		>
+	</div>
+
 	<!-- Left: profile -->
 	<section
 		aria-label={m.gis_hero_profile()}
-		class="mm absolute top-[102px] bottom-[102px] left-4 overflow-hidden"
+		class="intro-hide mm absolute top-[102px] bottom-[102px] left-4 overflow-hidden [--in:550ms]"
 		style="width: {L.leftW}px"
 	>
 		<div
@@ -223,7 +377,7 @@
 
 	<!-- Bottom-left: CTA under the profile -->
 	<div
-		class="mm absolute bottom-4 box-border flex h-[86px] items-center justify-center overflow-hidden px-4"
+		class="intro-hide mm absolute bottom-4 box-border flex h-[86px] items-center justify-center overflow-hidden px-4 [--in:770ms]"
 		style="left: {L.leftFootX}px; width: {L.leftFootW}px"
 	>
 		<a
@@ -258,7 +412,7 @@
 
 	<!-- Bottom-left slot: scale bar + cursor coordinates -->
 	<div
-		class="mm glass absolute bottom-4 left-4 box-border flex h-[76px] flex-col justify-center gap-[5px] overflow-hidden rounded-[22px_22px_30px_22px] px-4 font-mono text-[11px] whitespace-nowrap text-muted-foreground"
+		class="intro-hide mm glass absolute bottom-4 left-4 box-border flex h-[76px] flex-col justify-center gap-[5px] overflow-hidden rounded-[22px_22px_30px_22px] px-4 font-mono text-[11px] whitespace-nowrap text-muted-foreground [--in:850ms]"
 		style="width: {L.slotW}px; opacity: {leftOpen ? 1 : 0}"
 		aria-hidden={!leftOpen}
 	>
@@ -274,7 +428,9 @@
 	</div>
 
 	<!-- Right: layer panel toggle (under the language tab) -->
-	<div class="absolute top-[66px] right-4 flex h-9 w-[100px] items-center justify-center">
+	<div
+		class="intro-hide absolute top-[66px] right-4 flex h-9 w-[100px] items-center justify-center [--in:670ms]"
+	>
 		<button
 			type="button"
 			onclick={() => (rightOpen = !rightOpen)}
@@ -302,7 +458,7 @@
 	<!-- Right: layers -->
 	<section
 		aria-label={m.gis_layers_title()}
-		class="mm absolute top-[102px] right-4 bottom-[102px] overflow-hidden"
+		class="intro-hide mm absolute top-[102px] right-4 bottom-[102px] overflow-hidden [--in:630ms]"
 		style="width: {L.rightW}px"
 	>
 		<div
@@ -391,7 +547,7 @@
 
 	<!-- Bottom strip under the layer panel: socials -->
 	<div
-		class="mm absolute bottom-4 flex h-[86px] items-center justify-center gap-1 overflow-hidden"
+		class="intro-hide mm absolute bottom-4 flex h-[86px] items-center justify-center gap-1 overflow-hidden [--in:810ms]"
 		style="right: {L.rightFootRight}px; width: {L.rightFootW}px"
 	>
 		<a
@@ -427,7 +583,7 @@
 		role="toolbar"
 		aria-orientation="vertical"
 		aria-label={m.gis_map_controls()}
-		class="mm glass absolute top-[118px] flex flex-col rounded-[26px_14px_26px_14px] p-[5px]"
+		class="intro-hide mm glass absolute top-[118px] flex flex-col rounded-[26px_14px_26px_14px] p-[5px] [--in:890ms]"
 		style="right: {L.railRight}px"
 	>
 		<button
@@ -473,7 +629,7 @@
 
 	<!-- Bottom-right: quick contact (pill that unfolds into a small card) -->
 	<div
-		class="mm glass absolute bottom-4 overflow-hidden"
+		class="intro-hide mm glass absolute bottom-4 overflow-hidden [--in:950ms]"
 		style="right: {L.askRight}px; width: {askOpen ? 360 : 180}px; height: {askOpen
 			? 284
 			: 76}px; border-radius: {askOpen ? '30px 14px 30px 30px' : '22px 22px 22px 30px'}"
@@ -635,10 +791,24 @@
 		transition-timing-function: cubic-bezier(0.34, 1.3, 0.5, 1);
 	}
 	.morph {
+		d: var(--shape);
 		transition: d 0.7s cubic-bezier(0.65, 0, 0.25, 1);
 	}
 	.clip {
+		clip-path: var(--shape);
 		transition: clip-path 0.7s cubic-bezier(0.65, 0, 0.25, 1);
+	}
+	/* Intro: the shards start as loading pills, then morph into place */
+	:global(html.intro) .morph {
+		d: var(--pill);
+	}
+	:global(html.intro) .clip {
+		clip-path: var(--pill);
+	}
+	:global(html.intro-done) .morph,
+	:global(html.intro-done) .clip {
+		transition-duration: 0.9s;
+		transition-delay: calc(var(--i) * 70ms);
 	}
 	.mph {
 		transition:

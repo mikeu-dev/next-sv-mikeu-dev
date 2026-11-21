@@ -155,7 +155,7 @@
 	{/if}
 {/snippet}
 
-<header class="pointer-events-none absolute inset-x-0 top-0 z-40">
+<header class="intro-hide pointer-events-none absolute inset-x-0 top-0 z-40 [--in:500ms]">
 	<div class="flex items-start gap-2.5 p-3 sm:p-4 {overlay ? 'shard lg:[filter:none]' : 'shard'}">
 		<!-- Logo shard -->
 		<a

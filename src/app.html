@@ -9,6 +9,32 @@
 		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
 		<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+		<script>
+			// Home intro: decide before first paint so the hero never flashes.
+			// Desktop only, once per session; skipped for reduced motion and bots.
+			(function () {
+				try {
+					var q = new URLSearchParams(location.search).get('intro');
+					var home = /^\/(en\/?)?$/.test(location.pathname);
+					var ok =
+						q === '1' ||
+						(q !== '0' &&
+							home &&
+							window.matchMedia('(min-width: 1024px)').matches &&
+							!window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+							!navigator.webdriver &&
+							!/bot|crawl|spider|lighthouse/i.test(navigator.userAgent) &&
+							!sessionStorage.getItem('mikeu-intro'));
+					if (!home || !ok) return;
+					var root = document.documentElement;
+					root.classList.add('intro');
+					// failsafe: never keep the page hidden if the app fails to start
+					setTimeout(function () {
+						root.classList.remove('intro', 'intro-out');
+					}, 9000);
+				} catch (e) {}
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
