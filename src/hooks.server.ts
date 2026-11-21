@@ -89,6 +89,7 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 	);
 
 import { resolveGeo } from '#lib/server/services/geo.service.js';
+import { isBotRequest, isDataCenterPlace } from '#lib/server/utils/bot-filter.js';
 
 /**
  * Visitor tracking middleware
@@ -106,7 +107,12 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 		!event.url.pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|json|xml)$/) &&
 		!building &&
 		// a local dev server must not count (or geo-tag) visits in the production data
-		!dev
+		!dev &&
+		// crawlers, previewers, monitors and scripts are not visitors
+		!isBotRequest(
+			event.request.headers.get('user-agent'),
+			event.request.headers.get('accept-language')
+		)
 	) {
 		// Only track public pages and skip during build
 		// Set the cookie immediately so the response is not blocked
@@ -134,6 +140,9 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 				}
 
 				const geoData = await resolveGeo(event.request, ip);
+				// Requests from cloud data-centre towns are automated even when they
+				// pose as a browser (headless Chrome, scanners, link checkers).
+				if (isDataCenterPlace(geoData.country, geoData.city)) return;
 
 				await visitorService.increment({
 					ip,
