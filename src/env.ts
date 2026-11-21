@@ -29,5 +29,7 @@ export const variables = defineEnvVars({
 	ADMIN_USERNAME: { schema: (input) => input ?? '' },
 	ADMIN_PASSWORD: { schema: (input) => input ?? '' },
 	GOOGLE_GEMINI_API_KEY: { schema: (input) => input ?? '' },
-	EXTERNAL_API_KEY: { schema: (input) => input ?? '' }
+	EXTERNAL_API_KEY: { schema: (input) => input ?? '' },
+	// Set by Vercel: 'production' | 'preview' | 'development'; empty elsewhere.
+	VERCEL_ENV: { schema: (input) => input ?? '' }
 });
