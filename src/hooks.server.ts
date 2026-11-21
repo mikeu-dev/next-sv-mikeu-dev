@@ -6,7 +6,7 @@ import { env } from '#lib/server/config/env.js';
 import { logWarning } from '#lib/server/utils/logger.js';
 import { VisitorService } from '#lib/server/services/visitor.service.js';
 import { UAParser } from 'ua-parser-js';
-import { building } from '$app/env';
+import { building, dev } from '$app/env';
 import { createHandle } from '@vercel/flags/sveltekit';
 import { FLAGS_SECRET } from '$app/env/private';
 import * as flags from '#lib/flags.js';
@@ -104,7 +104,9 @@ const handleVisitor: Handle = async ({ event, resolve }) => {
 		!event.url.pathname.startsWith('/api') &&
 		!event.url.pathname.includes('sitemap.xml') &&
 		!event.url.pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|json|xml)$/) &&
-		!building
+		!building &&
+		// a local dev server must not count (or geo-tag) visits in the production data
+		!dev
 	) {
 		// Only track public pages and skip during build
 		// Set the cookie immediately so the response is not blocked
