@@ -62,6 +62,10 @@ export interface GeoNode {
 }
 
 import { sanitizeForFirestore } from '../utils/firestore';
+import { geoEntries, geoKey, isDevPlace, isPlottable, planGeoRepair } from '../utils/geo-summary';
+
+/** How often a broken geo summary may trigger a repair (reads recent logs). */
+const GEO_REPAIR_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export class VisitorService {
 	private readonly collectionName = 'counters';
@@ -147,7 +151,7 @@ export class VisitorService {
 		if (!currentDb) return;
 
 		const summaryRef = currentDb.collection(this.summaryCollectionName).doc(this.geoSummaryDocId);
-		const key = `${log.country}::${log.city || 'unknown'}`.replace(/\//g, '_'); // Sanitize key
+		const key = geoKey(log.country as string, log.city);
 
 		try {
 			await currentDb.runTransaction(async (t) => {
@@ -187,8 +191,18 @@ export class VisitorService {
 					// Use FieldPath (not dotted strings) so a country/city containing a
 					// literal "." (e.g. "St. Petersburg") is treated as one field
 					// segment, matching how the flat key was written by set() above.
+					// Location fields are written on every visit: a place seen for the
+					// first time must get them too, or the map cannot plot it.
 					t.update(
 						summaryRef,
+						new FieldPath(key, 'country'),
+						log.country,
+						new FieldPath(key, 'city'),
+						log.city || null,
+						new FieldPath(key, 'latitude'),
+						log.latitude,
+						new FieldPath(key, 'longitude'),
+						log.longitude,
 						new FieldPath(key, 'count'),
 						FieldValue.increment(1),
 						new FieldPath(key, 'lastVisit'),
@@ -400,17 +414,15 @@ export class VisitorService {
 						return this.fallbackGeoAggregation(Math.min(limit, 50));
 					}
 
-					const data = summaryDoc.data() || {};
-					delete data.updatedAt;
+					let data = summaryDoc.data() || {};
+					const broken = geoEntries(data).some(
+						([key, node]) => isDevPlace(key, node) || !isPlottable(node)
+					);
+					if (broken) data = await this.repairGeoSummary(data);
 
-					return Object.entries(data)
-						.map(([id, node]: [string, unknown]) => {
-							const nodeData = node as Omit<GeoNode, 'id'>;
-							return {
-								id,
-								...nodeData
-							};
-						})
+					return geoEntries(data)
+						.filter(([key, node]) => isPlottable(node) && !isDevPlace(key, node))
+						.map(([id, node]) => ({ id, ...(node as Omit<GeoNode, 'id'>) }))
 						.sort((a, b) => b.count - a.count)
 						.slice(0, limit);
 				} catch (error: unknown) {
@@ -429,6 +441,60 @@ export class VisitorService {
 			},
 			30 * 60 * 1000 // 30 minutes
 		);
+	}
+
+	/**
+	 * Fills places in the geo summary that were saved without country / city /
+	 * coordinates (an earlier bug only wrote them for the very first place) from
+	 * recent visitor logs, and drops mock "(Dev)" places. Runs at most once a
+	 * day; returns the summary data with the repair applied.
+	 */
+	async repairGeoSummary(
+		data: Record<string, unknown>,
+		{ force = false, logLimit = 2000 } = {}
+	): Promise<Record<string, unknown>> {
+		const currentDb = this.db;
+		if (!currentDb) return data;
+
+		const meta = (data._meta ?? {}) as { geoRepairAt?: string };
+		const last = meta.geoRepairAt ? Date.parse(meta.geoRepairAt) : 0;
+		if (!force && Date.now() - last < GEO_REPAIR_INTERVAL_MS) return data;
+
+		const summaryRef = currentDb.collection(this.summaryCollectionName).doc(this.geoSummaryDocId);
+		try {
+			// Claim the run first so concurrent instances do not repeat it.
+			await summaryRef.update(new FieldPath('_meta', 'geoRepairAt'), new Date().toISOString());
+
+			const logs = await this.repository.getWithGeoData(logLimit);
+			const plan = planGeoRepair(data, logs);
+
+			const fields: unknown[] = [];
+			for (const [key, patch] of Object.entries(plan.patches)) {
+				for (const [field, value] of Object.entries(patch)) {
+					fields.push(new FieldPath(key, field), value);
+				}
+			}
+			for (const key of plan.remove) fields.push(new FieldPath(key), FieldValue.delete());
+
+			if (fields.length) {
+				const [first, firstValue, ...rest] = fields;
+				await summaryRef.update(first as FieldPath, firstValue, ...rest);
+				persistentCache.clear('geo_aggregation');
+			}
+			console.log(
+				`VisitorService: geo summary repaired ${Object.keys(plan.patches).length} places, removed ${plan.remove.length}, ${plan.unresolved.length} still without coordinates`
+			);
+
+			const next: Record<string, unknown> = { ...data };
+			for (const [key, patch] of Object.entries(plan.patches)) {
+				next[key] = { ...(next[key] as object), ...patch };
+			}
+			for (const key of plan.remove) delete next[key];
+			return next;
+		} catch (error) {
+			console.error('VisitorService: Failed to repair geo summary', error);
+			return data;
+		}
 	}
 
 	/**

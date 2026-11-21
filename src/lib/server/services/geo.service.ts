@@ -46,7 +46,9 @@ export async function resolveGeo(request: Request, ip: string): Promise<GeoData>
 	}
 
 	// 2. Special handling for localhost/development
-	if (ip === '127.0.0.1' || ip === '::1' || ip === '0.0.0.0') {
+	// 0.0.0.0 means the address could not be read: no location rather than a fake one
+	if (ip === '0.0.0.0') return EMPTY_GEO;
+	if (ip === '127.0.0.1' || ip === '::1') {
 		// Mock Jakarta coordinates for developer visibility
 		return {
 			country: 'Indonesia',
