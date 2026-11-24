@@ -43,7 +43,10 @@ export default defineConfig({
 			extensions: ['.svelte', '.svx'],
 			adapter: adapter({ runtime: 'nodejs22.x', memory: 1024, regions: ['sin1'] }),
 			alias: { '@/*': 'src/*', '@lib/*': 'src/lib/*' },
-			paths: { relative: false }
+			paths: { relative: false },
+			// Inline the stylesheets (main one ~183 KB raw / ~30 KB gzip) into the
+			// HTML so they no longer block the first render as separate requests.
+			inlineStyleThreshold: 200 * 1024
 		}),
 		tailwindcss(),
 		devtoolsJson(),
