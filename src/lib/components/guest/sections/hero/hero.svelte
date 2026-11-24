@@ -259,25 +259,24 @@
 		</div>
 	</div>
 	<div
-		role="status"
-		aria-live="polite"
 		class="intro-only absolute right-8 left-8 flex h-[46px] items-center gap-4 px-5"
 		style="top: 822px"
 	>
 		<span
+			aria-hidden="true"
 			class="font-mono text-xs font-semibold whitespace-nowrap {introLoaded
 				? 'text-primary'
 				: 'text-ink-soft'}"
 		>
 			{introLoaded ? m.gis_intro_loaded() : m.gis_intro_fetching()}
 		</span>
-		<span class="relative h-1.5 flex-1 overflow-hidden rounded-full bg-well">
+		<span aria-hidden="true" class="relative h-1.5 flex-1 overflow-hidden rounded-full bg-well">
 			<span
 				class="absolute inset-y-0 left-0 rounded-full bg-primary"
 				style="width: {(introProgress * 100).toFixed(1)}%"
 			></span>
 		</span>
-		<span class="w-10 text-right font-mono text-xs text-ink-soft tabular-nums"
+		<span aria-hidden="true" class="w-10 text-right font-mono text-xs text-ink-soft tabular-nums"
 			>{Math.round(introProgress * 100)}%</span
 		>
 		<button
@@ -414,7 +413,7 @@
 	<div
 		class="intro-hide mm glass absolute bottom-4 left-4 box-border flex h-[76px] flex-col justify-center gap-[5px] overflow-hidden rounded-[22px_22px_30px_22px] px-4 font-mono text-[11px] whitespace-nowrap text-muted-foreground [--in:850ms]"
 		style="width: {L.slotW}px; opacity: {leftOpen ? 1 : 0}"
-		aria-hidden={!leftOpen}
+		aria-hidden="true"
 	>
 		<span class="flex items-center gap-2">
 			<span class="flex h-1.5 w-[70px] border-[1.5px] border-t-0 border-foreground">
@@ -473,7 +472,7 @@
 				<div class="flex flex-col gap-0.5 px-1 pb-1.5">
 					<span class="text-[17px] font-black whitespace-nowrap">{m.gis_layers_title()}</span>
 					<span class="font-mono text-[11px] whitespace-nowrap text-muted-foreground"
-						>EPSG:3857 · vektor</span
+						>EPSG:3857 · {m.gis_layers_vector()}</span
 					>
 				</div>
 			</div>

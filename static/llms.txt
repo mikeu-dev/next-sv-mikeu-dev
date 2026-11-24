@@ -1,43 +1,32 @@
-# Mikeu.Dev
+# mikeu.gis — Riki Ruswandi
 
-> Personal portfolio and technical blog by Riki Ruswandi (Mikeu.Dev), a fullstack software engineer specializing in SvelteKit, geospatial (GIS) solutions, and scalable web applications. Based in Indonesia.
+> Portfolio and technical blog of Riki Ruswandi (Mikeu), a software engineer focused on GIS: WebGIS applications, spatial data and map-based systems for local governments and companies, plus the APIs, automation and deployment around them. Based in Purwakarta, West Java, Indonesia.
 
-## Main Pages
+## Main pages
 
-- [Home](https://www.mikeudev.my.id/): Landing page featuring project showcase, latest blog posts, and an interactive 3D world visitor map.
-- [About](https://www.mikeudev.my.id/about): Professional background, interactive tech stack playground (physics-based), career journey timeline, and fun facts.
-- [Blog](https://www.mikeudev.my.id/blog): Technical articles covering web development, AI/RAG, SvelteKit, GIS, and software engineering best practices.
-- [Projects](https://www.mikeudev.my.id/projects): Curated portfolio of completed projects with live demos and source links.
-- [World](https://www.mikeudev.my.id/world): Interactive Three.js globe visualizing real-time site visitors by geographic location.
-- [Contact](https://www.mikeudev.my.id/contact): Professional inquiry form.
+- [Home](https://www.mikeudev.my.id/): Map-style landing page: profile, featured project "layers", capabilities, career route, latest articles and contact.
+- [Projects](https://www.mikeudev.my.id/projects): Portfolio of WebGIS, geospatial and information-system projects, mostly for Purwakarta Regency agencies.
+- [Blog](https://www.mikeudev.my.id/blog): Articles on WebGIS, spatial data, web development and AI.
+- [About](https://www.mikeudev.my.id/about): Background, tech stack and career journey.
+- [Footprints (Jejak)](https://www.mikeudev.my.id/world): Hex-grid world map (Equal Earth projection) of where site visitors come from.
+- [Contact](https://www.mikeudev.my.id/contact): Contact form for project inquiries.
 
-## Tech Stack
+## Focus areas
 
-- **Framework**: SvelteKit 2 + Svelte 5 (Runes)
-- **Language**: TypeScript (strict mode)
-- **Styling**: TailwindCSS 4
-- **3D Visualization**: Three.js
-- **Backend**: Firebase (Authentication & Firestore)
-- **Deployment**: Vercel (Edge Network)
-- **Internationalization**: Paraglide.js (Indonesian & English)
-
-## Content Topics
-
-- Svelte / SvelteKit development patterns
-- AI and RAG (Retrieval-Augmented Generation) implementations
-- Geospatial (GIS) web applications
-- Frontend performance optimization
-- TypeScript best practices
-- Firebase integration patterns
+- WebGIS with Leaflet and OpenLayers; spatial data and map-based dashboards
+- Geospatial information systems for local government (e.g. Satu Peta Purwakarta)
+- Web applications and APIs with Laravel, CodeIgniter 4 and SvelteKit
+- Automation and deployment
 
 ## Languages
 
-Available in Indonesian (id, default) and English (en). Language can be switched via URL prefix or locale selector.
+Indonesian (default, https://www.mikeudev.my.id/) and English (https://www.mikeudev.my.id/en).
 
 ## Contact
 
-- Email: Available on the contact page
+- Contact page: https://www.mikeudev.my.id/contact
 - GitHub: https://github.com/mikeu-dev
+- LinkedIn: https://www.linkedin.com/in/rikiruswandi/
 
 ## Sitemap
 

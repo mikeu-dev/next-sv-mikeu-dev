@@ -109,10 +109,6 @@
 
 		window.addEventListener('scroll', handleScroll);
 
-		if ('serviceWorker' in navigator && !dev) {
-			navigator.serviceWorker.register('/service-worker.js', { type: 'classic' });
-		}
-
 		window.addEventListener('beforeinstallprompt', (e) => {
 			e.preventDefault();
 			pwaState.setInstallPrompt(e as BeforeInstallPromptEvent);
@@ -252,11 +248,7 @@
 
 <div class="flex min-h-dvh flex-col overflow-x-clip">
 	{#if !isAdmin}
-		{#await data.resumeUrls}
-			<Navbar resolvedResumeUrls={{ en: '', id: '' }} />
-		{:then resolvedResumeUrls}
-			<Navbar {resolvedResumeUrls} />
-		{/await}
+		<Navbar resolvedResumeUrls={data.resumeUrls} />
 	{/if}
 	<main
 		id="main-content"
@@ -265,18 +257,10 @@
 		{@render children?.()}
 	</main>
 	{#if !isAdmin}
-		{#await Promise.all([data.socials, data.visitorStats])}
-			<footer class="container mx-auto px-4 py-8">
-				<div class="flex justify-between">
-					<Skeleton class="h-6 w-32" />
-					<Skeleton class="h-6 w-48" />
-				</div>
-			</footer>
-		{:then [socials, stats]}
-			<Footer {socials} visitorStats={liveStats.total > 0 ? liveStats : stats} />
-		{:catch}
-			<Footer socials={[]} visitorStats={{ total: 0, today: 0 }} />
-		{/await}
+		<Footer
+			socials={data.socials}
+			visitorStats={liveStats.total > 0 ? liveStats : data.visitorStats}
+		/>
 	{/if}
 </div>
 

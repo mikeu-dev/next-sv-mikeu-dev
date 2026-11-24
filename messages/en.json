@@ -3,7 +3,7 @@
 	"hero_title": "Hi there 👋 I'm",
 	"common_author_name": "Riki Ruswandi",
 	"common_alias_name": "Mikeu",
-	"hero_subtitle": "Software Engineer | ERP, GIS & AI-Powered Systems | APIs, Automation, Deployment",
+	"hero_subtitle": "Software Engineer focused on GIS | WebGIS, Spatial Data & Map-Based Systems | APIs, Automation, Deployment",
 	"hero_button_text": "Contact Me",
 	"hero_button_link": "View My Work",
 	"work_title": "Featured Projects",
@@ -141,7 +141,7 @@
 	"gis_hero_title_a": "Building maps that feel",
 	"gis_hero_title_em": "alive",
 	"gis_hero_title_b": "and systems people actually use.",
-	"gis_hero_lead": "Riki Ruswandi — Software Engineer for ERP, GIS & AI-powered systems: APIs, automation, all the way to deployment. Right now I focus on building WebGIS solutions for government and companies.",
+	"gis_hero_lead": "Riki Ruswandi — a Software Engineer focused on GIS: WebGIS, spatial data and map-based systems, with APIs, automation and deployment included. Right now I build WebGIS solutions for governments and companies.",
 	"gis_hero_zoom_in": "Zoom in",
 	"gis_hero_zoom_out": "Zoom out",
 	"gis_hero_north": "Reset north",
@@ -311,5 +311,9 @@
 	"gis_world_mode": "MAP MODE",
 	"gis_world_place_label": "{name}, {count} visits",
 	"gis_world_scale": "Density scale",
-	"gis_world_visits": "{count} visits"
+	"gis_world_visits": "{count} visits",
+	"seo_default_title": "Mikeu | Software Engineer focused on GIS",
+	"seo_default_description": "Riki Ruswandi (Mikeu), a software engineer focused on GIS: WebGIS, spatial data and map-based systems for governments and companies. Based in Purwakarta, Indonesia.",
+	"seo_job_title": "Software Engineer focused on GIS",
+	"gis_layers_vector": "vector"
 }

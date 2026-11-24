@@ -17,15 +17,10 @@
 	const locale = getLocale();
 	const email = PUBLIC_CONTACT_EMAIL || 'rikiruswandi28@gmail.com';
 
-	let resumeUrl = $state(
-		`https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${locale}).pdf`
+	let resumeUrl = $derived(
+		(locale === 'id' ? data.resumeUrls.id : data.resumeUrls.en) ||
+			`https://raw.githubusercontent.com/mikeu-dev/portfolio-assets/main/docs/cv/riki-ruswandi-resume-(${locale}).pdf`
 	);
-	$effect(() => {
-		data.resumeUrls.then((urls) => {
-			const url = locale === 'id' ? urls.id : urls.en;
-			if (url) resumeUrl = url;
-		});
-	});
 
 	let techstack = $derived(
 		((data?.techStack?.[locale] || data?.techStack?.['id'] || []) as TechStackCategory[]).map(
@@ -108,7 +103,7 @@
 					</span>
 				</div>
 				<dl class="m-0 grid grid-cols-2 gap-1.5 font-mono text-[13px]">
-					{#each [[m.gis_role(), 'Software Engineer'], [m.gis_base(), 'Purwakarta, ID'], [m.gis_coords(), '6.5569° S, 107.4431° E']] as [k, v], i (k)}
+					{#each [[m.gis_role(), m.seo_job_title()], [m.gis_base(), 'Purwakarta, ID'], [m.gis_coords(), '6.5569° S, 107.4431° E']] as [k, v], i (k)}
 						<div
 							class="flex flex-col gap-1 bg-well px-3 py-2.5 {i % 2
 								? 'rounded-leaf-sm-r'

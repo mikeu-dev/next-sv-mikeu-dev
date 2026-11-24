@@ -2,7 +2,7 @@
 
 export const GET: RequestHandler = ({ url }) => {
 	const title = url.searchParams.get('title') || 'Mikeu Dev';
-	const subtitle = url.searchParams.get('subtitle') || 'Fullstack Web Developer';
+	const subtitle = url.searchParams.get('subtitle') || 'Software Engineer · GIS';
 	const theme = url.searchParams.get('theme') || 'dark';
 
 	const bg = theme === 'dark' ? '#0f172a' : '#f8fafc';

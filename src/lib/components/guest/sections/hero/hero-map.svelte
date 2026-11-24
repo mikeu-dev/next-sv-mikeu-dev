@@ -57,6 +57,7 @@
 	<img
 		src="/images/map/hero-basemap.svg"
 		alt=""
+		fetchpriority="high"
 		class="map-art absolute inset-0 block size-full object-cover {fit}"
 	/>
 	<svg
@@ -176,6 +177,9 @@
 			<img
 				src="/images/map/hero-buildings-{n}.svg"
 				alt=""
+				loading="lazy"
+				decoding="async"
+				fetchpriority="low"
 				class="map-art map-rise absolute inset-0 block size-full object-cover {fit}"
 				style="animation-delay: {0.7 + n * 0.3}s"
 			/>

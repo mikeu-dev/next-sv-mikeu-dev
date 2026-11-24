@@ -3,7 +3,7 @@
 	"hero_title": "Halo 👋 Saya",
 	"common_author_name": "Riki Ruswandi",
 	"common_alias_name": "Mikeu",
-	"hero_subtitle": "Software Engineer | ERP, GIS & AI-Powered Systems | APIs, Automation, Deployment",
+	"hero_subtitle": "Software Engineer berfokus GIS | WebGIS, Data Spasial & Sistem Berbasis Peta | API, Otomasi, Deployment",
 	"hero_button_text": "Hubungi Saya",
 	"hero_button_link": "Lihat Proyek Saya",
 	"work_title": "Proyek Unggulan",
@@ -141,7 +141,7 @@
 	"gis_hero_title_a": "Membangun peta yang",
 	"gis_hero_title_em": "hidup",
 	"gis_hero_title_b": "dan sistem yang dipakai.",
-	"gis_hero_lead": "Riki Ruswandi — Software Engineer untuk ERP, GIS & AI-Powered Systems: API, otomasi, hingga deployment. Fokus saya saat ini membangun solusi WebGIS untuk pemerintah dan perusahaan.",
+	"gis_hero_lead": "Riki Ruswandi — Software Engineer yang berfokus pada GIS: WebGIS, data spasial, dan sistem berbasis peta, lengkap dengan API, otomasi, hingga deployment. Saat ini saya membangun solusi WebGIS untuk pemerintah dan perusahaan.",
 	"gis_hero_zoom_in": "Perbesar",
 	"gis_hero_zoom_out": "Perkecil",
 	"gis_hero_north": "Arah utara",
@@ -311,5 +311,9 @@
 	"gis_world_mode": "MODE PETA",
 	"gis_world_place_label": "{name}, {count} kunjungan",
 	"gis_world_scale": "Skala kepadatan",
-	"gis_world_visits": "{count} kunjungan"
+	"gis_world_visits": "{count} kunjungan",
+	"seo_default_title": "Mikeu | Software Engineer berfokus GIS",
+	"seo_default_description": "Riki Ruswandi (Mikeu), software engineer yang berfokus pada GIS: WebGIS, data spasial, dan sistem berbasis peta untuk pemerintah dan perusahaan. Berbasis di Purwakarta, Indonesia.",
+	"seo_job_title": "Software Engineer berfokus GIS",
+	"gis_layers_vector": "vektor"
 }

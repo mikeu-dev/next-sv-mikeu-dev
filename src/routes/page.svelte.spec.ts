@@ -13,9 +13,9 @@ describe('/+page.svelte', () => {
 					projects: [],
 					latestPosts: [],
 					journey: [],
-					socials: Promise.resolve([]),
-					visitorStats: Promise.resolve({ total: 0, today: 0 }),
-					resumeUrls: Promise.resolve({ en: '', id: '' }),
+					socials: [],
+					visitorStats: { total: 0, today: 0 },
+					resumeUrls: { en: '', id: '' },
 					user: undefined,
 					locale: 'en',
 					flags: {
