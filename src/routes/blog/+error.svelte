@@ -1,9 +1,8 @@
 ﻿<script lang="ts">
 	import { page } from '$app/state';
-	import { PUBLIC_LOTTIE_URL } from '$app/env/public';
 	import * as Card from '#lib/components/ui/card/index.js';
 	import Button from '@/lib/components/ui/button/button.svelte';
-	import { DotLottieSvelte } from '@lottiefiles/dotlottie-svelte';
+	import ErrorAnimation from '#lib/components/ui/error-animation.svelte';
 	import { localizeHref } from '#lib/paraglide/runtime.js';
 </script>
 
@@ -16,7 +15,7 @@
 			<Card.Description class="text-lg">Terjadi Kesalahan</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<DotLottieSvelte src={PUBLIC_LOTTIE_URL} loop autoplay />
+			<ErrorAnimation />
 			<p class="text-muted-foreground">{page.error?.message}</p>
 		</Card.Content>
 		<Card.Footer class="flex justify-center">
