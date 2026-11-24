@@ -40,7 +40,6 @@ export default defineConfig(
 	{
 		// Global ignores
 		ignores: [
-			'.agents/**',
 			'**/node_modules/**',
 			'.svelte-kit/**',
 			'.vercel/**',

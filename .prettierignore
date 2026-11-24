@@ -6,7 +6,6 @@ bun.lock
 bun.lockb
 
 # Miscellaneous
-/.agents/
 /static/
 /.svelte-kit/
 /.vercel/
