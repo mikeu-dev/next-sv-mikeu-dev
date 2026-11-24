@@ -3,6 +3,8 @@
 </script>
 
 <script lang="ts">
+	import basemapSvg from '#lib/assets/scenes/hero-basemap.svg?raw';
+
 	/**
 	 * The home hero's isometric city: basemap, vector tiles that load and fade,
 	 * analysis layers (buffer rings, A→B route with a moving vehicle, a polygon
@@ -11,13 +13,34 @@
 	let {
 		layers,
 		artScale = 1,
-		fit = 'object-center'
+		fit = 'object-center',
+		focusX = 50,
+		rise = true
 	}: {
 		layers: Record<LayerKey, boolean>;
 		artScale?: number;
 		/** object-position utility for the raster layers */
 		fit?: string;
+		/** horizontal focus (%) of the cropped basemap, like object-position x */
+		focusX?: number;
+		/**
+		 * Animate the 3D buildings rising in. Off for the phone hero: the
+		 * buildings are the largest image there, so a delayed fade-in made them
+		 * a late LCP.
+		 */
+		rise?: boolean;
 	} = $props();
+
+	// The basemap is inlined rather than an <img>: it then paints with the
+	// HTML (no request, no image decode) and, not being an image, is no longer
+	// the page's LCP element — on phones it was, with ~1.2 s of render delay.
+	// Its one id gets a per-instance suffix (the hero renders two maps).
+	const uid = $props.id();
+	const basemap = basemapSvg
+		// size attributes of the root <svg> only; the inner rects keep theirs
+		.replace(/^<svg([^>]*?)\swidth="\d+"\sheight="\d+"/, '<svg$1')
+		.replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" class="block size-full" ')
+		.replaceAll('river3', `river3-${uid}`);
 
 	// Vector tiles that "load" and fade out on first paint ----------------
 	// Pre-computed (deterministic) so SSR and hydration match.
@@ -54,12 +77,14 @@
 	class="map-mute pointer-events-none absolute inset-0 transition-transform duration-700 ease-out"
 	style="transform: scale({artScale}); transform-origin: 62% 55%"
 >
-	<img
-		src="/images/map/hero-basemap.svg"
-		alt=""
-		fetchpriority="high"
-		class="map-art absolute inset-0 block size-full object-cover {fit}"
-	/>
+	<!-- Cover-crop like object-fit: cover, focused at focusX%. -->
+	<div
+		class="map-art absolute inset-y-0 aspect-[1440/900] h-full min-w-full"
+		style="left: {focusX}%; transform: translateX(-{focusX}%)"
+	>
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- static asset from the repo -->
+		{@html basemap}
+	</div>
 	<svg
 		viewBox="0 0 1440 900"
 		preserveAspectRatio="xMidYMid slice"
@@ -177,11 +202,11 @@
 			<img
 				src="/images/map/hero-buildings-{n}.svg"
 				alt=""
-				loading="lazy"
+				loading={rise ? 'lazy' : 'eager'}
 				decoding="async"
-				fetchpriority="low"
-				class="map-art map-rise absolute inset-0 block size-full object-cover {fit}"
-				style="animation-delay: {0.7 + n * 0.3}s"
+				fetchpriority={rise ? 'low' : 'high'}
+				class="map-art {rise ? 'map-rise' : ''} absolute inset-0 block size-full object-cover {fit}"
+				style={rise ? `animation-delay: ${0.7 + n * 0.3}s` : undefined}
 			/>
 		{/each}
 	{/if}

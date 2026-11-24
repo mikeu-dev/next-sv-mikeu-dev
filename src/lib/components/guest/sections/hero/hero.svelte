@@ -52,10 +52,7 @@
 	// it morphs pills → shards and staggers the content in.
 	const INTRO_MIN_MS = 2400;
 	const INTRO_MAX_MS = 6000;
-	const MAP_IMAGES = [
-		'/images/map/hero-basemap.svg',
-		...[1, 2, 3, 4].map((n) => `/images/map/hero-buildings-${n}.svg`)
-	];
+	const MAP_IMAGES = [1, 2, 3, 4].map((n) => `/images/map/hero-buildings-${n}.svg`);
 	let introProgress = $state(0);
 	let introLoaded = $state(false);
 	let introEase = $derived(1 - (1 - introProgress) ** 2);
@@ -730,7 +727,7 @@
 <!-- ================= Phone / tablet: map, then a profile card ================= -->
 <section aria-label={m.gis_hero_label()} class="relative pt-[88px] lg:hidden">
 	<div class="relative h-[440px] overflow-hidden">
-		<HeroMap {layers} fit="object-[72%_50%]" />
+		<HeroMap {layers} fit="object-[72%_50%]" focusX={72} rise={false} />
 		<div class="absolute top-3 right-3 left-3 flex justify-between gap-2">
 			<div class="glass flex gap-1 rounded-leaf p-1">
 				{#each LAYER_DEFS.slice(0, 2) as l, i (l.key)}
