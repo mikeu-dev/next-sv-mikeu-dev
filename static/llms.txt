@@ -1,33 +1,35 @@
-# mikeu.gis — Riki Ruswandi
+# Mikeu.Dev
 
-> Portfolio and technical blog of Riki Ruswandi (Mikeu), a software engineer focused on GIS: WebGIS applications, spatial data and map-based systems for local governments and companies, plus the APIs, automation and deployment around them. Based in Purwakarta, West Java, Indonesia.
+> Portfolio and technical blog of Riki Ruswandi (Mikeu), a software engineer focused on GIS: WebGIS, spatial data, and map-based systems for government and enterprise. Based in Purwakarta, Indonesia. Also builds ERP modules and AI-augmented tooling (RAG pipelines, computer vision).
 
-## Main pages
+The site is bilingual: Indonesian is the default (`/`), English lives under `/en/`. Project codes such as "L-01" refer to project "layers" on the map-themed homepage.
 
-- [Home](https://www.mikeudev.my.id/): Map-style landing page: profile, featured project "layers", capabilities, career route, latest articles and contact.
-- [Projects](https://www.mikeudev.my.id/projects): Portfolio of WebGIS, geospatial and information-system projects, mostly for Purwakarta Regency agencies.
-- [Blog](https://www.mikeudev.my.id/blog): Articles on WebGIS, spatial data, web development and AI.
-- [About](https://www.mikeudev.my.id/about): Background, tech stack and career journey.
-- [Footprints (Jejak)](https://www.mikeudev.my.id/world): Hex-grid world map (Equal Earth projection) of where site visitors come from.
-- [Contact](https://www.mikeudev.my.id/contact): Contact form for project inquiries.
+## Main Pages
 
-## Focus areas
+- [Beranda / Home](https://www.mikeudev.my.id/): Overview with featured project layers, capabilities, career timeline, and latest blog posts. English: https://www.mikeudev.my.id/en/
+- [Proyek / Projects](https://www.mikeudev.my.id/projects): Portfolio of GIS, ERP, and web projects, including Geovara (GeoJSON editor), Satu Peta Kabupaten Purwakarta, and the Jatiluhur irrigation management unit system.
+- [Blog](https://www.mikeudev.my.id/blog): Notes on web development, GIS, and AI.
+- [Jejak / Footprints](https://www.mikeudev.my.id/world): Hex-grid world map (Equal Earth projection) of where the site's visitors come from, each drawn back to Purwakarta.
+- [Tentang / About](https://www.mikeudev.my.id/about): Background, experience, and skills.
+- [Kontak / Contact](https://www.mikeudev.my.id/contact): How to get in touch for projects or collaboration.
 
-- WebGIS with Leaflet and OpenLayers; spatial data and map-based dashboards
-- Geospatial information systems for local government (e.g. Satu Peta Purwakarta)
-- Web applications and APIs with Laravel, CodeIgniter 4 and SvelteKit
-- Automation and deployment
+## Featured Projects
 
-## Languages
+- [Geovara](https://www.mikeudev.my.id/projects/geo-draw): Web-based GeoJSON editor for drawing and editing spatial data. Live app: https://geovara.vercel.app
 
-Indonesian (default, https://www.mikeudev.my.id/) and English (https://www.mikeudev.my.id/en).
+## Expertise
+
+- GIS & WebGIS: vector tiles, spatial data processing, map-based dashboards for government and enterprise
+- Full-stack web: Laravel/PHP, SvelteKit, React, TypeScript, Node.js
+- Databases & infrastructure: PostgreSQL, MySQL, Docker, CI/CD
+- AI integration: RAG pipelines, computer vision (YOLOv8, PaddleOCR)
 
 ## Contact
 
-- Contact page: https://www.mikeudev.my.id/contact
-- GitHub: https://github.com/mikeu-dev
-- LinkedIn: https://www.linkedin.com/in/rikiruswandi/
+- [Email](mailto:rikiruswandi28@gmail.com): rikiruswandi28@gmail.com
+- [GitHub](https://github.com/mikeu-dev): Source code and open-source work
+- [LinkedIn](https://www.linkedin.com/in/rikiruswandi): Professional profile
 
-## Sitemap
+## Optional
 
-- [Sitemap XML](https://www.mikeudev.my.id/sitemap.xml)
+- [Sitemap](https://www.mikeudev.my.id/sitemap.xml): Full list of pages and blog posts

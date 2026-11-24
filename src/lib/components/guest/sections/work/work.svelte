@@ -31,14 +31,26 @@
 		year: 'numeric'
 	});
 
+	let section = $state<HTMLElement>();
+	let inView = false;
+
 	onMount(() => {
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) touring = false;
+		// Tour only while the section is on screen, so visitors arrive at layer 01
+		// rather than wherever the timer got to while they read the hero.
+		const io = new IntersectionObserver(([e]) => (inView = e.isIntersecting), {
+			threshold: 0.25
+		});
+		if (section) io.observe(section);
 		const id = setInterval(() => {
-			if (touring && layerProjects.length > 1) {
+			if (touring && inView && layerProjects.length > 1) {
 				activeIndex = (activeIndex + 1) % layerProjects.length;
 			}
 		}, 4200);
-		return () => clearInterval(id);
+		return () => {
+			clearInterval(id);
+			io.disconnect();
+		};
 	});
 
 	function pick(i: number) {
@@ -50,6 +62,7 @@
 <section
 	aria-labelledby="work-h"
 	class="mx-auto box-border max-w-[1440px] px-[clamp(16px,4vw,56px)] py-[clamp(56px,7vw,100px)]"
+	bind:this={section}
 >
 	<SectionHead id="work-h" eyebrow={m.gis_work_eyebrow()} title={m.gis_work_title()} />
 

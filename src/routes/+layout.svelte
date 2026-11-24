@@ -11,9 +11,6 @@
 	import { onNavigate, afterNavigate } from '$app/navigation';
 	import { FallingConfetti } from 'svelte-canvas-confetti';
 	import { playConfettiSound } from '#lib/utils/confetti-sound.js';
-	import gsap from 'gsap';
-	import ScrollToPlugin from 'gsap/ScrollToPlugin';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import Lenis from 'lenis';
 	import { dev } from '$app/env';
 	// @vercel/analytics's `injectAnalytics` (from '@vercel/analytics/sveltekit') still imports the
@@ -43,10 +40,9 @@
 
 	let { data, children } = $props();
 
-	// Register GSAP Plugin globally once
-	if (typeof window !== 'undefined') {
-		gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
-	}
+	const FONT_CSS =
+		'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap';
+	const FONT_STYLESHEET = `<link href="${FONT_CSS.replace(/&/g, '&amp;')}" rel="stylesheet" media="print" onload="this.media='all'">`;
 
 	onNavigate((navigation) => {
 		if (navigation.shallow) return;
@@ -62,50 +58,27 @@
 
 	let fallingConfetti = $state(false);
 	let confettiShown = false;
-	let scrollBtn = $state<HTMLElement | null>(null);
+	let showScrollTop = $state(false);
 	let liveStats = $state({ total: 0, today: 0 });
 	let lenis: Lenis;
 
 	function scrollToTop() {
-		if (lenis) {
-			lenis.scrollTo(0, { duration: 0.5 });
-		} else {
-			// Reduced duration for more responsive feel
-			gsap.to(window, {
-				duration: 0.5,
-				scrollTo: 0,
-				ease: 'power4.inOut'
-			});
-		}
+		if (lenis) lenis.scrollTo(0, { duration: 0.5 });
+		else window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 
 	function handleScroll() {
-		if (!scrollBtn) return;
-		const show = window.scrollY > 300;
-		gsap.to(scrollBtn, {
-			duration: 0.3,
-			opacity: show ? 1 : 0,
-			scale: show ? 1 : 0.8,
-			y: show ? 0 : 20,
-			pointerEvents: show ? 'auto' : 'none',
-			ease: 'back.out(1.7)'
-		});
+		showScrollTop = window.scrollY > 300;
 	}
 
 	onMount(() => {
+		// Smooth scrolling drives its own animation frame loop (no GSAP on every
+		// page: it was ~80 KiB of script the home page barely used).
 		lenis = new Lenis({
 			lerp: 0.1,
-			smoothWheel: true
+			smoothWheel: true,
+			autoRaf: true
 		});
-
-		lenis.on('scroll', ScrollTrigger.update);
-
-		const updateLenis = (time: number) => {
-			lenis.raf(time * 1000);
-		};
-
-		gsap.ticker.add(updateLenis);
-		gsap.ticker.lagSmoothing(0);
 
 		window.addEventListener('scroll', handleScroll);
 
@@ -135,7 +108,6 @@
 
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
-			gsap.ticker.remove(updateLenis);
 			if (lenis) lenis.destroy();
 		};
 	});
@@ -213,12 +185,10 @@
 		as="style"
 		href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap"
 	/>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap"
-		rel="stylesheet"
-		media="print"
-		onload={(e) => ((e.currentTarget as HTMLLinkElement).media = 'all')}
-	/>
+	<!-- Non-blocking font stylesheet. Raw HTML so the onload swap works before
+	     hydration (a Svelte handler only attaches once the app has hydrated). -->
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- constant markup, no user input -->
+	{@html FONT_STYLESHEET}
 	<noscript>
 		<link
 			href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Red+Hat+Mono:wght@400;500;600&display=swap"
@@ -271,8 +241,11 @@
 </div>
 
 <button
-	bind:this={scrollBtn}
-	class="glass pointer-events-none fixed right-6 bottom-6 z-[9999] flex size-12 items-center justify-center rounded-leaf-sm text-foreground opacity-0 transition-colors hover:bg-primary hover:text-primary-foreground sm:right-8 sm:bottom-8"
+	class="glass fixed right-6 bottom-6 z-[9999] flex size-12 items-center justify-center rounded-leaf-sm text-foreground transition-[opacity,transform,background-color,color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-primary hover:text-primary-foreground motion-reduce:transition-none sm:right-8 sm:bottom-8 {showScrollTop
+		? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
+		: 'pointer-events-none translate-y-5 scale-80 opacity-0'}"
+	tabindex={showScrollTop ? 0 : -1}
+	aria-hidden={!showScrollTop}
 	aria-label={m.gis_scroll_top()}
 	onclick={scrollToTop}
 >
