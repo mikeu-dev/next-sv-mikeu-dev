@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { m } from '#lib/paraglide/messages.js';
-	import { localizeHref } from '#lib/paraglide/runtime.js';
-	import isochrone from '#lib/assets/scenes/contact-isochrone.svg?raw';
+	import { getLocale, localizeHref } from '#lib/paraglide/runtime.js';
+	import isochroneSvg from '#lib/assets/scenes/contact-isochrone.svg?raw';
+
+	// The scene's ring labels are written in Indonesian ("5 mnt").
+	const isochrone =
+		getLocale() === 'en' ? isochroneSvg.replace(/>(\d+) mnt</g, '>$1 min<') : isochroneSvg;
 
 	const EMAIL = 'rikiruswandi28@gmail.com';
 	const LINKS = [

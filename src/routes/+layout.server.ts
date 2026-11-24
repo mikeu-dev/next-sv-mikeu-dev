@@ -7,27 +7,34 @@ import { showExperimentalFeature } from '#lib/flags.js';
 export const load: LayoutServerLoad = async (event) => {
 	const { locals } = event;
 
-	// Melakukan fetch secara paralel untuk efisiensi.
-	// Kita tidak melakukan 'await' langsung pada return untuk mengaktifkan streaming di SvelteKit.
-	return {
-		socials: socialsService
+	// Awaited, not streamed: SvelteKit 3.0.0-next drops the HTTP status of a
+	// streamed response, so with promises here every error page (404s included)
+	// went out as 200. The three reads are cached and run in parallel.
+	const [socials, visitorStats, resumeUrls] = await Promise.all([
+		socialsService
 			.getSocials()
 			.then((data) => (data as { links?: unknown[] })?.links || [])
 			.catch(() => []),
-		visitorStats: visitorService
+		visitorService
 			.getStats()
 			.then((stats) => ({
 				total: stats?.total || 0,
 				today: stats?.today || 0
 			}))
 			.catch(() => ({ total: 0, today: 0 })),
-		resumeUrls: settingsService
+		settingsService
 			.getResumeSettings()
 			.then((resume) => ({
 				en: resume?.resumeUrlEn || '',
 				id: resume?.resumeUrlId || ''
 			}))
-			.catch(() => ({ en: '', id: '' })),
+			.catch(() => ({ en: '', id: '' }))
+	]);
+
+	return {
+		socials,
+		visitorStats,
+		resumeUrls,
 		user: locals.user,
 		locale: locals.paraglide?.locale || 'id',
 		flags: {

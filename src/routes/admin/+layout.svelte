@@ -69,13 +69,7 @@
 				{@render children()}
 			</main>
 
-			{#await Promise.all([data.socials, data.visitorStats])}
-				<div class="h-20 animate-pulse bg-background/50"></div>
-			{:then [socials, visitorStats]}
-				<Footer {socials} {visitorStats} />
-			{:catch}
-				<Footer socials={[]} visitorStats={{ total: 0, today: 0 }} />
-			{/await}
+			<Footer socials={data.socials} visitorStats={data.visitorStats} />
 		</div>
 	</div>
 {:else}

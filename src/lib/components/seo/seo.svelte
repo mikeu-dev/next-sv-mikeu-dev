@@ -20,8 +20,8 @@
 	let { title, description, image, noindex = false, type = 'website', article }: Props = $props();
 
 	const canonicalBase = 'https://www.mikeudev.my.id';
-	const defaultTitle = 'Mikeu | Fullstack Web Developer';
-	const defaultDescription = 'A passionate Fullstack Web Developer from Indonesia.';
+	const defaultTitle = $derived(m.seo_default_title());
+	const defaultDescription = $derived(m.seo_default_description());
 	const siteUrl = canonicalBase;
 	const finalTitle = $derived(title ? `${title} | Mikeu` : defaultTitle);
 	const finalDescription = $derived(description || defaultDescription);
@@ -119,14 +119,15 @@
 				name: m.common_author_name(),
 				alternateName: [m.common_alias_name(), 'Mikeu Dev'],
 				description: m.hero_subtitle(),
+				jobTitle: m.seo_job_title(),
 				url: canonicalBase,
 				image: {
 					'@type': 'ImageObject',
 					url: `${siteUrl}/images/og-default.png`
 				},
 				sameAs: [
-					'https://github.com/riki-ruswandi',
-					'https://linkedin.com/in/riki-ruswandi',
+					'https://github.com/mikeu-dev',
+					'https://www.linkedin.com/in/rikiruswandi/',
 					'https://twitter.com/mikeu_dev'
 				]
 			}
@@ -175,7 +176,7 @@
 	<meta name="author" content={authorString} />
 	<meta
 		name="keywords"
-		content="Riki Ruswandi, Riki, Mikeu, Mikeu Dev, Fullstack Developer, Web Developer Indonesia, GIS, SvelteKit"
+		content="Riki Ruswandi, Mikeu, Mikeu Dev, Software Engineer, GIS, WebGIS, GIS Developer Indonesia, SvelteKit"
 	/>
 	<link rel="canonical" href={canonicalUrl} />
 	{#if noindex}

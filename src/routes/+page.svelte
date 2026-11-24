@@ -16,6 +16,11 @@
 
 <SEO />
 
+<svelte:head>
+	<!-- The hero basemap is the page's LCP element: fetch it before scripts and fonts. -->
+	<link rel="preload" as="image" href="/images/map/hero-basemap.svg" fetchpriority="high" />
+</svelte:head>
+
 <HeroSection />
 
 <TechMarquee skills={data.skills} />

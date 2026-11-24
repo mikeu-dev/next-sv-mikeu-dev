@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { auth } from '#lib/firebase/firebase.client.js';
 	import { toast } from 'svelte-sonner';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import { toggleMode } from 'mode-watcher';
-	import { signOut } from 'firebase/auth';
-	import { authState } from '#lib/stores/auth.svelte.js';
 	import InstallButton from '../pwa/InstallButton.svelte';
 	import { getLocale, setLocale, localizeHref, deLocalizeHref } from '#lib/paraglide/runtime.js';
 	import { ConfettiCannon } from 'svelte-canvas-confetti';
@@ -32,7 +29,10 @@
 
 	let menuOpen = $state(false);
 	let confettiCannon = $state(false);
-	let isLoggedIn = $derived(Boolean(authState.user));
+	// Session from the server (hooks verify the __session cookie). Reading it
+	// here instead of Firebase Auth keeps the Firebase SDK — and the
+	// apis.google.com script it pulls in — off every public page.
+	let isLoggedIn = $derived(Boolean(page.data.user));
 	let currentPath = $derived(deLocalizeHref(page.url.pathname || '/'));
 	// On the home page (desktop) the hero draws the glass shards behind this
 	// navbar, so the navbar itself stays transparent there.
@@ -56,6 +56,10 @@
 
 	async function handleSignOut() {
 		try {
+			const [{ auth }, { signOut }] = await Promise.all([
+				import('#lib/firebase/firebase.client.js'),
+				import('firebase/auth')
+			]);
 			await signOut(auth);
 			const res = await fetch('/api/auth', { method: 'DELETE' });
 			if (res.ok) {
